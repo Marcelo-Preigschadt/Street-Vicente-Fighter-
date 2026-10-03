@@ -1,0 +1,8 @@
+{
+  "name": "street-vicente-fighter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Jogo de luta arcade com Prof. Marcelo e Prof Rafael",
+  "scripts": { "test": "node --test tests/engine.test.js", "start": "python3 -m http.server 8000" }
+}
