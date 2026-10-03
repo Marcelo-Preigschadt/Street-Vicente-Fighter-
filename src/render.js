@@ -1,4 +1,4 @@
-import { CHARACTERS, WORLD } from './engine.js?v=3';
+import { CHARACTERS, WORLD } from './engine.js?v=4';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;

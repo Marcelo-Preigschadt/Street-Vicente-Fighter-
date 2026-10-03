@@ -69,7 +69,7 @@ export class Fighter {
   }
   get airborne() { return this.y < WORLD.floor - .01; }
   get canAct() { return this.hp > 0 && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.knocked && this.wakeTime <= 0 && this.landing <= 0; }
-  get crouching() { return !this.airborne && (this.input.down || ['crouch', 'crouchPunch', 'sweep', 'lowBlock'].includes(this.state)); }
+  get crouching() { return !this.airborne && ['crouch', 'crouchPunch', 'sweep', 'lowBlock'].includes(this.state); }
   get pushHeight() { return this.knocked ? 48 : this.airborne ? 145 : this.crouching ? 125 : 180; }
   get guard() {
     const back = this.direction > 0 ? this.input.left && !this.input.right : this.input.right && !this.input.left;
@@ -140,6 +140,8 @@ export class FightEngine {
       else if (this.motion(f, [2, 3, 6]) || this.motion(f, [2, 6], .23)) move = 'special';
       if (POWERS.has(move)) { f.directions = []; f.lastDirection = 5; }
     }
+    // Preserve a low attack even if down is released before the next simulation tick.
+    if (['punch', 'kick'].includes(move) && f.input.down && !f.airborne && f.jumpBuffer <= 0) move = move === 'punch' ? 'crouchPunch' : 'sweep';
     f.buffer = { move, strength, life: .20 };
   }
   contextualMove(f, move) {
@@ -151,6 +153,7 @@ export class FightEngine {
     const move = this.contextualMove(f, baseMove), m = moveData(move, strength);
     if (!m || f.hp <= 0 || f.hitstun > 0 || f.blockstun > 0 || f.knocked || f.wakeTime > 0 || f.landing > 0 || (f.action && !cancel)) return false;
     if (f.airborne && (!move.startsWith('air') || f.airAttackUsed)) return false;
+    if (!f.airborne && move.startsWith('air')) return false;
     if (!f.airborne && f.input.block) return false;
     if (m.cost && f.meter < m.cost) return false;
     if (move === 'special' && this.projectiles.some(p => p.owner === f.slot && p.move === 'special' && p.life > 0)) return false;
