@@ -1,5 +1,6 @@
 export const SOUNDS = Object.freeze({
-  hadouken: 'assets/audio/hadouken.wav',
+  'marcelo-special': 'assets/audio/marcelo-special.wav', 'marcelo-uppercut': 'assets/audio/marcelo-uppercut.wav', 'marcelo-super': 'assets/audio/marcelo-super.wav',
+  'rafael-special': 'assets/audio/rafael-special.wav', 'rafael-uppercut': 'assets/audio/rafael-uppercut.wav', 'rafael-super': 'assets/audio/rafael-super.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
   light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',
 });
@@ -8,6 +9,7 @@ export class ArcadeAudio {
   constructor() {
     this.enabled = true; this.playing = false; this.context = null; this.musicTime = 0; this.beat = 0;
     this.bytes = new Map(); this.buffers = new Map(); this.sources = new Set(); this.voices = new Map();
+    this.quoteMoves = new Map();
     this.loadPromise = null; this.decodePromise = null;
   }
   load() {
@@ -48,7 +50,7 @@ export class ArcadeAudio {
   }
   stopSamples() {
     for (const source of this.sources) { try { source.stop(); } catch {} }
-    this.sources.clear(); this.voices.clear();
+    this.sources.clear(); this.voices.clear(); this.quoteMoves.clear();
   }
   toggle() {
     this.enabled = !this.enabled;
@@ -96,17 +98,25 @@ export class ArcadeAudio {
     switch (e.type) {
       case 'swing': {
         const id = engine.fighters[e.fighter].character.id;
-        this.sample(e.move === 'kick' ? 'grunt3' : id === 'marcelo' ? 'grunt1' : 'grunt2', .9, e.fighter);
+        this.sample(['kick', 'sweep', 'airKick'].includes(e.move) ? 'grunt3' : id === 'marcelo' ? 'grunt1' : 'grunt2', .7, e.fighter);
         this.noise(.05, .04); break;
       }
       case 'jump': this.sample(e.fighter === 0 ? 'grunt1' : 'grunt2', .5, e.fighter); break;
       case 'land': this.noise(.04, .035); break;
+      case 'clash': this.sample('special', .4); break;
       case 'block': if (!this.sample('light', .35)) this.noise(.05, .08); break;
       case 'hit':
-        if (!this.sample(e.move === 'special' ? 'special' : e.move === 'kick' ? 'heavy' : 'light', .8)) this.noise(.12, .3);
+        if (!this.sample(['special', 'uppercut', 'super'].includes(e.move) ? 'special' : ['kick', 'sweep', 'airKick', 'throw'].includes(e.move) ? 'heavy' : 'light', .8)) this.noise(.12, .3);
         if (engine.fighters[e.target].hp > 0) this.sample('grunt3', .55, e.target);
         break;
-      case 'special': this.sample('hadouken', 1.15, e.fighter); break;
+      case 'special': {
+        const channel = `quote:${e.fighter}`;
+        const clip = `${engine.fighters[e.fighter].character.id}-${e.move}`;
+        if (!this.voices.has(channel) || this.quoteMoves.get(channel) !== clip) {
+          if (this.sample(clip, 1.45, channel)) this.quoteMoves.set(channel, clip);
+        }
+        break;
+      }
       case 'round': this.stopSamples(); this.musicTime = 0; this.beat = 0; this.tone(440, .14, 'square', .12); break;
       case 'fight': this.tone(660, .22, 'square', .19, 880); break;
       case 'roundEnd':

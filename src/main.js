@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP } from './engine.js?v=2';
-import { Renderer } from './render.js?v=2';
-import { ArcadeAudio } from './audio.js?v=2';
-import { Inputs } from './input.js?v=2';
+import { FightEngine, FIXED_STEP } from './engine.js?v=3';
+import { Renderer } from './render.js?v=3';
+import { ArcadeAudio } from './audio.js?v=3';
+import { Inputs } from './input.js?v=3';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -14,7 +14,7 @@ function event(e) {
   if (e.type === 'pause') { $('pause-screen').hidden = !e.paused; inputs.release(); audio.playing = !e.paused; $('pause').textContent = e.paused ? 'Continuar' : 'Pausar'; if (e.paused) $('resume').focus(); }
   if (e.type === 'round') $('announcer').textContent = `Round ${e.round}`;
   if (e.type === 'fight') $('announcer').textContent = 'Lutem!';
-  if (e.type === 'special') $('announcer').textContent = e.quote;
+  if (e.type === 'special') $('announcer').textContent = `${e.name}. ${e.quote}`;
   if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round`;
   if (e.type === 'result') {
     const f = engine.fighters[e.winner]; $('winner-name').textContent = `${f.character.name} venceu!`; $('winner-quote').textContent = f.character.quote;

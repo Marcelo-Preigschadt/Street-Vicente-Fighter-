@@ -1,78 +1,80 @@
-# Street-Vicente-Fighter-
+# Street Vicente Fighter
 
-Jogo de luta 2D para navegador com os personagens **Prof. Marcelo** e **Prof Rafael**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas; sem instalação de dependências, banco de dados ou CDN.
+Jogo de luta 2D para navegador com **Prof. Marcelo** e **Prof Rafael**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
 
-## Personagens
+[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/)
 
-| Lutador | Frase | Especial |
-| --- | --- | --- |
-| Prof. Marcelo | Bora NIT | Projétil de energia verde; maior dano e menor velocidade de movimento. |
-| Prof Rafael | No meu tempo não era assim | Projétil em forma de relógio; reduz a velocidade do adversário durante 1,5 segundo quando acerta. |
+## Combate — versão 2.0
 
-Os dois personagens têm 16 poses: guarda, respiração, caminhada, salto, agachamento, soco, chute, defesa, reação, especial, vitória e queda. Cada atlas contém uma grade 4 × 4 com transparência.
+- Seis botões: socos e chutes leves, médios e fortes, com preparação, duração ativa e recuperação diferentes.
+- Agachar + chute executa uma **rasteira baixa com queda**, seguida de tempo no chão e animação de levantar.
+- Pular + chute executa uma **voadeira com a perna estendida**, mantendo o deslocamento e a parábola do salto. Um ataque aéreo por salto.
+- Defesa em pé contra voadeiras; baixo + trás contra rasteiras. Segurar para trás bloqueia, além dos atalhos de defesa.
+- Socos confirmados em acerto ou bloqueio podem ser cancelados em poderes. Golpes no vazio precisam recuperar; encadeamentos de normais dependem do tempo de recuperação.
+- Agarrões de perto ignoram defesa. Projéteis opostos se anulam. Supers lançam três ondas e exigem barra cheia.
+- Simulação a 120 Hz, interpolação visual, reação ao impacto, recuo, áreas de colisão calibradas nos sprites, paredes e cruzamento por cima do oponente.
 
-## Jogar
+O cenário e os dois atlases originais foram preservados. Dois atlases adicionais trazem poses específicas de rasteira, soco agachado, voadeira, antiaéreo, defesa baixa, aterrissagem e levantar.
 
-1. Escolha quem será o jogador 1.
-2. Escolha **Contra o computador** ou **2 jogadores** no mesmo computador.
-3. Clique em **Começar a luta** ou pressione **Enter**.
-4. Vença dois rounds. Cada round tem 90 segundos; no empate, ocorre outro round sem atribuir uma vitória.
+## Poderes e falas
+
+| Professor | Poder | Efeito | Fala |
+| --- | --- | --- | --- |
+| Prof. Marcelo · Informática | Rajada de Código | Pacotes de código e trilha de zeros e uns | Código na tela! |
+| Prof. Marcelo · Informática | Firewall | Golpe ascendente com uma janela de barreira digital; invulnerabilidade inicial | Barreira digital ativada! |
+| Prof. Marcelo · Informática | Kernel Panic | Três rajadas de código, com barra cheia | Bora NIT! Pane no sistema! |
+| Prof Rafael · História | Crônicas | Pergaminhos e páginas | Abram as crônicas! |
+| Prof Rafael · História | Linha do Tempo | Golpe ascendente com marcos em algarismos romanos | Viagem pela história! |
+| Prof Rafael · História | Marcha dos Séculos | Três escudos históricos, com barra cheia | No meu tempo não era assim! Marcha dos séculos! |
+
+**Áudio:** as falas usam o mesmo preset, modelo, velocidade e interpretação do áudio original “Bora NIT”, com texto em português brasileiro. O próprio clipe original foi preservado e reutilizado no super de Marcelo. As falas disparam no lançamento do projétil ou na subida do antiaéreo; esforços e impactos não as interrompem. Um poder diferente substitui a fala do poder anterior. Não há fala Hadouken nem síntese de voz do navegador. Os clipes gerados não são conversões ou clones da voz de Ryu/Ken. [Origem dos áudios](assets/audio/SOURCES.md).
+
+## Comandos
+
+Escolha o lutador, selecione CPU ou dois jogadores locais e pressione Enter ou **Começar a luta**. Vence quem ganhar dois rounds de 90 segundos.
 
 | Ação | Jogador 1 | Jogador 2 |
 | --- | --- | --- |
-| Mover | A / D | ← / → |
-| Pular | W | ↑ |
-| Agachar | S | ↓ |
-| Soco | F | J |
-| Chute | G | K |
-| Especial | H | L |
-| Defender | R | O |
+| Mover / pular / agachar | A, D / W / S | ←, → / ↑ / ↓ |
+| Socos leve / médio / forte | T / F / Y | Num 7 / 8 / 9; J também faz médio |
+| Chutes leve / médio / forte | V / G / B | Num 4 / 5 / 6; K também faz médio |
+| Poder lançado | H | L |
+| Antiaéreo | U | ; |
+| Super com barra cheia | Q | . |
+| Agarrar de perto | E | N |
+| Defesa manual | R | O |
 | Pausar | Esc ou P | Esc ou P |
 
-O especial consome 40 de energia. Cada personagem começa com 50; acertar golpes e receber golpes repõe energia, que também se recupera lentamente. A defesa impede dano de socos e chutes; especiais causam pequeno dano residual, sem encerrar o round por esse dano. Antecipe o salto para passar por projéteis, ou agache para escapar de ataques altos. Os golpes têm preparação e recuperação; apertar o botão durante a recuperação final permite enfileirar o próximo golpe por até 200 ms. Após um soco acertar, é possível encadear um chute ou especial. Comandos permanecem na fila durante a breve pausa de impacto. Apertar pulo pouco antes de aterrissar também enfileira o salto seguinte.
+Os comandos abaixo são relativos ao lado para o qual o personagem olha. Inverta esquerda/direita ao trocar de lado.
 
-Em celular/tablet, o modo contra o computador mostra botões de toque. Para controles padrão de videogame: direcional ou analógico esquerdo para mover, cima para pular, baixo para agachar; botão inferior (A/×) soco, direito (B/○) chute, superior (Y/△) especial e esquerdo (X/□) ou LB/L1 defesa. Dois controles são suportados no modo local.
+| Comando | Ação |
+| --- | --- |
+| ↓ ↘ → + qualquer soco | Poder lançado |
+| → ↓ ↘ + qualquer soco | Antiaéreo |
+| ↓ ↘ → ↓ ↘ → + qualquer soco | Super |
+| Baixo + chute | Rasteira |
+| Pular + chute | Voadeira |
+| Para trás | Defesa alta |
+| Baixo + para trás | Defesa baixa |
 
-**Áudio:** vozes, impactos e nocaute usam clipes clássicos de Street Fighter carregados de `assets/audio/`. O especial usa a voz “Hadouken”. As frases dos professores aparecem como legendas; a síntese de fala foi removida. A música e os sinais de interface continuam sendo a composição sintetizada original. Origem e atribuições: [assets/audio/SOURCES.md](assets/audio/SOURCES.md).
+Os poderes normais não consomem barra. Só um projétil normal de cada professor pode estar ativo. Acertos, bloqueios e golpes recebidos carregam a barra de super. Botões aceitam comandos enfileirados por 200 ms e preservam esses comandos durante a pausa de impacto.
 
-**Movimentação e colisões:** a simulação roda a 120 Hz, com interpolação visual, aceleração e parada graduais, controle de movimento no ar e transições curtas entre poses. Os corpos conservam sua ordem no chão e não se sobrepõem nas paredes; saltos podem cruzar por cima do adversário. Socos e chutes têm áreas de acerto calibradas para cada sprite, e a defesa mantém o empurrão do impacto. As imagens dos personagens e do cenário são as mesmas da primeira versão.
+No celular, os botões aceitam vários dedos simultaneamente, incluindo baixo + chute. Em controles padrão: X/Y/RB são socos; A/B/RT são chutes; direcional ou analógico executa movimento, guarda e comandos; LB defende, Select agarra. Dois controles são suportados no modo local.
 
-## Publicar no GitHub Pages
+A organização dos controles, a defesa alta/baixa e os comandos direcionais seguem as convenções descritas no [guia publicado pela Capcom](https://news.capcomusa.com/lets/browse/street-fighter-iv-faq). O motor, a arte e os parâmetros de combate deste projeto são próprios; não contêm código do motor da Capcom.
 
-Em **Settings → Pages**, escolha **Deploy from a branch**, branch **main**, pasta **/(root)**, e salve. O arquivo `index.html` está na raiz, e todos os caminhos são relativos para funcionar no endereço do repositório.
-
-## Executar localmente
-
-Na pasta do projeto, execute:
+## Executar e verificar
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Abra `http://localhost:8000`. O jogo usa módulos JavaScript; abrir o HTML diretamente com `file://` não substitui o servidor local.
-
-## Estrutura
-
-```text
-index.html             seleção, arena, pausa e controles
-style.css              interface e adaptação de tela
-src/engine.js          simulação a 120 Hz, colisões, IA, golpes e rounds
-src/render.js          sprites, cenário, HUD e efeitos visuais
-src/input.js           teclado, toque e controles de videogame
-src/audio.js           clipes de combate e música sintetizada
-src/main.js            carregamento e integração da aplicação
-assets/                sprites, cenário e clipes de áudio locais
-tests/                 verificações de combate e áudio
-```
-
-As fotografias originais não integram o repositório; os arquivos do jogo são os personagens ilustrados e o cenário gerados para este projeto.
-
-## Verificação da simulação
-
-Com Node.js instalado:
+Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áudio com Node.js:
 
 ```bash
 npm test
 ```
 
-Nenhum pacote precisa ser instalado. Os testes verificam dano, defesa, energia, projéteis, trocas simultâneas, rounds, colisões nas paredes, cruzamento aéreo, comandos enfileirados e equivalência da simulação em diferentes taxas de atualização. Também verificam os WAV e a reprodução dos sons de combate.
+Não é necessário instalar pacotes. Os testes cobrem rasteira, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente.
+
+O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.

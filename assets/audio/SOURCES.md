@@ -1,16 +1,37 @@
-# Sons de combate
+# Áudio de combate
 
-Clipes clássicos de voz e impacto de Street Fighter, originalmente da Capcom, obtidos em 03/10/2026 do experimento [street-fighter-css de Jean-Baptiste Nébot](https://github.com/jkneb/street-fighter-css/tree/master/audio). O projeto de origem identifica os assets de Street Fighter como © Capcom. Esta atribuição não concede licença sobre os clipes.
+## Falas dos poderes
 
-| Arquivo local | Arquivo no projeto de origem | Uso |
+Gravações geradas para este projeto em português brasileiro. Todos os clipes finais usam o mesmo preset **Clint**, modelo expressivo `eleven_v3`, interpretação `[shouting]` e velocidade `1.1`, exatamente os parâmetros utilizados no primeiro áudio “Bora NIT”. Os arquivos são locais; não dependem de geração de voz ou serviços externos durante a partida.
+
+O áudio inicial aprovado de “Bora NIT” está preservado em `bora-nit-original.wav`. O super de Marcelo reutiliza suas amostras PCM, adiciona 60 ms de silêncio e a nova fala “Pane no sistema!”. Nenhuma alteração de tom, velocidade ou timbre foi aplicada ao trecho original.
+
+| Arquivo | Texto falado |
+| --- | --- |
+| `bora-nit-original.wav` | Bora NIT |
+| `marcelo-special.wav` | Código na tela! |
+| `marcelo-uppercut.wav` | Barreira digital ativada! |
+| `marcelo-super.wav` | Bora NIT! Pane no sistema! |
+| `rafael-special.wav` | Abram as crônicas! |
+| `rafael-uppercut.wav` | Viagem pela história! |
+| `rafael-super.wav` | No meu tempo não era assim! Marcha dos séculos! |
+
+Conversão para WAV PCM mono, 16 bits, 22.050 Hz, com normalização de volume. O idioma solicitado ao serviço foi `pt-br`. São gravações geradas com uma voz de catálogo, não uma conversão ou clonagem da voz de lutadores da Capcom. Os testes verificam integridade, amostras audíveis, preservação do trecho original e associação entre clipe e poder; não avaliam perceptualmente sotaque ou timbre.
+
+Falas e legendas disparam no momento em que o poder é lançado. O canal de fala é separado dos esforços e impactos. A fala não é reiniciada enquanto o mesmo poder estiver falando; outro poder substitui a fala para acompanhar a nova ação. Pausa e áudio desligado encerram a reprodução.
+
+## Esforços e impactos
+
+Clipes clássicos de Street Fighter, originalmente da Capcom, obtidos em 03/10/2026 do experimento [street-fighter-css de Jean-Baptiste Nébot](https://github.com/jkneb/street-fighter-css/tree/master/audio). O projeto de origem identifica esses assets como © Capcom. Esta atribuição não concede licença sobre os clipes.
+
+| Arquivo local | Arquivo na origem | Uso |
 | --- | --- | --- |
-| `hadouken.wav` | `audio/hado-shoryu_ken/hado.wav` + `ken.wav` | Voz dos especiais dos dois professores |
-| `grunt-1.wav` | `audio/huhs/huh1.wav` | Voz de esforço |
-| `grunt-2.wav` | `audio/huhs/huh2.wav` | Voz de esforço |
-| `grunt-3.wav` | `audio/huhs/huh3.wav` | Chute e reação a golpe |
-| `hit-light.wav` | `audio/hits/1.wav` | Soco e defesa |
-| `hit-heavy.wav` | `audio/hits/3.wav` | Chute |
-| `hit-special.wav` | `audio/hits/5.wav` | Impacto do especial |
+| `grunt-1.wav` | `audio/huhs/huh1.wav` | Esforço |
+| `grunt-2.wav` | `audio/huhs/huh2.wav` | Esforço |
+| `grunt-3.wav` | `audio/huhs/huh3.wav` | Esforço e reação |
+| `hit-light.wav` | `audio/hits/1.wav` | Socos e defesa |
+| `hit-heavy.wav` | `audio/hits/3.wav` | Chutes e agarrões |
+| `hit-special.wav` | `audio/hits/5.wav` | Poderes e anulação de projéteis |
 | `ko.wav` | `audio/defeat.wav` | Nocaute |
 
-Os dois fragmentos de “Hadouken” foram unidos em sequência, mantendo o PCM mono de 8 kHz. Os demais WAV foram copiados sem alteração. Todos são carregados do próprio repositório, sem hotlinks ou serviços de voz. As frases dos professores permanecem como texto; nenhuma voz é gerada por síntese de fala. A música e os sinais de interface continuam sendo a composição sintetizada original do projeto.
+Esses WAV foram copiados sem alteração. A fala “Hadouken” foi removida dos arquivos e do código. A música e os sinais de interface são a composição sintetizada original do projeto.

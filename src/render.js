@@ -1,4 +1,4 @@
-import { CHARACTERS, MOVES, WORLD } from './engine.js?v=2';
+import { CHARACTERS, WORLD } from './engine.js?v=3';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -14,11 +14,12 @@ export class Renderer {
     this.clock = 0; this.shake = 0; this.flash = 0; this.poses = new Map(); this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   async load() {
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...Object.values(CHARACTERS).map(f => loadImage(f.sprite))]);
+    const characters = Object.values(CHARACTERS);
+    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite)])]);
     this.background = background;
-    Object.values(CHARACTERS).forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i]); });
+    characters.forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i * 2]); this.sheets[f.id].combat = this.analyzeSheet(sheets[i * 2 + 1], true); });
   }
-  analyzeSheet(image) {
+  analyzeSheet(image, combat = false) {
     const frames = [];
     const offscreen = document.createElement('canvas'); offscreen.width = image.width; offscreen.height = image.height;
     const c = offscreen.getContext('2d', { willReadFrequently: true }); c.drawImage(image, 0, 0);
@@ -29,8 +30,9 @@ export class Renderer {
       const ex = Math.round((column + 1) * image.width / 4), ey = Math.round((row + 1) * image.height / 4);
       // Generated atlases can have a few pixels crossing nominal cell borders.
       // Find the largest connected silhouette in a padded cell, excluding neighboring-pose fragments.
-      const rx = Math.max(0, sx - 12), ry = Math.max(0, sy - 12);
-      const rw = Math.min(image.width, ex + 12) - rx, rh = Math.min(image.height, ey + 12) - ry;
+      const padding = combat ? 64 : 12;
+      const rx = Math.max(0, sx - padding), ry = Math.max(0, sy - padding);
+      const rw = Math.min(image.width, ex + padding) - rx, rh = Math.min(image.height, ey + padding) - ry;
       const mask = new Uint8Array(rw * rh), stack = new Int32Array(rw * rh);
       for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) mask[y * rw + x] = pixels[((ry + y) * image.width + rx + x) * 4 + 3] >= 95 ? 1 : 0;
       let best = null;
@@ -56,7 +58,7 @@ export class Renderer {
       }
       let anchor = i === 4 || i === 15 ? (x1 + x2) / 2 : (footLeft + footRight) / 2;
       // Align idle/walking poses by the pelvis; moving feet must not shift the whole body.
-      if (i < 4) {
+      if (!combat && i < 4) {
         let sum = 0, rows = 0;
         for (let y = Math.round(y1 + (y2 - y1) * .57); y <= Math.round(y1 + (y2 - y1) * .65); y++) {
           let left = x2, right = x1;
@@ -65,11 +67,17 @@ export class Renderer {
         }
         if (rows) anchor = sum / rows;
       }
+      if (combat) {
+        // The support foot anchors low attacks. Air attacks use the torso side rather than the extended heel.
+        if ([1, 3, 5, 7, 14].includes(i)) anchor = x1 + (x2 - x1) * (i === 3 ? .30 : i === 7 ? .35 : .39);
+        if ([4, 6, 11].includes(i)) anchor = x1 + (x2 - x1) * .49;
+      }
       frames.push({ sx, sy, x: x1, y: y1, w: x2 - x1 + 1, h: y2 - y1 + 1, anchor, bottom: y2 });
     }
-    return { image, frames, scale: 294 / frames[0].h };
+    return { image, frames, scale: 294 / frames[combat ? 8 : 0].h };
   }
   frameFor(f) {
+    const m = f.moveData, active = m && f.actionTime >= m.startup, releasing = m && f.actionTime < m.startup + m.active + .03;
     switch (f.state) {
       case 'walk': return 2 + Math.floor(f.walkTime * 8) % 2;
       case 'jump': return 4;
@@ -78,11 +86,22 @@ export class Renderer {
       case 'hit': return 11;
       case 'victory': return 14;
       case 'ko': return 15;
-      case 'punch': return f.actionTime < MOVES.punch.startup ? 6 : f.actionTime < MOVES.punch.startup + MOVES.punch.active + .03 ? 7 : 6;
-      case 'kick': return f.actionTime < MOVES.kick.startup ? 8 : f.actionTime < MOVES.kick.startup + MOVES.kick.active + .04 ? 9 : 8;
-      case 'special': return f.actionTime < MOVES.special.startup ? 12 : 13;
+      case 'punch': return active && releasing ? 7 : 6;
+      case 'kick': return active && releasing ? 9 : 8;
+      case 'special': case 'super': return active ? 13 : 12;
       default: return Math.floor(f.animTime * 3) % 2;
     }
+  }
+  poseFor(f) {
+    const original = this.sheets[f.character.id], combat = original.combat, m = f.moveData;
+    const extended = m && f.actionTime >= m.startup && f.actionTime < m.startup + m.active + .03;
+    const map = { crouchPunch: extended ? 1 : 0, sweep: extended ? 3 : 2, airPunch: extended ? 5 : 4,
+      airKick: extended ? 7 : 6, uppercut: f.actionTime >= (m?.startup ?? 0) ? 11 : 10,
+      lowBlock: 9, wake: 13, throw: 14, landing: 15 };
+    // Existing KO pose is complete and matches the original character silhouette.
+    if (f.state === 'knockdown') return { sheet: original, index: 15, id: 'base:15' };
+    if (combat && Object.hasOwn(map, f.state)) return { sheet: combat, index: map[f.state], id: `combat:${map[f.state]}` };
+    const index = this.frameFor(f); return { sheet: original, index, id: `base:${index}` };
   }
   preview(canvas, id) {
     const c = canvas.getContext('2d'), sheet = this.sheets[id]; if (!sheet) return;
@@ -91,14 +110,14 @@ export class Renderer {
     c.drawImage(sheet.image, f.sx + f.x, f.sy + f.y, f.w, f.h, (canvas.width - f.w * scale) / 2, canvas.height - f.h * scale - 3, f.w * scale, f.h * scale);
   }
   event(e) {
-    if (e.type === 'hit' || e.type === 'block') {
-      const count = e.type === 'block' ? 9 : e.move === 'special' ? 35 : 21;
+    if (e.type === 'hit' || e.type === 'block' || e.type === 'clash') {
+      const count = e.type === 'block' ? 9 : ['special', 'uppercut', 'super'].includes(e.move) ? 35 : 21;
       for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2, speed = 110 + Math.random() * 390;
         this.particles.push({ x: e.x, y: e.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: .2 + Math.random() * .3, maxLife: .5, color: e.type === 'block' ? '#9ce3ff' : i % 3 === 0 ? '#ffffff' : e.color, size: 2 + Math.random() * 5 });
       }
       if (e.type === 'hit') {
-        this.shake = this.reduced ? 0 : e.move === 'special' ? 7 : 3; this.flash = e.move === 'special' ? .06 : .025;
+        this.shake = this.reduced ? 0 : ['special', 'uppercut', 'super'].includes(e.move) ? 7 : 3; this.flash = ['special', 'uppercut', 'super'].includes(e.move) ? .06 : .025;
         this.labels.push({ x: e.x, y: e.y - 35, life: .75, text: `−${e.damage}`, color: '#fff0bf' });
       }
     }
@@ -135,58 +154,98 @@ export class Renderer {
   }
   drawShadow(f) {
     const c = this.c, air = Math.max(0, WORLD.floor - f.y); c.fillStyle = `rgba(8,16,16,${.35 - Math.min(.19, air / 1300)})`;
-    c.beginPath(); c.ellipse(f.x, WORLD.floor + 3, f.state === 'ko' ? 120 : 77 - air * .09, 12, 0, 0, Math.PI * 2); c.fill();
+    c.beginPath(); c.ellipse(f.x, WORLD.floor + 3, ['ko', 'knockdown'].includes(f.state) ? 120 : 77 - air * .09, 12, 0, 0, Math.PI * 2); c.fill();
   }
   drawFighter(f) {
-    const c = this.c, sheet = this.sheets[f.character.id]; if (!sheet) return;
-    const index = this.frameFor(f), scale = sheet.scale, key = `${f.slot}:${f.character.id}`;
+    const c = this.c, current = this.poseFor(f); if (!current.sheet) return;
+    const key = `${f.slot}:${f.character.id}`;
     let pose = this.poses.get(key);
-    if (!pose) { pose = { index, previous: index, changed: this.clock }; this.poses.set(key, pose); }
-    if (pose.index !== index) { pose.previous = pose.index; pose.index = index; pose.changed = this.clock; }
-    const blend = this.reduced ? 1 : Math.min(1, (this.clock - pose.changed) / .045);
+    if (!pose) { pose = { current, previous: current, changed: this.clock }; this.poses.set(key, pose); }
+    if (pose.current.id !== current.id) { pose.previous = pose.current; pose.current = current; pose.changed = this.clock; }
+    // The active silhouette appears on the contact frame. Only locomotion blends poses.
+    const blend = this.reduced || f.action || ['hit', 'knockdown', 'ko'].includes(f.state) ? 1 : Math.min(1, (this.clock - pose.changed) / .03);
     const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
     const stride = f.state === 'walk' && !this.reduced ? Math.sin(f.walkTime * Math.PI * 16) * .005 : 0;
     c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing + stride);
-    if (f.state === 'special' && f.actionTime < .32) {
-      c.shadowColor = f.character.color; c.shadowBlur = 14 + Math.sin(f.actionTime * 30) * 6;
-    }
+    if (['special', 'super', 'uppercut'].includes(f.state)) { c.shadowColor = f.character.color; c.shadowBlur = 12; }
     if (f.flash > 0) c.filter = 'brightness(1.8)';
     if (f.blockFlash > 0) c.filter = 'brightness(1.3) sepia(.1)';
-    if (f.slow > 0 && Math.floor(this.clock * 7) % 2) c.filter = 'sepia(.5)';
-    const drawPose = (frameIndex, opacity) => {
-      const frame = sheet.frames[frameIndex]; c.globalAlpha = opacity;
+    if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
+    const drawPose = (selected, opacity) => {
+      const { sheet, index } = selected, frame = sheet.frames[index], scale = sheet.scale; c.globalAlpha = opacity;
       c.drawImage(sheet.image, frame.sx + frame.x, frame.sy + frame.y, frame.w, frame.h,
         (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
     };
     if (blend < 1) drawPose(pose.previous, 1 - blend);
-    drawPose(index, blend); c.globalAlpha = 1;
-    c.restore();
-    if (f.state === 'special' && f.actionTime < .32) {
-      const strength = f.actionTime / .32, release = f.character.projectile;
-      this.energyOrb(f.x + f.direction * (50 + strength * (release.offset - 50)), f.y - release.height, 12 + strength * 19, f.character.id, strength);
+    drawPose(current, blend); c.globalAlpha = 1; c.restore();
+    if (['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
+      const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
+      this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
     }
+    if (f.state === 'uppercut') this.drawRisingPower(f);
   }
-  energyOrb(x, y, radius, id, phase) {
+  drawPowerGlyph(x, y, radius, id, superWave = false) {
     const c = this.c, color = CHARACTERS[id].color;
-    c.save(); c.translate(x, y); c.shadowColor = color; c.shadowBlur = 25;
-    const halo = c.createRadialGradient(0, 0, 0, 0, 0, radius * 2); halo.addColorStop(0, color); halo.addColorStop(.35, color + 'bb'); halo.addColorStop(1, color + '00');
-    c.fillStyle = halo; c.beginPath(); c.arc(0, 0, radius * 2, 0, Math.PI * 2); c.fill();
-    c.strokeStyle = '#fff8df'; c.lineWidth = 3; c.rotate(this.clock * (id === 'marcelo' ? 5 : -2));
-    if (id === 'rafael') {
-      c.beginPath(); c.arc(0, 0, radius, 0, Math.PI * 2); c.stroke();
-      for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; c.beginPath(); c.moveTo(Math.cos(a) * radius * .77, Math.sin(a) * radius * .77); c.lineTo(Math.cos(a) * radius * .9, Math.sin(a) * radius * .9); c.stroke(); }
-      c.beginPath(); c.moveTo(0, -radius * .55); c.lineTo(0, 0); c.lineTo(radius * .45, radius * .16); c.stroke();
+    c.save(); c.translate(x, y); c.shadowColor = color; c.shadowBlur = superWave ? 25 : 18;
+    if (id === 'marcelo') {
+      c.fillStyle = '#103523'; c.strokeStyle = color; c.lineWidth = 2.5;
+      rectangle(c, -radius * 1.25, -radius * .88, radius * 2.5, radius * 1.76, 5); c.fill(); c.stroke();
+      c.fillStyle = '#e6ffc4'; c.font = `900 ${Math.round(radius * .85)}px monospace`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(superWave ? '0xFF' : '{ }', 0, 1);
+      c.fillStyle = color;
+      for (let i = 0; i < 3; i++) c.fillRect(-radius + i * radius * .25, -radius * .65, radius * .12, radius * .12);
+    } else if (superWave) {
+      // Bronze shields make the history super visibly different from a fireball.
+      c.fillStyle = '#533018'; c.strokeStyle = '#ffdaa0'; c.lineWidth = 3;
+      c.beginPath(); c.moveTo(-radius, -radius); c.lineTo(radius, -radius); c.lineTo(radius * .8, radius * .55); c.quadraticCurveTo(0, radius * 1.5, -radius * .8, radius * .55); c.closePath(); c.fill(); c.stroke();
+      c.fillStyle = '#ffb555'; c.fillRect(-radius * .15, -radius * .65, radius * .3, radius * 1.55); c.fillRect(-radius * .65, -radius * .12, radius * 1.3, radius * .28);
+      c.fillStyle = '#fff4d1'; c.beginPath(); c.arc(0, 0, radius * .24, 0, Math.PI * 2); c.fill();
     } else {
-      for (let i = 0; i < 3; i++) { c.rotate(Math.PI * 2 / 3); c.beginPath(); c.moveTo(-radius, 0); c.lineTo(-radius * .35, -radius * .6); c.lineTo(radius * .3, radius * .45); c.lineTo(radius, 0); c.stroke(); }
+      // A rolled manuscript, with handwritten lines and visible scroll ends.
+      c.rotate(Math.sin(this.clock * 10) * .10); c.fillStyle = '#f6dca6'; c.strokeStyle = '#976332'; c.lineWidth = 2;
+      rectangle(c, -radius, -radius * .85, radius * 2, radius * 1.7, 3); c.fill(); c.stroke();
+      c.fillStyle = '#c28d4a'; rectangle(c, -radius * 1.2, -radius, radius * .3, radius * 2, 4); c.fill(); rectangle(c, radius * .9, -radius, radius * .3, radius * 2, 4); c.fill();
+      c.strokeStyle = '#735632'; c.lineWidth = 1.5;
+      for (let i = 0; i < 4; i++) { const yy = -radius * .5 + i * radius * .32; c.beginPath(); c.moveTo(-radius * .6, yy); c.lineTo(radius * (i % 2 ? .5 : .65), yy); c.stroke(); }
+    }
+    c.restore();
+  }
+  drawRisingPower(f) {
+    const c = this.c, m = f.moveData;
+    if (!m || f.actionTime < m.startup || f.actionTime > m.startup + m.active + .18) return;
+    const intensity = Math.max(0, 1 - (f.actionTime - m.startup) / (m.active + .18));
+    c.save(); c.globalAlpha = intensity * .8; c.shadowColor = f.character.color; c.shadowBlur = 15;
+    if (f.character.id === 'marcelo') {
+      const x = f.x + f.direction * 50;
+      c.fillStyle = '#104c3844'; c.strokeStyle = '#b8ed68'; c.lineWidth = 3; rectangle(c, x - 63, f.y - 365, 126, 320, 8); c.fill(); c.stroke();
+      c.fillStyle = '#b8ed68'; c.fillRect(x - 61, f.y - 365, 122, 22); text(c, 'FIREWALL', x, f.y - 353, 12, '#082a1b', 'center');
+      for (let i = 0; i < 7; i++) text(c, i % 2 ? '01 101 01' : '10 010 10', x, f.y - 315 + i * 35, 16, '#a3ffbe', 'center', 700);
+    } else {
+      const x = f.x + f.direction * 48, y = f.y - 240;
+      c.strokeStyle = '#ffcd83'; c.lineWidth = 4; c.beginPath(); c.arc(x, y, 99, -Math.PI * .8, Math.PI * .8); c.stroke();
+      for (let i = 0; i < 5; i++) {
+        const angle = -2.1 + i * .88, px = x + Math.cos(angle) * 98, py = y + Math.sin(angle) * 98;
+        c.fillStyle = '#714823'; c.beginPath(); c.arc(px, py, 21, 0, Math.PI * 2); c.fill(); c.stroke();
+        text(c, ['I', 'V', 'X', 'XV', 'XX'][i], px, py, 17, '#ffe5b3', 'center');
+      }
+      text(c, 'LINHA DO TEMPO', x, y + 117, 14, '#ffe1a0', 'center');
     }
     c.restore();
   }
   drawProjectile(p) {
     const c = this.c, color = CHARACTERS[p.character].color;
     c.save(); c.translate(p.x, p.y); c.scale(p.direction, 1);
-    const tail = c.createLinearGradient(-145, 0, 8, 0); tail.addColorStop(0, color + '00'); tail.addColorStop(1, color + 'aa');
-    c.fillStyle = tail; c.beginPath(); c.moveTo(-148, 0); c.lineTo(0, -19); c.lineTo(22, 0); c.lineTo(0, 19); c.closePath(); c.fill();
-    c.restore(); this.energyOrb(p.x, p.y, p.radius, p.character, 1);
+    if (p.character === 'marcelo') {
+      c.font = '700 17px monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      for (let i = 0; i < 5; i++) {
+        c.globalAlpha = .75 - i * .13; c.fillStyle = color;
+        c.fillText((i + Math.floor(this.clock * 12)) % 2 ? '01' : '10', -45 - i * 27, Math.sin(this.clock * 15 + i) * 15);
+      }
+    } else {
+      for (let i = 0; i < 3; i++) {
+        c.globalAlpha = .55 - i * .13; c.fillStyle = '#f5d7a0'; c.save(); c.translate(-43 - i * 31, Math.sin(this.clock * 9 + i) * 12); c.rotate(-.35 + Math.sin(this.clock * 9 + i) * .2); c.fillRect(-10, -13, 20, 26); c.restore();
+      }
+    }
+    c.restore(); this.drawPowerGlyph(p.x, p.y, p.radius, p.character, p.move === 'super');
   }
   drawParticles(dt) {
     const c = this.c;
@@ -229,8 +288,8 @@ export class Renderer {
       c.fillStyle = '#30423b'; c.fillRect(energyX, 674, energyWidth, 13);
       c.fillStyle = f.character.color; c.fillRect(right ? energyX + energyWidth * (1 - f.meter / 100) : energyX, 674, energyWidth * f.meter / 100, 13);
       c.strokeStyle = '#dde6cc88'; c.lineWidth = 1; c.strokeRect(energyX, 674, energyWidth, 13);
-      for (let j = 1; j <= 2; j++) { c.fillStyle = '#142224'; c.fillRect(energyX + energyWidth * .4 * j - 1, 674, 2, 13); }
-      text(c, f.meter >= 40 ? 'ESPECIAL PRONTO' : 'ENERGIA', right ? energyX + energyWidth : energyX, 666, 13, f.meter >= 40 ? f.character.color : '#a7b8ae', right ? 'right' : 'left');
+      for (let j = 1; j <= 3; j++) { c.fillStyle = '#142224'; c.fillRect(energyX + energyWidth * .25 * j - 1, 674, 2, 13); }
+      text(c, f.meter >= 100 ? 'SUPER PRONTO' : 'SUPER', right ? energyX + energyWidth : energyX, 666, 13, f.meter >= 100 ? f.character.color : '#a7b8ae', right ? 'right' : 'left');
       text(c, Math.floor(f.meter).toString(), right ? energyX : energyX + energyWidth, 666, 13, '#f5ecd9', right ? 'left' : 'right');
     });
     c.fillStyle = '#142323'; c.strokeStyle = '#dacda4'; c.lineWidth = 2; rectangle(c, 592, 28, 96, 89, 9); c.fill(); c.stroke();
@@ -240,9 +299,9 @@ export class Renderer {
   }
   drawQuote(f) {
     const c = this.c, x = f.slot === 0 ? 320 : 960, alpha = Math.min(1, f.quoteTime * 3);
-    c.save(); c.globalAlpha = alpha; c.font = '800 21px Arial'; const w = c.measureText(f.character.quote).width + 36;
-    c.fillStyle = '#101c20e6'; c.strokeStyle = f.character.color; c.lineWidth = 2; rectangle(c, x - w / 2, 163, w, 43, 5); c.fill(); c.stroke();
-    text(c, f.character.quote, x, 185, 21, f.character.color, 'center'); c.restore();
+    c.save(); c.globalAlpha = alpha; c.font = '800 21px Arial'; const w = Math.max(c.measureText(f.powerQuote || f.character.quote).width, c.measureText(f.powerName || '').width) + 36;
+    c.fillStyle = '#101c20e6'; c.strokeStyle = f.character.color; c.lineWidth = 2; rectangle(c, x - w / 2, 151, w, 66, 5); c.fill(); c.stroke();
+    text(c, f.powerName || '', x, 166, 13, '#f4ecdb', 'center'); text(c, f.powerQuote || f.character.quote, x, 194, 21, f.character.color, 'center'); c.restore();
   }
   drawCombo(f) {
     const c = this.c, x = f.slot === 0 ? 67 : 1213; c.save(); c.globalAlpha = Math.min(1, f.comboTime * 3);
