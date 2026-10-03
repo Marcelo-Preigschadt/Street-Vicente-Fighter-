@@ -1,4 +1,4 @@
-import { CHARACTERS, MOVES, WORLD } from './engine.js';
+import { CHARACTERS, MOVES, WORLD } from './engine.js?v=2';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -11,7 +11,7 @@ const text = (c, str, x, y, size = 20, color = '#f4ecdb', align = 'left', weight
 export class Renderer {
   constructor(canvas) {
     this.canvas = canvas; this.c = canvas.getContext('2d', { alpha: false }); this.sheets = {}; this.particles = []; this.labels = [];
-    this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.clock = 0; this.shake = 0; this.flash = 0; this.poses = new Map(); this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   async load() {
     const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...Object.values(CHARACTERS).map(f => loadImage(f.sprite))]);
@@ -54,7 +54,18 @@ export class Renderer {
       for (let y = Math.max(y1, y2 - 15); y <= y2; y++) for (let x = x1; x <= x2; x++) {
         if (pixels[((sy + y) * image.width + sx + x) * 4 + 3] > 140) { footLeft = Math.min(footLeft, x); footRight = Math.max(footRight, x); }
       }
-      frames.push({ sx, sy, x: x1, y: y1, w: x2 - x1 + 1, h: y2 - y1 + 1, anchor: i === 4 || i === 15 ? (x1 + x2) / 2 : (footLeft + footRight) / 2, bottom: y2 });
+      let anchor = i === 4 || i === 15 ? (x1 + x2) / 2 : (footLeft + footRight) / 2;
+      // Align idle/walking poses by the pelvis; moving feet must not shift the whole body.
+      if (i < 4) {
+        let sum = 0, rows = 0;
+        for (let y = Math.round(y1 + (y2 - y1) * .57); y <= Math.round(y1 + (y2 - y1) * .65); y++) {
+          let left = x2, right = x1;
+          for (let x = x1; x <= x2; x++) if (pixels[((sy + y) * image.width + sx + x) * 4 + 3] > 140) { left = Math.min(left, x); right = Math.max(right, x); }
+          if (right >= left) { sum += (left + right) / 2; rows++; }
+        }
+        if (rows) anchor = sum / rows;
+      }
+      frames.push({ sx, sy, x: x1, y: y1, w: x2 - x1 + 1, h: y2 - y1 + 1, anchor, bottom: y2 });
     }
     return { image, frames, scale: 294 / frames[0].h };
   }
@@ -67,9 +78,9 @@ export class Renderer {
       case 'hit': return 11;
       case 'victory': return 14;
       case 'ko': return 15;
-      case 'punch': return f.actionTime < MOVES.punch.startup ? 6 : f.actionTime < .27 ? 7 : 0;
-      case 'kick': return f.actionTime < MOVES.kick.startup ? 8 : f.actionTime < .41 ? 9 : 0;
-      case 'special': return f.actionTime < MOVES.special.startup ? 12 : f.actionTime < .65 ? 13 : 0;
+      case 'punch': return f.actionTime < MOVES.punch.startup ? 6 : f.actionTime < MOVES.punch.startup + MOVES.punch.active + .03 ? 7 : 6;
+      case 'kick': return f.actionTime < MOVES.kick.startup ? 8 : f.actionTime < MOVES.kick.startup + MOVES.kick.active + .04 ? 9 : 8;
+      case 'special': return f.actionTime < MOVES.special.startup ? 12 : 13;
       default: return Math.floor(f.animTime * 3) % 2;
     }
   }
@@ -87,21 +98,23 @@ export class Renderer {
         this.particles.push({ x: e.x, y: e.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: .2 + Math.random() * .3, maxLife: .5, color: e.type === 'block' ? '#9ce3ff' : i % 3 === 0 ? '#ffffff' : e.color, size: 2 + Math.random() * 5 });
       }
       if (e.type === 'hit') {
-        this.shake = this.reduced ? 0 : e.move === 'special' ? 12 : 6; this.flash = e.move === 'special' ? .09 : .035;
+        this.shake = this.reduced ? 0 : e.move === 'special' ? 7 : 3; this.flash = e.move === 'special' ? .06 : .025;
         this.labels.push({ x: e.x, y: e.y - 35, life: .75, text: `−${e.damage}`, color: '#fff0bf' });
       }
     }
-    if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; }
+    if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; this.poses.clear(); }
   }
-  draw(engine, dt) {
+  draw(engine, dt, alpha = 1) {
     const c = this.c; this.clock += dt; this.shake *= Math.exp(-dt * 14); this.flash = Math.max(0, this.flash - dt);
     c.save();
     if (this.shake > .1) c.translate((Math.random() - .5) * this.shake, (Math.random() - .5) * this.shake);
     this.drawBackground(engine);
     if (engine.phase !== 'selection') {
-      for (const f of engine.fighters) this.drawShadow(f);
-      for (const f of [...engine.fighters].sort((a, b) => a.y - b.y)) this.drawFighter(f);
-      for (const p of engine.projectiles) this.drawProjectile(p);
+      const fighters = engine.fighters.map(f => ({ ...f, x: f.prevX + (f.x - f.prevX) * alpha, y: f.prevY + (f.y - f.prevY) * alpha,
+        actionTime: f.prevActionTime <= f.actionTime ? f.prevActionTime + (f.actionTime - f.prevActionTime) * alpha : f.actionTime }));
+      for (const f of fighters) this.drawShadow(f);
+      for (const f of fighters.sort((a, b) => a.y - b.y)) this.drawFighter(f);
+      for (const p of engine.projectiles) this.drawProjectile({ ...p, x: p.prevX + (p.x - p.prevX) * alpha });
       this.drawParticles(dt);
       this.drawHUD(engine);
       for (const f of engine.fighters) { if (f.quoteTime > 0) this.drawQuote(f); if (f.combo >= 2 && f.comboTime > 0) this.drawCombo(f); }
@@ -126,20 +139,31 @@ export class Renderer {
   }
   drawFighter(f) {
     const c = this.c, sheet = this.sheets[f.character.id]; if (!sheet) return;
-    const frame = sheet.frames[this.frameFor(f)], scale = sheet.scale;
-    const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .7 : 0;
-    c.save(); c.translate(f.x, f.y + breathing); c.scale(f.direction, 1);
+    const index = this.frameFor(f), scale = sheet.scale, key = `${f.slot}:${f.character.id}`;
+    let pose = this.poses.get(key);
+    if (!pose) { pose = { index, previous: index, changed: this.clock }; this.poses.set(key, pose); }
+    if (pose.index !== index) { pose.previous = pose.index; pose.index = index; pose.changed = this.clock; }
+    const blend = this.reduced ? 1 : Math.min(1, (this.clock - pose.changed) / .045);
+    const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
+    const stride = f.state === 'walk' && !this.reduced ? Math.sin(f.walkTime * Math.PI * 16) * .005 : 0;
+    c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing + stride);
     if (f.state === 'special' && f.actionTime < .32) {
       c.shadowColor = f.character.color; c.shadowBlur = 14 + Math.sin(f.actionTime * 30) * 6;
     }
     if (f.flash > 0) c.filter = 'brightness(1.8)';
     if (f.blockFlash > 0) c.filter = 'brightness(1.3) sepia(.1)';
     if (f.slow > 0 && Math.floor(this.clock * 7) % 2) c.filter = 'sepia(.5)';
-    c.drawImage(sheet.image, frame.sx + frame.x, frame.sy + frame.y, frame.w, frame.h,
-      (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
+    const drawPose = (frameIndex, opacity) => {
+      const frame = sheet.frames[frameIndex]; c.globalAlpha = opacity;
+      c.drawImage(sheet.image, frame.sx + frame.x, frame.sy + frame.y, frame.w, frame.h,
+        (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
+    };
+    if (blend < 1) drawPose(pose.previous, 1 - blend);
+    drawPose(index, blend); c.globalAlpha = 1;
     c.restore();
     if (f.state === 'special' && f.actionTime < .32) {
-      const strength = f.actionTime / .32; this.energyOrb(f.x + f.direction * 50, f.y - 175, 12 + strength * 19, f.character.id, strength);
+      const strength = f.actionTime / .32, release = f.character.projectile;
+      this.energyOrb(f.x + f.direction * (50 + strength * (release.offset - 50)), f.y - release.height, 12 + strength * 19, f.character.id, strength);
     }
   }
   energyOrb(x, y, radius, id, phase) {

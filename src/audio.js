@@ -1,14 +1,73 @@
+export const SOUNDS = Object.freeze({
+  hadouken: 'assets/audio/hadouken.wav',
+  grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
+  light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',
+});
+
 export class ArcadeAudio {
-  constructor() { this.enabled = true; this.playing = false; this.context = null; this.musicTime = 0; this.beat = 0; this.lastSpeech = 0; }
+  constructor() {
+    this.enabled = true; this.playing = false; this.context = null; this.musicTime = 0; this.beat = 0;
+    this.bytes = new Map(); this.buffers = new Map(); this.sources = new Set(); this.voices = new Map();
+    this.loadPromise = null; this.decodePromise = null;
+  }
+  load() {
+    if (this.loadPromise) return this.loadPromise;
+    this.loadPromise = Promise.allSettled(Object.entries(SOUNDS).map(async ([id, path]) => {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`Áudio ${path}: HTTP ${response.status}`);
+      this.bytes.set(id, await response.arrayBuffer());
+    })).then(results => {
+      for (const result of results) if (result.status === 'rejected') console.warn('Não foi possível carregar um som de combate.', result.reason);
+      return results.every(result => result.status === 'fulfilled');
+    });
+    return this.loadPromise;
+  }
+  decode() {
+    if (!this.context) return Promise.resolve(false);
+    if (this.decodePromise) return this.decodePromise;
+    this.decodePromise = this.load().then(async () => {
+      const results = await Promise.allSettled([...this.bytes].map(async ([id, bytes]) => {
+        this.buffers.set(id, await this.context.decodeAudioData(bytes.slice(0)));
+      }));
+      for (const result of results) if (result.status === 'rejected') console.warn('Não foi possível preparar um som de combate.', result.reason);
+      const ready = results.every(result => result.status === 'fulfilled') && this.buffers.size === Object.keys(SOUNDS).length;
+      if (ready) console.info('Sons de combate prontos.');
+      return ready;
+    });
+    return this.decodePromise;
+  }
   unlock() {
     const Context = window.AudioContext || window.webkitAudioContext;
     if (!Context) return;
     if (!this.context) {
-      this.context = new Context(); this.master = this.context.createGain(); this.master.gain.value = .28; this.master.connect(this.context.destination);
+      this.context = new Context(); this.master = this.context.createGain(); this.master.gain.value = this.enabled ? .42 : 0;
+      const limiter = this.context.createDynamicsCompressor(); limiter.threshold.value = -8; limiter.knee.value = 12; limiter.ratio.value = 6;
+      this.master.connect(limiter); limiter.connect(this.context.destination);
     }
-    this.context.resume().catch(() => {});
+    this.context.resume().catch(() => {}); this.decode();
   }
-  toggle() { this.enabled = !this.enabled; if (this.master) this.master.gain.setTargetAtTime(this.enabled ? .28 : 0, this.context.currentTime, .03); if (!this.enabled) window.speechSynthesis?.cancel(); return this.enabled; }
+  stopSamples() {
+    for (const source of this.sources) { try { source.stop(); } catch {} }
+    this.sources.clear(); this.voices.clear();
+  }
+  toggle() {
+    this.enabled = !this.enabled;
+    if (this.master) this.master.gain.setTargetAtTime(this.enabled ? .42 : 0, this.context.currentTime, .02);
+    if (!this.enabled) this.stopSamples();
+    return this.enabled;
+  }
+  sample(id, volume = 1, voice = null) {
+    const buffer = this.buffers.get(id);
+    if (!buffer || !this.context || !this.enabled || this.context.state !== 'running') return false;
+    if (voice !== null) {
+      const previous = this.voices.get(voice); if (previous) { try { previous.stop(); } catch {} }
+    }
+    const ctx = this.context, source = ctx.createBufferSource(), amp = ctx.createGain();
+    source.buffer = buffer; amp.gain.value = volume; source.connect(amp); amp.connect(this.master);
+    this.sources.add(source); if (voice !== null) this.voices.set(voice, source);
+    source.onended = () => { source.disconnect(); amp.disconnect(); this.sources.delete(source); if (this.voices.get(voice) === source) this.voices.delete(voice); };
+    source.start(); return true;
+  }
   tone(frequency, duration, type = 'square', volume = .2, endFrequency = frequency) {
     if (!this.context || !this.enabled || this.context.state !== 'running') return;
     const ctx = this.context, t = ctx.currentTime, osc = ctx.createOscillator(), amp = ctx.createGain();
@@ -26,32 +85,35 @@ export class ArcadeAudio {
     if (!this.playing || !this.enabled || !this.context) return;
     this.musicTime += dt; if (this.musicTime < .165) return; this.musicTime -= .165;
     const notes = [110, 110, 164.81, 110, 130.81, 130.81, 196, 130.81, 98, 98, 146.83, 98, 82.41, 123.47, 164.81, 123.47];
-    this.tone(notes[this.beat % notes.length], .13, 'triangle', .15);
-    if (this.beat % 4 === 0) this.tone(105, .12, 'sine', .25, 38);
-    if (this.beat % 4 === 2) this.noise(.09, .06);
-    if (this.beat % 2 === 1) this.noise(.022, .025);
-    if (this.beat % 8 === 3 || this.beat % 8 === 6) this.tone(notes[this.beat % 16] * 4, .11, 'square', .035);
+    this.tone(notes[this.beat % notes.length], .13, 'triangle', .10);
+    if (this.beat % 4 === 0) this.tone(105, .12, 'sine', .16, 38);
+    if (this.beat % 4 === 2) this.noise(.09, .04);
+    if (this.beat % 2 === 1) this.noise(.022, .02);
+    if (this.beat % 8 === 3 || this.beat % 8 === 6) this.tone(notes[this.beat % 16] * 4, .11, 'square', .025);
     this.beat++;
-  }
-  say(phrase, slot = 0) {
-    if (!this.enabled || !window.speechSynthesis || Date.now() - this.lastSpeech < 1200) return;
-    this.lastSpeech = Date.now(); speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(phrase); utterance.lang = 'pt-BR'; utterance.rate = slot === 0 ? 1.14 : .97; utterance.pitch = slot === 0 ? .85 : .98; utterance.volume = .75;
-    const voices = speechSynthesis.getVoices(); utterance.voice = voices.find(v => v.lang.toLowerCase() === 'pt-br') || voices.find(v => v.lang.toLowerCase().startsWith('pt')) || null;
-    speechSynthesis.speak(utterance);
   }
   event(e, engine) {
     switch (e.type) {
-      case 'swing': this.noise(.085, .07); break;
-      case 'jump': this.tone(120, .09, 'triangle', .12, 300); break;
-      case 'block': this.tone(800, .07, 'square', .16, 280); this.noise(.05, .08); break;
-      case 'hit': this.noise(e.move === 'special' ? .23 : .12, .38); this.tone(155, .13, 'sine', .45, 40); break;
-      case 'special': this.tone(150, .32, 'sawtooth', .13, 850); this.say(e.quote, e.fighter); break;
-      case 'round': this.musicTime = 0; this.beat = 0; this.tone(440, .14, 'square', .12); break;
+      case 'swing': {
+        const id = engine.fighters[e.fighter].character.id;
+        this.sample(e.move === 'kick' ? 'grunt3' : id === 'marcelo' ? 'grunt1' : 'grunt2', .9, e.fighter);
+        this.noise(.05, .04); break;
+      }
+      case 'jump': this.sample(e.fighter === 0 ? 'grunt1' : 'grunt2', .5, e.fighter); break;
+      case 'land': this.noise(.04, .035); break;
+      case 'block': if (!this.sample('light', .35)) this.noise(.05, .08); break;
+      case 'hit':
+        if (!this.sample(e.move === 'special' ? 'special' : e.move === 'kick' ? 'heavy' : 'light', .8)) this.noise(.12, .3);
+        if (engine.fighters[e.target].hp > 0) this.sample('grunt3', .55, e.target);
+        break;
+      case 'special': this.sample('hadouken', 1.15, e.fighter); break;
+      case 'round': this.stopSamples(); this.musicTime = 0; this.beat = 0; this.tone(440, .14, 'square', .12); break;
       case 'fight': this.tone(660, .22, 'square', .19, 880); break;
-      case 'roundEnd': this.tone(220, .45, 'triangle', .35, 55); if (e.winner !== null) this.say(e.quote, e.winner); break;
+      case 'roundEnd':
+        if (e.winner !== null && !e.timeout) this.sample('ko', .65, 1 - e.winner);
+        this.tone(220, .30, 'triangle', .12, 55); break;
       case 'result': this.tone(523.25, .4, 'triangle', .2, 1046.5); break;
-      case 'pause': if (e.paused) window.speechSynthesis?.cancel(); break;
+      case 'pause': if (e.paused) this.stopSamples(); break;
     }
   }
 }

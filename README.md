@@ -29,11 +29,13 @@ Os dois personagens têm 16 poses: guarda, respiração, caminhada, salto, agach
 | Defender | R | O |
 | Pausar | Esc ou P | Esc ou P |
 
-O especial consome 40 de energia. Cada personagem começa com 50; acertar golpes e receber golpes repõe energia, que também se recupera lentamente. A defesa impede dano de socos e chutes; especiais causam pequeno dano residual, sem encerrar o round por esse dano. Pule para passar por projéteis, ou agache para escapar de ataques altos. Os golpes têm preparação e recuperação; apertar o botão durante a recuperação final permite enfileirar o próximo golpe por até 160 ms.
+O especial consome 40 de energia. Cada personagem começa com 50; acertar golpes e receber golpes repõe energia, que também se recupera lentamente. A defesa impede dano de socos e chutes; especiais causam pequeno dano residual, sem encerrar o round por esse dano. Antecipe o salto para passar por projéteis, ou agache para escapar de ataques altos. Os golpes têm preparação e recuperação; apertar o botão durante a recuperação final permite enfileirar o próximo golpe por até 200 ms. Após um soco acertar, é possível encadear um chute ou especial. Comandos permanecem na fila durante a breve pausa de impacto. Apertar pulo pouco antes de aterrissar também enfileira o salto seguinte.
 
 Em celular/tablet, o modo contra o computador mostra botões de toque. Para controles padrão de videogame: direcional ou analógico esquerdo para mover, cima para pular, baixo para agachar; botão inferior (A/×) soco, direito (B/○) chute, superior (Y/△) especial e esquerdo (X/□) ou LB/L1 defesa. Dois controles são suportados no modo local.
 
-**Áudio:** efeitos e trilha original sintetizados no navegador. As frases também aparecem na tela e podem ser pronunciadas pela síntese de voz do navegador em português. A disponibilidade e o timbre da voz dependem das vozes instaladas no dispositivo; não são gravações dos professores.
+**Áudio:** vozes, impactos e nocaute usam clipes clássicos de Street Fighter carregados de `assets/audio/`. O especial usa a voz “Hadouken”. As frases dos professores aparecem como legendas; a síntese de fala foi removida. A música e os sinais de interface continuam sendo a composição sintetizada original. Origem e atribuições: [assets/audio/SOURCES.md](assets/audio/SOURCES.md).
+
+**Movimentação e colisões:** a simulação roda a 120 Hz, com interpolação visual, aceleração e parada graduais, controle de movimento no ar e transições curtas entre poses. Os corpos conservam sua ordem no chão e não se sobrepõem nas paredes; saltos podem cruzar por cima do adversário. Socos e chutes têm áreas de acerto calibradas para cada sprite, e a defesa mantém o empurrão do impacto. As imagens dos personagens e do cenário são as mesmas da primeira versão.
 
 ## Publicar no GitHub Pages
 
@@ -54,13 +56,13 @@ Abra `http://localhost:8000`. O jogo usa módulos JavaScript; abrir o HTML diret
 ```text
 index.html             seleção, arena, pausa e controles
 style.css              interface e adaptação de tela
-src/engine.js          simulação a 60 Hz, colisões, IA, golpes e rounds
+src/engine.js          simulação a 120 Hz, colisões, IA, golpes e rounds
 src/render.js          sprites, cenário, HUD e efeitos visuais
 src/input.js           teclado, toque e controles de videogame
-src/audio.js           efeitos, música e frases sintetizadas
+src/audio.js           clipes de combate e música sintetizada
 src/main.js            carregamento e integração da aplicação
-assets/                sprites e cenário em WebP
-tests/engine.test.js   verificações da simulação
+assets/                sprites, cenário e clipes de áudio locais
+tests/                 verificações de combate e áudio
 ```
 
 As fotografias originais não integram o repositório; os arquivos do jogo são os personagens ilustrados e o cenário gerados para este projeto.
@@ -73,4 +75,4 @@ Com Node.js instalado:
 npm test
 ```
 
-Nenhum pacote precisa ser instalado. Os testes verificam dano, defesa, energia, projéteis, troca simultânea de golpes e conclusão dos rounds.
+Nenhum pacote precisa ser instalado. Os testes verificam dano, defesa, energia, projéteis, trocas simultâneas, rounds, colisões nas paredes, cruzamento aéreo, comandos enfileirados e equivalência da simulação em diferentes taxas de atualização. Também verificam os WAV e a reprodução dos sons de combate.

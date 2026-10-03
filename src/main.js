@@ -1,7 +1,7 @@
-import { FightEngine } from './engine.js';
-import { Renderer } from './render.js';
-import { ArcadeAudio } from './audio.js';
-import { Inputs } from './input.js';
+import { FightEngine, FIXED_STEP } from './engine.js?v=2';
+import { Renderer } from './render.js?v=2';
+import { ArcadeAudio } from './audio.js?v=2';
+import { Inputs } from './input.js?v=2';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -13,6 +13,7 @@ function event(e) {
   renderer.event(e); audio.event(e, engine);
   if (e.type === 'pause') { $('pause-screen').hidden = !e.paused; inputs.release(); audio.playing = !e.paused; $('pause').textContent = e.paused ? 'Continuar' : 'Pausar'; if (e.paused) $('resume').focus(); }
   if (e.type === 'round') $('announcer').textContent = `Round ${e.round}`;
+  if (e.type === 'fight') $('announcer').textContent = 'Lutem!';
   if (e.type === 'special') $('announcer').textContent = e.quote;
   if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round`;
   if (e.type === 'result') {
@@ -35,7 +36,7 @@ function start() {
   engine.start(selected, mode);
 }
 function selection() {
-  engine.phase = 'selection'; engine.paused = false; inputs.release(); audio.playing = false; window.speechSynthesis?.cancel();
+  engine.phase = 'selection'; engine.paused = false; inputs.release(); audio.playing = false; audio.stopSamples();
   $('selection').hidden = false; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('touch-controls').hidden = true; $('pause').disabled = true; $('start').focus();
 }
 $('start').addEventListener('click', start); $('restart').addEventListener('click', start); $('rematch').addEventListener('click', start);
@@ -58,15 +59,17 @@ window.addEventListener('blur', autopause); document.addEventListener('visibilit
 let last = performance.now(), accumulator = 0;
 function frame(now) {
   const dt = Math.min(.066, (now - last) / 1000); last = now;
-  if (!engine.paused) { accumulator += dt; while (accumulator >= 1 / 60) { inputs.update(); engine.update(1 / 60); accumulator -= 1 / 60; } }
+  if (!engine.paused) { accumulator += dt; while (accumulator >= FIXED_STEP) { inputs.update(); engine.update(FIXED_STEP); accumulator -= FIXED_STEP; } }
   else accumulator = 0;
-  renderer.draw(engine, dt); audio.tick(dt); requestAnimationFrame(frame);
+  renderer.draw(engine, engine.paused ? 0 : dt, engine.paused ? 1 : accumulator / FIXED_STEP); audio.tick(dt); requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 try {
-  await renderer.load(); document.querySelectorAll('[data-preview]').forEach(canvas => renderer.preview(canvas, canvas.dataset.preview));
-  ready = true; $('start').disabled = false; $('start').textContent = 'Começar a luta'; $('load-status').textContent = 'Selecione o personagem e pressione Enter ou Começar a luta';
+  const [, audioReady] = await Promise.all([renderer.load(), audio.load()]);
+  document.querySelectorAll('[data-preview]').forEach(canvas => renderer.preview(canvas, canvas.dataset.preview));
+  ready = true; $('start').disabled = false; $('start').textContent = 'Começar a luta';
+  $('load-status').textContent = audioReady ? 'Selecione o personagem e pressione Enter ou Começar a luta' : 'Áudio de combate indisponível. Recarregue a página para tentar novamente.';
 } catch (error) {
   $('load-status').textContent = `${error.message}. Recarregue a página para tentar novamente.`; $('start').textContent = 'Recarregar'; $('start').disabled = false;
   $('start').addEventListener('click', () => { if (!ready) location.reload(); });
