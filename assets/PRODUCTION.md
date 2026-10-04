@@ -51,3 +51,16 @@ Os quatro atlases e todos os WAV aprovados permanecem byte a byte. A caminhada �
 `src/walk.js` calcula joelhos por cinemática inversa, apoio de cada pé, elevação durante a passagem e rotação do calçado. Cada ciclo corresponde a 200 pixels efetivamente percorridos. A metade de apoio cancela o deslocamento do corpo; a metade de passagem tem trajetória curva. Renderização e área vulnerável inferior usam os mesmos tornozelos e calçados. As áreas aprovadas de cabeça e tronco são mantidas, com o deslocamento vertical de respiração da caminhada. As caixas de separação dos corpos e os parâmetros de rasteira, salto e golpes da versão 2.1 continuam iguais.
 
 `src/super-fx.js` mantém relógios separados para barra completa, abertura do super e impactos. Os efeitos de tela são desenhados no Canvas: fundo azul escuro, raios, anéis, halo, clarão curto e faixa com o nome do golpe. Verde é a identidade visual de Kernel Panic; âmbar é a de Marcha dos Séculos. A abertura congela a simulação por 14 quadros antes de integrar os lutadores/projéteis, enquanto a apresentação continua. Pausa e troca de round limpam ou suspendem os efeitos conforme o contexto. Nenhum asset visual ou voz da Capcom foi acrescentado nesta revisão.
+
+
+## Prof. Gustavo e caminhada completa — versão 2.3
+
+A foto fornecida de Gustavo foi usada como referência de identidade; os atlases aprovados dos professores anteriores foram usados como referência de estilo. O built-in `image_gen` gerou `gustavo.webp`, `gustavo-combat.webp` e os três `*-walk.webp`, com fundo transparente. Os PNG originais foram convertidos para WebP preservando o alpha. Prompts completos: [gustavo-prompts.json](gustavo-prompts.json) e [walk-prompts.json](walk-prompts.json).
+
+Base e combate mantêm as 16 poses na ordem dos professores anteriores. Cada caminhada tem oito poses completas em quatro colunas por duas linhas. O renderer desenha uma única silhueta inteira e opaca em cada quadro. Foram removidos os recortes e a cinemática inversa da versão 2.2, que produziam emendas visíveis no quadril e nos joelhos. Escala uniforme por quadro e alinhamento pela pelve mantêm a altura do personagem. Desenho e colisão selecionam o mesmo quadro por distância efetiva, com reversão da sequência ao recuar.
+
+As áreas vulneráveis e o alcance dos golpes de Gustavo foram medidos nos pixels opacos da nova arte. As áreas de guarda e combate dos professores anteriores, os parâmetros gerais de movimento/golpes e os efeitos de super permanecem iguais. As novas áreas de caminhada foram medidas nos três atlases completos.
+
+Os poderes de Gustavo são desenhos por Canvas: um núcleo carregado com elétrons para Pulso Iônico; uma coluna de calor, bolhas e ΔH < 0 para Reação Exotérmica; moléculas com ligações e três ondas para Reação em Cadeia. A tela de ativação do super segue o padrão existente com identidade ciano/violeta.
+
+As três falas foram geradas com voz de catálogo Mark, `eleven_v3`, `[shouting]`, `pt-br`, velocidade 1.15, e integradas como WAV PCM mono de 16 bits a 22.050 Hz. Os sprites e WAV anteriores foram verificados contra os hashes Git da versão 2.2.0. O clipe original Bora NIT mantém suas amostras.

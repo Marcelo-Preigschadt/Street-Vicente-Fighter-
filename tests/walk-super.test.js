@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FightEngine, FIXED_STEP, COMBAT, MOVES } from '../src/engine.js';
-import { footAt, WALK_STRIDE, WALK_RIGS, walkingPose, shoePoint } from '../src/walk.js';
+import { FightEngine, FIXED_STEP, COMBAT, MOVES, CHARACTERS, fighterPose } from '../src/engine.js';
+import { WALK_STRIDE, WALK_FRAMES, walkingFrame } from '../src/walk.js';
+import { HURT_PROFILES } from '../src/hitboxes.js';
 import { SuperEffects } from '../src/super-fx.js';
 
 function scene() {
@@ -38,28 +39,32 @@ test('o ciclo não corre contra paredes nem contra um adversário encostado no c
   assert.equal(g.fighters[0].walkDistance, 0); assert.equal(g.fighters[0].walkBlend, 0);
 });
 
-test('o apoio fica no mesmo ponto do chão enquanto o corpo passa por ele', () => {
-  for (const phase of [.08, .16, .24, .32, .40]) {
-    const foot = footAt(phase), worldX = phase * WALK_STRIDE;
-    assert.equal(foot.planted, true); assert.equal(foot.y, 0);
-    assert.ok(Math.abs(worldX + foot.x - WALK_STRIDE / 4) < 1e-7);
+test('poses completas avançam e invertem pela distância, sem variar quando o corpo para', () => {
+  for (let i = 0; i < WALK_FRAMES; i++) {
+    assert.equal(walkingFrame(i * WALK_STRIDE / WALK_FRAMES + 1), i);
+    assert.equal(walkingFrame((i - WALK_FRAMES) * WALK_STRIDE / WALK_FRAMES + 1), i);
   }
-  assert.equal(footAt(.75).planted, false); assert.ok(footAt(.75).y < -25);
+  assert.equal(walkingFrame(WALK_STRIDE), 0);
+  assert.equal(walkingFrame(-1), WALK_FRAMES - 1);
 });
 
-test('as pernas trocam apoio, dobram os joelhos e voltam à pose original sem transparência', () => {
-  for (const id of ['marcelo', 'rafael']) {
-    const f = { character: { id }, walkDistance: 0, walkBlend: 1 };
-    const a = walkingPose(f); f.walkDistance = WALK_STRIDE * .5; const b = walkingPose(f);
-    assert.ok(a.near.ankle.x > a.far.ankle.x); assert.ok(b.near.ankle.x < b.far.ankle.x);
-    f.walkDistance = WALK_STRIDE * .25; const c = walkingPose(f);
-    assert.ok(c.far.ankle.y < -30); assert.ok(c.far.knee.x > c.far.ankle.x);
-    f.walkBlend = 0; const rest = walkingPose(f);
-    for (const side of ['near', 'far']) {
-      assert.deepEqual(rest[side].knee, WALK_RIGS[id][side].knee);
-      const p = { x: rest[side].source.ankle.x + 10, y: -5 }, skinned = shoePoint(p, rest[side]);
-      assert.ok(Math.hypot(p.x - skinned.x, p.y - skinned.y) < 1e-8);
+test('cada pose completa usa as mesmas áreas vulneráveis no desenho e no combate', () => {
+  for (const id of Object.keys(CHARACTERS)) {
+    const { g } = scene(); g.start(id, 'local'); const f = g.fighters[0];
+    f.state = 'walk'; f.walkBlend = 1;
+    for (let index = 0; index < WALK_FRAMES; index++) {
+      f.walkDistance = index * WALK_STRIDE / WALK_FRAMES + 1;
+      assert.deepEqual(fighterPose(f), { atlas: 'walk', index });
+      for (const direction of [-1, 1]) {
+        f.direction = direction;
+        const expected = HURT_PROFILES[id].walk[index].map(([x, h, w, height]) => ({
+          x: f.x + (direction > 0 ? x : -x - w), y: f.y - h, w, h: height,
+        }));
+        assert.deepEqual(f.hurtboxes, expected);
+      }
     }
+    f.state = 'idle'; f.walkBlend = 0;
+    assert.equal(fighterPose(f).atlas, 'base');
   }
 });
 

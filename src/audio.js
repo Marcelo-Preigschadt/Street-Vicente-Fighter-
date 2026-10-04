@@ -1,6 +1,7 @@
 export const SOUNDS = Object.freeze({
   'marcelo-special': 'assets/audio/marcelo-special.wav', 'marcelo-uppercut': 'assets/audio/marcelo-uppercut.wav', 'marcelo-super': 'assets/audio/marcelo-super.wav',
   'rafael-special': 'assets/audio/rafael-special.wav', 'rafael-uppercut': 'assets/audio/rafael-uppercut.wav', 'rafael-super': 'assets/audio/rafael-super.wav',
+  'gustavo-special': 'assets/audio/gustavo-special.wav', 'gustavo-uppercut': 'assets/audio/gustavo-uppercut.wav', 'gustavo-super': 'assets/audio/gustavo-super.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
   light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',
 });

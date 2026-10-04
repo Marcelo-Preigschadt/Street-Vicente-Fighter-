@@ -1,6 +1,6 @@
-import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=9';
-import { walkingPose, boneMap, shoePoint, WALK_RIGS } from './walk.js?v=9';
-import { SuperEffects } from './super-fx.js?v=9';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=10';
+
+import { SuperEffects } from './super-fx.js?v=10';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -15,23 +15,23 @@ export class Renderer {
     this.canvas = canvas; this.c = canvas.getContext('2d', { alpha: false }); this.sheets = {}; this.particles = []; this.labels = [];
     this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.superFX = new SuperEffects();
-    this.walkParts = new Map();
+
   }
   async load() {
     const characters = Object.values(CHARACTERS);
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite)])]);
+    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite)])]);
     this.background = background;
-    characters.forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i * 2]); this.sheets[f.id].combat = this.analyzeSheet(sheets[i * 2 + 1], true); });
+    characters.forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i * 3]); this.sheets[f.id].combat = this.analyzeSheet(sheets[i * 3 + 1], true); this.sheets[f.id].walk = this.analyzeSheet(sheets[i * 3 + 2], false, 2); });
   }
-  analyzeSheet(image, combat = false) {
+  analyzeSheet(image, combat = false, rows = 4) {
     const frames = [];
     const offscreen = document.createElement('canvas'); offscreen.width = image.width; offscreen.height = image.height;
     const c = offscreen.getContext('2d', { willReadFrequently: true }); c.drawImage(image, 0, 0);
     const pixels = c.getImageData(0, 0, image.width, image.height).data;
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 4 * rows; i++) {
       const column = i % 4, row = Math.floor(i / 4);
-      const sx = Math.round(column * image.width / 4), sy = Math.round(row * image.height / 4);
-      const ex = Math.round((column + 1) * image.width / 4), ey = Math.round((row + 1) * image.height / 4);
+      const sx = Math.round(column * image.width / 4), sy = Math.round(row * image.height / rows);
+      const ex = Math.round((column + 1) * image.width / 4), ey = Math.round((row + 1) * image.height / rows);
       // Generated atlases can have a few pixels crossing nominal cell borders.
       // Find the largest connected silhouette in a padded cell, excluding neighboring-pose fragments.
       const padding = combat ? 64 : 12;
@@ -63,7 +63,7 @@ export class Renderer {
       }
       let anchor = i === 4 || i === 15 ? (x1 + x2) / 2 : (footLeft + footRight) / 2;
       // Align idle/walking poses by the pelvis; moving feet must not shift the whole body.
-      if (!combat && i < 4) {
+      if (!combat && (rows === 2 || i < 4)) {
         let sum = 0, rows = 0;
         for (let y = Math.round(y1 + (y2 - y1) * .57); y <= Math.round(y1 + (y2 - y1) * .65); y++) {
           let left = x2, right = x1;
@@ -92,6 +92,9 @@ export class Renderer {
       clean.putImageData(data, 0, 0);
       frames.push({ sx, sy, x: x1, y: y1, w, h, anchor, bottom: y2, cutout });
     }
+    // Whole walk poses have separate uniform calibration, so atlas row size
+    // cannot make the professor shrink during a stride. No limb is stretched.
+    if (rows === 2) for (const frame of frames) frame.scale = 294 / frame.h;
     return { image, frames, scale: 294 / frames[combat ? 8 : 0].h };
   }
   frameFor(f) {
@@ -99,7 +102,7 @@ export class Renderer {
   }
   poseFor(f) {
     const original = this.sheets[f.character.id], { atlas, index } = fighterPose(f);
-    return { sheet: atlas === 'combat' ? original.combat : original, index, id: `${atlas}:${index}` };
+    return { sheet: atlas === 'combat' ? original.combat : atlas === 'walk' ? original.walk : original, index, id: `${atlas}:${index}` };
   }
   preview(canvas, id) {
     const c = canvas.getContext('2d'), sheet = this.sheets[id]; if (!sheet) return;
@@ -172,60 +175,17 @@ export class Renderer {
     if (f.blockFlash > 0) c.filter = 'brightness(1.3) sepia(.1)';
     if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
     const drawPose = (selected, opacity) => {
-      const { sheet, index } = selected, frame = sheet.frames[index], scale = sheet.scale; c.globalAlpha = opacity;
+      const { sheet, index } = selected, frame = sheet.frames[index], scale = frame.scale ?? sheet.scale; c.globalAlpha = opacity;
       c.drawImage(frame.cutout, 0, 0, frame.w, frame.h,
         (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
     };
-    if (['walk', 'idle'].includes(f.state) && f.walkBlend > 0) this.drawWalkingBody(f);
-    else drawPose(current, 1);
+    drawPose(current, 1);
     c.globalAlpha = 1; c.restore();
     if (['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
     }
     if (f.state === 'uppercut') this.drawRisingPower(f);
-  }
-  drawWalkingBody(f) {
-    const c = this.c, sheet = this.sheets[f.character.id], frame = sheet.frames[0], scale = sheet.scale;
-    const gait = walkingPose(f), ox = (frame.x - frame.anchor) * scale, oy = (frame.y - frame.bottom) * scale;
-    if (!this.walkParts.has(f.character.id)) {
-      const parts = {};
-      for (const side of ['far', 'near']) {
-        parts[side] = {};
-        for (const [name, top, bottom] of [['thigh', -130, -60], ['shin', -92, -23], ['shoe', -28, 2]]) {
-          const cutout = document.createElement('canvas'); cutout.width = frame.w; cutout.height = frame.h;
-          const ctx = cutout.getContext('2d'), left = side === 'far' ? -120 : 0;
-          ctx.beginPath(); ctx.rect((left - ox) / scale, (top - oy) / scale, 120 / scale, (bottom - top) / scale); ctx.clip();
-          if (name !== 'shoe') {
-            const rig = WALK_RIGS[f.character.id][side], a = name === 'thigh' ? rig.hip : rig.knee,
-              b = name === 'thigh' ? rig.knee : rig.ankle;
-            const dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy), width = name === 'thigh' ? 27 : 22;
-            const nx = -dy / length * width, ny = dx / length * width;
-            const ends = [{x:a.x-dx*.16,y:a.y-dy*.16},{x:b.x+dx*.2,y:b.y+dy*.2}];
-            const polygon = [{x:ends[0].x+nx,y:ends[0].y+ny},{x:ends[1].x+nx,y:ends[1].y+ny},
-              {x:ends[1].x-nx,y:ends[1].y-ny},{x:ends[0].x-nx,y:ends[0].y-ny}];
-            ctx.beginPath();polygon.forEach((p,i)=>ctx[i?'lineTo':'moveTo']((p.x-ox)/scale,(p.y-oy)/scale));ctx.closePath();ctx.clip();
-          }
-          ctx.drawImage(frame.cutout, 0, 0); parts[side][name] = cutout;
-        }
-      }
-      this.walkParts.set(f.character.id, parts);
-    }
-    const parts = this.walkParts.get(f.character.id);
-    // Overlapping opaque segments preserve the painted texture at the joints.
-    // Each calf and shoe rotates independently; the face and shirt stay intact.
-    for (const side of ['far', 'near']) {
-      const leg = gait[side], s = leg.source;
-      for (const [name, map] of [['shin', p => boneMap(p, s.knee, s.ankle, leg.knee, leg.ankle)],
-        ['thigh', p => boneMap(p, s.hip, s.knee, leg.hip, leg.knee)], ['shoe', p => shoePoint(p, leg)]]) {
-        const origin = map({ x: 0, y: 0 }), x = map({ x: 1, y: 0 }), y = map({ x: 0, y: 1 });
-        c.save(); c.transform(x.x - origin.x, x.y - origin.y, y.x - origin.x, y.y - origin.y, origin.x, origin.y);
-        c.drawImage(parts[side][name], ox, oy, frame.w * scale, frame.h * scale); c.restore();
-      }
-    }
-    c.save();c.translate(0,gait.bob);c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+frame.w*scale,oy);
-    c.lineTo(ox+frame.w*scale,-139);c.lineTo(57,-131);c.lineTo(24,-110);c.lineTo(-24,-110);c.lineTo(-57,-131);c.lineTo(ox,-139);c.closePath();c.clip();
-    c.drawImage(frame.cutout,ox,oy,frame.w*scale,frame.h*scale);c.restore();
   }
   drawSuperScene(fighters) {
     const active = this.superFX.bursts;
@@ -308,7 +268,26 @@ export class Renderer {
   drawPowerGlyph(x, y, radius, id, superWave = false) {
     const c = this.c, color = CHARACTERS[id].color;
     c.save(); c.translate(x, y); c.shadowColor = color; c.shadowBlur = superWave ? 25 : 18;
-    if (id === 'marcelo') {
+    if (id === 'gustavo') {
+      c.rotate(this.clock * (superWave ? 2.5 : 1.4));
+      c.strokeStyle = '#b39bff'; c.lineWidth = superWave ? 4 : 2;
+      if (superWave) {
+        const atoms = [[0, 0], [-radius * .9, -radius * .55], [radius * .9, radius * .55], [-radius * .4, radius], [radius * .4, -radius]];
+        for (const [ax, ay] of atoms.slice(1)) { c.beginPath(); c.moveTo(0, 0); c.lineTo(ax, ay); c.stroke(); }
+        atoms.forEach(([ax, ay], i) => {
+          c.fillStyle = i % 2 ? '#b39bff' : '#77dcf5'; c.beginPath(); c.arc(ax, ay, radius * (i ? .34 : .48), 0, Math.PI * 2); c.fill();
+          c.fillStyle = '#effcff'; c.beginPath(); c.arc(ax - radius * .08, ay - radius * .10, radius * .10, 0, Math.PI * 2); c.fill();
+        });
+      } else {
+        const glow = c.createRadialGradient(-radius * .2, -radius * .2, 1, 0, 0, radius * .75);
+        glow.addColorStop(0, '#ffffff'); glow.addColorStop(.35, '#a9f6ff'); glow.addColorStop(1, '#237bcb');
+        c.fillStyle = glow; c.beginPath(); c.arc(0, 0, radius * .68, 0, Math.PI * 2); c.fill();
+        for (let i = 0; i < 3; i++) {
+          c.save(); c.rotate(i * Math.PI / 3); c.beginPath(); c.ellipse(0, 0, radius * 1.3, radius * .48, 0, 0, Math.PI * 2); c.stroke();
+          c.fillStyle = '#f2fcff'; c.beginPath(); c.arc(radius * 1.3, 0, radius * .13, 0, Math.PI * 2); c.fill(); c.restore();
+        }
+      }
+    } else if (id === 'marcelo') {
       c.fillStyle = '#103523'; c.strokeStyle = color; c.lineWidth = 2.5;
       rectangle(c, -radius * 1.25, -radius * .88, radius * 2.5, radius * 1.76, 5); c.fill(); c.stroke();
       c.fillStyle = '#e6ffc4'; c.font = `900 ${Math.round(radius * .85)}px monospace`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(superWave ? '0xFF' : '{ }', 0, 1);
@@ -340,6 +319,20 @@ export class Renderer {
       c.fillStyle = '#104c3844'; c.strokeStyle = '#b8ed68'; c.lineWidth = 3; rectangle(c, x - 63, f.y - 365, 126, 320, 8); c.fill(); c.stroke();
       c.fillStyle = '#b8ed68'; c.fillRect(x - 61, f.y - 365, 122, 22); text(c, 'FIREWALL', x, f.y - 353, 12, '#082a1b', 'center');
       for (let i = 0; i < 7; i++) text(c, i % 2 ? '01 101 01' : '10 010 10', x, f.y - 315 + i * 35, 16, '#a3ffbe', 'center', 700);
+    } else if (f.character.id === 'gustavo') {
+      const x = f.x + f.direction * 46, bottom = f.y - 38;
+      const heat = c.createLinearGradient(x, bottom, x, bottom - 310);
+      heat.addColorStop(0, '#28b4e066'); heat.addColorStop(.3, '#ff941fbb'); heat.addColorStop(.7, '#fff18be6'); heat.addColorStop(1, '#ffffff00');
+      c.fillStyle = heat; c.beginPath(); c.moveTo(x - 65, bottom);
+      c.bezierCurveTo(x - 102, bottom - 125, x - 12, bottom - 172, x - 30, bottom - 300);
+      c.bezierCurveTo(x + 22, bottom - 228, x + 18, bottom - 184, x + 50, bottom - 270);
+      c.bezierCurveTo(x + 105, bottom - 145, x + 76, bottom - 65, x + 63, bottom); c.closePath(); c.fill();
+      c.strokeStyle = '#aaf5ff'; c.lineWidth = 2;
+      for (let i = 0; i < 6; i++) {
+        const rise = (this.clock * 150 + i * 43) % 290, px = x + Math.sin(i * 2.7 + this.clock * 9) * (55 - rise * .1);
+        c.beginPath(); c.arc(px, bottom - rise, 5 + (i % 3) * 3, 0, Math.PI * 2); c.stroke();
+      }
+      text(c, 'ΔH < 0', x, bottom + 14, 16, '#f6e99d', 'center');
     } else {
       const x = f.x + f.direction * 48, y = f.y - 240;
       c.strokeStyle = '#ffcd83'; c.lineWidth = 4; c.beginPath(); c.arc(x, y, 99, -Math.PI * .8, Math.PI * .8); c.stroke();
@@ -360,6 +353,13 @@ export class Renderer {
       for (let i = 0; i < 5; i++) {
         c.globalAlpha = .75 - i * .13; c.fillStyle = color;
         c.fillText((i + Math.floor(this.clock * 12)) % 2 ? '01' : '10', -45 - i * 27, Math.sin(this.clock * 15 + i) * 15);
+      }
+    } else if (p.character === 'gustavo') {
+      c.strokeStyle = '#b39bff'; c.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        c.globalAlpha = .7 - i * .12; const x = -40 - i * 23, y = Math.sin(this.clock * 12 + i * 1.7) * 16;
+        c.fillStyle = i % 2 ? '#b39bff' : '#77dcf5'; c.beginPath(); c.arc(x, y, 6 - i * .5, 0, Math.PI * 2); c.fill();
+        if (p.move === 'super' && i < 4) { c.beginPath(); c.moveTo(x, y); c.lineTo(x - 23, Math.sin(this.clock * 12 + (i + 1) * 1.7) * 16); c.stroke(); }
       }
     } else {
       for (let i = 0; i < 3; i++) {

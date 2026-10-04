@@ -1,6 +1,6 @@
 # Street Vicente Fighter
 
-Jogo de luta 2D para navegador com **Prof. Marcelo** e **Prof Rafael**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
+Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. Gustavo**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
 
 [Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/)
 
@@ -20,11 +20,13 @@ A rasteira só acerta durante a extensão ativa da perna, alcança o calçado vi
 
 O cenário e os dois atlases originais foram preservados. Dois atlases adicionais trazem poses específicas de rasteira, soco agachado, voadeira, antiaéreo, defesa baixa, aterrissagem e levantar.
 
-## Caminhada e super — versão 2.2
+## Caminhada e elenco — versão 2.3
 
-A caminhada usa pernas articuladas sobre a arte aprovada: coxa, panturrilha e calçado giram separadamente, com joelho dobrando e tornozelo rolando do calcanhar à ponta. O ciclo acompanha a distância real depois de resolver paredes e contato entre corpos, inverte ao recuar e deixa de avançar quando o corpo fica parado. O pé de apoio permanece no mesmo ponto do chão durante a passada; o outro sobe e passa pelo corpo. A transição entre guarda e caminhada ajusta os membros sem misturar imagens transparentes. Cabeça, camisa, vozes e poses dos golpes continuam iguais.
+A caminhada usa oito desenhos completos por professor, com guarda, passos alternados, joelhos dobrados e elevação do pé. Cada quadro é uma imagem opaca inteira, sem recortar ou torcer o quadril, as pernas ou os calçados. O tamanho e o eixo do corpo são calibrados por quadro. A animação acompanha a distância efetivamente percorrida, inverte ao recuar e para contra paredes ou contra um adversário no canto. As áreas vulneráveis usam a mesma pose completa mostrada na tela.
 
-Ao completar a barra, aparecem uma onda de energia no professor, um aviso de **SUPER PRONTO** e brilho na barra. A ativação pausa a simulação por 14 quadros de jogo (233 ms), escurece a arena e destaca o professor com raios convergentes, anéis de energia, clarão e o nome do golpe. Kernel Panic usa verde; Marcha dos Séculos usa âmbar. O impacto das ondas também cria um anel e uma explosão de luz. O HUD continua legível durante os efeitos.
+Prof. Gustavo entra no elenco com sprites de guarda, caminhada e todos os golpes, criados a partir da foto fornecida. Sua identidade é ciano e violeta, com poderes de Química. A seleção permite escolher os dois professores do confronto, tanto contra CPU quanto em dois jogadores locais. As artes anteriores de luta, o cenário e os áudios aprovados de Marcelo e Rafael foram preservados byte a byte.
+
+Ao completar a barra, aparecem uma onda de energia no professor, um aviso de **SUPER PRONTO** e brilho na barra. A ativação pausa a simulação por 14 quadros de jogo (233 ms), escurece a arena e destaca o professor com raios convergentes, anéis de energia, clarão e o nome do golpe. Kernel Panic usa verde; Marcha dos Séculos usa âmbar; Reação em Cadeia usa ciano e violeta. O impacto das ondas também cria um anel e uma explosão de luz. O HUD continua legível durante os efeitos.
 
 O congelamento da ativação acontece antes de mover qualquer lutador ou projétil, preserva o cronômetro e os comandos enfileirados, e funciona para os dois slots, inclusive com supers simultâneos. A frase aprovada continua disparando uma única vez quando sai a primeira onda. `prefers-reduced-motion` reduz clarões, raios e movimentos decorativos; a pausa do jogador interrompe os relógios dos efeitos.
 
@@ -38,12 +40,15 @@ O congelamento da ativação acontece antes de mover qualquer lutador ou projét
 | Prof Rafael · História | Crônicas | Pergaminhos e páginas | Abram as crônicas! |
 | Prof Rafael · História | Linha do Tempo | Golpe ascendente com marcos em algarismos romanos | Viagem pela história! |
 | Prof Rafael · História | Marcha dos Séculos | Três escudos históricos, com barra cheia | No meu tempo não era assim! Marcha dos séculos! |
+| Prof. Gustavo · Química | Pulso Iônico | Esfera carregada com elétrons em órbita | Carga liberada! |
+| Prof. Gustavo · Química | Reação Exotérmica | Golpe ascendente com calor e bolhas energéticas | Vai esquentar! |
+| Prof. Gustavo · Química | Reação em Cadeia | Três ondas de moléculas ligadas, com barra cheia | Reagiu, perdeu! Reação em cadeia! |
 
-**Áudio:** as falas usam o mesmo preset, modelo, velocidade e interpretação do áudio original “Bora NIT”, com texto em português brasileiro. O próprio clipe original foi preservado e reutilizado no super de Marcelo. As falas disparam no lançamento do projétil ou na subida do antiaéreo; esforços e impactos não as interrompem. Um poder diferente substitui a fala do poder anterior. Não há fala Hadouken nem síntese de voz do navegador. Os clipes gerados não são conversões ou clones da voz de Ryu/Ken. [Origem dos áudios](assets/audio/SOURCES.md).
+**Áudio:** Marcelo e Rafael conservam os clipes aprovados. Gustavo tem uma voz própria, de timbre diferente e fala um pouco mais rápida, em português brasileiro, usando o preset Mark a 1,15×. O próprio clipe original foi preservado e reutilizado no super de Marcelo. As falas disparam no lançamento do projétil ou na subida do antiaéreo; esforços e impactos não as interrompem. Um poder diferente substitui a fala do poder anterior. Não há fala Hadouken nem síntese de voz do navegador. Os clipes gerados não são conversões ou clones da voz de Ryu/Ken. [Origem dos áudios](assets/audio/SOURCES.md).
 
 ## Comandos
 
-Escolha o lutador, selecione CPU ou dois jogadores locais e pressione Enter ou **Começar a luta**. Vence quem ganhar dois rounds de 90 segundos.
+Escolha seu lutador e o adversário, selecione CPU ou dois jogadores locais e pressione Enter ou **Começar a luta**. Vence quem ganhar dois rounds de 90 segundos.
 
 | Ação | Jogador 1 | Jogador 2 |
 | --- | --- | --- |
@@ -89,6 +94,6 @@ Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áu
 npm test
 ```
 
-Não é necessário instalar pacotes. Os 69 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
+Não é necessário instalar pacotes. Os 73 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.

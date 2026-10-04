@@ -1,5 +1,5 @@
-import { HURT_PROFILES } from './hitboxes.js?v=9';
-import { walkingPose, walkingLegBounds } from './walk.js?v=9';
+import { HURT_PROFILES } from './hitboxes.js?v=10';
+import { walkingFrame } from './walk.js?v=10';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -7,7 +7,7 @@ export const COMBAT = Object.freeze({ jumpVelocity: -1440, preJump: 3 / 60, inpu
   landing: 4 / 60, emptyLanding: 2 / 60, superFreeze: 14 / 60, leftWall: 110, rightWall: 1170 });
 export const CHARACTERS = Object.freeze({
   marcelo: { id: 'marcelo', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
-    speed: 360, backSpeed: 270, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp',
+    speed: 360, backSpeed: 270, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
     powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Kernel Panic' },
     powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Pane no sistema!' },
     voiceDuration: { special: 1.84, uppercut: 2.40, super: 4.30 },
@@ -16,7 +16,7 @@ export const CHARACTERS = Object.freeze({
       airPunch: { near: 30, reach: 170, height: 188, h: 34 }, airKick: { near: 30, reach: 187, height: 128, h: 62 },
       uppercut: { near: -25, reach: 82, height: 297, h: 100 } }, projectile: { offset: 154, height: 199 } },
   rafael: { id: 'rafael', name: 'Prof Rafael', quote: 'No meu tempo não era assim', color: '#ffa14c', accent: '#ffd08a',
-    speed: 384, backSpeed: 288, jumpSpeed: 630, power: 1, sprite: 'assets/rafael.webp', combatSprite: 'assets/rafael-combat.webp',
+    speed: 384, backSpeed: 288, jumpSpeed: 630, power: 1, sprite: 'assets/rafael.webp', combatSprite: 'assets/rafael-combat.webp', walkSprite: 'assets/rafael-walk.webp',
     powers: { special: 'Crônicas', uppercut: 'Linha do Tempo', super: 'Marcha dos Séculos' },
     powerQuotes: { special: 'Abram as crônicas!', uppercut: 'Viagem pela história!', super: 'No meu tempo não era assim! Marcha dos séculos!' },
     voiceDuration: { special: 2.40, uppercut: 3.12, super: 4.80 },
@@ -24,6 +24,12 @@ export const CHARACTERS = Object.freeze({
       crouchPunch: { near: 35, reach: 148, height: 119, h: 30 }, sweep: { near: 35, reach: 205, height: 52, h: 38 },
       airPunch: { near: 30, reach: 157, height: 145, h: 32 }, airKick: { near: 30, reach: 175, height: 110, h: 36 },
       uppercut: { near: -25, reach: 87, height: 303, h: 80 } }, projectile: { offset: 150, height: 214 } },
+  gustavo: { id: 'gustavo', name: 'Prof. Gustavo', quote: 'Reagiu, perdeu!', color: '#77dcf5', accent: '#b39bff',
+    speed: 372, backSpeed: 279, jumpSpeed: 615, power: 1.04, sprite: 'assets/gustavo.webp', combatSprite: 'assets/gustavo-combat.webp', walkSprite: 'assets/gustavo-walk.webp',
+    powers: { special: 'Pulso Iônico', uppercut: 'Reação Exotérmica', super: 'Reação em Cadeia' },
+    powerQuotes: { special: 'Carga liberada!', uppercut: 'Vai esquentar!', super: 'Reagiu, perdeu! Reação em cadeia!' },
+    voiceDuration: {"special": 2.1, "uppercut": 1.73, "super": 3.19},
+    strikes: {"punch": {"near": 42, "reach": 147, "height": 195, "h": 42}, "kick": {"near": 60, "reach": 192, "height": 241, "h": 77}, "crouchPunch": {"near": 35, "reach": 158, "height": 130, "h": 42}, "sweep": {"near": 35, "reach": 192, "height": 45, "h": 74}, "airPunch": {"near": 30, "reach": 147, "height": 168, "h": 41}, "airKick": {"near": 30, "reach": 176, "height": 115, "h": 75}, "uppercut": {"near": -25, "reach": 75, "height": 316, "h": 86}}, projectile: {"offset": 177, "height": 185} },
 });
 
 const frames = n => n / 60;
@@ -64,6 +70,7 @@ const POWERS = new Set(['special', 'uppercut', 'super']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if (['walk', 'idle'].includes(f.state) && f.walkBlend > 0) return { atlas: 'walk', index: walkingFrame(f.walkDistance) };
   const m = f.moveData, extended = m && f.actionTime >= m.startup && f.actionTime < m.startup + m.active + .03;
   const combat = { crouchPunch: extended ? 1 : 0, sweep: extended ? 3 : 2, airPunch: extended ? 5 : 4,
     airKick: extended ? 7 : 6, uppercut: f.actionTime >= (m?.startup ?? 0) ? 11 : 10,
@@ -122,10 +129,6 @@ export class Fighter {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
     let profile = HURT_PROFILES[this.character.id][pose.atlas][pose.index];
-    if (this.state === 'walk' || (this.state === 'idle' && this.walkBlend > 0)) {
-      const gait = walkingPose(this);
-      profile = [...HURT_PROFILES[this.character.id].base[0].slice(0, 2).map(([x, y, w, h]) => [x, y - gait.bob, w, h]), walkingLegBounds(gait)];
-    }
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
     }));
@@ -154,9 +157,10 @@ export class FightEngine {
     this.ai = { timer: 0, input: idleInput(), actionTimer: 0 }; this.cpu = true;
   }
   event(type, data = {}) { this.onEvent({ type, ...data }); }
-  start(id = 'marcelo', mode = 'cpu') {
+  start(id = 'marcelo', mode = 'cpu', opponentId = id === 'marcelo' ? 'rafael' : 'marcelo') {
+    if (!Object.hasOwn(CHARACTERS, id) || !Object.hasOwn(CHARACTERS, opponentId) || id === opponentId) throw new RangeError('Escolha dois professores diferentes do elenco.');
     this.cpu = mode === 'cpu'; this.playerId = id; this.mode = mode;
-    this.fighters = [new Fighter(id, 0), new Fighter(id === 'marcelo' ? 'rafael' : 'marcelo', 1)];
+    this.fighters = [new Fighter(id, 0), new Fighter(opponentId, 1)];
     this.round = 1; this.paused = false; this.ai = { timer: 0, input: idleInput(), actionTimer: 0 }; this.newRound();
   }
   newRound() {

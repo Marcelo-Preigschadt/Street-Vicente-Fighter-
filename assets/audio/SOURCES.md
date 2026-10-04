@@ -2,7 +2,7 @@
 
 ## Falas dos poderes
 
-Gravações geradas para este projeto em português brasileiro. Todos os clipes finais usam o mesmo preset **Clint**, modelo expressivo `eleven_v3`, interpretação `[shouting]` e velocidade `1.1`, exatamente os parâmetros utilizados no primeiro áudio “Bora NIT”. Os arquivos são locais; não dependem de geração de voz ou serviços externos durante a partida.
+Gravações geradas para este projeto em português brasileiro. Os clipes aprovados de Marcelo e Rafael usam o preset **Clint**, modelo expressivo `eleven_v3`, interpretação `[shouting]` e velocidade `1.1`, exatamente os parâmetros utilizados no primeiro áudio “Bora NIT”. Os arquivos são locais; não dependem de geração de voz ou serviços externos durante a partida.
 
 O áudio inicial aprovado de “Bora NIT” está preservado em `bora-nit-original.wav`. O super de Marcelo reutiliza suas amostras PCM, adiciona 60 ms de silêncio e a nova fala “Pane no sistema!”. Nenhuma alteração de tom, velocidade ou timbre foi aplicada ao trecho original.
 
@@ -15,6 +15,11 @@ O áudio inicial aprovado de “Bora NIT” está preservado em `bora-nit-origin
 | `rafael-special.wav` | Abram as crônicas! |
 | `rafael-uppercut.wav` | Viagem pela história! |
 | `rafael-super.wav` | No meu tempo não era assim! Marcha dos séculos! |
+| `gustavo-special.wav` | Carga liberada! |
+| `gustavo-uppercut.wav` | Vai esquentar! |
+| `gustavo-super.wav` | Reagiu, perdeu! Reação em cadeia! |
+
+Gustavo usa o preset **Mark**, modelo expressivo `eleven_v3`, interpretação `[shouting]`, idioma `pt-br` e velocidade `1.15`. As três falas foram geradas em 04/10/2026 e usam um timbre diferente do preset Clint. Os seis WAV anteriores permanecem byte a byte.
 
 Conversão para WAV PCM mono, 16 bits, 22.050 Hz, com normalização de volume. O idioma solicitado ao serviço foi `pt-br`. São gravações geradas com uma voz de catálogo, não uma conversão ou clonagem da voz de lutadores da Capcom. Os testes verificam integridade, amostras audíveis, preservação do trecho original e associação entre clipe e poder; não avaliam perceptualmente sotaque ou timbre.
 

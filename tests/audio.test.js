@@ -47,18 +47,18 @@ test('todos os clipes locais são WAV PCM válidos, curtos e com amostras audív
     assert.ok(peak > .03, `${path} não deve conter apenas silêncio`);
   }
 });
-test('pré-carregamento prepara os treze clipes e reutiliza as mesmas promessas', async t => {
+test('pré-carregamento prepara todos os clipes do elenco e reutiliza as mesmas promessas', async t => {
   const audio = prepare(t), load = audio.load(); assert.equal(audio.load(), load); assert.equal(await load, true);
-  audio.unlock(); assert.equal(await audio.decode(), true); assert.equal(audio.buffers.size, 13);
-  assert.equal(audio.decode(), audio.decodePromise); assert.equal(globalThis.fetch.mock.callCount(), 13);
+  audio.unlock(); assert.equal(await audio.decode(), true); assert.equal(audio.buffers.size, Object.keys(SOUNDS).length);
+  assert.equal(audio.decode(), audio.decodePromise); assert.equal(globalThis.fetch.mock.callCount(), Object.keys(SOUNDS).length);
 });
 test('cada poder usa seu clipe e esforços não interrompem sua fala', async t => {
   const audio = prepare(t); await audio.load(); audio.unlock(); await audio.decode();
-  const engine = { fighters: [{ character: { id: 'marcelo' }, hp: 1000 }, { character: { id: 'rafael' }, hp: 1000 }] };
-  for (const slot of [0, 1]) for (const move of ['special', 'uppercut', 'super']) {
+  for (const id of ['marcelo', 'rafael', 'gustavo']) for (const slot of [0, 1]) for (const move of ['special', 'uppercut', 'super']) {
+    const engine = { fighters: [{ character: { id }, hp: 1000 }, { character: { id }, hp: 1000 }] };
     audio.event({ type: 'special', fighter: slot, move }, engine);
     const channel = `quote:${slot}`, phrase = audio.voices.get(channel);
-    assert.equal(phrase.buffer, audio.buffers.get(`${engine.fighters[slot].character.id}-${move}`));
+    assert.equal(phrase.buffer, audio.buffers.get(`${id}-${move}`));
     audio.event({ type: 'swing', fighter: slot, move: 'punch' }, engine);
     audio.event({ type: 'hit', fighter: 1-slot, target: slot, move: 'punch' }, engine);
     assert.equal(phrase.stopped, false); assert.equal(audio.voices.get(channel), phrase);

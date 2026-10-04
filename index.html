@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111719">
-  <meta name="description" content="Prof. Marcelo e Prof Rafael se enfrentam em um jogo de luta arcade do Vicente.">
+  <meta name="description" content="Prof. Marcelo, Prof Rafael e Prof. Gustavo se enfrentam em um jogo de luta arcade do Vicente.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9">
-  <script type="module" src="src/main.js?v=9"></script>
+  <link rel="stylesheet" href="style.css?v=10">
+  <script type="module" src="src/main.js?v=10"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="2.2.0">
+  <main class="cabinet" data-game-version="2.3.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -30,14 +30,18 @@
             <span class="player-chip">JOGADOR 1</span><canvas class="fighter-preview" data-preview="marcelo" width="320" height="360" aria-hidden="true"></canvas>
             <span class="fighter-name">Prof. Marcelo</span><span class="quote">Bora NIT</span><span class="fighter-style">INFORMÁTICA · RAJADA DE CÓDIGO</span>
           </button>
-          <span class="versus" aria-hidden="true">VS</span>
           <button class="fighter-card rafael" data-fighter="rafael" aria-pressed="false" type="button">
             <span class="player-chip">ADVERSÁRIO</span><canvas class="fighter-preview" data-preview="rafael" width="320" height="360" aria-hidden="true"></canvas>
             <span class="fighter-name">Prof Rafael</span><span class="quote">No meu tempo não era assim</span><span class="fighter-style">HISTÓRIA · CRÔNICAS</span>
           </button>
+          <button class="fighter-card gustavo" data-fighter="gustavo" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><canvas class="fighter-preview" data-preview="gustavo" width="320" height="360" aria-hidden="true"></canvas>
+            <span class="fighter-name">Prof. Gustavo</span><span class="quote">Reagiu, perdeu!</span><span class="fighter-style">QUÍMICA · PULSO IÔNICO</span>
+          </button>
         </div>
         <div class="start-panel">
           <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="cpu" checked><span>Contra o computador</span></label><label><input type="radio" name="mode" value="local"><span>2 jogadores</span></label></fieldset>
+          <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option></select></label>
           <button id="start" class="primary-button" type="button" disabled>Preparando lutadores…</button>
           <p id="load-status" class="load-status" role="status">Carregando personagens e cenário</p>
         </div>
@@ -62,7 +66,7 @@
         <div class="guide-grid">
           <div><h3>Como lutar</h3><p><strong>Rasteira:</strong> agachar + chute. Acerta os pés e derruba. Defenda com baixo + trás; se bloquear, aproveite a recuperação para contra-atacar.</p><p><strong>Voadeira:</strong> pule para a frente e chute durante a descida. Acerta por cima; defenda em pé. Segurar para cima repete o salto ao pousar.</p><p><strong>Defesa:</strong> segure para trás, ou <kbd>R</kbd> (P1) / <kbd>O</kbd> (P2). Para bloquear rasteiras, agache junto.</p><p><strong>Comandos:</strong> ↓ ↘ → + soco lança o poder. → ↓ ↘ + soco executa o antiaéreo. ↓ ↘ → ↓ ↘ → + soco ativa o super com barra cheia. Inverta as setas ao virar para a esquerda.</p></div>
           <div><h3>Prof. Marcelo · Informática</h3><p><strong>Rajada de Código:</strong> pacotes binários atravessam a arena.</p><p><strong>Firewall:</strong> golpe ascendente com uma barreira de código. Intercepta saltos e projéteis no início.</p><p><strong>Kernel Panic:</strong> três rajadas de código com a barra completa.</p><h3>Prof Rafael · História</h3><p><strong>Crônicas:</strong> pergaminhos e páginas atravessam a arena.</p><p><strong>Linha do Tempo:</strong> golpe ascendente com marcos históricos em algarismos romanos.</p><p><strong>Marcha dos Séculos:</strong> três escudos históricos com a barra completa.</p></div>
-          <div><h3>Seis botões de ataque</h3><p><strong>P1 socos:</strong> <kbd>T</kbd> leve, <kbd>F</kbd> médio, <kbd>Y</kbd> forte.<br><strong>P1 chutes:</strong> <kbd>V</kbd> leve, <kbd>G</kbd> médio, <kbd>B</kbd> forte.</p><p><strong>P2 teclado numérico:</strong> <kbd>7</kbd><kbd>8</kbd><kbd>9</kbd> socos; <kbd>4</kbd><kbd>5</kbd><kbd>6</kbd> chutes. Do leve ao forte.</p><p><strong>Controle:</strong> X / Y / RB para socos; A / B / RT para chutes. Direcional para comandos e defesa; LB para defender e Select para agarrar.</p><p>Golpes fortes causam mais dano e deixam mais tempo de recuperação. Socos que acertam ou são bloqueados podem ser cancelados em poderes; golpes no vazio precisam terminar.</p><p>Melhor de três rounds de 90 segundos.</p></div>
+          <div><h3>Prof. Gustavo · Química</h3><p><strong>Pulso Iônico:</strong> esfera carregada com elétrons em órbita. “Carga liberada!”</p><p><strong>Reação Exotérmica:</strong> golpe ascendente com liberação de calor. “Vai esquentar!”</p><p><strong>Reação em Cadeia:</strong> três ondas de moléculas ligadas, com barra cheia. “Reagiu, perdeu! Reação em cadeia!”</p><h3>Seis botões de ataque</h3><p><strong>P1 socos:</strong> <kbd>T</kbd> leve, <kbd>F</kbd> médio, <kbd>Y</kbd> forte.<br><strong>P1 chutes:</strong> <kbd>V</kbd> leve, <kbd>G</kbd> médio, <kbd>B</kbd> forte.</p><p><strong>P2 teclado numérico:</strong> <kbd>7</kbd><kbd>8</kbd><kbd>9</kbd> socos; <kbd>4</kbd><kbd>5</kbd><kbd>6</kbd> chutes. Do leve ao forte.</p><p><strong>Controle:</strong> X / Y / RB para socos; A / B / RT para chutes. Direcional para comandos e defesa; LB para defender e Select para agarrar.</p><p>Golpes fortes causam mais dano e deixam mais tempo de recuperação. Socos que acertam ou são bloqueados podem ser cancelados em poderes; golpes no vazio precisam terminar.</p><p>Melhor de três rounds de 90 segundos.</p></div>
         </div>
       </details>
     </footer>

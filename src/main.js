@@ -1,11 +1,11 @@
-import { FightEngine, FIXED_STEP } from './engine.js?v=9';
-import { Renderer } from './render.js?v=9';
-import { ArcadeAudio } from './audio.js?v=9';
-import { Inputs } from './input.js?v=9';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=10';
+import { Renderer } from './render.js?v=10';
+import { ArcadeAudio } from './audio.js?v=10';
+import { Inputs } from './input.js?v=10';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
-let selected = 'marcelo', ready = false;
+let selected = 'marcelo', opponent = 'rafael', ready = false;
 const engine = new FightEngine({ onEvent: event });
 const inputs = new Inputs(engine);
 
@@ -22,10 +22,26 @@ function event(e) {
   }
 }
 
+function updateSelection() {
+  if (opponent === selected) opponent = Object.keys(CHARACTERS).find(id => id !== selected);
+  const local = document.querySelector('input[name="mode"]:checked').value === 'local';
+  $('opponent-label').textContent = local ? 'Jogador 2' : 'Adversário';
+  for (const option of $('opponent').options) option.disabled = option.value === selected;
+  $('opponent').value = opponent;
+  document.querySelectorAll('[data-fighter]').forEach(card => {
+    const chosen = card.dataset.fighter === selected;
+    card.classList.toggle('selected', chosen); card.classList.toggle('opponent', card.dataset.fighter === opponent);
+    card.setAttribute('aria-pressed', String(chosen));
+    card.querySelector('.player-chip').textContent = chosen ? 'JOGADOR 1' : card.dataset.fighter === opponent ? local ? 'JOGADOR 2' : 'ADVERSÁRIO' : 'ESCOLHER';
+  });
+}
 document.querySelectorAll('[data-fighter]').forEach(button => button.addEventListener('click', () => {
-  selected = button.dataset.fighter; audio.unlock(); audio.tone(selected === 'marcelo' ? 392 : 493.88, .09, 'triangle', .15);
-  document.querySelectorAll('[data-fighter]').forEach(card => { const chosen = card.dataset.fighter === selected; card.classList.toggle('selected', chosen); card.setAttribute('aria-pressed', String(chosen)); card.querySelector('.player-chip').textContent = chosen ? 'JOGADOR 1' : 'ADVERSÁRIO'; });
+  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33}[selected], .09, 'triangle', .15);
+  updateSelection();
 }));
+$('opponent').addEventListener('change', () => { opponent = $('opponent').value; updateSelection(); });
+document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventListener('change', updateSelection));
+updateSelection();
 
 function start() {
   if (!ready) return;
@@ -33,7 +49,8 @@ function start() {
   $('selection').hidden = true; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('pause').disabled = false; $('pause').textContent = 'Pausar';
   const mode = document.querySelector('input[name="mode"]:checked').value;
   $('touch-controls').hidden = !(matchMedia('(pointer: coarse)').matches && mode === 'cpu');
-  engine.start(selected, mode);
+  engine.start(selected, mode, opponent);
+  $('game').setAttribute('aria-label', `Jogo de luta: ${CHARACTERS[selected].name} contra ${CHARACTERS[opponent].name}. Os comandos estão abaixo da arena.`);
 }
 function selection() {
   renderer.event({ type: 'selection' });
