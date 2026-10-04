@@ -1,4 +1,4 @@
-import { HURT_PROFILES } from './hitboxes.js?v=7';
+import { HURT_PROFILES } from './hitboxes.js?v=8';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;

@@ -42,4 +42,4 @@ Os quatro atlases aprovados foram mantidos byte a byte. `src/hitboxes.js` regist
 
 O contato ativo continua calibrado no punho/calçado, e a caixa que impede os corpos de se atravessarem é independente das áreas de golpe. Os sons, falas, efeitos temáticos e arquivos de imagem permanecem iguais à versão 2.0.2.
 
-Na versão 2.1.1, apenas poses de caminhada/guarda neutra misturam imagens durante a transição. Agachar, defender baixo, aterrissar, levantar e atacar mostram uma única silhueta no quadro correspondente, evitando a sobreposição de um corpo em pé com outro agachado.
+Na versão 2.1.1, cada quadro mostra uma única pose opaca, inclusive na caminhada. A interpolação da posição mantém o deslocamento suave sem misturar a transparência das imagens. Agachar, defender baixo, aterrissar, levantar e atacar mostram a silhueta correspondente à colisão, evitando a sobreposição de um corpo em pé com outro agachado.

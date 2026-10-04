@@ -1,4 +1,4 @@
-import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=7';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=8';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -11,7 +11,7 @@ const text = (c, str, x, y, size = 20, color = '#f4ecdb', align = 'left', weight
 export class Renderer {
   constructor(canvas) {
     this.canvas = canvas; this.c = canvas.getContext('2d', { alpha: false }); this.sheets = {}; this.particles = []; this.labels = [];
-    this.clock = 0; this.shake = 0; this.flash = 0; this.poses = new Map(); this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   async load() {
     const characters = Object.values(CHARACTERS);
@@ -115,7 +115,7 @@ export class Renderer {
         this.labels.push({ x: e.x, y: e.y - 35, life: .75, text: `−${e.damage}`, color: '#fff0bf' });
       }
     }
-    if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; this.poses.clear(); }
+    if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; }
   }
   draw(engine, dt, alpha = 1) {
     const c = this.c; this.clock += dt; this.shake *= Math.exp(-dt * 14); this.flash = Math.max(0, this.flash - dt);
@@ -153,13 +153,7 @@ export class Renderer {
   }
   drawFighter(f) {
     const c = this.c, current = this.poseFor(f); if (!current.sheet) return;
-    const key = `${f.slot}:${f.character.id}`;
-    let pose = this.poses.get(key);
-    if (!pose) { pose = { current, previous: current, changed: this.clock }; this.poses.set(key, pose); }
-    if (pose.current.id !== current.id) { pose.previous = pose.current; pose.current = current; pose.changed = this.clock; }
-    // Blend only standing locomotion; stance changes must show one physical silhouette.
-    const locomotion = ['idle', 'walk'].includes(f.state) && /^base:[0-3]$/.test(current.id) && /^base:[0-3]$/.test(pose.previous.id);
-    const blend = this.reduced || !locomotion ? 1 : Math.min(1, (this.clock - pose.changed) / .03);
+    // Arcade poses stay opaque. Position interpolation supplies smooth movement.
     const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
     const stride = f.state === 'walk' && !this.reduced ? Math.sin(f.walkTime * Math.PI * 16) * .005 : 0;
     c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing + stride);
@@ -172,8 +166,7 @@ export class Renderer {
       c.drawImage(frame.cutout, 0, 0, frame.w, frame.h,
         (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
     };
-    if (blend < 1) drawPose(pose.previous, 1 - blend);
-    drawPose(current, blend); c.globalAlpha = 1; c.restore();
+    drawPose(current, 1); c.globalAlpha = 1; c.restore();
     if (['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
