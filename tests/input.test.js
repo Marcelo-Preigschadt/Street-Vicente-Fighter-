@@ -7,7 +7,7 @@ function prepare(t) {
   const events=[],game=new FightEngine({onEvent:e=>events.push(e)});game.start('marcelo','local');game.phase='fight';game.fighters[1].x=1000;
   const old={window:globalThis.window,document:globalThis.document,navigator:Object.getOwnPropertyDescriptor(globalThis,'navigator')};
   globalThis.window=new EventTarget();
-  const buttons=['down','kick','special','punch'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
+  const buttons=['down','kick','special','punch','custom','guardCounter','block'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
   globalThis.document={querySelectorAll:q=>q==='[data-action]'?buttons:buttons.filter(b=>b.pressed)};
   const pad={axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};let connected=false;
   Object.defineProperty(globalThis,'navigator',{value:{getGamepads:()=>connected?[pad]:[]},configurable:true});
@@ -29,4 +29,23 @@ test('botões de toque leve e forte fornecem as forças necessárias aos combos'
  button.dataset.strength='0';s.pointer('punch','pointerdown',3);advance(s.game,.02);assert.equal(s.game.fighters[0].moveData.strength,0);
  s.pointer('punch','pointerup',3);advance(s.game,.5);
  button.dataset.strength='2';s.pointer('punch','pointerdown',4);advance(s.game,.02);assert.equal(s.game.fighters[0].moveData.strength,2);
+});
+
+test('Combo Livre entra por teclado, toque e gamepad sem repetir o custo ao segurar',t=>{
+ const s=prepare(t),f=s.game.fighters[0];f.meter=100;s.key('KeyC');assert.equal(f.meter,50);assert.ok(f.customTime>0);
+ s.key('KeyC','keydown',true);assert.equal(f.meter,50);s.key('KeyC','keyup');
+ f.customTime=0;f.meter=100;s.pointer('custom','pointerdown',4);assert.equal(f.meter,50);s.pointer('custom','pointerup',4);
+ f.customTime=0;f.meter=100;s.connect();s.pad.buttons[9].pressed=true;s.input.update();assert.equal(f.meter,50);s.input.update();assert.equal(f.meter,50);
+});
+test('atalhos dos dois jogadores cancelam somente o impacto bloqueado, por teclado e toque',t=>{
+ const s=prepare(t);
+ for(const slot of [0,1]){
+  const f=s.game.fighters[slot],attacker=s.game.fighters[1-slot];s.game.setInput(slot,{block:true});
+  s.game.hit({attacker,target:f,move:'punch',x:f.x,y:f.y-200});f.meter=100;
+  s.key(slot===0?'KeyX':'Comma');assert.equal(f.action,'guardCounter');assert.equal(f.meter,75);assert.equal(f.blockstun,0);
+  s.key(slot===0?'KeyX':'Comma','keyup');s.game.clearAction(f);f.invincible=0;s.game.setInput(slot,{});
+ }
+ const f=s.game.fighters[0];s.pointer('block','pointerdown',1);
+ s.game.hit({attacker:s.game.fighters[1],target:f,move:'punch',x:f.x,y:f.y-200});f.meter=100;
+ s.pointer('guardCounter','pointerdown',2);assert.equal(f.action,'guardCounter');assert.equal(f.meter,75);
 });

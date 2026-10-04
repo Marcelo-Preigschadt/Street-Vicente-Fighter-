@@ -1,18 +1,19 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=13';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=14';
+import { techniqueStrike } from './technique.js?v=14';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
 export const FIGHTING_STYLES = Object.freeze({
   marcelo: {
-    name: 'Krav Maga', summary: 'Palmas, cotoveladas e joelhadas de perto.', step: 26,
-    names: { punch: ['Palma rápida', 'Golpe de palma', 'Cotovelada'], kick: ['Joelhada curta', 'Joelhada', 'Joelhada forte'],
-      crouchPunch: ['Palma baixa rápida', 'Palma baixa', 'Palma baixa forte'], sweep: ['Chute baixo rápido', 'Chute de contenção', 'Rasteira de contenção'],
-      airPunch: ['Palma aérea rápida', 'Palma aérea', 'Palma aérea forte'], airKick: ['Joelhada aérea rápida', 'Joelhada voadora', 'Joelhada voadora forte'] },
-    normals: { punch: [[4,3,8,42,19,90],[6,4,12,68,23,135],[8,4,18,94,26,130]],
-      kick: [[5,4,12,50,19,120],[8,5,18,80,24,180],[11,5,23,110,27,260]] },
-    combos: [route('Entrada Direta','punch:0','punch:1','kick:1'), route('Combate Próximo','punch:1','punch:2','kick:1'),
-      route('Resposta Baixa','crouchPunch:0','punch:1','kick:1'),
-      route('Pressão Direta','punch:0','punch:1','punch:2','kick:1')],
+    name: 'Kung Fu', summary: 'Punhos na linha central, retorno giratório, chutes frontais e rasteira.', step: 26,
+    names: { punch: ['Punho rápido', 'Soco direto', 'Punho de retorno'], kick: ['Chute frontal rápido', 'Chute frontal', 'Chute frontal forte'],
+      crouchPunch: ['Punho baixo rápido', 'Soco baixo', 'Soco baixo forte'], sweep: ['Rasteira rápida', 'Rasteira circular', 'Rasteira forte'],
+      airPunch: ['Palma aérea rápida', 'Palma aérea', 'Palma aérea forte'], airKick: ['Chute voador rápido', 'Chute lateral voador', 'Chute voador forte'] },
+    normals: { punch: [[4,3,8,42,19,90],[6,4,12,68,23,135],[9,4,18,94,26,150]],
+      kick: [[6,4,12,50,20,120],[8,5,18,80,25,180],[11,5,23,110,28,260]] },
+    combos: [route('Linha Central','punch:0','punch:1','kick:1'), route('Punho e Retorno','punch:1','punch:2','kick:1'),
+      route('Dragão Baixo','crouchPunch:0','punch:1','kick:1'),
+      route('Sequência do Dragão','punch:0','punch:1','punch:2','kick:1')],
   },
   rafael: {
     name: 'Boxe', summary: 'Jab, cruzado, gancho e uppercut. Só punhos.', step: 34,
@@ -54,6 +55,8 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  const technique = techniqueStrike(f);
+  if (technique) return technique;
   const calibrated = STYLE_STRIKES[f.character.id];
   return calibrated?.[`${f.action}:${f.moveData?.strength}`] ?? calibrated?.[f.action] ?? f.character.strikes[f.action];
 }

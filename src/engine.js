@@ -1,7 +1,8 @@
-import { HURT_PROFILES } from './hitboxes.js?v=13';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=13';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=13';
-export { FIGHTING_STYLES } from './styles.js?v=13';
+import { HURT_PROFILES } from './hitboxes.js?v=14';
+import { techniquePose, techniqueHurt } from './technique.js?v=14';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=14';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=14';
+export { FIGHTING_STYLES } from './styles.js?v=14';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -64,9 +65,12 @@ function moveData(name, strength = 1, characterId = null) {
     stun: frames(26), blockstun: frames(18), push: 250, meter: 0, level: 'mid', projectile: true, chip: .1, speed: 860, cost: 100, invincibility: frames(10) };
   if (name === 'throw') return { name, strength, startup: frames(5), active: frames(2), recovery: frames(23), damage: 130,
     stun: frames(30), blockstun: 0, push: 650, meter: 9, level: 'throw', knockdown: true, launch: 490 };
+  if (name === 'guardCounter') return { name, strength:1, startup:frames(5), active:frames(5), recovery:frames(24), damage:65,
+    stun:frames(25), blockstun:frames(12), push:450, meter:0, level:'mid', knockdown:true, launch:330, invincibility:frames(10) };
   return null;
 }
-export const MOVES = Object.freeze(Object.fromEntries([...Object.keys(NORMALS), 'special', 'uppercut', 'super', 'throw'].map(name => [name, moveData(name)])));
+export const MOVES = Object.freeze(Object.fromEntries([...Object.keys(NORMALS), 'special', 'uppercut', 'super', 'throw', 'guardCounter'].map(name => [name, moveData(name)])));
+export const ALPHA = Object.freeze({ customCost:50, customDuration:2.5, customLimit:8, guardCost:25 });
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const approach = (value, target, step) => value + clamp(target - value, -step, step);
 const overlaps = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -78,6 +82,8 @@ const POWERS = new Set(['special', 'uppercut', 'super']);
 export function fighterPose(f) {
   const motion = motionPose(f);
   if (motion) return motion;
+  const technique = techniquePose(f);
+  if (technique) return technique;
   const m = f.moveData, extended = m && f.actionTime >= m.startup && f.actionTime < m.startup + m.active + .03;
   const styled = stylePose(f, extended);
   if (styled) return styled;
@@ -116,6 +122,7 @@ export class Fighter {
       directions: [], lastDirection: 5, powerName: '', powerQuote: '', blockLow: false, chain:[], comboName:'', comboNameTime:0 });
     Object.assign(this, { footwork:null, footworkCooldown:0, tapDirection:0, tapTime:-10, tapReleased:false, counterWindow:0,
       stunGauge:0, stunQuiet:0, dizzyPending:false, dizzyTime:0, dizzyProtection:0, escapeTime:-10 });
+    Object.assign(this, { customTime:0, customMoves:0, hitDuration:0, hitRegion:'body', hitStrength:0, quickRise:false, quickRiseBuffer:0, quickRiseAllowed:true, knockdownLandedAt:-10 });
   }
   get airborne() { return this.y < WORLD.floor - .01; }
   get canAct() { return this.hp > 0 && this.state !== 'dizzy' && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
@@ -134,13 +141,13 @@ export class Fighter {
   }
   get guard() {
     const back = this.direction > 0 ? this.input.left && !this.input.right : this.input.right && !this.input.left;
-    return { active: (back || this.input.block) && !this.airborne && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.hitstun <= 0 && this.preJump <= 0,
+    return { active: (back || this.input.block) && this.customTime <= 0 && !this.airborne && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.hitstun <= 0 && this.preJump <= 0,
       low: !!this.input.down, direction: this.direction };
   }
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = ['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
@@ -185,6 +192,7 @@ export class FightEngine {
   setInput(slot, input) {
     const f = this.fighters[slot], next = { ...idleInput(), ...input };
     const previous = f.input;
+    if (next.down && !previous.down && f.knocked) f.quickRiseBuffer = frames(8);
     if (next.jump && !f.input.jump && this.phase === 'fight' && !this.paused) f.jumpBuffer = .14;
     f.input = next;
     if (this.phase !== 'fight' || this.paused) return;
@@ -212,9 +220,12 @@ export class FightEngine {
     return tail.length === pattern.length && tail.every((d, i) => d.direction === pattern[i]);
   }
   queue(slot, move, strength = 1) {
-    if (this.phase !== 'fight' || this.paused || !MOVES[move]) return;
+    if (this.phase !== 'fight' || this.paused) return;
     const f = this.fighters[slot];
     if (f.dizzyTime > 0) { this.escapeDizzy(f); return; }
+    if (move === 'custom') { this.startCustom(f); return; }
+    if (move === 'guardCounter') { this.guardCounter(f); return; }
+    if (!MOVES[move]) return;
     if (move === 'punch' && !f.airborne) {
       if (f.meter >= 100 && this.motion(f, [2, 3, 6, 2, 3, 6], .75)) move = 'super';
       else if (this.motion(f, [6, 2, 3])) move = 'uppercut';
@@ -236,10 +247,13 @@ export class FightEngine {
     if (f.footwork && (f.footwork.kind !== 'advance' || f.footwork.time < f.footwork.cancelAt)) return false;
     if (f.airborne && (!move.startsWith('air') || f.airAttackUsed)) return false;
     if (!f.airborne && move.startsWith('air')) return false;
-    if (!f.airborne && f.input.block) return false;
+    if (!f.airborne && f.input.block && f.customTime <= 0 && move !== 'guardCounter') return false;
+    if (move === 'guardCounter' && !f.guardCounterAuthorized) return false;
+    if (f.customTime > 0 && (f.customMoves >= ALPHA.customLimit || ['throw','super'].includes(move))) return false;
     if (m.cost && f.meter < m.cost) return false;
     if (move === 'special' && this.projectiles.some(p => p.owner === f.slot && p.move === 'special' && p.life > 0)) return false;
     const normalChain = cancel && !!NORMALS[move];
+    if (f.customTime > 0) { f.customMoves++; m.recovery = Math.max(frames(6), m.recovery * .55); m.meter = 0; }
     f.chain = NORMALS[move] ? normalChain ? [...f.chain, `${move}:${m.strength}`] : [`${move}:${m.strength}`] : [];
     if (normalChain) m.advance = FIGHTING_STYLES[f.character.id].step;
     else if (!f.airborne && (Number(f.input.right)-Number(f.input.left))*f.direction > 0)
@@ -260,8 +274,28 @@ export class FightEngine {
     } else this.event('swing', { move, strength, fighter: f.slot, technique:m.technique, style:FIGHTING_STYLES[f.character.id].name, chained:normalChain });
     return true;
   }
+  startCustom(f) {
+    if (!f.canAct || f.airborne || f.input.down || f.input.block || f.customTime > 0 || f.meter < ALPHA.customCost) return false;
+    f.meter -= ALPHA.customCost; f.customTime = ALPHA.customDuration; f.customMoves = 0;
+    f.chain = []; f.buffer = null; f.jumpBuffer = 0;
+    this.event('customStart', { fighter:f.slot, character:f.character.id, color:f.character.color, x:f.x, y:f.y-160 });
+    return true;
+  }
+  customCancel(f, move) {
+    return f.customTime > 0 && f.customMoves < ALPHA.customLimit && f.action && !f.airborne && !['throw','super','guardCounter'].includes(move)
+      && f.actionTime >= f.moveData.startup + frames(2) && !f.moveData.knockdown;
+  }
+  guardCounter(f) {
+    if (f.blockstun <= 0 || f.hitstun > 0 || f.airborne || f.knocked || f.hp <= 0 || f.meter < ALPHA.guardCost) return false;
+    f.blockstun = 0; f.buffer = null; f.jumpBuffer = 0;
+    f.guardCounterAuthorized = true;
+    const started = this.beginMove(f,'guardCounter',1);
+    f.guardCounterAuthorized = false;
+    if (started) { f.meter -= ALPHA.guardCost; this.event('guardCounter', { fighter:f.slot, x:f.x, y:f.y-190, character:f.character.id, color:f.character.color }); }
+    return started;
+  }
   beginFootwork(f, kind) {
-    if (!f.canAct || f.airborne || f.input.down || f.input.block || f.footworkCooldown > 0) return false;
+    if (!f.canAct || f.customTime > 0 || f.airborne || f.input.down || f.input.block || f.footworkCooldown > 0) return false;
     const profile = FOOTWORK[f.character.id][kind];
     f.footwork = { ...profile, kind, time:0, sign:f.direction * (kind === 'advance' ? 1 : -1) };
     f.footworkCooldown = profile.duration + .10; f.buffer = null; f.jumpBuffer = 0; f.vx = 0;
@@ -305,7 +339,8 @@ export class FightEngine {
     const [near,far] = FOOTWORK[id].range;
     const threat = foe.action && dist < 260, incoming = this.projectiles.some(p => p.owner !== f.slot && Math.abs(p.x - f.x) < 310);
     ai.input = idleInput();
-    // Boxe retreats into counters; Krav Maga closes; kickboxing protects kicking distance.
+    // Boxing retreats into counters; kung fu closes; kickboxing protects kicking distance.
+    if (f.blockstun > 0 && f.meter >= ALPHA.guardCost && dist < 180 && this.random() < .18) { this.guardCounter(f); return; }
     if (threat && f.canAct && !foe.airborne && !incoming && this.random() < (id === 'rafael' ? .6 : id === 'gustavo' ? .3 : .12)) {
       this.setInput(1,ai.input); if (this.beginFootwork(f,'retreat')) { ai.timer = .12; return; }
     }
@@ -325,6 +360,7 @@ export class FightEngine {
     else if (f.canAct && !f.airborne) {
       if (foe.airborne && dist < 210 && this.random() < .55) this.queue(1, 'uppercut');
       else if (f.meter >= 100 && dist > 210 && this.random() < .6) this.queue(1, 'super');
+      else if(f.meter >= ALPHA.customCost && f.customTime <= 0 && dist < 190 && (foe.dizzyTime > 0 || foe.movePhase === 'recovery') && this.random() < .35) this.startCustom(f);
       else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, 'special');
       else if (dist < 140 && this.random() < (id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
       else if (dist < (id === 'gustavo' ? 255 : 200)) {
@@ -409,7 +445,7 @@ export class FightEngine {
   }
   updateFighter(f, dt) {
     f.animTime += dt;
-    for (const timer of ['flash', 'blockFlash', 'hitstun', 'blockstun', 'quoteTime', 'comboTime', 'comboNameTime', 'landing', 'invincible', 'throwInvincible', 'footworkCooldown', 'counterWindow', 'dizzyProtection', 'stunQuiet']) f[timer] = Math.max(0, f[timer] - dt);
+    for (const timer of ['flash', 'blockFlash', 'hitstun', 'blockstun', 'quoteTime', 'comboTime', 'comboNameTime', 'landing', 'invincible', 'throwInvincible', 'footworkCooldown', 'counterWindow', 'dizzyProtection', 'stunQuiet', 'customTime', 'quickRiseBuffer']) f[timer] = Math.max(0, f[timer] - dt);
     if (f.stunQuiet <= 0 && f.hitstun <= 0 && !f.dizzyPending && f.dizzyTime <= 0) f.stunGauge = Math.max(0,f.stunGauge-DIZZY.decay*dt);
     if (f.comboTime <= 0) f.combo = 0;
     if (f.hitstun <= 0 && !f.knocked) f.lastAttacker = null;
@@ -417,7 +453,11 @@ export class FightEngine {
     if (f.knocked) {
       f.vx = 0; f.state = 'knockdown';
       f.jumpBuffer = Math.max(0, f.jumpBuffer - dt);
-      if (!f.airborne) { f.knockdownTime = Math.max(0, f.knockdownTime - dt); if (f.knockdownTime <= 0) { f.knocked = false; f.wakeTime = .24; f.state = 'wake'; } }
+      if (!f.airborne) {
+        if (f.quickRiseBuffer > 0 && f.quickRiseAllowed && this.time-f.knockdownLandedAt <= frames(8) && !f.dizzyPending && !f.quickRise) { f.quickRise = true; f.knockdownTime = Math.min(f.knockdownTime,frames(7)); this.event('quickRise',{fighter:f.slot}); }
+        f.knockdownTime = Math.max(0, f.knockdownTime - dt);
+        if (f.knockdownTime <= 0) { f.knocked = false; f.wakeTime = f.quickRise ? frames(8) : .24; f.state = 'wake'; }
+      }
       if (f.buffer) { f.buffer.life -= dt; if (f.buffer.life <= 0) f.buffer = null; }
       this.integrate(f, dt); return;
     }
@@ -464,7 +504,7 @@ export class FightEngine {
       if (f.actionTime >= total && (f.action !== 'uppercut' || !f.airborne)) this.clearAction(f);
     }
     const movement = Number(f.input.right) - Number(f.input.left);
-    if ((f.jumpBuffer > 0 || f.input.jump) && !f.input.down && f.canAct && !f.airborne && !f.input.block) {
+    if ((f.jumpBuffer > 0 || f.input.jump) && f.customTime <= 0 && !f.input.down && f.canAct && !f.airborne && !f.input.block) {
       f.preJump = COMBAT.preJump; f.jumpVelocityX = movement * f.character.jumpSpeed;
       f.jumpBuffer = 0; f.vx = 0; f.state = 'preJump';
     }
@@ -479,14 +519,18 @@ export class FightEngine {
       const nextMove = this.contextualMove(f, f.buffer.move);
       const cancel = (f.action && f.moveData.cancellable && f.actionHit && POWERS.has(nextMove)
         && f.actionTime <= f.moveData.startup + f.moveData.active + .10)
-        || canStyleChain(f, nextMove, clamp(f.buffer.strength,0,2), this.time);
+        || canStyleChain(f, nextMove, clamp(f.buffer.strength,0,2), this.time) || this.customCancel(f,nextMove);
       if (this.beginMove(f, f.buffer.move, f.buffer.strength, cancel)) f.buffer = null;
       else { f.buffer.life -= dt; if (f.buffer.life <= 0) f.buffer = null; }
     }
     if (f.hp <= 0) f.state = 'ko';
     else if (f.hitstun > 0) { f.state = 'hit'; f.vx = 0; }
-    else if (f.blockstun > 0) { f.state = f.input.down ? 'lowBlock' : 'block'; f.vx = 0; }
-    else if (f.action) { f.state = f.action; if (!f.airborne) f.vx = f.actionTime < f.moveData.startup && f.moveData.advance ? f.direction * f.moveData.advance / f.moveData.startup : 0; }
+    else if (f.blockstun > 0) { f.state = f.blockLow ? 'lowBlock' : 'block'; f.vx = 0; }
+    else if (f.action) {
+      f.state = f.action;
+      if (!f.airborne) f.vx = f.customTime > 0 && !f.moveData.projectile ? f.direction*135
+        : f.actionTime < f.moveData.startup && f.moveData.advance ? f.direction * f.moveData.advance / f.moveData.startup : 0;
+    }
     else if (f.landing > 0) { f.state = 'landing'; f.vx = 0; }
     else if (f.airborne) f.state = 'jump'; // Horizontal jump velocity is locked at takeoff.
     else {
@@ -495,10 +539,10 @@ export class FightEngine {
       const nearbyStrike = enemyStrike && opponent.movePhase !== 'recovery' && opponent.direction === -f.direction && Math.abs(opponent.x - f.x) <= enemyStrike.reach + 60;
       const nearbyProjectile = this.projectiles.some(p => p.owner !== f.slot && p.direction === -f.direction && (p.x - f.x) * f.direction >= 0 && Math.abs(p.x - f.x) < 150);
       const guardReady = f.guard.active && (nearbyStrike || nearbyProjectile);
-      const target = f.input.down || f.input.block || guardReady ? 0 : movement * speed;
+      const target = f.customTime > 0 ? f.direction * (f.customMoves < ALPHA.customLimit ? 135 : 0) : f.input.down || f.input.block || guardReady ? 0 : movement * speed;
       // Arcade walking starts, stops and reverses on the next simulation tick.
       f.vx = target;
-      f.state = f.input.down ? (f.input.block || guardReady ? 'lowBlock' : 'crouch') : f.input.block || guardReady ? 'block' : Math.abs(f.vx) > 8 ? 'walk' : 'idle';
+      f.state = f.customTime > 0 ? Math.abs(f.vx) > 8 ? 'walk' : 'idle' : f.input.down ? (f.input.block || guardReady ? 'lowBlock' : 'crouch') : f.input.block || guardReady ? 'block' : Math.abs(f.vx) > 8 ? 'walk' : 'idle';
     }
     this.integrate(f, dt);
   }
@@ -508,11 +552,11 @@ export class FightEngine {
     const { offset, height } = f.character.projectile, x = f.x + f.direction * offset;
     this.projectiles.push({ owner: f.slot, character: f.character.id, direction: f.direction, move: f.action, data: { ...data }, wave,
       x, prevX: x, y: f.y - height, radius: f.action === 'super' ? 32 : 27, speed: data.speed, life: 3.1 });
-    this.event('projectile', { fighter: f.slot, move: f.action });
+    this.event('projectile', { fighter:f.slot, move:f.action, character:f.character.id, color:f.character.color, x, y:f.y-height, direction:f.direction, wave });
   }
   announcePower(f) {
     f.quoteTime = f.character.voiceDuration[f.action] + .1; f.powerQuote = f.character.powerQuotes[f.action];
-    this.event('special', { fighter: f.slot, move: f.action, name: f.powerName, quote: f.powerQuote });
+    this.event('special', { fighter:f.slot, move:f.action, name:f.powerName, quote:f.powerQuote, character:f.character.id, color:f.character.color, x:f.x, y:f.y-190, direction:f.direction });
   }
   updateProjectiles(dt, contacts) {
     for (const p of this.projectiles) { p.prevX = p.x; p.x += p.direction * p.speed * dt; p.life -= dt; }
@@ -558,6 +602,7 @@ export class FightEngine {
     if (f.y >= WORLD.floor) {
       f.y = WORLD.floor; f.vy = 0;
       if (wasAirborne) {
+        if(f.knocked)f.knockdownLandedAt=this.time;
         const attacked = f.airAttackUsed || f.action === 'uppercut';
         f.vx = 0; f.airAttackUsed = false;
         if (!f.knocked && f.hp > 0) {
@@ -620,17 +665,19 @@ export class FightEngine {
       target.hp = Math.max(1, target.hp - chip); target.blockFlash = .15; target.blockstun = data.blockstun;
       this.recoil(target, direction, data.push * .10, Math.min(data.blockstun, frames(14)), attacker.slot);
       target.blockLow = guard.low; target.state = guard.low ? 'lowBlock' : 'block'; target.vx = 0;
-      this.addMeter(target, 5); this.addMeter(attacker, 4);
-      this.freeze = Math.max(this.freeze, frames(4)); this.event('block', { x, y, move, fighter: target.slot, color: target.character.color }); return;
+      this.addMeter(target, 5); if(attacker.customTime <= 0)this.addMeter(attacker, 4);
+      this.freeze = Math.max(this.freeze, frames(4)); this.event('block', { x, y, move, fighter:target.slot, character:attacker.character.id, strength:data.strength, direction, color:target.character.color }); return;
     }
     const counter = target.action && ['startup','recovery'].includes(target.movePhase);
     const counterBonus = counter ? 1.12 : 1;
     const continued = target.hitstun > 0 && target.lastAttacker === attacker.slot;
-    const combo = continued ? attacker.combo + 1 : 1, scaling = Math.max(.55, 1 - (combo - 1) * .08);
+    const combo = continued ? attacker.combo + 1 : 1, scaling = Math.max(attacker.customTime > 0 ? .35 : .55, 1 - (combo - 1) * (attacker.customTime > 0 ? .12 : .08));
     const damage = Math.round(data.damage * attacker.character.power * scaling * counterBonus * (target.airborne ? .93 : 1));
     if (target.dizzyTime > 0 || target.state === 'dizzy') this.finishDizzy(target);
     target.hp = Math.max(0, target.hp - damage); target.hitCrouched = target.crouching;
-    target.hitstun = data.stun + (counter ? frames(attacker.counterWindow > 0 ? 5 : 3) : 0); target.flash = .12;
+    target.hitstun = data.stun + (counter ? frames(attacker.counterWindow > 0 ? 5 : 3) : 0); target.flash = frames(3);
+    target.hitDuration = target.hitstun; target.hitRegion = target.y-y >= 210 ? 'head' : 'body'; target.hitStrength = data.strength;
+    target.customTime = 0; target.customMoves = 0;
     if (counter) attacker.counterWindow = 0;
     if (target.hp > 0 && target.dizzyProtection <= 0 && data.level !== 'throw') {
       target.stunGauge = clamp(target.stunGauge + 18 + data.strength * 9,0,100); target.stunQuiet = 1;
@@ -641,7 +688,8 @@ export class FightEngine {
     target.buffer = null; target.jumpBuffer = 0; target.preJump = 0; target.vx = 0; target.lastAttacker = attacker.slot;
     target.state = target.hp <= 0 ? 'ko' : 'hit';
     if (data.knockdown || target.airborne) {
-      target.knocked = true; target.knockdownTime = .48; target.wakeTime = 0; target.state = 'knockdown';
+      target.knocked = true; target.knockdownTime = .48; target.wakeTime = 0; target.state = 'knockdown'; target.quickRise = false; target.quickRiseBuffer = 0;
+      target.quickRiseAllowed = data.level !== 'throw'; target.knockdownLandedAt = Infinity;
       if (data.launch) { target.vy = -data.launch; target.y -= .02; }
       else { target.vy = target.airborne ? -460 : -300; target.y -= .02; }
     }
@@ -650,8 +698,10 @@ export class FightEngine {
     if (combo === 1) { attacker.comboName = ''; attacker.comboNameTime = 0; }
     const route = completedStyleCombo(attacker);
     if (route && combo >= route.steps.length) { attacker.comboName = route.name; attacker.comboNameTime = 1.2; }
-    this.freeze = Math.max(this.freeze, frames(counter || move === 'super' || move === 'uppercut' ? 7 : data.strength === 2 ? 6 : 5));
+    if (attacker.customTime > 0) { attacker.comboName = 'Combo Livre'; attacker.comboNameTime = 1.2; }
+    this.freeze = Math.max(this.freeze, frames(counter || move === 'super' || move === 'uppercut' ? 9 : data.strength === 2 ? 8 : data.strength === 1 ? 6 : 4));
     this.event('hit', { x, y, damage, move, fighter: attacker.slot, target: target.slot, combo, color: attacker.character.color,
+      character:attacker.character.id, strength:data.strength, direction, region:target.hitRegion,
       technique:data.technique, counter:!!counter, comboName:route && combo >= route.steps.length ? route.name : '' });
   }
   endRound() {
@@ -660,6 +710,7 @@ export class FightEngine {
     this.fighters.forEach(f => {
       this.clearAction(f); f.buffer = null; f.jumpBuffer = 0; f.input = idleInput(); f.knocked = false; f.wakeTime = 0;
       f.footwork = null; f.dizzyPending = false; f.dizzyTime = 0; f.stunGauge = 0; f.counterWindow = 0;
+      f.customTime = 0; f.customMoves = 0; f.quickRise = false; f.quickRiseBuffer = 0;
       f.state = f.hp <= 0 ? 'ko' : winner === f ? 'victory' : 'idle';
     });
     if (winner) { winner.wins++; winner.quoteTime = 2.75; winner.powerName = 'ROUND VENCIDO'; winner.powerQuote = winner.character.quote; }

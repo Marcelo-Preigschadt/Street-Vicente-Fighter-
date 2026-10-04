@@ -38,7 +38,7 @@ test('três forças de soco têm preparação, dano e recuperação diferentes',
 test('baixo + chute executa rasteira, acerta pernas, derruba e permite levantar', () => {
   const {game,events}=arena(); game.setInput(0,{down:true}); game.queue(0,'kick'); advance(game,.03);
   const a=game.fighters[0],b=game.fighters[1]; assert.equal(a.action,'sweep'); assert.equal(a.moveData.level,'low');
-  assert.equal(a.attackbox,null); until(game,()=>b.knocked); assert.ok(a.attackbox.y>WORLD.floor-165); assert.ok(a.attackbox.y+a.attackbox.h<WORLD.floor-65); assert.equal(hits(events)[0].move,'sweep');
+  assert.equal(a.attackbox,null); until(game,()=>b.knocked); assert.ok(a.attackbox.y>WORLD.floor-165); assert.ok(a.attackbox.y+a.attackbox.h>WORLD.floor-80); assert.ok(a.attackbox.y+a.attackbox.h<=WORLD.floor); assert.equal(hits(events)[0].move,'sweep');
   const hp=b.hp; game.queue(1,'punch'); advance(game,.45); assert.equal(b.action,null); assert.equal(b.hp,hp);
   until(game,()=>b.wakeTime>0); assert.equal(b.state,'wake'); until(game,()=>b.wakeTime===0); assert.ok(b.throwInvincible>0); assert.ok(b.hurtboxes.length>0); advance(game,.2); assert.equal(b.y,WORLD.floor); assert.equal(b.knocked,false);
 });

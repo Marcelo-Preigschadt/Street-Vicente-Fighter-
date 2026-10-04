@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=13';
-import { Renderer } from './render.js?v=13';
-import { ArcadeAudio } from './audio.js?v=13';
-import { Inputs } from './input.js?v=13';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=14';
+import { Renderer } from './render.js?v=14';
+import { ArcadeAudio } from './audio.js?v=14';
+import { Inputs } from './input.js?v=14';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -29,10 +29,10 @@ function updateSelection() {
   $('opponent-label').textContent = local ? 'Jogador 2' : 'Adversário';
   for (const option of $('opponent').options) option.disabled = option.value === selected;
   $('opponent').value = opponent;
-  const second = { marcelo:'joelhada', rafael:'gancho', gustavo:'chute' };
+  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
   const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
-  touchSecond.textContent = { marcelo:'JOELHO', rafael:'GANCHO', gustavo:'CHUTE' }[selected];
+  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE' }[selected];
   touchSecond.setAttribute('aria-label',second[selected]);
   document.querySelectorAll('[data-fighter]').forEach(card => {
     const chosen = card.dataset.fighter === selected;

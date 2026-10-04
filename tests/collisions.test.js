@@ -42,8 +42,8 @@ test('segurar para trás perto de um golpe prepara a guarda antes do contato', (
 });
 
 test('um golpe que passou por cima não impede recuar durante o recolhimento', () => {
-  const { game, events } = scene(); game.fighters[1].x = 700;
-  game.setInput(1, { right: true, down: true }); game.queue(0, 'kick');
+  const { game, events } = scene(); game.start('gustavo','local','marcelo'); game.phase='fight'; game.fighters[0].x=450; game.fighters[1].x = 700;
+  game.setInput(1, { right: true, down: true }); game.queue(0, 'kick',2);
   until(game, () => game.fighters[0].movePhase === 'recovery'); assert.equal(hits(events).length, 0);
   const position = game.fighters[1].x;
   game.setInput(1, { right: true }); step(game);
@@ -106,7 +106,8 @@ test('a perna estendida é vulnerável: rasteiras simultâneas podem se encontra
   const alone = scene(); alone.game.fighters[1].x = 780;
   alone.game.setInput(0, { down: true }); alone.game.queue(0, 'kick'); advance(alone.game, .3);
   assert.equal(hits(alone.events).length, 0);
-  const { game, events } = scene(); game.start('marcelo','local','gustavo'); game.phase='fight'; game.fighters[0].x=450; game.fighters[1].x = 830;
+  // The new sweeps have measured reaches of 186 and 167; only extended legs meet here.
+  const { game, events } = scene(); game.start('marcelo','local','gustavo'); game.phase='fight'; game.fighters[0].x=450; game.fighters[1].x = 775;
   for (const slot of [0, 1]) { game.setInput(slot, { down: true }); game.queue(slot, 'kick'); }
   advance(game, .3); assert.equal(hits(events).length, 2); assert.ok(game.fighters.every(f => f.hp < 1000));
 });

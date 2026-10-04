@@ -1,6 +1,7 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=13';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=14';
 
-import { SuperEffects } from './super-fx.js?v=13';
+import { SuperEffects } from './super-fx.js?v=14';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise } from './fight-fx.js?v=14';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -15,16 +16,19 @@ export class Renderer {
     this.canvas = canvas; this.c = canvas.getContext('2d', { alpha: false }); this.sheets = {}; this.particles = []; this.labels = [];
     this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.superFX = new SuperEffects();
+    this.fightFX = new FightEffects();
 
   }
   async load() {
     const characters = Object.values(CHARACTERS);
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite), loadImage(`assets/${f.id}-style.webp`), loadImage(`assets/${f.id}-motion.webp`)])]);
+    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite), loadImage(`assets/${f.id}-style.webp`), loadImage(`assets/${f.id}-motion.webp`), loadImage(`assets/${f.id}-strike-v3.webp`), loadImage(`assets/${f.id}-reaction-v3.webp`), loadImage(`assets/${f.id}-low-v3.webp`)])]);
     this.background = background;
     characters.forEach((f, i) => {
-      const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 5]);
-      base.combat = this.analyzeSheet(sheets[i * 5 + 1],true); base.walk = this.analyzeSheet(sheets[i * 5 + 2],false,2);
-      base.style = this.analyzeStyleSheet(sheets[i * 5 + 3]); base.motion = this.analyzeMotionSheet(sheets[i * 5 + 4]);
+      const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 8]);
+      base.combat = this.analyzeSheet(sheets[i * 8 + 1],true); base.walk = this.analyzeSheet(sheets[i * 8 + 2],false,2);
+      base.style = this.analyzeStyleSheet(sheets[i * 8 + 3]); base.motion = this.analyzeMotionSheet(sheets[i * 8 + 4]);
+      base.strike = this.analyzeTechniqueSheet(sheets[i * 8 + 5],'strike'); base.reaction = this.analyzeTechniqueSheet(sheets[i * 8 + 6],'reaction');
+      base.low = this.analyzeTechniqueSheet(sheets[i * 8 + 7],'low');
     });
   }
   analyzeSheet(image, combat = false, rows = 4, cellPadding = null) {
@@ -125,6 +129,24 @@ export class Renderer {
     }
     return sheet;
   }
+  analyzeTechniqueSheet(image,atlas) {
+    const sheet=this.analyzeSheet(image,false,atlas==='low'?2:4,96);
+    if(atlas==='low') { sheet.scale=218/sheet.frames[4].h;for(const frame of sheet.frames)delete frame.scale; }
+    for(const [i,frame]of sheet.frames.entries()) {
+      if(atlas==='low'&&i>=4) { frame.anchor=frame.x+(frame.w-1)*(i===6?.36:.45);continue; }
+      const pixels=frame.cutout.getContext('2d').getImageData(0,0,frame.w,frame.h).data;
+      // Use hips for standing motion, the planted rear foot for extended kicks.
+      if(atlas==='strike'&&[6,14].includes(i)||atlas==='low'&&i===2)continue;
+      let sum=0,count=0;
+      for(let y=Math.round(frame.h*.55);y<=Math.round(frame.h*.64);y++) {
+        let left=frame.w,right=-1;
+        for(let x=0;x<frame.w;x++)if(pixels[(y*frame.w+x)*4+3]>140){left=Math.min(left,x);right=Math.max(right,x);}
+        if(right>=left){sum+=(left+right)/2;count++;}
+      }
+      if(count)frame.anchor=frame.x+sum/count;
+    }
+    return sheet;
+  }
   poseFor(f) {
     const original = this.sheets[f.character.id], { atlas, index } = fighterPose(f);
     return { sheet: atlas === 'base' ? original : original[atlas], index, id: `${atlas}:${index}` };
@@ -137,24 +159,19 @@ export class Renderer {
   }
   event(e) {
     this.superFX.event(e);
-    if (e.type === 'hit' || e.type === 'block' || e.type === 'clash') {
-      const count = e.type === 'block' ? 9 : ['special', 'uppercut', 'super'].includes(e.move) ? 35 : 21;
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2, speed = 110 + Math.random() * 390;
-        this.particles.push({ x: e.x, y: e.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: .2 + Math.random() * .3, maxLife: .5, color: e.type === 'block' ? '#9ce3ff' : i % 3 === 0 ? '#ffffff' : e.color, size: 2 + Math.random() * 5 });
-      }
-      if (e.type === 'hit') {
-        this.shake = this.reduced ? 0 : ['special', 'uppercut', 'super'].includes(e.move) ? 7 : 3; this.flash = ['special', 'uppercut', 'super'].includes(e.move) ? .06 : .025;
-        this.labels.push({ x: e.x, y: e.y - 35, life: .75, text: `−${e.damage}`, color: '#fff0bf' });
-        if (e.counter) this.labels.push({x:e.x,y:e.y-75,life:.85,text:'CONTRA-ATAQUE',color:'#ffe58b'});
-      }
+    this.fightFX.event(e);
+    if (e.type === 'hit') {
+      const power = ['special','uppercut','super'].includes(e.move);
+      this.shake = this.reduced ? 0 : power ? 8 : e.strength === 2 ? 5 : 2;
+      this.flash = power ? .035 : 0;
+      if(e.counter)this.labels.push({x:e.fighter === 0 ? 168 : 1112,y:306,life:.7,text:'CONTRA-ATAQUE',color:'#ffe58b'});
     }
     if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; this.flash = 0; }
   }
   draw(engine, dt, alpha = 1) {
     const c = this.c; this.clock += dt; this.shake *= Math.exp(-dt * 14); this.flash = Math.max(0, this.flash - dt);
-    this.superFX.update(dt);
-    if (engine.phase === 'selection') this.superFX.clear();
+    this.superFX.update(dt); this.fightFX.update(dt);
+    if (engine.phase === 'selection') { this.superFX.clear(); this.fightFX.clear(); }
     c.save();
     if (this.shake > .1) c.translate((Math.random() - .5) * this.shake, (Math.random() - .5) * this.shake);
     this.drawBackground(engine);
@@ -166,6 +183,7 @@ export class Renderer {
       for (const f of fighters) this.drawShadow(f);
       for (const f of fighters.sort((a, b) => a.y - b.y)) this.drawFighter(f);
       for (const p of engine.projectiles) this.drawProjectile({ ...p, x: p.prevX + (p.x - p.prevX) * alpha });
+      this.fightFX.draw(c,this.reduced);
       this.drawParticles(dt);
       this.drawSuperScene(fighters);
       this.drawSuperImpacts();
@@ -197,7 +215,7 @@ export class Renderer {
     const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
     c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing);
     if (['special', 'super', 'uppercut'].includes(f.state)) { c.shadowColor = f.character.color; c.shadowBlur = 12; }
-    if (f.flash > 0) c.filter = 'brightness(1.8)';
+    if (f.flash > 0) c.filter = 'brightness(1.5) saturate(.6)';
     if (f.blockFlash > 0) c.filter = 'brightness(1.3) sepia(.1)';
     if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
     const drawPose = (selected, opacity) => {
@@ -211,7 +229,8 @@ export class Renderer {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
     }
-    if (f.state === 'uppercut') this.drawRisingPower(f);
+    if (f.state === 'uppercut') drawEnergyRise(c,f,this.clock,this.reduced);
+    if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
   }
   drawDizzy(f) {
@@ -349,64 +368,14 @@ export class Renderer {
     }
     c.restore();
   }
-  drawRisingPower(f) {
-    const c = this.c, m = f.moveData;
-    if (!m || f.actionTime < m.startup || f.actionTime > m.startup + m.active + .18) return;
-    const intensity = Math.max(0, 1 - (f.actionTime - m.startup) / (m.active + .18));
-    c.save(); c.globalAlpha = intensity * .8; c.shadowColor = f.character.color; c.shadowBlur = 15;
-    if (f.character.id === 'marcelo') {
-      const x = f.x + f.direction * 50;
-      c.fillStyle = '#104c3844'; c.strokeStyle = '#b8ed68'; c.lineWidth = 3; rectangle(c, x - 63, f.y - 365, 126, 320, 8); c.fill(); c.stroke();
-      c.fillStyle = '#b8ed68'; c.fillRect(x - 61, f.y - 365, 122, 22); text(c, 'FIREWALL', x, f.y - 353, 12, '#082a1b', 'center');
-      for (let i = 0; i < 7; i++) text(c, i % 2 ? '01 101 01' : '10 010 10', x, f.y - 315 + i * 35, 16, '#a3ffbe', 'center', 700);
-    } else if (f.character.id === 'gustavo') {
-      const x = f.x + f.direction * 46, bottom = f.y - 38;
-      const heat = c.createLinearGradient(x, bottom, x, bottom - 310);
-      heat.addColorStop(0, '#28b4e066'); heat.addColorStop(.3, '#ff941fbb'); heat.addColorStop(.7, '#fff18be6'); heat.addColorStop(1, '#ffffff00');
-      c.fillStyle = heat; c.beginPath(); c.moveTo(x - 65, bottom);
-      c.bezierCurveTo(x - 102, bottom - 125, x - 12, bottom - 172, x - 30, bottom - 300);
-      c.bezierCurveTo(x + 22, bottom - 228, x + 18, bottom - 184, x + 50, bottom - 270);
-      c.bezierCurveTo(x + 105, bottom - 145, x + 76, bottom - 65, x + 63, bottom); c.closePath(); c.fill();
-      c.strokeStyle = '#aaf5ff'; c.lineWidth = 2;
-      for (let i = 0; i < 6; i++) {
-        const rise = (this.clock * 150 + i * 43) % 290, px = x + Math.sin(i * 2.7 + this.clock * 9) * (55 - rise * .1);
-        c.beginPath(); c.arc(px, bottom - rise, 5 + (i % 3) * 3, 0, Math.PI * 2); c.stroke();
-      }
-      text(c, 'ΔH < 0', x, bottom + 14, 16, '#f6e99d', 'center');
-    } else {
-      const x = f.x + f.direction * 48, y = f.y - 240;
-      c.strokeStyle = '#ffcd83'; c.lineWidth = 4; c.beginPath(); c.arc(x, y, 99, -Math.PI * .8, Math.PI * .8); c.stroke();
-      for (let i = 0; i < 5; i++) {
-        const angle = -2.1 + i * .88, px = x + Math.cos(angle) * 98, py = y + Math.sin(angle) * 98;
-        c.fillStyle = '#714823'; c.beginPath(); c.arc(px, py, 21, 0, Math.PI * 2); c.fill(); c.stroke();
-        text(c, ['I', 'V', 'X', 'XV', 'XX'][i], px, py, 17, '#ffe5b3', 'center');
-      }
-      text(c, 'LINHA DO TEMPO', x, y + 117, 14, '#ffe1a0', 'center');
-    }
-    c.restore();
-  }
-  drawProjectile(p) {
-    const c = this.c, color = CHARACTERS[p.character].color;
-    c.save(); c.translate(p.x, p.y); c.scale(p.direction, 1);
-    if (p.character === 'marcelo') {
-      c.font = '700 17px monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
-      for (let i = 0; i < 5; i++) {
-        c.globalAlpha = .75 - i * .13; c.fillStyle = color;
-        c.fillText((i + Math.floor(this.clock * 12)) % 2 ? '01' : '10', -45 - i * 27, Math.sin(this.clock * 15 + i) * 15);
-      }
-    } else if (p.character === 'gustavo') {
-      c.strokeStyle = '#b39bff'; c.lineWidth = 2;
-      for (let i = 0; i < 5; i++) {
-        c.globalAlpha = .7 - i * .12; const x = -40 - i * 23, y = Math.sin(this.clock * 12 + i * 1.7) * 16;
-        c.fillStyle = i % 2 ? '#b39bff' : '#77dcf5'; c.beginPath(); c.arc(x, y, 6 - i * .5, 0, Math.PI * 2); c.fill();
-        if (p.move === 'super' && i < 4) { c.beginPath(); c.moveTo(x, y); c.lineTo(x - 23, Math.sin(this.clock * 12 + (i + 1) * 1.7) * 16); c.stroke(); }
-      }
-    } else {
-      for (let i = 0; i < 3; i++) {
-        c.globalAlpha = .55 - i * .13; c.fillStyle = '#f5d7a0'; c.save(); c.translate(-43 - i * 31, Math.sin(this.clock * 9 + i) * 12); c.rotate(-.35 + Math.sin(this.clock * 9 + i) * .2); c.fillRect(-10, -13, 20, 26); c.restore();
-      }
-    }
-    c.restore(); this.drawPowerGlyph(p.x, p.y, p.radius, p.character, p.move === 'super');
+  drawProjectile(p) { drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
+  drawCustomAura(f) {
+    const c=this.c;c.save();c.strokeStyle=`${f.character.color}88`;c.lineWidth=2;
+    c.beginPath();c.ellipse(f.x,WORLD.floor+1,68,13,0,0,Math.PI*2);c.stroke();
+    if(!this.reduced){
+      c.strokeStyle=`${f.character.accent}99`;c.lineWidth=3;
+      for(let i=0;i<3;i++){const rise=(this.clock*220+i*75)%265;c.beginPath();c.moveTo(f.x-55+i*45,f.y-rise);c.lineTo(f.x-55+i*45,f.y-rise-22);c.stroke();}
+    }c.restore();
   }
   drawParticles(dt) {
     const c = this.c;
@@ -464,6 +433,7 @@ export class Renderer {
       c.strokeStyle = '#dde6cc88'; c.lineWidth = 1; c.strokeRect(energyX, 674, energyWidth, 13);
       for (let j = 1; j <= 3; j++) { c.fillStyle = '#142224'; c.fillRect(energyX + energyWidth * .25 * j - 1, 674, 2, 13); }
       text(c, f.meter >= 100 ? 'SUPER PRONTO' : 'SUPER', right ? energyX + energyWidth : energyX, 666, 13, f.meter >= 100 ? f.character.color : '#a7b8ae', right ? 'right' : 'left');
+      if(f.customTime>0)text(c,`COMBO LIVRE · ${f.customTime.toFixed(1)}s`,right?energyX+energyWidth:energyX,641,15,f.character.color,right?'right':'left');
       text(c, Math.floor(f.meter).toString(), right ? energyX : energyX + energyWidth, 666, 13, '#f5ecd9', right ? 'left' : 'right');
     });
     c.fillStyle = '#142323'; c.strokeStyle = '#dacda4'; c.lineWidth = 2; rectangle(c, 592, 28, 96, 89, 9); c.fill(); c.stroke();

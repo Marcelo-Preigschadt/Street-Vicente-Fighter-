@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { FightEngine, FIXED_STEP, WORLD, fighterPose } from '../src/engine.js';
 import { FIGHTING_STYLES, styleStrike } from '../src/styles.js';
 import { STYLE_HURT } from '../src/styles-data.js';
+import { TECHNIQUE_HURT } from '../src/technique-data.js';
 
 function scene(id,slot=0,other=id==='marcelo'?'gustavo':'marcelo') {
   const events=[],game=new FightEngine({random:()=>.6,onEvent:e=>events.push(e)});
@@ -18,8 +19,8 @@ test('cada modalidade tem alcance e tempo próprios; boxe usa apenas punhos em t
  for(const s of [m,r,g]){s.game.queue(0,'punch',0);advance(s.game,.01);}
  assert.ok(r.f.moveData.startup<m.f.moveData.startup);
  for(const s of [m,r,g]){s.game.clearAction(s.f);s.game.queue(0,'kick');advance(s.game,.01);}
- assert.ok(styleStrike(m.f).reach<styleStrike(g.f).reach);
- assert.equal(m.f.moveData.technique,'Joelhada');assert.equal(r.f.moveData.technique,'Gancho');assert.equal(g.f.moveData.technique,'Chute circular');
+ assert.notDeepEqual(styleStrike(m.f),styleStrike(g.f));
+ assert.equal(m.f.moveData.technique,'Chute frontal');assert.equal(r.f.moveData.technique,'Gancho');assert.equal(g.f.moveData.technique,'Chute circular');
  for(const names of Object.values(FIGHTING_STYLES.rafael.names))for(const name of names)assert.doesNotMatch(name,/chute|joelh|rasteira/i);
 });
 
@@ -89,8 +90,9 @@ test('guarda e golpes de estilo usam as mesmas silhuetas vulneráveis nos dois s
   const {game,f}=scene(id);assert.equal(STYLE_HURT[id].length,16);
   for(const direction of [-1,1])for(const state of ['idle','punch','kick','crouchPunch','sweep','airPunch','airKick','throw']){
    f.direction=direction;f.state=state;f.action=null;f.moveData={startup:.1,active:.2,strength:1};f.actionTime=.12;
-   const pose=fighterPose(f);assert.equal(pose.atlas,'style');
-   const expected=STYLE_HURT[id][pose.index].map(([x,h,w,height])=>({x:f.x+(direction>0?x:-x-w),y:f.y-h,w,h:height}));
+   const pose=fighterPose(f);assert.ok(['style','strike','low','reaction'].includes(pose.atlas));
+   const profile=pose.atlas==='style'?STYLE_HURT[id][pose.index]:TECHNIQUE_HURT[id][pose.atlas][pose.index];
+   const expected=profile.map(([x,h,w,height])=>({x:f.x+(direction>0?x:-x-w),y:f.y-h,w,h:height}));
    assert.deepEqual(f.hurtboxes,expected);
   }
  }

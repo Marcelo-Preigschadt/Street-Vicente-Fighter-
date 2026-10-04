@@ -107,7 +107,8 @@ export class ArcadeAudio {
       case 'clash': this.sample('special', .4); break;
       case 'block': if (!this.sample('light', .35)) this.noise(.05, .08); break;
       case 'hit':
-        if (!this.sample(['special', 'uppercut', 'super'].includes(e.move) ? 'special' : ['kick', 'sweep', 'airKick', 'throw'].includes(e.move) ? 'heavy' : 'light', .8)) this.noise(.12, .3);
+        if (!this.sample(['special', 'uppercut', 'super'].includes(e.move) ? 'special' : e.strength === 2 || ['kick', 'sweep', 'airKick', 'throw'].includes(e.move) ? 'heavy' : 'light', .8)) this.noise(.12, .3);
+        if(e.strength===2||e.region==='body')this.tone(85,.09,'sine',.14,32);
         if (engine.fighters[e.target].hp > 0) this.sample('grunt3', .55, e.target);
         break;
       case 'special': {
@@ -120,6 +121,8 @@ export class ArcadeAudio {
       }
       case 'round': this.stopSamples(); this.musicTime = 0; this.beat = 0; this.tone(440, .14, 'square', .12); break;
       case 'fight': this.tone(660, .22, 'square', .19, 880); break;
+      case 'customStart': this.tone(260,.25,'triangle',.15,780); break;
+      case 'guardCounter': this.tone(780,.13,'triangle',.12,260); break;
       case 'roundEnd':
         if (e.winner !== null && !e.timeout) this.sample('ko', .65, 1 - e.winner);
         this.tone(220, .30, 'triangle', .12, 55); break;
