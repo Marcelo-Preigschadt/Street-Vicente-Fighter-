@@ -4,6 +4,24 @@ Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. 
 
 [Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/)
 
+## Dinâmica dos estilos e tontura — versão 2.5
+
+Cada professor tem um novo ciclo de oito desenhos completos de movimentação em guarda, dois desenhos de entrada, dois de recuo e quatro de tontura. Marcelo transfere peso em passos baixos, com a palma à frente; Rafael faz passos curtos com os punhos junto ao rosto; Gustavo mantém a base mais alta e pronta para chutar. O ciclo acompanha a distância efetiva, inclusive ao recuar, e a silhueta visível determina as áreas vulneráveis. Os desenhos completos não sofrem deformação de pernas ou quadril.
+
+Dois toques para frente, separados por neutro e dentro de 230 ms, executam uma entrada; dois para trás executam um recuo. Marcelo fecha distância rapidamente e pressiona com palmas, cotovelos e joelhos. Rafael tem recuo curto no tempo e deslocamento de boxe, buscando punir o golpe que passou no vazio. Gustavo conserva distância maior para os circulares e alterna alturas. Entradas permitem atacar depois da preparação; recuos precisam terminar. Os passos respeitam os corpos e as paredes, têm recuperação e continuam vulneráveis. A CPU usa alcance, escolha de golpes e estratégia próprios de cada modalidade.
+
+Punir a preparação ou a recuperação de um golpe produz **CONTRA-ATAQUE**, com 12% a mais de dano e três quadros extras de reação. Após um recuo, a confirmação de contra-ataque concede cinco quadros extras de reação. Andar para frente durante a preparação de um ataque acrescenta uma entrada curta, ajustada ao golpe e ao professor.
+
+| Professor | Sequência longa de P1 |
+| --- | --- |
+| Marcelo · Pressão Direta | T → F → Y → G: palma rápida, palma, cotovelada, joelhada |
+| Rafael · Série de Boxe | T → F → G → B: jab, cruzado, gancho, uppercut |
+| Gustavo · Troca de Altura | T → F → S + T, solte S → G: jab, cruzado, jab baixo, circular |
+
+Uma sequência de pelo menos quatro acertos e carga suficiente de tontura deixa o adversário **tonto**, com guarda caída, quatro poses de desequilíbrio e estrelas orbitando a cabeça. A tontura começa depois da reação do último golpe; se houve queda, começa depois de levantar. Dura até 2,35 segundos. Alternar comandos acelera a recuperação; segurar um botão não acelera. O personagem fica vulnerável e não pode atacar, defender ou pular. Um acerto interrompe a tontura e inicia uma nova sequência. Há quatro segundos de proteção contra outra tontura, impedindo repetição imediata. Acertos isolados acumulam carga, que diminui após um intervalo sem acertos; bloqueios, agarrões e golpes no vazio não a acumulam.
+
+Agora há doze rotas de combos. Cenário, poderes e áudios aprovados foram preservados. A barra de super continua entre rounds; tontura, sequências e deslocamentos são limpos ao trocar de round. [Especificação e referências](assets/FIGHTING-STYLES.md).
+
 ## Estilos e combos — versão 2.4
 
 Cada professor tem guarda, golpes, alcance e ritmo próprios. Novas poses completas preservam o rosto, a roupa e a estética do jogo. Cenário, caminhadas, poderes e WAV aprovados foram mantidos. A barra de super permanece entre rounds; nova luta ou revanche começa com a barra vazia.
@@ -30,7 +48,7 @@ A rasteira só acerta durante a extensão ativa da perna, alcança o calçado vi
 - Agachar + chute executa uma **rasteira baixa com queda**, seguida de tempo no chão e animação de levantar.
 - Pular + chute executa uma **voadeira com a perna estendida**, mantendo o deslocamento e a parábola do salto. Um ataque aéreo por salto.
 - Defesa em pé contra voadeiras; baixo + trás contra rasteiras. Segurar para trás bloqueia, além dos atalhos de defesa.
-- Socos confirmados em acerto ou bloqueio podem ser cancelados em poderes. Golpes no vazio precisam recuperar; encadeamentos de normais seguem as dez rotas de cada estilo.
+- Socos confirmados em acerto ou bloqueio podem ser cancelados em poderes. Golpes no vazio precisam recuperar; encadeamentos de normais seguem as doze rotas dos estilos.
 - Agarrões de perto ignoram defesa. Projéteis opostos se anulam. Supers lançam três ondas e exigem barra cheia.
 - Simulação a 120 Hz, interpolação visual, reação ao impacto, recuo, áreas de colisão calibradas nos sprites, paredes e cruzamento por cima do oponente.
 
@@ -112,6 +130,6 @@ Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áu
 npm test
 ```
 
-Não é necessário instalar pacotes. Os 86 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
+Não é necessário instalar pacotes. Os 99 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.

@@ -22,9 +22,11 @@ test('andar, soltar e inverter o direcional respondem no próximo tick para ambo
     const fighter = game.fighters[slot], sign = slot === 0 ? 1 : -1;
     const start = fighter.x;
     game.setInput(slot, { right: sign > 0, left: sign < 0 }); step(game);
-    assert.ok((fighter.x - start) * sign >= 3);
+    assert.ok(Math.abs((fighter.x - start) * sign - fighter.character.speed * FIXED_STEP) < 1e-8);
     const moving = fighter.x;
     game.setInput(slot, {}); step(game); assert.equal(fighter.x, moving); assert.equal(fighter.vx, 0);
+    // A second tap within 230 ms now intentionally performs a burst step.
+    advance(game,.24); assert.equal(fighter.x,moving);
     game.setInput(slot, { right: sign > 0, left: sign < 0 }); step(game);
     const reversing = fighter.x;
     game.setInput(slot, { left: sign > 0, right: sign < 0 }); step(game);

@@ -23,7 +23,7 @@ test('cada modalidade tem alcance e tempo próprios; boxe usa apenas punhos em t
  for(const names of Object.values(FIGHTING_STYLES.rafael.names))for(const name of names)assert.doesNotMatch(name,/chute|joelh|rasteira/i);
 });
 
-test('as dez sequências completas acertam, escalam o dano e mostram o nome, nos dois lados e contra todos os rivais',()=>{
+test('as doze sequências completas acertam, escalam o dano e mostram o nome, nos dois lados e contra todos os rivais',()=>{
  for(const id of Object.keys(FIGHTING_STYLES))for(const other of Object.keys(FIGHTING_STYLES).filter(v=>v!==id))for(const slot of [0,1])for(const route of FIGHTING_STYLES[id].combos){
   const {game,events,f,target}=scene(id,slot,other);let raw=0;
   for(const [index,step] of route.steps.entries()){

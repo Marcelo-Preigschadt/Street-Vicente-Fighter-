@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FightEngine, FIXED_STEP, COMBAT, MOVES, CHARACTERS, fighterPose } from '../src/engine.js';
 import { WALK_STRIDE, WALK_FRAMES, walkingFrame } from '../src/walk.js';
-import { HURT_PROFILES } from '../src/hitboxes.js';
+import { FOOTWORK } from '../src/motion.js';
+import { MOTION_HURT } from '../src/motion-data.js';
 import { SuperEffects } from '../src/super-fx.js';
 
 function scene() {
@@ -53,11 +54,11 @@ test('cada pose completa usa as mesmas áreas vulneráveis no desenho e no comba
     const { g } = scene(); g.start(id, 'local'); const f = g.fighters[0];
     f.state = 'walk'; f.walkBlend = 1;
     for (let index = 0; index < WALK_FRAMES; index++) {
-      f.walkDistance = index * WALK_STRIDE / WALK_FRAMES + 1;
-      assert.deepEqual(fighterPose(f), { atlas: 'walk', index });
+      f.walkDistance = index * FOOTWORK[id].stride / WALK_FRAMES + 1;
+      assert.deepEqual(fighterPose(f), { atlas: 'motion', index });
       for (const direction of [-1, 1]) {
         f.direction = direction;
-        const expected = HURT_PROFILES[id].walk[index].map(([x, h, w, height]) => ({
+        const expected = MOTION_HURT[id][index].map(([x, h, w, height]) => ({
           x: f.x + (direction > 0 ? x : -x - w), y: f.y - h, w, h: height,
         }));
         assert.deepEqual(f.hurtboxes, expected);

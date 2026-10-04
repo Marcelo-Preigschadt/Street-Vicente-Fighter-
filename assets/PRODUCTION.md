@@ -74,3 +74,12 @@ As áreas vulneráveis e o alcance dos golpes de Gustavo foram medidos nos pixel
 Os poderes de Gustavo são desenhos por Canvas: um núcleo carregado com elétrons para Pulso Iônico; uma coluna de calor, bolhas e ΔH < 0 para Reação Exotérmica; moléculas com ligações e três ondas para Reação em Cadeia. A tela de ativação do super segue o padrão existente com identidade ciano/violeta.
 
 As três falas foram geradas com voz de catálogo Mark, `eleven_v3`, `[shouting]`, `pt-br`, velocidade 1.15, e integradas como WAV PCM mono de 16 bits a 22.050 Hz. Os sprites e WAV anteriores foram verificados contra os hashes Git da versão 2.2.0. O clipe original Bora NIT mantém suas amostras.
+
+
+## Movimento e tontura — 2.5.0
+
+Novos assets de projeto: `assets/marcelo-motion.webp`, `assets/rafael-motion.webp` e `assets/gustavo-motion.webp`. Criados com o imagegen integrado, fundo transparente e o atlas de estilo de cada professor como referência de identidade. Rostos, roupas e desenho dos atlases anteriores foram preservados. Os prompts completos estão em [motion-prompts.json](motion-prompts.json).
+
+Cada atlas tem 4 × 4 células. Índices 0–7: ciclo de passos em guarda; 8–9: entrada; 10–11: recuo; 12–15: desequilíbrio em pé após tontura. São silhuetas completas, sem deformação procedural das pernas. Os arquivos finais foram convertidos para WebP com alpha, qualidade 94. O recorte usa o maior componente conectado em cada célula com margem de 40 px; o eixo do corpo é calibrado na faixa do quadril. Uma escala uniforme por atlas preserva a altura e o abaixamento natural das poses. As áreas de cabeça, tronco e pernas foram medidas nos mesmos recortes e eixos usados pelo renderizador e registradas em `src/motion-data.js`.
+
+Animação por distância efetiva: Krav Maga 160 px por ciclo, boxe 128 px, kickboxing 196 px. A física determina o progresso dos passos; colisão ou parede para o ciclo. A animação de tontura usa 4 poses a 7 quadros/s, com estrelas desenhadas no Canvas e recuperação regida pelo motor. Nenhuma fala ou poder aprovado foi modificado.

@@ -1,7 +1,7 @@
-import { HURT_PROFILES } from './hitboxes.js?v=12';
-import { walkingFrame } from './walk.js?v=12';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=12';
-export { FIGHTING_STYLES } from './styles.js?v=12';
+import { HURT_PROFILES } from './hitboxes.js?v=13';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=13';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=13';
+export { FIGHTING_STYLES } from './styles.js?v=13';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -9,7 +9,7 @@ export const COMBAT = Object.freeze({ jumpVelocity: -1440, preJump: 3 / 60, inpu
   landing: 4 / 60, emptyLanding: 2 / 60, superFreeze: 14 / 60, leftWall: 110, rightWall: 1170 });
 export const CHARACTERS = Object.freeze({
   marcelo: { id: 'marcelo', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
-    speed: 360, backSpeed: 270, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
+    speed: 324, backSpeed: 240, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
     powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Kernel Panic' },
     powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Pane no sistema!' },
     voiceDuration: { special: 1.84, uppercut: 2.40, super: 4.30 },
@@ -18,7 +18,7 @@ export const CHARACTERS = Object.freeze({
       airPunch: { near: 30, reach: 170, height: 188, h: 34 }, airKick: { near: 30, reach: 187, height: 128, h: 62 },
       uppercut: { near: -25, reach: 82, height: 297, h: 100 } }, projectile: { offset: 154, height: 199 } },
   rafael: { id: 'rafael', name: 'Prof Rafael', quote: 'No meu tempo não era assim', color: '#ffa14c', accent: '#ffd08a',
-    speed: 384, backSpeed: 288, jumpSpeed: 630, power: 1, sprite: 'assets/rafael.webp', combatSprite: 'assets/rafael-combat.webp', walkSprite: 'assets/rafael-walk.webp',
+    speed: 390, backSpeed: 348, jumpSpeed: 630, power: 1, sprite: 'assets/rafael.webp', combatSprite: 'assets/rafael-combat.webp', walkSprite: 'assets/rafael-walk.webp',
     powers: { special: 'Crônicas', uppercut: 'Linha do Tempo', super: 'Marcha dos Séculos' },
     powerQuotes: { special: 'Abram as crônicas!', uppercut: 'Viagem pela história!', super: 'No meu tempo não era assim! Marcha dos séculos!' },
     voiceDuration: { special: 2.40, uppercut: 3.12, super: 4.80 },
@@ -27,7 +27,7 @@ export const CHARACTERS = Object.freeze({
       airPunch: { near: 30, reach: 157, height: 145, h: 32 }, airKick: { near: 30, reach: 175, height: 110, h: 36 },
       uppercut: { near: -25, reach: 87, height: 303, h: 80 } }, projectile: { offset: 150, height: 214 } },
   gustavo: { id: 'gustavo', name: 'Prof. Gustavo', quote: 'Reagiu, perdeu!', color: '#77dcf5', accent: '#b39bff',
-    speed: 372, backSpeed: 279, jumpSpeed: 615, power: 1.04, sprite: 'assets/gustavo.webp', combatSprite: 'assets/gustavo-combat.webp', walkSprite: 'assets/gustavo-walk.webp',
+    speed: 342, backSpeed: 312, jumpSpeed: 615, power: 1.04, sprite: 'assets/gustavo.webp', combatSprite: 'assets/gustavo-combat.webp', walkSprite: 'assets/gustavo-walk.webp',
     powers: { special: 'Pulso Iônico', uppercut: 'Reação Exotérmica', super: 'Reação em Cadeia' },
     powerQuotes: { special: 'Carga liberada!', uppercut: 'Vai esquentar!', super: 'Reagiu, perdeu! Reação em cadeia!' },
     voiceDuration: {"special": 2.1, "uppercut": 1.73, "super": 3.19},
@@ -76,7 +76,8 @@ const POWERS = new Set(['special', 'uppercut', 'super']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
-  if (['walk', 'idle'].includes(f.state) && f.walkBlend > 0) return { atlas: 'walk', index: walkingFrame(f.walkDistance) };
+  const motion = motionPose(f);
+  if (motion) return motion;
   const m = f.moveData, extended = m && f.actionTime >= m.startup && f.actionTime < m.startup + m.active + .03;
   const styled = stylePose(f, extended);
   if (styled) return styled;
@@ -113,9 +114,11 @@ export class Fighter {
       preJump: 0, jumpVelocityX: 0, recoilTime: 0, recoilDeceleration: 0, recoilSource: null, hitCrouched: false, throwInvincible: 0,
       animTime: 0, quoteTime: 0, walkTime: 0, walkDistance: 0, prevWalkDistance: 0, walkBlend: 0, prevWalkBlend: 0,
       directions: [], lastDirection: 5, powerName: '', powerQuote: '', blockLow: false, chain:[], comboName:'', comboNameTime:0 });
+    Object.assign(this, { footwork:null, footworkCooldown:0, tapDirection:0, tapTime:-10, tapReleased:false, counterWindow:0,
+      stunGauge:0, stunQuiet:0, dizzyPending:false, dizzyTime:0, dizzyProtection:0, escapeTime:-10 });
   }
   get airborne() { return this.y < WORLD.floor - .01; }
-  get canAct() { return this.hp > 0 && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
+  get canAct() { return this.hp > 0 && this.state !== 'dizzy' && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
   get crouching() { return !this.airborne && (['crouch', 'crouchPunch', 'lowBlock', 'preJump', 'landing'].includes(this.state)
     || this.state === 'sweep' && this.character.id === 'rafael' || (this.state === 'hit' && this.hitCrouched)); }
   get movePhase() {
@@ -131,13 +134,14 @@ export class Fighter {
   }
   get guard() {
     const back = this.direction > 0 ? this.input.left && !this.input.right : this.input.right && !this.input.left;
-    return { active: (back || this.input.block) && !this.airborne && !this.action && !this.knocked && this.wakeTime <= 0 && this.hitstun <= 0 && this.preJump <= 0,
+    return { active: (back || this.input.block) && !this.airborne && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.hitstun <= 0 && this.preJump <= 0,
       low: !!this.input.down, direction: this.direction };
   }
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
+    const profile = pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+      : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
     }));
@@ -180,10 +184,21 @@ export class FightEngine {
   }
   setInput(slot, input) {
     const f = this.fighters[slot], next = { ...idleInput(), ...input };
+    const previous = f.input;
     if (next.jump && !f.input.jump && this.phase === 'fight' && !this.paused) f.jumpBuffer = .14;
     f.input = next;
     if (this.phase !== 'fight' || this.paused) return;
     const horizontal = (Number(next.right) - Number(next.left)) * f.direction;
+    // Two presses separated by neutral. Diagonal power commands never trigger a step.
+    if (next.down || next.jump || next.block) { f.tapDirection = 0; f.tapReleased = false; }
+    else if (!next.left && !next.right) f.tapReleased = true;
+    else if ((next.left !== previous.left || next.right !== previous.right) && horizontal) {
+      if (f.tapReleased && f.tapDirection === horizontal && this.time - f.tapTime <= .23) {
+        this.beginFootwork(f,horizontal > 0 ? 'advance' : 'retreat'); f.tapDirection = 0;
+      } else { f.tapDirection = horizontal; f.tapTime = this.time; }
+      f.tapReleased = false;
+    }
+    if (Object.keys(next).some(key => next[key] && !previous[key])) this.escapeDizzy(f);
     const vertical = next.down ? -1 : next.jump ? 1 : 0;
     const direction = vertical === -1 ? (horizontal < 0 ? 1 : horizontal > 0 ? 3 : 2)
       : vertical === 1 ? (horizontal < 0 ? 7 : horizontal > 0 ? 9 : 8) : horizontal < 0 ? 4 : horizontal > 0 ? 6 : 5;
@@ -199,6 +214,7 @@ export class FightEngine {
   queue(slot, move, strength = 1) {
     if (this.phase !== 'fight' || this.paused || !MOVES[move]) return;
     const f = this.fighters[slot];
+    if (f.dizzyTime > 0) { this.escapeDizzy(f); return; }
     if (move === 'punch' && !f.airborne) {
       if (f.meter >= 100 && this.motion(f, [2, 3, 6, 2, 3, 6], .75)) move = 'super';
       else if (this.motion(f, [6, 2, 3])) move = 'uppercut';
@@ -216,7 +232,8 @@ export class FightEngine {
   }
   beginMove(f, baseMove, strength = 1, cancel = false) {
     const move = this.contextualMove(f, baseMove), m = moveData(move, strength, f.character.id);
-    if (!m || f.hp <= 0 || f.hitstun > 0 || f.blockstun > 0 || f.knocked || f.wakeTime > 0 || f.landing > 0 || f.preJump > 0 || (f.action && !cancel)) return false;
+    if (!m || f.hp <= 0 || f.hitstun > 0 || f.blockstun > 0 || f.knocked || f.wakeTime > 0 || f.landing > 0 || f.preJump > 0 || f.dizzyPending || f.dizzyTime > 0 || f.state === 'dizzy' || (f.action && !cancel)) return false;
+    if (f.footwork && (f.footwork.kind !== 'advance' || f.footwork.time < f.footwork.cancelAt)) return false;
     if (f.airborne && (!move.startsWith('air') || f.airAttackUsed)) return false;
     if (!f.airborne && move.startsWith('air')) return false;
     if (!f.airborne && f.input.block) return false;
@@ -225,6 +242,9 @@ export class FightEngine {
     const normalChain = cancel && !!NORMALS[move];
     f.chain = NORMALS[move] ? normalChain ? [...f.chain, `${move}:${m.strength}`] : [`${move}:${m.strength}`] : [];
     if (normalChain) m.advance = FIGHTING_STYLES[f.character.id].step;
+    else if (!f.airborne && (Number(f.input.right)-Number(f.input.left))*f.direction > 0)
+      m.advance = FOOTWORK[f.character.id].attackAdvance[move]?.[m.strength] ?? 0;
+    f.footwork = null;
     f.action = move; f.moveData = m; f.actionTime = 0; f.prevActionTime = 0; f.actionHit = false; f.contactTime = -10; f.shotsSent = 0; f.state = move; f.animTime = 0;
     if (f.airborne) f.airAttackUsed = true;
     else f.vx = 0;
@@ -240,11 +260,39 @@ export class FightEngine {
     } else this.event('swing', { move, strength, fighter: f.slot, technique:m.technique, style:FIGHTING_STYLES[f.character.id].name, chained:normalChain });
     return true;
   }
+  beginFootwork(f, kind) {
+    if (!f.canAct || f.airborne || f.input.down || f.input.block || f.footworkCooldown > 0) return false;
+    const profile = FOOTWORK[f.character.id][kind];
+    f.footwork = { ...profile, kind, time:0, sign:f.direction * (kind === 'advance' ? 1 : -1) };
+    f.footworkCooldown = profile.duration + .10; f.buffer = null; f.jumpBuffer = 0; f.vx = 0;
+    f.state = kind === 'advance' ? 'stepIn' : 'stepBack'; f.walkBlend = 0;
+    this.event('footwork',{fighter:f.slot,character:f.character.id,kind}); return true;
+  }
+  escapeDizzy(f) {
+    if (f.dizzyTime <= 0 || this.time - f.escapeTime < DIZZY.escapeInterval) return;
+    f.escapeTime = this.time; f.dizzyTime = Math.max(0,f.dizzyTime-DIZZY.escapeAmount);
+  }
+  startDizzy(f) {
+    f.dizzyPending = false; f.dizzyTime = DIZZY.duration; f.stunGauge = 0;
+    f.state = 'dizzy'; f.animTime = 0; f.vx = 0; f.buffer = null; f.jumpBuffer = 0; f.footwork = null;
+    f.tapDirection = 0; f.counterWindow = 0;
+    this.event('dizzy',{fighter:f.slot,x:f.x,y:f.y-300,color:f.character.color});
+  }
+  finishDizzy(f) {
+    f.dizzyTime = 0; f.dizzyPending = false; f.stunGauge = 0; f.dizzyProtection = DIZZY.protection;
+    f.buffer = null; f.jumpBuffer = 0; f.state = 'idle';
+  }
   updateAI(dt) {
     const ai = this.ai, f = this.fighters[1], foe = this.fighters[0]; ai.timer -= dt; ai.actionTimer -= dt;
+    if (f.dizzyTime > 0) { this.escapeDizzy(f); this.setInput(1,idleInput()); return; }
     // CPU follows the same bounded, contact-confirmed routes as a human player.
     if (f.actionHit && !f.airborne && this.time - f.contactTime <= .18) {
-      const route = FIGHTING_STYLES[f.character.id].combos.find(c => c.steps.length > f.chain.length && f.chain.every((s,i) => s === c.steps[i]));
+      const routes = FIGHTING_STYLES[f.character.id].combos.filter(c => c.steps.length > f.chain.length && f.chain.every((s,i) => s === c.steps[i]));
+      if (ai.comboContact !== f.contactTime) {
+        ai.comboContact = f.contactTime;
+        if (f.chain.length === 1) ai.comboPlan = (this.random() < .65 ? routes.toSorted((a,b)=>b.steps.length-a.steps.length) : routes)[0]?.name;
+      }
+      const route = routes.find(c=>c.name === ai.comboPlan) ?? routes[0];
       if (route && this.random() < .8) {
         const [move,strength] = route.steps[f.chain.length].split(':');
         ai.input = { ...idleInput(), down:move === 'sweep' || move === 'crouchPunch' };
@@ -253,28 +301,38 @@ export class FightEngine {
     }
     if (ai.timer > 0) { this.setInput(1, ai.input); return; }
     ai.timer = .11 + this.random() * .13;
-    const dist = Math.abs(f.x - foe.x), toward = Math.sign(foe.x - f.x);
+    const dist = Math.abs(f.x - foe.x), toward = Math.sign(foe.x - f.x), id = f.character.id;
+    const [near,far] = FOOTWORK[id].range;
     const threat = foe.action && dist < 260, incoming = this.projectiles.some(p => p.owner !== f.slot && Math.abs(p.x - f.x) < 310);
     ai.input = idleInput();
-    if ((threat || incoming) && this.random() < .65) { ai.input.block = true; ai.input.down = foe.action === 'sweep' || (!foe.airborne && this.random() < .3); }
-    else if (dist > 140) { ai.input.left = toward < 0; ai.input.right = toward > 0; }
-    else if (this.random() < .15) { ai.input.left = toward > 0; ai.input.right = toward < 0; }
+    // Boxe retreats into counters; Krav Maga closes; kickboxing protects kicking distance.
+    if (threat && f.canAct && !foe.airborne && !incoming && this.random() < (id === 'rafael' ? .6 : id === 'gustavo' ? .3 : .12)) {
+      this.setInput(1,ai.input); if (this.beginFootwork(f,'retreat')) { ai.timer = .12; return; }
+    }
+    if ((threat || incoming) && this.random() < .65) { ai.input.block = true; ai.input.down = foe.action === 'sweep' && foe.character.id !== 'rafael'; }
+    else if (dist > far || foe.dizzyTime > 0 && dist > 130) { ai.input.left = toward < 0; ai.input.right = toward > 0; }
+    else if (dist < near && id !== 'marcelo') { ai.input.left = toward > 0; ai.input.right = toward < 0; }
+    else if (id === 'rafael' && this.random() < .22) { ai.input.left = toward > 0; ai.input.right = toward < 0; }
     if (incoming && !ai.input.block && this.random() < .6) ai.input.jump = true;
-    if (dist > 200 && dist < 480 && !incoming && this.random() < .14) ai.input.jump = true;
-    if (!ai.input.block && dist < 220 && this.random() < .26) ai.input.down = true;
+    if (dist > 240 && dist < 480 && !incoming && this.random() < (id === 'gustavo' ? .2 : id === 'rafael' ? .02 : .07)) ai.input.jump = true;
+    if (!ai.input.block && dist < far && this.random() < (id === 'gustavo' ? .2 : .12)) ai.input.down = true;
     this.setInput(1, ai.input);
+    if (f.canAct && dist > far + 60 && dist < 450 && !ai.input.block && !ai.input.jump && this.random() < (id === 'marcelo' ? .35 : .12)) {
+      if (this.beginFootwork(f,'advance')) return;
+    }
     if (ai.input.block || ai.actionTimer > 0 || (!f.canAct && !f.airborne)) return;
     if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
     else if (f.canAct && !f.airborne) {
       if (foe.airborne && dist < 210 && this.random() < .55) this.queue(1, 'uppercut');
       else if (f.meter >= 100 && dist > 210 && this.random() < .6) this.queue(1, 'super');
-      else if (dist > 260 && dist < 850 && this.random() < .44) this.queue(1, 'special');
-      else if (dist < 140 && this.random() < .18) this.queue(1, 'throw');
-      else if (dist < (f.character.id === 'gustavo' ? 260 : 210)) {
-        const kickChance = f.character.id === 'rafael' ? .25 : f.character.id === 'gustavo' ? .58 : .35;
-        this.queue(1,this.random() < kickChance ? 'kick' : 'punch',this.random() < .4 ? 0 : 1);
+      else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, 'special');
+      else if (dist < 140 && this.random() < (id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
+      else if (dist < (id === 'gustavo' ? 255 : 200)) {
+        if (id === 'gustavo' && dist > 175) this.queue(1,'kick',this.random() < .3 ? 2 : 1);
+        else if (id === 'marcelo' && dist < 135 && this.random() < .3) this.queue(1,'kick',1);
+        else this.queue(1,'punch',this.random() < .72 ? 0 : 1);
       }
-      ai.actionTimer = .25 + this.random() * .35;
+      ai.actionTimer = (id === 'rafael' ? .17 : id === 'marcelo' ? .24 : .3) + this.random() * .22;
     }
   }
   update(dt) {
@@ -351,7 +409,8 @@ export class FightEngine {
   }
   updateFighter(f, dt) {
     f.animTime += dt;
-    for (const timer of ['flash', 'blockFlash', 'hitstun', 'blockstun', 'quoteTime', 'comboTime', 'comboNameTime', 'landing', 'invincible', 'throwInvincible']) f[timer] = Math.max(0, f[timer] - dt);
+    for (const timer of ['flash', 'blockFlash', 'hitstun', 'blockstun', 'quoteTime', 'comboTime', 'comboNameTime', 'landing', 'invincible', 'throwInvincible', 'footworkCooldown', 'counterWindow', 'dizzyProtection', 'stunQuiet']) f[timer] = Math.max(0, f[timer] - dt);
+    if (f.stunQuiet <= 0 && f.hitstun <= 0 && !f.dizzyPending && f.dizzyTime <= 0) f.stunGauge = Math.max(0,f.stunGauge-DIZZY.decay*dt);
     if (f.comboTime <= 0) f.combo = 0;
     if (f.hitstun <= 0 && !f.knocked) f.lastAttacker = null;
     f.displayHP += (f.hp - f.displayHP) * (1 - Math.exp(-dt * 6));
@@ -368,6 +427,28 @@ export class FightEngine {
       f.wakeTime = Math.max(0, f.wakeTime - dt); f.state = 'wake'; f.vx = 0;
       if (f.wakeTime <= 0) { f.throwInvincible = frames(5); f.state = 'idle'; f.hitstun = 0; }
       this.integrate(f, dt); return;
+    }
+    // Finish the combo's hit reaction/knockdown before entering the vulnerable dizzy state.
+    if (f.dizzyPending && f.hitstun <= 0 && !f.airborne && f.hp > 0) this.startDizzy(f);
+    if (f.dizzyTime > 0 || f.state === 'dizzy') {
+      f.dizzyTime = Math.max(0,f.dizzyTime-dt); f.vx = 0;
+      if (f.dizzyTime <= 0) this.finishDizzy(f);
+      this.integrate(f,dt); return;
+    }
+    if (f.footwork) {
+      const step = f.footwork, old = step.time; step.time = Math.min(step.duration,old+dt);
+      f.vx = step.sign * step.distance * (stepDistance(step.time/step.duration)-stepDistance(old/step.duration))/dt;
+      f.state = step.kind === 'advance' ? 'stepIn' : 'stepBack';
+      this.integrate(f,dt);
+      if (f.buffer) {
+        if (this.beginMove(f,f.buffer.move,f.buffer.strength)) f.buffer = null;
+        else { f.buffer.life -= dt; if (f.buffer.life <= 0) f.buffer = null; }
+      }
+      if (f.footwork && step.time >= step.duration-1e-9) {
+        f.footwork = null; f.vx = 0; f.state = 'idle';
+        if (step.kind === 'retreat') f.counterWindow = FOOTWORK[f.character.id].counter;
+      }
+      return;
     }
     if (f.action) {
       f.actionTime += dt; const m = f.moveData;
@@ -491,7 +572,7 @@ export class FightEngine {
   }
   updateFacing() {
     for (const f of this.fighters) {
-      if (f.action || f.airborne || f.knocked || f.preJump > 0 || f.hitstun > 0 || f.blockstun > 0 || f.wakeTime > 0) continue;
+      if (f.action || f.footwork || f.dizzyPending || f.dizzyTime > 0 || f.airborne || f.knocked || f.preJump > 0 || f.hitstun > 0 || f.blockstun > 0 || f.wakeTime > 0) continue;
       const direction = this.fighters[1 - f.slot].x >= f.x ? 1 : -1;
       if (direction !== f.direction) { f.direction = direction; f.directions = []; f.lastDirection = 5; }
     }
@@ -542,12 +623,22 @@ export class FightEngine {
       this.addMeter(target, 5); this.addMeter(attacker, 4);
       this.freeze = Math.max(this.freeze, frames(4)); this.event('block', { x, y, move, fighter: target.slot, color: target.character.color }); return;
     }
+    const counter = target.action && ['startup','recovery'].includes(target.movePhase);
+    const counterBonus = counter ? 1.12 : 1;
     const continued = target.hitstun > 0 && target.lastAttacker === attacker.slot;
     const combo = continued ? attacker.combo + 1 : 1, scaling = Math.max(.55, 1 - (combo - 1) * .08);
-    const damage = Math.round(data.damage * attacker.character.power * scaling * (target.airborne ? .93 : 1));
-    target.hp = Math.max(0, target.hp - damage); target.hitCrouched = target.crouching; target.hitstun = data.stun; target.flash = .12;
+    const damage = Math.round(data.damage * attacker.character.power * scaling * counterBonus * (target.airborne ? .93 : 1));
+    if (target.dizzyTime > 0 || target.state === 'dizzy') this.finishDizzy(target);
+    target.hp = Math.max(0, target.hp - damage); target.hitCrouched = target.crouching;
+    target.hitstun = data.stun + (counter ? frames(attacker.counterWindow > 0 ? 5 : 3) : 0); target.flash = .12;
+    if (counter) attacker.counterWindow = 0;
+    if (target.hp > 0 && target.dizzyProtection <= 0 && data.level !== 'throw') {
+      target.stunGauge = clamp(target.stunGauge + 18 + data.strength * 9,0,100); target.stunQuiet = 1;
+      if (combo >= DIZZY.minHits && target.stunGauge >= DIZZY.threshold) target.dizzyPending = true;
+    }
     this.recoil(target, direction, data.push * .16, frames(data.knockdown || target.airborne ? 18 : 10 + data.strength * 4), attacker.slot);
-    this.clearAction(target); target.buffer = null; target.jumpBuffer = 0; target.preJump = 0; target.vx = 0; target.lastAttacker = attacker.slot;
+    this.clearAction(target); target.footwork = null; target.counterWindow = 0;
+    target.buffer = null; target.jumpBuffer = 0; target.preJump = 0; target.vx = 0; target.lastAttacker = attacker.slot;
     target.state = target.hp <= 0 ? 'ko' : 'hit';
     if (data.knockdown || target.airborne) {
       target.knocked = true; target.knockdownTime = .48; target.wakeTime = 0; target.state = 'knockdown';
@@ -559,15 +650,16 @@ export class FightEngine {
     if (combo === 1) { attacker.comboName = ''; attacker.comboNameTime = 0; }
     const route = completedStyleCombo(attacker);
     if (route && combo >= route.steps.length) { attacker.comboName = route.name; attacker.comboNameTime = 1.2; }
-    this.freeze = Math.max(this.freeze, frames(move === 'super' || move === 'uppercut' ? 7 : data.strength === 2 ? 6 : 5));
+    this.freeze = Math.max(this.freeze, frames(counter || move === 'super' || move === 'uppercut' ? 7 : data.strength === 2 ? 6 : 5));
     this.event('hit', { x, y, damage, move, fighter: attacker.slot, target: target.slot, combo, color: attacker.character.color,
-      technique:data.technique, comboName:route && combo >= route.steps.length ? route.name : '' });
+      technique:data.technique, counter:!!counter, comboName:route && combo >= route.steps.length ? route.name : '' });
   }
   endRound() {
     const [a, b] = this.fighters, winner = a.hp === b.hp ? null : a.hp > b.hp ? a : b;
     this.phase = 'roundEnd'; this.phaseTime = 0; this.projectiles = []; this.freeze = .08;
     this.fighters.forEach(f => {
       this.clearAction(f); f.buffer = null; f.jumpBuffer = 0; f.input = idleInput(); f.knocked = false; f.wakeTime = 0;
+      f.footwork = null; f.dizzyPending = false; f.dizzyTime = 0; f.stunGauge = 0; f.counterWindow = 0;
       f.state = f.hp <= 0 ? 'ko' : winner === f ? 'victory' : 'idle';
     });
     if (winner) { winner.wins++; winner.quoteTime = 2.75; winner.powerName = 'ROUND VENCIDO'; winner.powerQuote = winner.character.quote; }

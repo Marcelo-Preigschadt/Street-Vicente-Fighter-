@@ -1,4 +1,4 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=12';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=13';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
@@ -11,7 +11,8 @@ export const FIGHTING_STYLES = Object.freeze({
     normals: { punch: [[4,3,8,42,19,90],[6,4,12,68,23,135],[8,4,18,94,26,130]],
       kick: [[5,4,12,50,19,120],[8,5,18,80,24,180],[11,5,23,110,27,260]] },
     combos: [route('Entrada Direta','punch:0','punch:1','kick:1'), route('Combate Próximo','punch:1','punch:2','kick:1'),
-      route('Resposta Baixa','crouchPunch:0','punch:1','kick:1')],
+      route('Resposta Baixa','crouchPunch:0','punch:1','kick:1'),
+      route('Pressão Direta','punch:0','punch:1','punch:2','kick:1')],
   },
   rafael: {
     name: 'Boxe', summary: 'Jab, cruzado, gancho e uppercut. Só punhos.', step: 34,
@@ -32,7 +33,8 @@ export const FIGHTING_STYLES = Object.freeze({
     normals: { punch: [[4,3,9,42,19,100],[6,4,12,66,23,145],[10,4,20,92,25,205]],
       kick: [[6,4,13,54,21,165],[9,5,19,86,26,230],[13,5,25,118,29,310]] },
     combos: [route('Um-dois e Circular','punch:0','punch:1','kick:1'), route('Quebra de Base','punch:1','sweep:1'),
-      route('Final Circular','punch:0','punch:1','kick:2')],
+      route('Final Circular','punch:0','punch:1','kick:2'),
+      route('Troca de Altura','punch:0','punch:1','crouchPunch:0','kick:1')],
   },
 });
 

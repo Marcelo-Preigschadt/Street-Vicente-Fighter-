@@ -46,6 +46,7 @@ export class Inputs {
     this.held.clear(); this.touch.clear(); this.padInput = [{}, {}]; this.gamepadPrevious = [{}, {}];
     for (let slot = 0; slot < 2; slot++) if (!(slot === 1 && this.engine.cpu)) {
       this.engine.setInput(slot, {}); this.engine.fighters[slot].buffer = null; this.engine.fighters[slot].jumpBuffer = 0;
+      this.engine.fighters[slot].tapDirection = 0; this.engine.fighters[slot].tapReleased = false;
     }
     document.querySelectorAll('.touch-controls .pressed').forEach(b => b.classList.remove('pressed'));
   }

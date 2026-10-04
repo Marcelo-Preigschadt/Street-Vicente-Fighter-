@@ -1,6 +1,6 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=12';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=13';
 
-import { SuperEffects } from './super-fx.js?v=12';
+import { SuperEffects } from './super-fx.js?v=13';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -19,9 +19,13 @@ export class Renderer {
   }
   async load() {
     const characters = Object.values(CHARACTERS);
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite), loadImage(`assets/${f.id}-style.webp`)])]);
+    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite), loadImage(`assets/${f.id}-style.webp`), loadImage(`assets/${f.id}-motion.webp`)])]);
     this.background = background;
-    characters.forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i * 4]); this.sheets[f.id].combat = this.analyzeSheet(sheets[i * 4 + 1], true); this.sheets[f.id].walk = this.analyzeSheet(sheets[i * 4 + 2], false, 2); this.sheets[f.id].style = this.analyzeStyleSheet(sheets[i * 4 + 3]); });
+    characters.forEach((f, i) => {
+      const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 5]);
+      base.combat = this.analyzeSheet(sheets[i * 5 + 1],true); base.walk = this.analyzeSheet(sheets[i * 5 + 2],false,2);
+      base.style = this.analyzeStyleSheet(sheets[i * 5 + 3]); base.motion = this.analyzeMotionSheet(sheets[i * 5 + 4]);
+    });
   }
   analyzeSheet(image, combat = false, rows = 4, cellPadding = null) {
     const frames = [];
@@ -107,6 +111,20 @@ export class Renderer {
     }
     return sheet;
   }
+  analyzeMotionSheet(image) {
+    const sheet = this.analyzeSheet(image,false,4,40);
+    for (const frame of sheet.frames) {
+      const pixels = frame.cutout.getContext('2d').getImageData(0,0,frame.w,frame.h).data;
+      let sum = 0, count = 0;
+      for (let y = Math.round(frame.h*.57); y <= Math.round(frame.h*.65); y++) {
+        let left = frame.w, right = -1;
+        for (let x = 0; x < frame.w; x++) if (pixels[(y*frame.w+x)*4+3] > 140) { left = Math.min(left,x); right = Math.max(right,x); }
+        if (right >= left) { sum += (left+right)/2; count++; }
+      }
+      if (count) frame.anchor = frame.x + sum/count;
+    }
+    return sheet;
+  }
   poseFor(f) {
     const original = this.sheets[f.character.id], { atlas, index } = fighterPose(f);
     return { sheet: atlas === 'base' ? original : original[atlas], index, id: `${atlas}:${index}` };
@@ -128,6 +146,7 @@ export class Renderer {
       if (e.type === 'hit') {
         this.shake = this.reduced ? 0 : ['special', 'uppercut', 'super'].includes(e.move) ? 7 : 3; this.flash = ['special', 'uppercut', 'super'].includes(e.move) ? .06 : .025;
         this.labels.push({ x: e.x, y: e.y - 35, life: .75, text: `−${e.damage}`, color: '#fff0bf' });
+        if (e.counter) this.labels.push({x:e.x,y:e.y-75,life:.85,text:'CONTRA-ATAQUE',color:'#ffe58b'});
       }
     }
     if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; this.flash = 0; }
@@ -193,6 +212,20 @@ export class Renderer {
       this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
     }
     if (f.state === 'uppercut') this.drawRisingPower(f);
+    if (f.state === 'dizzy') this.drawDizzy(f);
+  }
+  drawDizzy(f) {
+    const c = this.c, angle = this.reduced ? 0 : f.animTime*5;
+    const { sheet,index } = this.poseFor(f), frame = sheet.frames[index], top = f.y-(frame.h-1)*sheet.scale-18;
+    c.save(); c.strokeStyle = '#ffe78977'; c.lineWidth = 2;
+    c.beginPath(); c.ellipse(f.x,top,42,10,0,0,Math.PI*2); c.stroke();
+    for (let n = 0; n < 3; n++) {
+      const a = angle+n*Math.PI*2/3, x = f.x+Math.cos(a)*42, y = top+Math.sin(a)*10;
+      c.beginPath();
+      for (let p = 0; p < 10; p++) { const t = -Math.PI/2+p*Math.PI/5, radius = p%2 ? 4 : 10; c.lineTo(x+Math.cos(t)*radius,y+Math.sin(t)*radius); }
+      c.closePath(); c.fillStyle = '#ffe578'; c.fill();
+    }
+    text(c,'TONTO!',f.x,top-30,18,'#ffe789','center'); c.restore();
   }
   drawSuperScene(fighters) {
     const active = this.superFX.bursts;
