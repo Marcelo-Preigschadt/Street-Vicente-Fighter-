@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP } from './engine.js?v=8';
-import { Renderer } from './render.js?v=8';
-import { ArcadeAudio } from './audio.js?v=8';
-import { Inputs } from './input.js?v=8';
+import { FightEngine, FIXED_STEP } from './engine.js?v=9';
+import { Renderer } from './render.js?v=9';
+import { ArcadeAudio } from './audio.js?v=9';
+import { Inputs } from './input.js?v=9';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -36,6 +36,7 @@ function start() {
   engine.start(selected, mode);
 }
 function selection() {
+  renderer.event({ type: 'selection' });
   engine.phase = 'selection'; engine.paused = false; inputs.release(); audio.playing = false; audio.stopSamples();
   $('selection').hidden = false; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('touch-controls').hidden = true; $('pause').disabled = true; $('start').focus();
 }

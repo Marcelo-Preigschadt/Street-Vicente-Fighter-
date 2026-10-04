@@ -20,6 +20,14 @@ A rasteira só acerta durante a extensão ativa da perna, alcança o calçado vi
 
 O cenário e os dois atlases originais foram preservados. Dois atlases adicionais trazem poses específicas de rasteira, soco agachado, voadeira, antiaéreo, defesa baixa, aterrissagem e levantar.
 
+## Caminhada e super — versão 2.2
+
+A caminhada usa pernas articuladas sobre a arte aprovada: coxa, panturrilha e calçado giram separadamente, com joelho dobrando e tornozelo rolando do calcanhar à ponta. O ciclo acompanha a distância real depois de resolver paredes e contato entre corpos, inverte ao recuar e deixa de avançar quando o corpo fica parado. O pé de apoio permanece no mesmo ponto do chão durante a passada; o outro sobe e passa pelo corpo. A transição entre guarda e caminhada ajusta os membros sem misturar imagens transparentes. Cabeça, camisa, vozes e poses dos golpes continuam iguais.
+
+Ao completar a barra, aparecem uma onda de energia no professor, um aviso de **SUPER PRONTO** e brilho na barra. A ativação pausa a simulação por 14 quadros de jogo (233 ms), escurece a arena e destaca o professor com raios convergentes, anéis de energia, clarão e o nome do golpe. Kernel Panic usa verde; Marcha dos Séculos usa âmbar. O impacto das ondas também cria um anel e uma explosão de luz. O HUD continua legível durante os efeitos.
+
+O congelamento da ativação acontece antes de mover qualquer lutador ou projétil, preserva o cronômetro e os comandos enfileirados, e funciona para os dois slots, inclusive com supers simultâneos. A frase aprovada continua disparando uma única vez quando sai a primeira onda. `prefers-reduced-motion` reduz clarões, raios e movimentos decorativos; a pausa do jogador interrompe os relógios dos efeitos.
+
 ## Poderes e falas
 
 | Professor | Poder | Efeito | Fala |
@@ -81,6 +89,6 @@ Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áu
 npm test
 ```
 
-Não é necessário instalar pacotes. Os 59 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente.
+Não é necessário instalar pacotes. Os 69 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.

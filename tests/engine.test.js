@@ -92,7 +92,8 @@ test('poder normal não exige barra, limita um projétil e fala apenas no lança
 });
 test('cada poder emite sua fala em português e conserva o bordão no super', () => {
   for(const slot of [0,1])for(const move of ['special','uppercut','super']) {
-    const {game,events}=arena();game.fighters[0].x=200;game.fighters[1].x=1050;game.fighters[slot].meter=100;game.queue(slot,move);advance(game,.3);
+    const {game,events}=arena();game.fighters[0].x=200;game.fighters[1].x=1050;game.fighters[slot].meter=100;game.queue(slot,move);
+    until(game,()=>events.some(e=>e.type==='special'));
     const event=events.find(e=>e.type==='special');assert.equal(event.quote,game.fighters[slot].character.powerQuotes[move]);assert.equal(event.name,game.fighters[slot].character.powers[move]);
     if(move==='super')assert.ok(event.quote.includes(game.fighters[slot].character.quote));
   }

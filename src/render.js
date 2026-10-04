@@ -1,4 +1,6 @@
-import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=8';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=9';
+import { walkingPose, boneMap, shoePoint, WALK_RIGS } from './walk.js?v=9';
+import { SuperEffects } from './super-fx.js?v=9';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -12,6 +14,8 @@ export class Renderer {
   constructor(canvas) {
     this.canvas = canvas; this.c = canvas.getContext('2d', { alpha: false }); this.sheets = {}; this.particles = []; this.labels = [];
     this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.superFX = new SuperEffects();
+    this.walkParts = new Map();
   }
   async load() {
     const characters = Object.values(CHARACTERS);
@@ -104,6 +108,7 @@ export class Renderer {
     c.drawImage(f.cutout, 0, 0, f.w, f.h, (canvas.width - f.w * scale) / 2, canvas.height - f.h * scale - 3, f.w * scale, f.h * scale);
   }
   event(e) {
+    this.superFX.event(e);
     if (e.type === 'hit' || e.type === 'block' || e.type === 'clash') {
       const count = e.type === 'block' ? 9 : ['special', 'uppercut', 'super'].includes(e.move) ? 35 : 21;
       for (let i = 0; i < count; i++) {
@@ -115,22 +120,28 @@ export class Renderer {
         this.labels.push({ x: e.x, y: e.y - 35, life: .75, text: `−${e.damage}`, color: '#fff0bf' });
       }
     }
-    if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; }
+    if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; this.flash = 0; }
   }
   draw(engine, dt, alpha = 1) {
     const c = this.c; this.clock += dt; this.shake *= Math.exp(-dt * 14); this.flash = Math.max(0, this.flash - dt);
+    this.superFX.update(dt);
+    if (engine.phase === 'selection') this.superFX.clear();
     c.save();
     if (this.shake > .1) c.translate((Math.random() - .5) * this.shake, (Math.random() - .5) * this.shake);
     this.drawBackground(engine);
     if (engine.phase !== 'selection') {
       if (engine.freeze > 0) alpha = 1;
       const fighters = engine.fighters.map(f => ({ ...f, x: f.prevX + (f.x - f.prevX) * alpha, y: f.prevY + (f.y - f.prevY) * alpha,
-        actionTime: f.actionTime }));
+        walkDistance: f.prevWalkDistance + (f.walkDistance - f.prevWalkDistance) * alpha,
+        walkBlend: f.prevWalkBlend + (f.walkBlend - f.prevWalkBlend) * alpha, actionTime: f.actionTime }));
       for (const f of fighters) this.drawShadow(f);
       for (const f of fighters.sort((a, b) => a.y - b.y)) this.drawFighter(f);
       for (const p of engine.projectiles) this.drawProjectile({ ...p, x: p.prevX + (p.x - p.prevX) * alpha });
       this.drawParticles(dt);
+      this.drawSuperScene(fighters);
+      this.drawSuperImpacts();
       this.drawHUD(engine);
+      this.drawReadyEffects(engine);
       for (const f of engine.fighters) { if (f.quoteTime > 0) this.drawQuote(f); if (f.combo >= 2 && f.comboTime > 0) this.drawCombo(f); }
       this.drawAnnouncer(engine);
     }
@@ -155,8 +166,7 @@ export class Renderer {
     const c = this.c, current = this.poseFor(f); if (!current.sheet) return;
     // Arcade poses stay opaque. Position interpolation supplies smooth movement.
     const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
-    const stride = f.state === 'walk' && !this.reduced ? Math.sin(f.walkTime * Math.PI * 16) * .005 : 0;
-    c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing + stride);
+    c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing);
     if (['special', 'super', 'uppercut'].includes(f.state)) { c.shadowColor = f.character.color; c.shadowBlur = 12; }
     if (f.flash > 0) c.filter = 'brightness(1.8)';
     if (f.blockFlash > 0) c.filter = 'brightness(1.3) sepia(.1)';
@@ -166,12 +176,134 @@ export class Renderer {
       c.drawImage(frame.cutout, 0, 0, frame.w, frame.h,
         (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
     };
-    drawPose(current, 1); c.globalAlpha = 1; c.restore();
+    if (['walk', 'idle'].includes(f.state) && f.walkBlend > 0) this.drawWalkingBody(f);
+    else drawPose(current, 1);
+    c.globalAlpha = 1; c.restore();
     if (['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
     }
     if (f.state === 'uppercut') this.drawRisingPower(f);
+  }
+  drawWalkingBody(f) {
+    const c = this.c, sheet = this.sheets[f.character.id], frame = sheet.frames[0], scale = sheet.scale;
+    const gait = walkingPose(f), ox = (frame.x - frame.anchor) * scale, oy = (frame.y - frame.bottom) * scale;
+    if (!this.walkParts.has(f.character.id)) {
+      const parts = {};
+      for (const side of ['far', 'near']) {
+        parts[side] = {};
+        for (const [name, top, bottom] of [['thigh', -130, -60], ['shin', -92, -23], ['shoe', -28, 2]]) {
+          const cutout = document.createElement('canvas'); cutout.width = frame.w; cutout.height = frame.h;
+          const ctx = cutout.getContext('2d'), left = side === 'far' ? -120 : 0;
+          ctx.beginPath(); ctx.rect((left - ox) / scale, (top - oy) / scale, 120 / scale, (bottom - top) / scale); ctx.clip();
+          if (name !== 'shoe') {
+            const rig = WALK_RIGS[f.character.id][side], a = name === 'thigh' ? rig.hip : rig.knee,
+              b = name === 'thigh' ? rig.knee : rig.ankle;
+            const dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy), width = name === 'thigh' ? 27 : 22;
+            const nx = -dy / length * width, ny = dx / length * width;
+            const ends = [{x:a.x-dx*.16,y:a.y-dy*.16},{x:b.x+dx*.2,y:b.y+dy*.2}];
+            const polygon = [{x:ends[0].x+nx,y:ends[0].y+ny},{x:ends[1].x+nx,y:ends[1].y+ny},
+              {x:ends[1].x-nx,y:ends[1].y-ny},{x:ends[0].x-nx,y:ends[0].y-ny}];
+            ctx.beginPath();polygon.forEach((p,i)=>ctx[i?'lineTo':'moveTo']((p.x-ox)/scale,(p.y-oy)/scale));ctx.closePath();ctx.clip();
+          }
+          ctx.drawImage(frame.cutout, 0, 0); parts[side][name] = cutout;
+        }
+      }
+      this.walkParts.set(f.character.id, parts);
+    }
+    const parts = this.walkParts.get(f.character.id);
+    // Overlapping opaque segments preserve the painted texture at the joints.
+    // Each calf and shoe rotates independently; the face and shirt stay intact.
+    for (const side of ['far', 'near']) {
+      const leg = gait[side], s = leg.source;
+      for (const [name, map] of [['shin', p => boneMap(p, s.knee, s.ankle, leg.knee, leg.ankle)],
+        ['thigh', p => boneMap(p, s.hip, s.knee, leg.hip, leg.knee)], ['shoe', p => shoePoint(p, leg)]]) {
+        const origin = map({ x: 0, y: 0 }), x = map({ x: 1, y: 0 }), y = map({ x: 0, y: 1 });
+        c.save(); c.transform(x.x - origin.x, x.y - origin.y, y.x - origin.x, y.y - origin.y, origin.x, origin.y);
+        c.drawImage(parts[side][name], ox, oy, frame.w * scale, frame.h * scale); c.restore();
+      }
+    }
+    c.save();c.translate(0,gait.bob);c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+frame.w*scale,oy);
+    c.lineTo(ox+frame.w*scale,-139);c.lineTo(57,-131);c.lineTo(24,-110);c.lineTo(-24,-110);c.lineTo(-57,-131);c.lineTo(ox,-139);c.closePath();c.clip();
+    c.drawImage(frame.cutout,ox,oy,frame.w*scale,frame.h*scale);c.restore();
+  }
+  drawSuperScene(fighters) {
+    const active = this.superFX.bursts;
+    if (!active.length) return;
+    const c = this.c, opacity = Math.max(...active.map(fx => Math.min(1, (fx.duration - fx.age) / .18)));
+    c.save(); c.fillStyle = `rgba(3,7,31,${opacity * (this.reduced ? .48 : .88)})`; c.fillRect(0, 0, WORLD.width, WORLD.height);
+    for (const fx of active) {
+      const f = fighters.find(f => f.slot === fx.fighter), color = fx.color;
+      if (!f) continue;
+      const progress = Math.min(1, fx.age / fx.freeze), fade = Math.min(1, (fx.duration - fx.age) / .18);
+      const x = f.x + f.direction * 92, y = f.y - 194;
+      c.globalAlpha = fade;
+      const aura = c.createRadialGradient(x, y, 5, x, y, 320);
+      aura.addColorStop(0, '#e8faff99'); aura.addColorStop(.20, `${color}66`); aura.addColorStop(.65, '#2777d233'); aura.addColorStop(1, '#08183d00');
+      c.fillStyle = aura; c.fillRect(0, 120, WORLD.width, 530);
+      if (!this.reduced) {
+        for (let ray = 0; ray < 22; ray++) {
+          const angle = ray * Math.PI * 2 / 22 + .09 * progress;
+          const inner = 13 + (1 - progress) * 48, outer = 180 + (1 - progress) * 380 + (ray % 3) * 58;
+          c.fillStyle = ray % 3 ? `${color}bb` : '#d5f4ffdd';
+          c.beginPath(); c.moveTo(x + Math.cos(angle) * inner, y + Math.sin(angle) * inner);
+          c.lineTo(x + Math.cos(angle - .016) * outer, y + Math.sin(angle - .016) * outer);
+          c.lineTo(x + Math.cos(angle + .016) * outer, y + Math.sin(angle + .016) * outer); c.closePath(); c.fill();
+        }
+        c.strokeStyle = '#c7edff'; c.lineWidth = 2.5;
+        for (let i = 0; i < 2; i++) { const radius = Math.max(28, 210 - progress * 178 + i * 28); c.beginPath(); c.ellipse(x, y, radius, radius * .66, -.3, 0, Math.PI * 2); c.stroke(); }
+      }
+      // The caster remains fully opaque and lit against the darkened fight.
+      c.globalAlpha = 1; c.shadowColor = color; c.shadowBlur = 24 * fade; this.drawFighter(f); c.shadowBlur = 0;
+      if (!this.reduced) {
+        c.globalAlpha = fade * .85; c.strokeStyle = '#f6ffff'; c.lineWidth = 4;
+        const star = 16 + 20 * (1 - progress);
+        c.beginPath(); c.moveTo(x - star * 1.7, y); c.lineTo(x + star * 1.7, y); c.moveTo(x, y - star); c.lineTo(x, y + star); c.stroke();
+        c.fillStyle = `rgba(225,244,255,${Math.max(0, 1 - fx.age / .075) * .60})`; c.fillRect(0, 0, WORLD.width, WORLD.height);
+      }
+      c.globalAlpha = fade;
+      const titleY = active.length > 1 ? 262 + fx.fighter * 61 : 278;
+      const band = c.createLinearGradient(170, 0, 1110, 0); band.addColorStop(0, '#08182c00'); band.addColorStop(.18, '#08182ce8'); band.addColorStop(.82, '#08182ce8'); band.addColorStop(1, '#08182c00');
+      c.fillStyle = band; c.fillRect(170, titleY - 31, 940, 63);
+      c.strokeStyle = color; c.lineWidth = 2; c.beginPath(); c.moveTo(285, titleY + 31); c.lineTo(995, titleY + 31); c.stroke();
+      text(c, fx.name.toLocaleUpperCase('pt-BR'), 640, titleY, 43, '#f2faff', 'center', 900);
+    }
+    c.restore();
+  }
+  drawReadyEffects(engine) {
+    const c = this.c;
+    for (const fx of this.superFX.ready) {
+      const f = engine.fighters[fx.fighter], fade = Math.max(0, 1 - fx.age / fx.duration), right = f.slot === 1;
+      const x = right ? 853 : 54;
+      c.save(); c.globalAlpha = fade; c.strokeStyle = fx.color; c.lineWidth = 2;
+      const expand = this.reduced ? 4 : fx.age * 24;
+      c.strokeRect(x - expand, 674 - expand / 2, 373 + expand * 2, 13 + expand);
+      if (!this.reduced) {
+        const radial = c.createRadialGradient(f.x, f.y - 160, 25, f.x, f.y - 160, 150);
+        radial.addColorStop(0, `${fx.color}00`); radial.addColorStop(.7, `${fx.color}33`); radial.addColorStop(1, `${fx.color}00`);
+        c.fillStyle = radial; c.fillRect(f.x - 155, f.y - 315, 310, 310);
+        c.strokeStyle = `${fx.color}88`; c.lineWidth = 1.5;
+        const radius = 42 + fx.age * 116;
+        c.beginPath(); c.ellipse(f.x, f.y - 160, radius, radius * .75, 0, 0, Math.PI * 2); c.stroke();
+      }
+      text(c, 'SUPER PRONTO', right ? 1035 : 240, 627 - (this.reduced ? 0 : fx.age * 16), 22, '#efffd3', 'center'); c.restore();
+    }
+  }
+  drawSuperImpacts() {
+    const c = this.c;
+    for (const fx of this.superFX.impacts) {
+      const fade = 1 - fx.age / fx.duration, radius = this.reduced ? 40 : 32 + fx.age * 720;
+      c.save();c.globalAlpha=fade;c.strokeStyle=fx.color;c.lineWidth=5;
+      c.beginPath();c.ellipse(fx.x,fx.y,radius*1.35,radius*.70,0,0,Math.PI*2);c.stroke();
+      if (!this.reduced) {
+        const light=c.createRadialGradient(fx.x,fx.y,0,fx.x,fx.y,210);
+        light.addColorStop(0,'#f4ffffbb');light.addColorStop(.25,`${fx.color}77`);light.addColorStop(1,`${fx.color}00`);
+        c.fillStyle=light;c.fillRect(fx.x-210,fx.y-210,420,420);
+        c.strokeStyle='#f5ffff';c.lineWidth=3;
+        for(let i=0;i<8;i++){const angle=i*Math.PI/4;c.beginPath();c.moveTo(fx.x+Math.cos(angle)*radius*.55,fx.y+Math.sin(angle)*radius*.55);c.lineTo(fx.x+Math.cos(angle)*(radius+55),fx.y+Math.sin(angle)*(radius+55));c.stroke();}
+      }
+      c.restore();
+    }
   }
   drawPowerGlyph(x, y, radius, id, superWave = false) {
     const c = this.c, color = CHARACTERS[id].color;
@@ -276,6 +408,18 @@ export class Renderer {
       c.fillStyle = '#081617cc'; rectangle(c, energyX - 8, 656, energyWidth + 16, 48, 4); c.fill();
       c.fillStyle = '#30423b'; c.fillRect(energyX, 674, energyWidth, 13);
       c.fillStyle = f.character.color; c.fillRect(right ? energyX + energyWidth * (1 - f.meter / 100) : energyX, 674, energyWidth * f.meter / 100, 13);
+      if (f.meter >= 100) {
+        c.save(); c.shadowColor = f.character.color; c.shadowBlur = this.reduced ? 8 : 12 + Math.sin(this.clock * 7) * 4;
+        c.strokeStyle = '#f0ffca'; c.lineWidth = 2; c.strokeRect(energyX - 1, 673, energyWidth + 2, 15);
+        if (!this.reduced) {
+          c.beginPath(); c.rect(energyX, 674, energyWidth, 13); c.clip();
+          const sweep = (this.clock * 135) % (energyWidth + 100) - 50;
+          const shine = c.createLinearGradient(energyX + sweep - 25, 0, energyX + sweep + 25, 0);
+          shine.addColorStop(0, '#ffffff00'); shine.addColorStop(.5, '#ffffffa0'); shine.addColorStop(1, '#ffffff00');
+          c.fillStyle = shine; c.fillRect(energyX, 674, energyWidth, 13);
+        }
+        c.restore();
+      }
       c.strokeStyle = '#dde6cc88'; c.lineWidth = 1; c.strokeRect(energyX, 674, energyWidth, 13);
       for (let j = 1; j <= 3; j++) { c.fillStyle = '#142224'; c.fillRect(energyX + energyWidth * .25 * j - 1, 674, 2, 13); }
       text(c, f.meter >= 100 ? 'SUPER PRONTO' : 'SUPER', right ? energyX + energyWidth : energyX, 666, 13, f.meter >= 100 ? f.character.color : '#a7b8ae', right ? 'right' : 'left');

@@ -43,3 +43,11 @@ Os quatro atlases aprovados foram mantidos byte a byte. `src/hitboxes.js` regist
 O contato ativo continua calibrado no punho/calçado, e a caixa que impede os corpos de se atravessarem é independente das áreas de golpe. Os sons, falas, efeitos temáticos e arquivos de imagem permanecem iguais à versão 2.0.2.
 
 Na versão 2.1.1, cada quadro mostra uma única pose opaca, inclusive na caminhada. A interpolação da posição mantém o deslocamento suave sem misturar a transparência das imagens. Agachar, defender baixo, aterrissar, levantar e atacar mostram a silhueta correspondente à colisão, evitando a sobreposição de um corpo em pé com outro agachado.
+
+## Caminhada articulada e super — versão 2.2
+
+Os quatro atlases e todos os WAV aprovados permanecem byte a byte. A caminhada é uma animação por Canvas da própria guarda neutra: recortes opacos de coxas, panturrilhas e calçados são ligados a uma cadeia de duas articulações por perna. A face e a roupa do tronco são desenhadas diretamente do original. Sobreposição nos joelhos e tornozelos oculta as emendas sem fazer transição por transparência entre corpos completos.
+
+`src/walk.js` calcula joelhos por cinemática inversa, apoio de cada pé, elevação durante a passagem e rotação do calçado. Cada ciclo corresponde a 200 pixels efetivamente percorridos. A metade de apoio cancela o deslocamento do corpo; a metade de passagem tem trajetória curva. Renderização e área vulnerável inferior usam os mesmos tornozelos e calçados. As áreas aprovadas de cabeça e tronco são mantidas, com o deslocamento vertical de respiração da caminhada. As caixas de separação dos corpos e os parâmetros de rasteira, salto e golpes da versão 2.1 continuam iguais.
+
+`src/super-fx.js` mantém relógios separados para barra completa, abertura do super e impactos. Os efeitos de tela são desenhados no Canvas: fundo azul escuro, raios, anéis, halo, clarão curto e faixa com o nome do golpe. Verde é a identidade visual de Kernel Panic; âmbar é a de Marcha dos Séculos. A abertura congela a simulação por 14 quadros antes de integrar os lutadores/projéteis, enquanto a apresentação continua. Pausa e troca de round limpam ou suspendem os efeitos conforme o contexto. Nenhum asset visual ou voz da Capcom foi acrescentado nesta revisão.

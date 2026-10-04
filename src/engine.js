@@ -1,9 +1,10 @@
-import { HURT_PROFILES } from './hitboxes.js?v=8';
+import { HURT_PROFILES } from './hitboxes.js?v=9';
+import { walkingPose, walkingLegBounds } from './walk.js?v=9';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
 export const COMBAT = Object.freeze({ jumpVelocity: -1440, preJump: 3 / 60, inputBuffer: 6 / 60,
-  landing: 4 / 60, emptyLanding: 2 / 60, leftWall: 110, rightWall: 1170 });
+  landing: 4 / 60, emptyLanding: 2 / 60, superFreeze: 14 / 60, leftWall: 110, rightWall: 1170 });
 export const CHARACTERS = Object.freeze({
   marcelo: { id: 'marcelo', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
     speed: 360, backSpeed: 270, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp',
@@ -71,7 +72,7 @@ export function fighterPose(f) {
   if (Object.hasOwn(combat, f.state)) return { atlas: 'combat', index: combat[f.state] };
   let index;
   switch (f.state) {
-    case 'walk': index = 2 + Math.floor(f.walkTime * 8) % 2; break;
+    case 'walk': index = 0; break;
     case 'jump': index = 4; break;
     case 'crouch': index = 5; break;
     case 'block': index = 10; break;
@@ -95,7 +96,8 @@ export class Fighter {
       hitstun: 0, blockstun: 0, flash: 0, blockFlash: 0, combo: 0, comboTime: 0, lastAttacker: null, state: 'idle', input: idleInput(),
       buffer: null, jumpBuffer: 0, airAttackUsed: false, landing: 0, knocked: false, knockdownTime: 0, wakeTime: 0, invincible: 0,
       preJump: 0, jumpVelocityX: 0, recoilTime: 0, recoilDeceleration: 0, recoilSource: null, hitCrouched: false, throwInvincible: 0,
-      animTime: 0, quoteTime: 0, walkTime: 0, directions: [], lastDirection: 5, powerName: '', powerQuote: '', blockLow: false });
+      animTime: 0, quoteTime: 0, walkTime: 0, walkDistance: 0, prevWalkDistance: 0, walkBlend: 0, prevWalkBlend: 0,
+      directions: [], lastDirection: 5, powerName: '', powerQuote: '', blockLow: false });
   }
   get airborne() { return this.y < WORLD.floor - .01; }
   get canAct() { return this.hp > 0 && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
@@ -119,7 +121,12 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const body = HURT_PROFILES[this.character.id][pose.atlas][pose.index].map(([offset, height, w, h]) => ({
+    let profile = HURT_PROFILES[this.character.id][pose.atlas][pose.index];
+    if (this.state === 'walk' || (this.state === 'idle' && this.walkBlend > 0)) {
+      const gait = walkingPose(this);
+      profile = [...HURT_PROFILES[this.character.id].base[0].slice(0, 2).map(([x, y, w, h]) => [x, y - gait.bob, w, h]), walkingLegBounds(gait)];
+    }
+    const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
     }));
     // Extended arms and legs can be struck, including the first recovery frames.
@@ -208,6 +215,11 @@ export class FightEngine {
     if (m.invincibility) f.invincible = m.invincibility;
     if (POWERS.has(move)) {
       f.powerName = f.character.powers[move];
+      if (move === 'super') {
+        this.freeze = Math.max(this.freeze, COMBAT.superFreeze);
+        this.event('superStart', { fighter: f.slot, character: f.character.id, name: f.powerName,
+          color: f.character.color, freeze: COMBAT.superFreeze });
+      }
     } else this.event('swing', { move, strength, fighter: f.slot });
     return true;
   }
@@ -242,7 +254,10 @@ export class FightEngine {
   }
   step(dt) {
     if (this.paused || this.phase === 'selection' || this.phase === 'result') return;
-    for (const f of this.fighters) { f.prevPushbox = f.pushbox; f.prevX = f.x; f.prevY = f.y; f.prevActionTime = f.actionTime; }
+    for (const f of this.fighters) {
+      f.prevPushbox = f.pushbox; f.prevX = f.x; f.prevY = f.y; f.prevActionTime = f.actionTime;
+      f.prevWalkDistance = f.walkDistance; f.prevWalkBlend = f.walkBlend;
+    }
     for (const p of this.projectiles) p.prevX = p.x;
     if (this.freeze > 0) { this.freeze = Math.max(0, this.freeze - dt); return; }
     this.phaseTime += dt; this.time += dt; this.wallTransfers = [];
@@ -258,14 +273,27 @@ export class FightEngine {
         else { this.round++; this.newRound(); }
       } return;
     }
-    this.timer = Math.max(0, this.timer - dt);
     if (this.cpu) this.updateAI(dt);
     this.updateFacing();
+    // Start either slot's super before integrating either fighter or any projectile.
+    let superStarted = false;
+    for (const f of this.fighters) if (f.buffer?.move === 'super' && !(f.jumpBuffer > 0 || f.input.jump)) {
+      const cancel = f.action && f.moveData.cancellable && f.actionHit
+        && f.actionTime <= f.moveData.startup + f.moveData.active + .10;
+      if (this.beginMove(f, 'super', f.buffer.strength, cancel)) { f.buffer = null; superStarted = true; }
+    }
+    if (superStarted) return;
+    this.timer = Math.max(0, this.timer - dt);
     for (const f of this.fighters) this.updateFighter(f, dt);
     this.applyWallTransfers();
     this.resolvePushboxes();
     this.updateFacing();
-    for (const f of this.fighters) if (f.state === 'walk') f.walkTime += dt;
+    for (const f of this.fighters) {
+      const walked = f.state === 'walk' && Math.abs(f.x - f.prevX) > 1e-7;
+      if (walked) { f.walkDistance += (f.x - f.prevX) * f.direction; f.walkTime += dt; }
+      f.walkBlend = clamp(f.walkBlend + (walked ? 1 : -1) * dt * 18, 0, 1);
+      if (!['walk', 'idle'].includes(f.state)) f.walkBlend = 0;
+    }
     const contacts = [];
     for (const f of this.fighters) {
       const m = f.moveData;
@@ -447,6 +475,13 @@ export class FightEngine {
     }
     this.wallTransfers = [];
   }
+  addMeter(f, amount) {
+    const before = f.meter;
+    f.meter = clamp(f.meter + amount, 0, 100);
+    if (before < 100 && f.meter >= 100 && f.hp > 0) this.event('superReady', {
+      fighter: f.slot, character: f.character.id, color: f.character.color, name: f.character.powers.super,
+    });
+  }
   resolvePushboxes() {
     const [a, b] = this.fighters;
     const ab = a.pushbox, bb = b.pushbox;
@@ -473,7 +508,7 @@ export class FightEngine {
       target.hp = Math.max(1, target.hp - chip); target.blockFlash = .15; target.blockstun = data.blockstun;
       this.recoil(target, direction, data.push * .10, Math.min(data.blockstun, frames(14)), attacker.slot);
       target.blockLow = guard.low; target.state = guard.low ? 'lowBlock' : 'block'; target.vx = 0;
-      target.meter = Math.min(100, target.meter + 5); attacker.meter = Math.min(100, attacker.meter + 4);
+      this.addMeter(target, 5); this.addMeter(attacker, 4);
       this.freeze = Math.max(this.freeze, frames(4)); this.event('block', { x, y, move, fighter: target.slot, color: target.character.color }); return;
     }
     const continued = target.hitstun > 0 && target.lastAttacker === attacker.slot;
@@ -488,7 +523,7 @@ export class FightEngine {
       if (data.launch) { target.vy = -data.launch; target.y -= .02; }
       else { target.vy = target.airborne ? -460 : -300; target.y -= .02; }
     }
-    attacker.meter = Math.min(100, attacker.meter + data.meter); target.meter = Math.min(100, target.meter + 7);
+    this.addMeter(attacker, data.meter); this.addMeter(target, 7);
     attacker.combo = combo; attacker.comboTime = 1.2;
     this.freeze = Math.max(this.freeze, frames(move === 'super' || move === 'uppercut' ? 7 : data.strength === 2 ? 6 : 5));
     this.event('hit', { x, y, damage, move, fighter: attacker.slot, target: target.slot, combo, color: attacker.character.color });
