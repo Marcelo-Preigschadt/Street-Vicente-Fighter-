@@ -64,7 +64,7 @@ test('cada pose completa usa as mesmas áreas vulneráveis no desenho e no comba
       }
     }
     f.state = 'idle'; f.walkBlend = 0;
-    assert.equal(fighterPose(f).atlas, 'base');
+    assert.equal(fighterPose(f).atlas, 'style');
   }
 });
 

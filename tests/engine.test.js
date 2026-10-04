@@ -38,7 +38,7 @@ test('três forças de soco têm preparação, dano e recuperação diferentes',
 test('baixo + chute executa rasteira, acerta pernas, derruba e permite levantar', () => {
   const {game,events}=arena(); game.setInput(0,{down:true}); game.queue(0,'kick'); advance(game,.03);
   const a=game.fighters[0],b=game.fighters[1]; assert.equal(a.action,'sweep'); assert.equal(a.moveData.level,'low');
-  assert.equal(a.attackbox,null); until(game,()=>b.knocked); assert.ok(a.attackbox.y>WORLD.floor-80); assert.equal(hits(events)[0].move,'sweep');
+  assert.equal(a.attackbox,null); until(game,()=>b.knocked); assert.ok(a.attackbox.y>WORLD.floor-165); assert.ok(a.attackbox.y+a.attackbox.h<WORLD.floor-65); assert.equal(hits(events)[0].move,'sweep');
   const hp=b.hp; game.queue(1,'punch'); advance(game,.45); assert.equal(b.action,null); assert.equal(b.hp,hp);
   until(game,()=>b.wakeTime>0); assert.equal(b.state,'wake'); until(game,()=>b.wakeTime===0); assert.ok(b.throwInvincible>0); assert.ok(b.hurtboxes.length>0); advance(game,.2); assert.equal(b.y,WORLD.floor); assert.equal(b.knocked,false);
 });
@@ -65,9 +65,10 @@ test('salto não pode mudar direção no ar e só aceita um ataque por salto', (
   game.queue(0,'kick'); advance(game,.15); assert.ok(game.fighters[0].airborne); game.queue(0,'punch'); advance(game,.03);
   assert.equal(events.filter(e=>e.type==='swing').length,1); until(game,()=>game.fighters[0].y===WORLD.floor); assert.equal(game.fighters[0].airAttackUsed,false);
 });
-test('baixo + soco usa o soco agachado; chute alto passa sobre agachamento', () => {
+test('baixo + soco usa o soco agachado; jab do boxe passa sobre agachamento', () => {
   const {game,events}=arena(); game.setInput(0,{down:true}); game.queue(0,'punch'); advance(game,.4); assert.equal(hits(events)[0].move,'crouchPunch');
-  const {game:duck}=arena(); duck.setInput(1,{down:true}); duck.queue(0,'kick'); advance(duck,.7); assert.equal(duck.fighters[1].hp,1000);
+  const {game:duck}=arena(); duck.start('rafael','local','marcelo'); duck.phase='fight'; duck.fighters[0].x=450; duck.fighters[1].x=580;
+  duck.setInput(1,{down:true}); duck.queue(0,'punch'); advance(duck,.7); assert.equal(duck.fighters[1].hp,1000);
 });
 test('meia-lua para frente + soco lança poder espelhado para os dois lados', () => {
   for(const slot of [0,1]) { const {game,events}=arena(); game.fighters[0].x=250;game.fighters[1].x=950; motion(game,slot,[2,3,6]); game.queue(slot,'punch'); advance(game,.03); assert.equal(game.fighters[slot].action,'special'); advance(game,.3);
@@ -130,7 +131,8 @@ test('controle no fim da recuperação é aproveitado; não repete ao segurar at
   const {game,events}=arena();game.fighters[1].x=1000;game.queue(0,'kick');advance(game,.43);game.queue(0,'punch');advance(game,.3);assert.deepEqual(events.filter(e=>e.type==='swing').map(e=>e.move),['kick','punch']);
 });
 test('ataques simultâneos trocam dano; pausa congela a simulação', () => {
-  const {game}=arena();game.queue(0,'punch');game.queue(1,'punch');advance(game,.3);assert.ok(game.fighters.every(f=>f.hp<1000));
+  const {game}=arena();game.start('marcelo','local','gustavo');game.phase='fight';game.fighters[0].x=450;game.fighters[1].x=580;
+  game.queue(0,'punch');game.queue(1,'punch');advance(game,.3);assert.ok(game.fighters.every(f=>f.hp<1000));
   game.togglePause();const snapshot=game.fighters.map(f=>[f.hp,f.x,f.y]);const time=game.timer;game.queue(0,'super');advance(game,1);assert.equal(game.timer,time);assert.deepEqual(game.fighters.map(f=>[f.hp,f.x,f.y]),snapshot);
 });
 test('melhor de três mantém placar e encerra após duas vitórias', () => {

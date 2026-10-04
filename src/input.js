@@ -27,7 +27,7 @@ export class Inputs {
       button.addEventListener('pointerdown', e => {
         e.preventDefault(); if (engine.paused || engine.phase !== 'fight') return;
         button.setPointerCapture(e.pointerId); this.touch.set(e.pointerId, action); button.classList.add('pressed'); this.applyHeld(0);
-        if (!DIRECTIONS.has(action)) engine.queue(0, action, 1);
+        if (!DIRECTIONS.has(action)) engine.queue(0, action, Number(button.dataset.strength ?? 1));
       });
       const up = e => {
         e.preventDefault(); this.touch.delete(e.pointerId); if (![...this.touch.values()].includes(action)) button.classList.remove('pressed'); this.applyHeld(0);

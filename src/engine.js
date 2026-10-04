@@ -1,5 +1,7 @@
-import { HURT_PROFILES } from './hitboxes.js?v=11';
-import { walkingFrame } from './walk.js?v=11';
+import { HURT_PROFILES } from './hitboxes.js?v=12';
+import { walkingFrame } from './walk.js?v=12';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=12';
+export { FIGHTING_STYLES } from './styles.js?v=12';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -42,13 +44,17 @@ const NORMALS = {
   airPunch: [[4, 12, 8, 48, 19, 155], [5, 14, 10, 72, 23, 225], [7, 16, 12, 98, 27, 290]],
   airKick: [[4, 14, 8, 54, 21, 185], [5, 18, 10, 86, 25, 265], [7, 19, 12, 114, 29, 340]],
 };
-function moveData(name, strength = 1) {
+function moveData(name, strength = 1, characterId = null) {
   strength = Math.max(0, Math.min(2, strength));
   if (NORMALS[name]) {
-    const [startup, active, recovery, damage, stun, push] = NORMALS[name][strength];
+    const [startup, active, recovery, damage, stun, push] = FIGHTING_STYLES[characterId]?.normals[name]?.[strength] ?? NORMALS[name][strength];
     return { name, strength, startup: frames(startup), active: frames(active), recovery: frames(recovery), damage, stun: frames(stun),
       blockstun: frames(name === 'sweep' ? 10 + strength * 2 : Math.max(9, stun - 5)), push, meter: 5 + strength * 3, level: name === 'sweep' ? 'low' : name.startsWith('air') ? 'overhead' : 'mid',
-      knockdown: name === 'sweep', cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
+      knockdown: name === 'sweep' && characterId !== 'rafael' || characterId === 'rafael' && name === 'kick' && strength === 2,
+      ...(characterId === 'rafael' && name === 'sweep' ? { level:'mid' } : {}),
+      ...(characterId === 'rafael' && name === 'kick' && strength === 2 ? { launch:450 } : {}),
+      technique: characterId ? styleTechnique(characterId,name,strength) : '',
+      cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
   if (name === 'special') return { name, strength, startup: frames(12), active: frames(1), recovery: frames(24), damage: 98 + strength * 12,
     stun: frames(26), blockstun: frames(18), push: 330, meter: 8, level: 'mid', projectile: true, chip: .1, speed: 460 + strength * 150 };
@@ -72,6 +78,8 @@ const POWERS = new Set(['special', 'uppercut', 'super']);
 export function fighterPose(f) {
   if (['walk', 'idle'].includes(f.state) && f.walkBlend > 0) return { atlas: 'walk', index: walkingFrame(f.walkDistance) };
   const m = f.moveData, extended = m && f.actionTime >= m.startup && f.actionTime < m.startup + m.active + .03;
+  const styled = stylePose(f, extended);
+  if (styled) return styled;
   const combat = { crouchPunch: extended ? 1 : 0, sweep: extended ? 3 : 2, airPunch: extended ? 5 : 4,
     airKick: extended ? 7 : 6, uppercut: f.actionTime >= (m?.startup ?? 0) ? 11 : 10,
     lowBlock: 9, wake: 13, throw: 14, landing: 15, preJump: 15 };
@@ -104,11 +112,12 @@ export class Fighter {
       buffer: null, jumpBuffer: 0, airAttackUsed: false, landing: 0, knocked: false, knockdownTime: 0, wakeTime: 0, invincible: 0,
       preJump: 0, jumpVelocityX: 0, recoilTime: 0, recoilDeceleration: 0, recoilSource: null, hitCrouched: false, throwInvincible: 0,
       animTime: 0, quoteTime: 0, walkTime: 0, walkDistance: 0, prevWalkDistance: 0, walkBlend: 0, prevWalkBlend: 0,
-      directions: [], lastDirection: 5, powerName: '', powerQuote: '', blockLow: false });
+      directions: [], lastDirection: 5, powerName: '', powerQuote: '', blockLow: false, chain:[], comboName:'', comboNameTime:0 });
   }
   get airborne() { return this.y < WORLD.floor - .01; }
   get canAct() { return this.hp > 0 && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
-  get crouching() { return !this.airborne && (['crouch', 'crouchPunch', 'sweep', 'lowBlock', 'preJump', 'landing'].includes(this.state) || (this.state === 'hit' && this.hitCrouched)); }
+  get crouching() { return !this.airborne && (['crouch', 'crouchPunch', 'lowBlock', 'preJump', 'landing'].includes(this.state)
+    || this.state === 'sweep' && this.character.id === 'rafael' || (this.state === 'hit' && this.hitCrouched)); }
   get movePhase() {
     if (!this.moveData) return null;
     return this.actionTime < this.moveData.startup ? 'startup' : this.actionTime < this.moveData.startup + this.moveData.active ? 'active' : 'recovery';
@@ -117,7 +126,7 @@ export class Fighter {
     if (this.hp <= 0 || (this.knocked && !this.airborne)) return null;
     const width = this.airborne ? 96 : BODY_WIDTH;
     const bottom = this.y - (this.airborne ? 70 : 0);
-    const height = this.airborne ? 178 : this.state === 'sweep' ? 146 : this.crouching ? 180 : 250;
+    const height = this.airborne ? 178 : this.state === 'sweep' && this.character.id === 'rafael' ? 146 : this.crouching ? 180 : 250;
     return { x: this.x - width / 2, y: bottom - height, w: width, h: height };
   }
   get guard() {
@@ -128,12 +137,12 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    let profile = HURT_PROFILES[this.character.id][pose.atlas][pose.index];
+    const profile = pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
     }));
     // Extended arms and legs can be struck, including the first recovery frames.
-    const strike = this.character.strikes[this.action];
+    const strike = styleStrike(this);
     if (strike && this.actionTime >= this.moveData.startup && this.actionTime < this.moveData.startup + this.moveData.active + frames(2)) {
       const near = Math.max(40, strike.near), reach = strike.reach;
       if (reach > near) body.push({ x: this.x + (this.direction > 0 ? near : -reach), y: this.y - strike.height - strike.h / 2,
@@ -142,7 +151,7 @@ export class Fighter {
     return body;
   }
   get attackbox() {
-    const strike = this.character.strikes[this.action];
+    const strike = styleStrike(this);
     if (!strike || this.movePhase !== 'active') return null;
     return { x: this.x + (this.direction > 0 ? strike.near : -strike.reach), y: this.y - strike.height - strike.h / 2,
       w: strike.reach - strike.near, h: strike.h };
@@ -206,13 +215,16 @@ export class FightEngine {
     return move;
   }
   beginMove(f, baseMove, strength = 1, cancel = false) {
-    const move = this.contextualMove(f, baseMove), m = moveData(move, strength);
+    const move = this.contextualMove(f, baseMove), m = moveData(move, strength, f.character.id);
     if (!m || f.hp <= 0 || f.hitstun > 0 || f.blockstun > 0 || f.knocked || f.wakeTime > 0 || f.landing > 0 || f.preJump > 0 || (f.action && !cancel)) return false;
     if (f.airborne && (!move.startsWith('air') || f.airAttackUsed)) return false;
     if (!f.airborne && move.startsWith('air')) return false;
     if (!f.airborne && f.input.block) return false;
     if (m.cost && f.meter < m.cost) return false;
     if (move === 'special' && this.projectiles.some(p => p.owner === f.slot && p.move === 'special' && p.life > 0)) return false;
+    const normalChain = cancel && !!NORMALS[move];
+    f.chain = NORMALS[move] ? normalChain ? [...f.chain, `${move}:${m.strength}`] : [`${move}:${m.strength}`] : [];
+    if (normalChain) m.advance = FIGHTING_STYLES[f.character.id].step;
     f.action = move; f.moveData = m; f.actionTime = 0; f.prevActionTime = 0; f.actionHit = false; f.contactTime = -10; f.shotsSent = 0; f.state = move; f.animTime = 0;
     if (f.airborne) f.airAttackUsed = true;
     else f.vx = 0;
@@ -225,11 +237,20 @@ export class FightEngine {
         this.event('superStart', { fighter: f.slot, character: f.character.id, name: f.powerName,
           color: f.character.color, freeze: COMBAT.superFreeze });
       }
-    } else this.event('swing', { move, strength, fighter: f.slot });
+    } else this.event('swing', { move, strength, fighter: f.slot, technique:m.technique, style:FIGHTING_STYLES[f.character.id].name, chained:normalChain });
     return true;
   }
   updateAI(dt) {
     const ai = this.ai, f = this.fighters[1], foe = this.fighters[0]; ai.timer -= dt; ai.actionTimer -= dt;
+    // CPU follows the same bounded, contact-confirmed routes as a human player.
+    if (f.actionHit && !f.airborne && this.time - f.contactTime <= .18) {
+      const route = FIGHTING_STYLES[f.character.id].combos.find(c => c.steps.length > f.chain.length && f.chain.every((s,i) => s === c.steps[i]));
+      if (route && this.random() < .8) {
+        const [move,strength] = route.steps[f.chain.length].split(':');
+        ai.input = { ...idleInput(), down:move === 'sweep' || move === 'crouchPunch' };
+        this.setInput(1,ai.input); this.queue(1,move,Number(strength)); ai.actionTimer = .35; return;
+      }
+    }
     if (ai.timer > 0) { this.setInput(1, ai.input); return; }
     ai.timer = .11 + this.random() * .13;
     const dist = Math.abs(f.x - foe.x), toward = Math.sign(foe.x - f.x);
@@ -249,7 +270,10 @@ export class FightEngine {
       else if (f.meter >= 100 && dist > 210 && this.random() < .6) this.queue(1, 'super');
       else if (dist > 260 && dist < 850 && this.random() < .44) this.queue(1, 'special');
       else if (dist < 140 && this.random() < .18) this.queue(1, 'throw');
-      else if (dist < 230) this.queue(1, dist > 157 || this.random() > .5 ? 'kick' : 'punch', this.random() < .2 ? 0 : 1);
+      else if (dist < (f.character.id === 'gustavo' ? 260 : 210)) {
+        const kickChance = f.character.id === 'rafael' ? .25 : f.character.id === 'gustavo' ? .58 : .35;
+        this.queue(1,this.random() < kickChance ? 'kick' : 'punch',this.random() < .4 ? 0 : 1);
+      }
       ai.actionTimer = .25 + this.random() * .35;
     }
   }
@@ -314,7 +338,7 @@ export class FightEngine {
       const strike = f.attackbox, body = strike && target.hurtboxes.find(box => overlaps(strike, box));
       if (body) {
         f.actionHit = true;
-        contacts.push({ attacker: f, target, move: f.action, data: m, x: clamp(f.x + f.direction * f.character.strikes[f.action].reach, body.x, body.x + body.w),
+        contacts.push({ attacker: f, target, move: f.action, data: m, x: clamp(f.x + f.direction * styleStrike(f).reach, body.x, body.x + body.w),
           y: clamp(strike.y + strike.h / 2, body.y, body.y + body.h) });
       }
     }
@@ -327,7 +351,7 @@ export class FightEngine {
   }
   updateFighter(f, dt) {
     f.animTime += dt;
-    for (const timer of ['flash', 'blockFlash', 'hitstun', 'blockstun', 'quoteTime', 'comboTime', 'landing', 'invincible', 'throwInvincible']) f[timer] = Math.max(0, f[timer] - dt);
+    for (const timer of ['flash', 'blockFlash', 'hitstun', 'blockstun', 'quoteTime', 'comboTime', 'comboNameTime', 'landing', 'invincible', 'throwInvincible']) f[timer] = Math.max(0, f[timer] - dt);
     if (f.comboTime <= 0) f.combo = 0;
     if (f.hitstun <= 0 && !f.knocked) f.lastAttacker = null;
     f.displayHP += (f.hp - f.displayHP) * (1 - Math.exp(-dt * 6));
@@ -371,20 +395,22 @@ export class FightEngine {
     }
     f.jumpBuffer = Math.max(0, f.jumpBuffer - dt);
     if (f.buffer) {
-      const cancel = f.action && f.moveData.cancellable && f.actionHit && POWERS.has(f.buffer.move)
-        && f.actionTime <= f.moveData.startup + f.moveData.active + .10;
+      const nextMove = this.contextualMove(f, f.buffer.move);
+      const cancel = (f.action && f.moveData.cancellable && f.actionHit && POWERS.has(nextMove)
+        && f.actionTime <= f.moveData.startup + f.moveData.active + .10)
+        || canStyleChain(f, nextMove, clamp(f.buffer.strength,0,2), this.time);
       if (this.beginMove(f, f.buffer.move, f.buffer.strength, cancel)) f.buffer = null;
       else { f.buffer.life -= dt; if (f.buffer.life <= 0) f.buffer = null; }
     }
     if (f.hp <= 0) f.state = 'ko';
     else if (f.hitstun > 0) { f.state = 'hit'; f.vx = 0; }
     else if (f.blockstun > 0) { f.state = f.input.down ? 'lowBlock' : 'block'; f.vx = 0; }
-    else if (f.action) { f.state = f.action; if (!f.airborne) f.vx = 0; }
+    else if (f.action) { f.state = f.action; if (!f.airborne) f.vx = f.actionTime < f.moveData.startup && f.moveData.advance ? f.direction * f.moveData.advance / f.moveData.startup : 0; }
     else if (f.landing > 0) { f.state = 'landing'; f.vx = 0; }
     else if (f.airborne) f.state = 'jump'; // Horizontal jump velocity is locked at takeoff.
     else {
       const backwards = movement * f.direction < 0, speed = backwards ? f.character.backSpeed : f.character.speed;
-      const opponent = this.fighters[1 - f.slot], enemyStrike = opponent.character.strikes[opponent.action];
+      const opponent = this.fighters[1 - f.slot], enemyStrike = styleStrike(opponent);
       const nearbyStrike = enemyStrike && opponent.movePhase !== 'recovery' && opponent.direction === -f.direction && Math.abs(opponent.x - f.x) <= enemyStrike.reach + 60;
       const nearbyProjectile = this.projectiles.some(p => p.owner !== f.slot && p.direction === -f.direction && (p.x - f.x) * f.direction >= 0 && Math.abs(p.x - f.x) < 150);
       const guardReady = f.guard.active && (nearbyStrike || nearbyProjectile);
@@ -530,8 +556,12 @@ export class FightEngine {
     }
     this.addMeter(attacker, data.meter); this.addMeter(target, 7);
     attacker.combo = combo; attacker.comboTime = 1.2;
+    if (combo === 1) { attacker.comboName = ''; attacker.comboNameTime = 0; }
+    const route = completedStyleCombo(attacker);
+    if (route && combo >= route.steps.length) { attacker.comboName = route.name; attacker.comboNameTime = 1.2; }
     this.freeze = Math.max(this.freeze, frames(move === 'super' || move === 'uppercut' ? 7 : data.strength === 2 ? 6 : 5));
-    this.event('hit', { x, y, damage, move, fighter: attacker.slot, target: target.slot, combo, color: attacker.character.color });
+    this.event('hit', { x, y, damage, move, fighter: attacker.slot, target: target.slot, combo, color: attacker.character.color,
+      technique:data.technique, comboName:route && combo >= route.steps.length ? route.name : '' });
   }
   endRound() {
     const [a, b] = this.fighters, winner = a.hp === b.hp ? null : a.hp > b.hp ? a : b;

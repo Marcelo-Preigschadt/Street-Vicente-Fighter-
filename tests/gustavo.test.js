@@ -61,5 +61,5 @@ test('as poses específicas e a caminhada de Gustavo têm áreas válidas, medid
   const { g, f } = scene(); g.setInput(0, { jump: true }); advance(g, .08); g.setInput(0, {});
   g.queue(0, 'kick'); advance(g, .1);
   assert.equal(f.action, 'airKick'); assert.ok(f.airborne);
-  assert.deepEqual(fighterPose(f), { atlas: 'combat', index: 7 });
+  assert.deepEqual(fighterPose(f), { atlas: 'style', index: 13 });
 });

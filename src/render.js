@@ -1,6 +1,6 @@
-import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=11';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=12';
 
-import { SuperEffects } from './super-fx.js?v=11';
+import { SuperEffects } from './super-fx.js?v=12';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -19,11 +19,11 @@ export class Renderer {
   }
   async load() {
     const characters = Object.values(CHARACTERS);
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite)])]);
+    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite), loadImage(`assets/${f.id}-style.webp`)])]);
     this.background = background;
-    characters.forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i * 3]); this.sheets[f.id].combat = this.analyzeSheet(sheets[i * 3 + 1], true); this.sheets[f.id].walk = this.analyzeSheet(sheets[i * 3 + 2], false, 2); });
+    characters.forEach((f, i) => { this.sheets[f.id] = this.analyzeSheet(sheets[i * 4]); this.sheets[f.id].combat = this.analyzeSheet(sheets[i * 4 + 1], true); this.sheets[f.id].walk = this.analyzeSheet(sheets[i * 4 + 2], false, 2); this.sheets[f.id].style = this.analyzeStyleSheet(sheets[i * 4 + 3]); });
   }
-  analyzeSheet(image, combat = false, rows = 4) {
+  analyzeSheet(image, combat = false, rows = 4, cellPadding = null) {
     const frames = [];
     const offscreen = document.createElement('canvas'); offscreen.width = image.width; offscreen.height = image.height;
     const c = offscreen.getContext('2d', { willReadFrequently: true }); c.drawImage(image, 0, 0);
@@ -34,7 +34,7 @@ export class Renderer {
       const ex = Math.round((column + 1) * image.width / 4), ey = Math.round((row + 1) * image.height / rows);
       // Generated atlases can have a few pixels crossing nominal cell borders.
       // Find the largest connected silhouette in a padded cell, excluding neighboring-pose fragments.
-      const padding = combat ? 64 : 12;
+      const padding = cellPadding ?? (combat ? 64 : 12);
       const rx = Math.max(0, sx - padding), ry = Math.max(0, sy - padding);
       const rw = Math.min(image.width, ex + padding) - rx, rh = Math.min(image.height, ey + padding) - ry;
       const mask = new Uint8Array(rw * rh), stack = new Int32Array(rw * rh);
@@ -100,12 +100,19 @@ export class Renderer {
   frameFor(f) {
     return fighterPose(f).index;
   }
+  analyzeStyleSheet(image) {
+    const sheet = this.analyzeSheet(image, false, 4, 64);
+    for (const index of [10,11,12,13]) {
+      const f = sheet.frames[index]; f.anchor = f.x + (f.w - 1) * ([11,13].includes(index) ? .39 : .47);
+    }
+    return sheet;
+  }
   poseFor(f) {
     const original = this.sheets[f.character.id], { atlas, index } = fighterPose(f);
-    return { sheet: atlas === 'combat' ? original.combat : atlas === 'walk' ? original.walk : original, index, id: `${atlas}:${index}` };
+    return { sheet: atlas === 'base' ? original : original[atlas], index, id: `${atlas}:${index}` };
   }
   preview(canvas, id) {
-    const c = canvas.getContext('2d'), sheet = this.sheets[id]; if (!sheet) return;
+    const c = canvas.getContext('2d'), sheet = this.sheets[id]?.style; if (!sheet) return;
     const f = sheet.frames[0], scale = Math.min((canvas.height - 15) / f.h, (canvas.width - 35) / f.w);
     c.clearRect(0, 0, canvas.width, canvas.height); c.imageSmoothingEnabled = true;
     c.drawImage(f.cutout, 0, 0, f.w, f.h, (canvas.width - f.w * scale) / 2, canvas.height - f.h * scale - 3, f.w * scale, f.h * scale);
@@ -404,6 +411,7 @@ export class Renderer {
       c.strokeStyle = '#f1e6cc'; c.lineWidth = 2; c.strokeRect(x, 68, w, 29);
       for (let j = 0; j < 2; j++) { c.fillStyle = j < f.wins ? '#ffe3a2' : '#1c3028'; c.strokeStyle = '#869378'; rectangle(c, right ? x + w - 16 - j * 23 : x + j * 23, 110, 14, 10, 2); c.fill(); c.stroke(); }
       if (f.hp < 250) text(c, 'PERIGO', right ? x + w - 62 : x + 60, 115, 13, '#ffbc88', right ? 'right' : 'left');
+      text(c, FIGHTING_STYLES[f.character.id].name.toLocaleUpperCase('pt-BR'), right ? x + w : x, 139, 12, '#d5e1cc', right ? 'right' : 'left', 700);
       const energyX = right ? 853 : 54, energyWidth = 373;
       c.fillStyle = '#081617cc'; rectangle(c, energyX - 8, 656, energyWidth + 16, 48, 4); c.fill();
       c.fillStyle = '#30423b'; c.fillRect(energyX, 674, energyWidth, 13);
@@ -438,7 +446,9 @@ export class Renderer {
   }
   drawCombo(f) {
     const c = this.c, x = f.slot === 0 ? 67 : 1213; c.save(); c.globalAlpha = Math.min(1, f.comboTime * 3);
-    text(c, `${f.combo} HITS`, x, 246, 32, f.character.color, f.slot === 0 ? 'left' : 'right', 900); c.restore();
+    text(c, `${f.combo} ACERTOS`, x, 246, 30, f.character.color, f.slot === 0 ? 'left' : 'right', 900);
+    if (f.comboNameTime > 0) text(c,f.comboName,x,277,18,'#fff4dd',f.slot === 0 ? 'left' : 'right');
+    c.restore();
   }
   drawAnnouncer(engine) {
     const c = this.c; let title = '', subtitle = '', size = 100;

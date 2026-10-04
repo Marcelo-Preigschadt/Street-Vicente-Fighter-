@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=11';
-import { Renderer } from './render.js?v=11';
-import { ArcadeAudio } from './audio.js?v=11';
-import { Inputs } from './input.js?v=11';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=12';
+import { Renderer } from './render.js?v=12';
+import { ArcadeAudio } from './audio.js?v=12';
+import { Inputs } from './input.js?v=12';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -28,6 +28,11 @@ function updateSelection() {
   $('opponent-label').textContent = local ? 'Jogador 2' : 'Adversário';
   for (const option of $('opponent').options) option.disabled = option.value === selected;
   $('opponent').value = opponent;
+  const second = { marcelo:'joelhada', rafael:'gancho', gustavo:'chute' };
+  $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
+  const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
+  touchSecond.textContent = { marcelo:'JOELHO', rafael:'GANCHO', gustavo:'CHUTE' }[selected];
+  touchSecond.setAttribute('aria-label',second[selected]);
   document.querySelectorAll('[data-fighter]').forEach(card => {
     const chosen = card.dataset.fighter === selected;
     card.classList.toggle('selected', chosen); card.classList.toggle('opponent', card.dataset.fighter === opponent);

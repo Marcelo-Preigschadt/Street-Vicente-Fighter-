@@ -7,7 +7,7 @@ function prepare(t) {
   const events=[],game=new FightEngine({onEvent:e=>events.push(e)});game.start('marcelo','local');game.phase='fight';game.fighters[1].x=1000;
   const old={window:globalThis.window,document:globalThis.document,navigator:Object.getOwnPropertyDescriptor(globalThis,'navigator')};
   globalThis.window=new EventTarget();
-  const buttons=['down','kick','special'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
+  const buttons=['down','kick','special','punch'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
   globalThis.document={querySelectorAll:q=>q==='[data-action]'?buttons:buttons.filter(b=>b.pressed)};
   const pad={axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};let connected=false;
   Object.defineProperty(globalThis,'navigator',{value:{getGamepads:()=>connected?[pad]:[]},configurable:true});
@@ -23,3 +23,10 @@ test('toque permite agachar e chutar simultaneamente com dedos distintos',t=>{co
 test('gamepad aplica direcional antes da borda do botão de ataque',t=>{const s=prepare(t);s.connect();s.pad.axes[1]=.8;s.pad.buttons[1].pressed=true;s.input.update();advance(s.game,.02);assert.equal(s.game.fighters[0].action,'sweep');});
 
 test('rasteira continua sendo rasteira quando baixo é solto antes do próximo frame',t=>{const s=prepare(t);s.key('KeyS');s.key('KeyG');s.key('KeyS','keyup');advance(s.game,.02);assert.equal(s.game.fighters[0].action,'sweep');});
+
+test('botões de toque leve e forte fornecem as forças necessárias aos combos',t=>{
+ const s=prepare(t),button=s.buttons.find(b=>b.dataset.action==='punch');
+ button.dataset.strength='0';s.pointer('punch','pointerdown',3);advance(s.game,.02);assert.equal(s.game.fighters[0].moveData.strength,0);
+ s.pointer('punch','pointerup',3);advance(s.game,.5);
+ button.dataset.strength='2';s.pointer('punch','pointerdown',4);advance(s.game,.02);assert.equal(s.game.fighters[0].moveData.strength,2);
+});

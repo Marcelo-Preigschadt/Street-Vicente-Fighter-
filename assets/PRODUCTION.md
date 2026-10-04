@@ -1,5 +1,15 @@
 # Assets de Street Vicente Fighter
 
+## Estilos de luta — versão 2.4
+
+O built-in `image_gen` criou três novos atlases transparentes 4 × 4 de 16 poses completas, usando os respectivos atlases base como referências de identidade, roupa, proporções e estética. Arquivos: [marcelo-style.webp](marcelo-style.webp), [rafael-style.webp](rafael-style.webp), [gustavo-style.webp](gustavo-style.webp). Os prompts integrais estão em [styles-prompts.json](styles-prompts.json). PNG gerado convertido para WebP de qualidade 92, alpha preservado. Todos os atlases antigos, o cenário e os WAV ficaram byte a byte iguais.
+
+Ordem de poses: guarda e guarda alternativa; preparação e extensão do soco; preparação e extensão do segundo ataque; preparação e extensão do soco baixo; preparação e extensão do golpe baixo; preparação e extensão do soco aéreo; preparação e extensão do segundo ataque aéreo; aproximação e golpe de contato curto.
+
+Marcelo usa palma, cotovelo, joelhada e chute de contenção. Rafael usa jab, cruzado, gancho, uppercut e golpes no corpo, sem chutes. Gustavo usa socos, circular, low kick e chute lateral voador. Ataques fortes específicos selecionam a pose de cotovelo ou uppercut. Cada quadro é uma silhueta inteira e opaca, com escala uniforme, sem recortar ou distorcer membros. Células usam margem de análise de 64 pixels e extração da maior silhueta conectada para preservar mãos e calçados que ultrapassam a grade nominal.
+
+`src/styles-data.js` registra as áreas vulneráveis e de contato medidas nos pixels opacos, com o mesmo eixo, baseline, escala e seletor de pose usados pelo renderer. Técnicas e rotas ficam em `src/styles.js`; [fontes e sequências](FIGHTING-STYLES.md). A caminhada anterior continua calibrada pelo deslocamento efetivo; a nova guarda não altera a passada.
+
 Sprites e cenário gerados com a ferramenta nativa imagegen. As fotos enviadas foram referências de identidade facial; os corpos, roupas complementares e poses foram ilustrados para o jogo. As imagens geradas foram convertidas para WebP com qualidade 91 e transparência preservada. Os originais das fotos não são distribuídos.
 
 ## Especificações dos sprites

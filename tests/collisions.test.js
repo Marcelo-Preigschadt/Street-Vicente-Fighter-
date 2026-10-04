@@ -75,11 +75,12 @@ test('segurar para cima repete o salto depois de pousar; cima e baixo juntos nã
 });
 
 test('rasteira acerta no alcance do pé e falha fora dele, espelhada e nas três forças', () => {
-  for (const slot of [0, 1]) for (const strength of [0, 1, 2]) for (const distance of [295, 330]) {
-    const { game, events } = scene(); game.fighters[0].x = 450; game.fighters[1].x = 450 + distance;
+  for (const slot of [0, 1]) for (const strength of [0, 1, 2]) for (const distance of [270, 340]) {
+    const { game, events } = scene(); game.start('marcelo','local','gustavo'); game.phase='fight';
+    game.fighters[0].x = 450; game.fighters[1].x = 450 + distance;
     game.setInput(slot, { down: true }); game.queue(slot, 'kick', strength); advance(game, .35);
-    assert.equal(hits(events).length, distance === 295 ? 1 : 0, `lado ${slot}, força ${strength}, distância ${distance}`);
-    assert.equal(game.fighters[1 - slot].knocked, distance === 295);
+    assert.equal(hits(events).length, distance === 270 ? 1 : 0, `lado ${slot}, força ${strength}, distância ${distance}`);
+    assert.equal(game.fighters[1 - slot].knocked, distance === 270);
   }
 });
 
@@ -103,7 +104,7 @@ test('a perna estendida é vulnerável: rasteiras simultâneas podem se encontra
   const alone = scene(); alone.game.fighters[1].x = 780;
   alone.game.setInput(0, { down: true }); alone.game.queue(0, 'kick'); advance(alone.game, .3);
   assert.equal(hits(alone.events).length, 0);
-  const { game, events } = scene(); game.fighters[1].x = 780;
+  const { game, events } = scene(); game.start('marcelo','local','gustavo'); game.phase='fight'; game.fighters[0].x=450; game.fighters[1].x = 830;
   for (const slot of [0, 1]) { game.setInput(slot, { down: true }); game.queue(slot, 'kick'); }
   advance(game, .3); assert.equal(hits(events).length, 2); assert.ok(game.fighters.every(f => f.hp < 1000));
 });
@@ -143,9 +144,11 @@ test('no canto o recuo que não cabe na vítima afasta quem bateu, nos dois lado
     const { game, events } = scene(), victim = side === 'right' ? 1 : 0, attacker = 1 - victim;
     const wall = side === 'right' ? 1170 : 110;
     game.fighters[victim].x = wall; game.fighters[attacker].x = wall + (side === 'right' ? -180 : 180);
-    const start = game.fighters[attacker].x; game.queue(attacker, 'punch'); until(game, () => hits(events).length > 0); advance(game, .6);
+    const start = game.fighters[attacker].x; game.queue(attacker, 'punch'); until(game, () => game.fighters[attacker].moveData);
+    const expected = game.fighters[attacker].moveData.push * .16;
+    until(game, () => hits(events).length > 0); advance(game, .6);
     assert.equal(game.fighters[victim].x, wall);
-    assert.ok((game.fighters[attacker].x - start) * (side === 'right' ? -1 : 1) > 25);
+    assert.ok(Math.abs((game.fighters[attacker].x - start) * (side === 'right' ? -1 : 1) - expected) < 1e-6);
   }
 });
 
