@@ -32,6 +32,6 @@ Ordem das 16 novas poses (índices 0 a 15):
 - 8–11: guarda neutra de calibração; guarda baixa; preparação e salto do antiaéreo.
 - 12–15: queda; levantar; tentativa de agarrão; aterrissagem.
 
-A renderização usa as poses de queda completas dos atlases originais. A análise dos novos atlases usa células com margem de 64 pixels e seleciona a maior silhueta conectada, para preservar braços, pés e punhos que ultrapassam levemente a grade nominal. O tamanho é calibrado pela guarda neutra. Alcance e altura dos golpes são medidos no punho ou calçado da pose ativa.
+A renderização usa as poses de queda completas dos atlases originais. A análise dos novos atlases usa células com margem de 64 pixels e seleciona e extrai somente os pixels da maior silhueta conectada, excluindo fragmentos de outras poses, para preservar braços, pés e punhos que ultrapassam levemente a grade nominal. O tamanho é calibrado pela guarda neutra. Alcance e altura dos golpes são medidos no punho ou calçado da pose ativa.
 
 Os poderes são desenhados por Canvas: janelas de código e trilhas binárias para informática, pergaminhos, marcos em algarismos romanos e escudos para história. Os efeitos acompanham a posição física dos projéteis e do golpe ascendente.

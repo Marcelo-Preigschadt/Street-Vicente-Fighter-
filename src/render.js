@@ -1,4 +1,4 @@
-import { CHARACTERS, WORLD } from './engine.js?v=4';
+import { CHARACTERS, WORLD } from './engine.js?v=5';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -38,16 +38,17 @@ export class Renderer {
       let best = null;
       for (let start = 0; start < mask.length; start++) {
         if (mask[start] !== 1) continue;
+        const members = [];
         let top = 0, count = 0, bx1 = rw, by1 = rh, bx2 = 0, by2 = 0; stack[top++] = start; mask[start] = 2;
         while (top) {
-          const index = stack[--top], x = index % rw, y = Math.floor(index / rw); count++;
+          const index = stack[--top], x = index % rw, y = Math.floor(index / rw); count++; members.push(index);
           bx1 = Math.min(bx1, x); by1 = Math.min(by1, y); bx2 = Math.max(bx2, x); by2 = Math.max(by2, y);
           for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
             if ((!dx && !dy) || x + dx < 0 || x + dx >= rw || y + dy < 0 || y + dy >= rh) continue;
             const next = index + dy * rw + dx; if (mask[next] === 1) { mask[next] = 2; stack[top++] = next; }
           }
         }
-        if (!best || count > best.count) best = { count, bx1, by1, bx2, by2 };
+        if (!best || count > best.count) best = { count, bx1, by1, bx2, by2, members };
       }
       if (!best || best.count < 100) throw new Error('Sprite vazio. Verifique o atlas de personagens.');
       const x1 = rx + best.bx1 - sx, y1 = ry + best.by1 - sy, x2 = rx + best.bx2 - sx, y2 = ry + best.by2 - sy;
@@ -72,7 +73,20 @@ export class Renderer {
         if ([1, 3, 5, 7, 14].includes(i)) anchor = x1 + (x2 - x1) * (i === 3 ? .30 : i === 7 ? .35 : .39);
         if ([4, 6, 11].includes(i)) anchor = x1 + (x2 - x1) * .49;
       }
-      frames.push({ sx, sy, x: x1, y: y1, w: x2 - x1 + 1, h: y2 - y1 + 1, anchor, bottom: y2 });
+      // Extract this silhouette so the crop cannot contain a neighboring-pose fragment.
+      const w = x2 - x1 + 1, h = y2 - y1 + 1, cutout = document.createElement('canvas'); cutout.width = w; cutout.height = h;
+      const clean = cutout.getContext('2d'), data = clean.createImageData(w, h);
+      for (const index of best.members) {
+        const mx = index % rw, my = Math.floor(index / rw);
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const x = mx + dx - best.bx1, y = my + dy - best.by1;
+          if (x < 0 || x >= w || y < 0 || y >= h) continue;
+          const src = ((ry + my + dy) * image.width + rx + mx + dx) * 4, dst = (y * w + x) * 4;
+          for (let channel = 0; channel < 4; channel++) data.data[dst + channel] = pixels[src + channel];
+        }
+      }
+      clean.putImageData(data, 0, 0);
+      frames.push({ sx, sy, x: x1, y: y1, w, h, anchor, bottom: y2, cutout });
     }
     return { image, frames, scale: 294 / frames[combat ? 8 : 0].h };
   }
@@ -107,7 +121,7 @@ export class Renderer {
     const c = canvas.getContext('2d'), sheet = this.sheets[id]; if (!sheet) return;
     const f = sheet.frames[0], scale = Math.min((canvas.height - 15) / f.h, (canvas.width - 35) / f.w);
     c.clearRect(0, 0, canvas.width, canvas.height); c.imageSmoothingEnabled = true;
-    c.drawImage(sheet.image, f.sx + f.x, f.sy + f.y, f.w, f.h, (canvas.width - f.w * scale) / 2, canvas.height - f.h * scale - 3, f.w * scale, f.h * scale);
+    c.drawImage(f.cutout, 0, 0, f.w, f.h, (canvas.width - f.w * scale) / 2, canvas.height - f.h * scale - 3, f.w * scale, f.h * scale);
   }
   event(e) {
     if (e.type === 'hit' || e.type === 'block' || e.type === 'clash') {
@@ -173,7 +187,7 @@ export class Renderer {
     if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
     const drawPose = (selected, opacity) => {
       const { sheet, index } = selected, frame = sheet.frames[index], scale = sheet.scale; c.globalAlpha = opacity;
-      c.drawImage(sheet.image, frame.sx + frame.x, frame.sy + frame.y, frame.w, frame.h,
+      c.drawImage(frame.cutout, 0, 0, frame.w, frame.h,
         (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
     };
     if (blend < 1) drawPose(pose.previous, 1 - blend);
@@ -264,7 +278,7 @@ export class Renderer {
     c.save(); rectangle(c, x, y, 70, 76, 4); c.fillStyle = '#2b3c32'; c.fill(); c.clip();
     if (flip) { c.translate(x * 2 + 70, 0); c.scale(-1, 1); }
     const headX = frame.x + frame.w * .37, headY = frame.y, headW = frame.w * .45, headH = frame.h * .30;
-    c.drawImage(sheet.image, frame.sx + headX, frame.sy + headY, headW, headH, x - 4, y - 1, 80, 81); c.restore();
+    c.drawImage(frame.cutout, headX - frame.x, headY - frame.y, headW, headH, x - 4, y - 1, 80, 81); c.restore();
     c.strokeStyle = f.character.color; c.lineWidth = 2; rectangle(c, x, y, 70, 76, 4); c.stroke();
   }
   drawHUD(engine) {
