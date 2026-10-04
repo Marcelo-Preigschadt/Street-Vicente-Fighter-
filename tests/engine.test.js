@@ -141,6 +141,49 @@ test('tempo esgotado decide por vida e empate não soma vitória', () => {
   const {game}=arena();game.timer=.01;game.fighters[0].hp=800;advance(game,.1);assert.equal(game.roundWinner,1);
   const {game:tied}=arena();tied.timer=.01;advance(tied,.1);assert.equal(tied.roundWinner,null);assert.ok(tied.fighters.every(f=>f.wins===0));
 });
+test('carga parcial e completa atravessam os rounds 2 e 3, após KO, tempo e empate', () => {
+  for (const id of Object.keys(CHARACTERS)) for (const slot of [0, 1]) for (const ending of ['ko', 'timeout', 'draw']) {
+    const other = id === 'marcelo' ? 'rafael' : 'marcelo';
+    const game = new FightEngine(); game.start(slot === 0 ? id : other, 'local', slot === 0 ? other : id);
+    const meters = slot === 0 ? [37.5, 100] : [100, 37.5];
+    game.fighters.forEach((f, i) => { f.meter = meters[i]; });
+    for (const round of [1, 2]) {
+      game.phase = 'fight'; game.phaseTime = 0;
+      if (ending === 'ko') game.fighters[round === 1 ? 0 : 1].hp = 0;
+      else { game.timer = 0; if (ending === 'timeout') game.fighters[round === 1 ? 0 : 1].hp = 500; }
+      until(game, () => game.phase === 'roundEnd');
+      assert.deepEqual(game.fighters.map(f => f.meter), meters);
+      until(game, () => game.round === round + 1, 3.5);
+      assert.deepEqual(game.fighters.map(f => f.meter), meters, `${id}, lado ${slot}, ${ending}, round ${round + 1}`);
+      assert.ok(game.fighters.every(f => f.hp === 1000 && f.action === null && f.hitstun === 0));
+      assert.equal(game.timer, 90); assert.equal(game.projectiles.length, 0);
+    }
+  }
+});
+test('o super guardado pode ser usado no próximo round e não recupera carga gasta', () => {
+  for (const slot of [0, 1]) {
+    const {game,events}=arena(); game.fighters[slot].meter=100;
+    game.fighters[1-slot].hp=0; until(game,()=>game.phase==='roundEnd');
+    until(game,()=>game.phase==='fight' && game.round===2,6);
+    game.queue(slot,'super'); advance(game,.03);
+    assert.equal(game.fighters[slot].meter,0); assert.equal(game.fighters[slot].action,'super');
+    assert.equal(events.filter(e=>e.type==='superStart').length,1);
+    advance(game,.8);
+    assert.equal(events.filter(e=>e.type==='projectile' && e.move==='super').length,3);
+    game.fighters[slot].hp=0; until(game,()=>game.phase==='roundEnd');
+    const remaining=game.fighters.map(f=>f.meter); until(game,()=>game.round===3,3.5);
+    assert.deepEqual(game.fighters.map(f=>f.meter),remaining); assert.equal(game.fighters[slot].meter,0);
+  }
+});
+test('nova luta ou revanche começa com barras vazias em CPU e em dois jogadores', () => {
+  for (const mode of ['cpu','local']) {
+    const {game}=arena(); game.fighters.forEach(f=>{f.meter=100;f.wins=1;});
+    game.start('marcelo',mode,'rafael'); assert.deepEqual(game.fighters.map(f=>f.meter),[0,0]);
+    game.fighters[0].meter=63;game.fighters[1].meter=100;
+    game.start('gustavo',mode,'marcelo'); assert.deepEqual(game.fighters.map(f=>f.meter),[0,0]);
+    assert.equal(game.round,1);assert.ok(game.fighters.every(f=>f.wins===0));
+  }
+});
 test('sequência de salto e poder produz o mesmo resultado em 30, 60 e 120 Hz', () => {
   const run=hz=>{const {game}=arena();game.fighters[0].x=300;game.fighters[1].x=900;game.setInput(0,{right:true,jump:true});for(let i=0;i<hz;i++)game.update(1/hz);game.setInput(0,{});game.queue(1,'special');for(let i=0;i<hz*2;i++)game.update(1/hz);return game.fighters.map(f=>[f.x,f.y,f.vx,f.hp]);};
   const expected=run(120);for(const hz of [30,60])run(hz).forEach((f,i)=>f.forEach((v,j)=>assert.ok(Math.abs(v-expected[i][j])<1e-7)));

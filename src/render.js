@@ -1,6 +1,6 @@
-import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=10';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=11';
 
-import { SuperEffects } from './super-fx.js?v=10';
+import { SuperEffects } from './super-fx.js?v=11';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;

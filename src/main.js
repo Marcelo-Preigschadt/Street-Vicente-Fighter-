@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=10';
-import { Renderer } from './render.js?v=10';
-import { ArcadeAudio } from './audio.js?v=10';
-import { Inputs } from './input.js?v=10';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=11';
+import { Renderer } from './render.js?v=11';
+import { ArcadeAudio } from './audio.js?v=11';
+import { Inputs } from './input.js?v=11';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();

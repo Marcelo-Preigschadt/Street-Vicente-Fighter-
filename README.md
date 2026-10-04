@@ -74,6 +74,8 @@ Os comandos abaixo são relativos ao lado para o qual o personagem olha. Inverta
 | Para trás | Defesa alta |
 | Baixo + para trás | Defesa baixa |
 
+A carga de super de ambos os professores é mantida entre rounds, incluindo carga parcial ou completa, após nocaute, tempo esgotado ou empate. O super guardado pode ser usado no round seguinte. Nova luta e revanche começam com barras vazias.
+
 Os poderes normais não consomem barra. Só um projétil normal de cada professor pode estar ativo. Acertos, bloqueios e golpes recebidos carregam a barra de super. Botões aceitam comandos enfileirados por 100 ms e preservam esses comandos durante a pausa de impacto. O salto prepara por três quadros; a direção horizontal fica fixa no lançamento. Aterrissar sem ataque recupera em dois quadros, e com ataque em quatro. O antiaéreo conserva seu tempo restante de recuperação depois de tocar o chão.
 
 No celular, os botões aceitam vários dedos simultaneamente, incluindo baixo + chute. Em controles padrão: X/Y/RB são socos; A/B/RT são chutes; direcional ou analógico executa movimento, guarda e comandos; LB defende, Select agarra. Dois controles são suportados no modo local.
@@ -94,6 +96,6 @@ Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áu
 npm test
 ```
 
-Não é necessário instalar pacotes. Os 73 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
+Não é necessário instalar pacotes. Os 76 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.

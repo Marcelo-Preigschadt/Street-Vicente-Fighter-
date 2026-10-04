@@ -1,5 +1,5 @@
-import { HURT_PROFILES } from './hitboxes.js?v=10';
-import { walkingFrame } from './walk.js?v=10';
+import { HURT_PROFILES } from './hitboxes.js?v=11';
+import { walkingFrame } from './walk.js?v=11';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -96,10 +96,10 @@ export function fighterPose(f) {
 
 export class Fighter {
   constructor(id, slot) { this.character = CHARACTERS[id]; this.slot = slot; this.wins = 0; this.reset(); }
-  reset() {
+  reset(meter = 0) {
     const x = this.slot === 0 ? 360 : 920;
     Object.assign(this, { x, y: WORLD.floor, prevX: x, prevY: WORLD.floor, vx: 0, vy: 0, knockback: 0, direction: this.slot === 0 ? 1 : -1,
-      hp: 1000, displayHP: 1000, meter: 0, action: null, moveData: null, actionTime: 0, prevActionTime: 0, actionHit: false, contactTime: -10, shotsSent: 0,
+      hp: 1000, displayHP: 1000, meter, action: null, moveData: null, actionTime: 0, prevActionTime: 0, actionHit: false, contactTime: -10, shotsSent: 0,
       hitstun: 0, blockstun: 0, flash: 0, blockFlash: 0, combo: 0, comboTime: 0, lastAttacker: null, state: 'idle', input: idleInput(),
       buffer: null, jumpBuffer: 0, airAttackUsed: false, landing: 0, knocked: false, knockdownTime: 0, wakeTime: 0, invincible: 0,
       preJump: 0, jumpVelocityX: 0, recoilTime: 0, recoilDeceleration: 0, recoilSource: null, hitCrouched: false, throwInvincible: 0,
@@ -164,7 +164,8 @@ export class FightEngine {
     this.round = 1; this.paused = false; this.ai = { timer: 0, input: idleInput(), actionTimer: 0 }; this.newRound();
   }
   newRound() {
-    this.fighters.forEach(f => f.reset()); this.projectiles = []; this.freeze = 0; this.timer = 90;
+    // Keep accumulated super charge for the match; start() creates fresh fighters.
+    this.fighters.forEach(f => f.reset(f.meter)); this.projectiles = []; this.freeze = 0; this.timer = 90;
     this.phase = 'intro'; this.phaseTime = 0; this.time = 0; this.roundWinner = null;
     this.event('round', { round: this.round });
   }
