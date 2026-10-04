@@ -1,4 +1,4 @@
-import { CHARACTERS, WORLD } from './engine.js?v=5';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=6';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -91,31 +91,11 @@ export class Renderer {
     return { image, frames, scale: 294 / frames[combat ? 8 : 0].h };
   }
   frameFor(f) {
-    const m = f.moveData, active = m && f.actionTime >= m.startup, releasing = m && f.actionTime < m.startup + m.active + .03;
-    switch (f.state) {
-      case 'walk': return 2 + Math.floor(f.walkTime * 8) % 2;
-      case 'jump': return 4;
-      case 'crouch': return 5;
-      case 'block': return 10;
-      case 'hit': return 11;
-      case 'victory': return 14;
-      case 'ko': return 15;
-      case 'punch': return active && releasing ? 7 : 6;
-      case 'kick': return active && releasing ? 9 : 8;
-      case 'special': case 'super': return active ? 13 : 12;
-      default: return Math.floor(f.animTime * 3) % 2;
-    }
+    return fighterPose(f).index;
   }
   poseFor(f) {
-    const original = this.sheets[f.character.id], combat = original.combat, m = f.moveData;
-    const extended = m && f.actionTime >= m.startup && f.actionTime < m.startup + m.active + .03;
-    const map = { crouchPunch: extended ? 1 : 0, sweep: extended ? 3 : 2, airPunch: extended ? 5 : 4,
-      airKick: extended ? 7 : 6, uppercut: f.actionTime >= (m?.startup ?? 0) ? 11 : 10,
-      lowBlock: 9, wake: 13, throw: 14, landing: 15 };
-    // Existing KO pose is complete and matches the original character silhouette.
-    if (f.state === 'knockdown') return { sheet: original, index: 15, id: 'base:15' };
-    if (combat && Object.hasOwn(map, f.state)) return { sheet: combat, index: map[f.state], id: `combat:${map[f.state]}` };
-    const index = this.frameFor(f); return { sheet: original, index, id: `base:${index}` };
+    const original = this.sheets[f.character.id], { atlas, index } = fighterPose(f);
+    return { sheet: atlas === 'combat' ? original.combat : original, index, id: `${atlas}:${index}` };
   }
   preview(canvas, id) {
     const c = canvas.getContext('2d'), sheet = this.sheets[id]; if (!sheet) return;
@@ -143,8 +123,9 @@ export class Renderer {
     if (this.shake > .1) c.translate((Math.random() - .5) * this.shake, (Math.random() - .5) * this.shake);
     this.drawBackground(engine);
     if (engine.phase !== 'selection') {
+      if (engine.freeze > 0) alpha = 1;
       const fighters = engine.fighters.map(f => ({ ...f, x: f.prevX + (f.x - f.prevX) * alpha, y: f.prevY + (f.y - f.prevY) * alpha,
-        actionTime: f.prevActionTime <= f.actionTime ? f.prevActionTime + (f.actionTime - f.prevActionTime) * alpha : f.actionTime }));
+        actionTime: f.actionTime }));
       for (const f of fighters) this.drawShadow(f);
       for (const f of fighters.sort((a, b) => a.y - b.y)) this.drawFighter(f);
       for (const p of engine.projectiles) this.drawProjectile({ ...p, x: p.prevX + (p.x - p.prevX) * alpha });

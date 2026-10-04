@@ -35,3 +35,9 @@ Ordem das 16 novas poses (índices 0 a 15):
 A renderização usa as poses de queda completas dos atlases originais. A análise dos novos atlases usa células com margem de 64 pixels e seleciona e extrai somente os pixels da maior silhueta conectada, excluindo fragmentos de outras poses, para preservar braços, pés e punhos que ultrapassam levemente a grade nominal. O tamanho é calibrado pela guarda neutra. Alcance e altura dos golpes são medidos no punho ou calçado da pose ativa.
 
 Os poderes são desenhados por Canvas: janelas de código e trilhas binárias para informática, pergaminhos, marcos em algarismos romanos e escudos para história. Os efeitos acompanham a posição física dos projéteis e do golpe ascendente.
+
+## Calibração de colisões — versão 2.1
+
+Os quatro atlases aprovados foram mantidos byte a byte. `src/hitboxes.js` registra áreas vulneráveis de cabeça, tronco e pernas para as 16 poses de cada atlas e professor, medidas na silhueta opaca e relativas ao eixo e aos pés usados pela renderização. Cabeça e tronco consideram a região central; braços e pernas estendidos também recebem área vulnerável durante a extensão e o início do recolhimento. Um seletor compartilhado em `src/engine.js` escolhe a pose para o desenho e para a colisão, inclusive em caminhada, reação agachada e aterrissagem.
+
+O contato ativo continua calibrado no punho/calçado, e a caixa que impede os corpos de se atravessarem é independente das áreas de golpe. Os sons, falas, efeitos temáticos e arquivos de imagem permanecem iguais à versão 2.0.2.

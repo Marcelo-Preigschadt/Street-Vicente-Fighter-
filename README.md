@@ -4,7 +4,11 @@ Jogo de luta 2D para navegador com **Prof. Marcelo** e **Prof Rafael**, criados 
 
 [Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/)
 
-## Combate — versão 2.0
+## Combate — versão 2.1
+
+A revisão 2.1 faz a caminhada começar, parar e inverter no próximo tick, encurta o salto para quarenta quadros de voo e encerra o recuo por duração definida. As áreas vulneráveis de cabeça, tronco e pernas foram medidas nos sprites aprovados e acompanham a mesma pose usada para desenhar o personagem. A área que separa os corpos permanece independente dos braços e pernas estendidos. No canto, o recuo que não cabe na vítima afasta o atacante.
+
+A rasteira só acerta durante a extensão ativa da perna, alcança o calçado visível, deixa a perna vulnerável e pode ser punida se for bloqueada. O salto permite cruzar por cima e troca a orientação ao pousar. Um golpe recebido no ar causa queda; a reação agachada conserva a postura. Após levantar, a proteção curta se aplica a agarrões, permitindo ataques na retomada da luta.
 
 - Seis botões: socos e chutes leves, médios e fortes, com preparação, duração ativa e recuperação diferentes.
 - Agachar + chute executa uma **rasteira baixa com queda**, seguida de tempo no chão e animação de levantar.
@@ -57,11 +61,13 @@ Os comandos abaixo são relativos ao lado para o qual o personagem olha. Inverta
 | Para trás | Defesa alta |
 | Baixo + para trás | Defesa baixa |
 
-Os poderes normais não consomem barra. Só um projétil normal de cada professor pode estar ativo. Acertos, bloqueios e golpes recebidos carregam a barra de super. Botões aceitam comandos enfileirados por 200 ms e preservam esses comandos durante a pausa de impacto.
+Os poderes normais não consomem barra. Só um projétil normal de cada professor pode estar ativo. Acertos, bloqueios e golpes recebidos carregam a barra de super. Botões aceitam comandos enfileirados por 100 ms e preservam esses comandos durante a pausa de impacto. O salto prepara por três quadros; a direção horizontal fica fixa no lançamento. Aterrissar sem ataque recupera em dois quadros, e com ataque em quatro. O antiaéreo conserva seu tempo restante de recuperação depois de tocar o chão.
 
 No celular, os botões aceitam vários dedos simultaneamente, incluindo baixo + chute. Em controles padrão: X/Y/RB são socos; A/B/RT são chutes; direcional ou analógico executa movimento, guarda e comandos; LB defende, Select agarra. Dois controles são suportados no modo local.
 
 A organização dos controles, a defesa alta/baixa e os comandos direcionais seguem as convenções descritas no [guia publicado pela Capcom](https://news.capcomusa.com/lets/browse/street-fighter-iv-faq). O motor, a arte e os parâmetros de combate deste projeto são próprios; não contêm código do motor da Capcom.
+
+Para a revisão de movimento e colisão, foi consultada a [análise técnica do Street Fighter II: World Warrior](https://github.com/ROMArchaeology/sf2-lineage/blob/main/engine/ENGINE.md): locomoção por deslocamento definido, física de salto e seleção de áreas de ataque e vulnerabilidade por pose. Velocidades, tamanhos e tempos deste jogo foram ajustados para os sprites dos professores; não são uma cópia exata dos parâmetros de Ryu ou Ken.
 
 ## Executar e verificar
 
@@ -75,6 +81,6 @@ Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áu
 npm test
 ```
 
-Não é necessário instalar pacotes. Os testes cobrem rasteira, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente.
+Não é necessário instalar pacotes. Os 58 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente.
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.

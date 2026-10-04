@@ -20,7 +20,7 @@ function flying(guardLow = null) {
   const scene = arena(), { game } = scene;
   game.fighters[0].x = 300; game.fighters[1].x = 660;
   if (guardLow !== null) game.setInput(1, { block: true, down: guardLow });
-  game.setInput(0, { right: true, jump: true }); advance(game,.65); game.setInput(0,{}); game.queue(0,'kick'); advance(game,.25);
+  game.setInput(0, { right: true, jump: true }); advance(game,.42); game.setInput(0,{}); game.queue(0,'kick'); advance(game,.23);
   return scene;
 }
 
@@ -38,9 +38,9 @@ test('três forças de soco têm preparação, dano e recuperação diferentes',
 test('baixo + chute executa rasteira, acerta pernas, derruba e permite levantar', () => {
   const {game,events}=arena(); game.setInput(0,{down:true}); game.queue(0,'kick'); advance(game,.03);
   const a=game.fighters[0],b=game.fighters[1]; assert.equal(a.action,'sweep'); assert.equal(a.moveData.level,'low');
-  assert.ok(a.attackbox.y>WORLD.floor-80); until(game,()=>b.knocked); assert.equal(hits(events)[0].move,'sweep');
+  assert.equal(a.attackbox,null); until(game,()=>b.knocked); assert.ok(a.attackbox.y>WORLD.floor-80); assert.equal(hits(events)[0].move,'sweep');
   const hp=b.hp; game.queue(1,'punch'); advance(game,.45); assert.equal(b.action,null); assert.equal(b.hp,hp);
-  until(game,()=>b.wakeTime>0); assert.equal(b.state,'wake'); until(game,()=>b.wakeTime===0); assert.ok(b.invincible>0); advance(game,.2); assert.equal(b.y,WORLD.floor); assert.equal(b.knocked,false);
+  until(game,()=>b.wakeTime>0); assert.equal(b.state,'wake'); until(game,()=>b.wakeTime===0); assert.ok(b.throwInvincible>0); assert.ok(b.hurtboxes.length>0); advance(game,.2); assert.equal(b.y,WORLD.floor); assert.equal(b.knocked,false);
 });
 test('rasteira atravessa a guarda alta mas é bloqueada pela guarda baixa', () => {
   for(const low of [false,true]) { const {game,events}=arena(); game.setInput(0,{down:true}); game.setInput(1,{block:true,down:low}); game.queue(0,'kick'); advance(game,.45);
@@ -62,7 +62,7 @@ test('voadeira exige guarda alta; guarda baixa recebe dano', () => {
 test('salto não pode mudar direção no ar e só aceita um ataque por salto', () => {
   const {game,events}=arena(); game.fighters[1].x=1000; game.setInput(0,{right:true,jump:true}); advance(game,.2); const vx=game.fighters[0].vx;
   game.setInput(0,{left:true}); advance(game,.2); assert.equal(game.fighters[0].vx,vx);
-  game.queue(0,'kick'); advance(game,.46); game.queue(0,'punch'); advance(game,.05);
+  game.queue(0,'kick'); advance(game,.15); assert.ok(game.fighters[0].airborne); game.queue(0,'punch'); advance(game,.03);
   assert.equal(events.filter(e=>e.type==='swing').length,1); until(game,()=>game.fighters[0].y===WORLD.floor); assert.equal(game.fighters[0].airAttackUsed,false);
 });
 test('baixo + soco usa o soco agachado; chute alto passa sobre agachamento', () => {
@@ -123,7 +123,7 @@ test('super acerta em combo e a contagem reinicia depois da recuperação', () =
 });
 test('corpos respeitam paredes, saltos cruzam por cima e a direção vira ao pousar', () => {
   for(const side of ['left','right']) {const {game}=arena();const[a,b]=game.fighters;a.x=side==='left'?110:1058;b.x=a.x+112;game.setInput(side==='left'?1:0,side==='left'?{left:true}:{right:true});advance(game,1);assert.ok(b.x-a.x>=112-1e-8);assert.ok(a.x>=110 && b.x<=1170);}
-  const {game}=arena();game.fighters[0].x=450;game.fighters[1].x=562;game.setInput(0,{jump:true,right:true});advance(game,1.2);assert.ok(game.fighters[0].x>game.fighters[1].x);assert.equal(game.fighters[0].direction,-1);assert.equal(game.fighters[0].y,WORLD.floor);
+  const {game}=arena();game.fighters[0].x=450;game.fighters[1].x=562;game.setInput(0,{jump:true,right:true});advance(game,.15);game.setInput(0,{});advance(game,1.05);assert.ok(game.fighters[0].x>game.fighters[1].x);assert.equal(game.fighters[0].direction,-1);assert.equal(game.fighters[0].y,WORLD.floor);
 });
 test('controle no fim da recuperação é aproveitado; não repete ao segurar ataque', () => {
   const {game,events}=arena();game.fighters[1].x=1000;game.queue(0,'kick');advance(game,.43);game.queue(0,'punch');advance(game,.3);assert.deepEqual(events.filter(e=>e.type==='swing').map(e=>e.move),['kick','punch']);
