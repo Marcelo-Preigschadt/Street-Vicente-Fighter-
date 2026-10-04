@@ -39,6 +39,15 @@ test('segurar para trás perto de um golpe prepara a guarda antes do contato', (
   until(game, () => events.some(e => e.type === 'block')); assert.equal(target.hp, 1000);
 });
 
+test('um golpe que passou por cima não impede recuar durante o recolhimento', () => {
+  const { game, events } = scene(); game.fighters[1].x = 700;
+  game.setInput(1, { right: true, down: true }); game.queue(0, 'kick');
+  until(game, () => game.fighters[0].movePhase === 'recovery'); assert.equal(hits(events).length, 0);
+  const position = game.fighters[1].x;
+  game.setInput(1, { right: true }); step(game);
+  assert.ok(game.fighters[1].x > position); assert.equal(game.fighters[1].state, 'walk');
+});
+
 test('pulo e chute pressionados juntos produzem um único ataque aéreo após a preparação', () => {
   const { game, events } = scene(); game.fighters[1].x = 1000;
   game.setInput(0, { jump: true, right: true }); game.queue(0, 'kick'); advance(game, .025);

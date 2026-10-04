@@ -1,4 +1,4 @@
-import { HURT_PROFILES } from './hitboxes.js?v=6';
+import { HURT_PROFILES } from './hitboxes.js?v=7';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -352,8 +352,8 @@ export class FightEngine {
     else {
       const backwards = movement * f.direction < 0, speed = backwards ? f.character.backSpeed : f.character.speed;
       const opponent = this.fighters[1 - f.slot], enemyStrike = opponent.character.strikes[opponent.action];
-      const nearbyStrike = enemyStrike && opponent.direction === -f.direction && Math.abs(opponent.x - f.x) <= enemyStrike.reach + 60;
-      const nearbyProjectile = this.projectiles.some(p => p.owner !== f.slot && p.direction === -f.direction && Math.abs(p.x - f.x) < 150);
+      const nearbyStrike = enemyStrike && opponent.movePhase !== 'recovery' && opponent.direction === -f.direction && Math.abs(opponent.x - f.x) <= enemyStrike.reach + 60;
+      const nearbyProjectile = this.projectiles.some(p => p.owner !== f.slot && p.direction === -f.direction && (p.x - f.x) * f.direction >= 0 && Math.abs(p.x - f.x) < 150);
       const guardReady = f.guard.active && (nearbyStrike || nearbyProjectile);
       const target = f.input.down || f.input.block || guardReady ? 0 : movement * speed;
       // Arcade walking starts, stops and reverses on the next simulation tick.

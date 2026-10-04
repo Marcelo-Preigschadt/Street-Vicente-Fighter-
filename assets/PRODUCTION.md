@@ -41,3 +41,5 @@ Os poderes são desenhados por Canvas: janelas de código e trilhas binárias pa
 Os quatro atlases aprovados foram mantidos byte a byte. `src/hitboxes.js` registra áreas vulneráveis de cabeça, tronco e pernas para as 16 poses de cada atlas e professor, medidas na silhueta opaca e relativas ao eixo e aos pés usados pela renderização. Cabeça e tronco consideram a região central; braços e pernas estendidos também recebem área vulnerável durante a extensão e o início do recolhimento. Um seletor compartilhado em `src/engine.js` escolhe a pose para o desenho e para a colisão, inclusive em caminhada, reação agachada e aterrissagem.
 
 O contato ativo continua calibrado no punho/calçado, e a caixa que impede os corpos de se atravessarem é independente das áreas de golpe. Os sons, falas, efeitos temáticos e arquivos de imagem permanecem iguais à versão 2.0.2.
+
+Na versão 2.1.1, apenas poses de caminhada/guarda neutra misturam imagens durante a transição. Agachar, defender baixo, aterrissar, levantar e atacar mostram uma única silhueta no quadro correspondente, evitando a sobreposição de um corpo em pé com outro agachado.

@@ -1,4 +1,4 @@
-import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=6';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=7';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -157,8 +157,9 @@ export class Renderer {
     let pose = this.poses.get(key);
     if (!pose) { pose = { current, previous: current, changed: this.clock }; this.poses.set(key, pose); }
     if (pose.current.id !== current.id) { pose.previous = pose.current; pose.current = current; pose.changed = this.clock; }
-    // The active silhouette appears on the contact frame. Only locomotion blends poses.
-    const blend = this.reduced || f.action || ['hit', 'knockdown', 'ko'].includes(f.state) ? 1 : Math.min(1, (this.clock - pose.changed) / .03);
+    // Blend only standing locomotion; stance changes must show one physical silhouette.
+    const locomotion = ['idle', 'walk'].includes(f.state) && /^base:[0-3]$/.test(current.id) && /^base:[0-3]$/.test(pose.previous.id);
+    const blend = this.reduced || !locomotion ? 1 : Math.min(1, (this.clock - pose.changed) / .03);
     const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
     const stride = f.state === 'walk' && !this.reduced ? Math.sin(f.walkTime * Math.PI * 16) * .005 : 0;
     c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing + stride);
