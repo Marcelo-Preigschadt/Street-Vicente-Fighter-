@@ -1,7 +1,8 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=14';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=15';
 
-import { SuperEffects } from './super-fx.js?v=14';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise } from './fight-fx.js?v=14';
+import { SuperEffects } from './super-fx.js?v=15';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=15';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=15';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -21,7 +22,9 @@ export class Renderer {
   }
   async load() {
     const characters = Object.values(CHARACTERS);
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [loadImage(f.sprite), loadImage(f.combatSprite), loadImage(f.walkSprite), loadImage(`assets/${f.id}-style.webp`), loadImage(`assets/${f.id}-motion.webp`), loadImage(`assets/${f.id}-strike-v3.webp`), loadImage(`assets/${f.id}-reaction-v3.webp`), loadImage(`assets/${f.id}-low-v3.webp`)])]);
+    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [
+      loadImage(costumeAsset(f.id,'base',f.sprite)),loadImage(costumeAsset(f.id,'combat',f.combatSprite)),loadImage(f.walkSprite),
+      ...['style','motion','strike','reaction','low'].map(atlas=>loadImage(costumeAsset(f.id,atlas,`assets/${f.id}-${atlas}${['strike','reaction','low'].includes(atlas)?'-v3':''}.webp`)))])]);
     this.background = background;
     characters.forEach((f, i) => {
       const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 8]);
@@ -29,6 +32,8 @@ export class Renderer {
       base.style = this.analyzeStyleSheet(sheets[i * 8 + 3]); base.motion = this.analyzeMotionSheet(sheets[i * 8 + 4]);
       base.strike = this.analyzeTechniqueSheet(sheets[i * 8 + 5],'strike'); base.reaction = this.analyzeTechniqueSheet(sheets[i * 8 + 6],'reaction');
       base.low = this.analyzeTechniqueSheet(sheets[i * 8 + 7],'low');
+      alignCostumeSheet(base,f.id,'base');
+      for(const atlas of ['combat','style','motion','strike','reaction','low'])alignCostumeSheet(base[atlas],f.id,atlas);
     });
   }
   analyzeSheet(image, combat = false, rows = 4, cellPadding = null) {
@@ -162,8 +167,8 @@ export class Renderer {
     this.fightFX.event(e);
     if (e.type === 'hit') {
       const power = ['special','uppercut','super'].includes(e.move);
-      this.shake = this.reduced ? 0 : power ? 8 : e.strength === 2 ? 5 : 2;
-      this.flash = power ? .035 : 0;
+      this.shake = this.reduced ? 0 : e.effect==='chemicalSmoke'?2:power ? 8 : e.strength === 2 ? 5 : 2;
+      this.flash = power&&e.effect!=='chemicalSmoke' ? .035 : 0;
       if(e.counter)this.labels.push({x:e.fighter === 0 ? 168 : 1112,y:306,life:.7,text:'CONTRA-ATAQUE',color:'#ffe58b'});
     }
     if (e.type === 'round') { this.particles = []; this.labels = []; this.shake = 0; this.flash = 0; }
@@ -227,7 +232,9 @@ export class Renderer {
     c.globalAlpha = 1; c.restore();
     if (['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
-      this.drawPowerGlyph(f.x + f.direction * (55 + strength * (release.offset - 55)), f.y - release.height, 10 + strength * 18, f.character.id, false);
+      const x = f.x + f.direction * (55 + strength * (release.offset - 55));
+      if(f.moveData.effect === 'chemicalSmoke')drawChemicalSmoke(c,{x,y:f.y-release.height,radius:8+strength*17,direction:f.direction},this.clock,this.reduced,.65);
+      else this.drawPowerGlyph(x,f.y-release.height,10+strength*18,f.character.id,false);
     }
     if (f.state === 'uppercut') drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
@@ -235,6 +242,7 @@ export class Renderer {
   }
   drawDizzy(f) {
     const c = this.c, angle = this.reduced ? 0 : f.animTime*5;
+    if(f.dizzyCause === 'chemicalSmoke')drawChemicalSmoke(c,{x:f.x,y:f.y-233,radius:35,direction:f.direction},this.clock,this.reduced,.27);
     const { sheet,index } = this.poseFor(f), frame = sheet.frames[index], top = f.y-(frame.h-1)*sheet.scale-18;
     c.save(); c.strokeStyle = '#ffe78977'; c.lineWidth = 2;
     c.beginPath(); c.ellipse(f.x,top,42,10,0,0,Math.PI*2); c.stroke();
@@ -393,7 +401,10 @@ export class Renderer {
     const c = this.c, sheet = this.sheets[f.character.id], frame = sheet.frames[0];
     c.save(); rectangle(c, x, y, 70, 76, 4); c.fillStyle = '#2b3c32'; c.fill(); c.clip();
     if (flip) { c.translate(x * 2 + 70, 0); c.scale(-1, 1); }
-    const headX = frame.x + frame.w * .37, headY = frame.y, headW = frame.w * .45, headH = frame.h * .30;
+    const portrait=COSTUME_LAYOUT[f.character.id]?.base.portrait;
+    const headX=portrait?portrait.x*sheet.image.width-frame.sx:frame.x+frame.w*.37,
+      headY=portrait?portrait.y*sheet.image.height-frame.sy:frame.y,
+      headW=portrait?portrait.w*sheet.image.width:frame.w*.45,headH=portrait?portrait.h*sheet.image.height:frame.h*.30;
     c.drawImage(frame.cutout, headX - frame.x, headY - frame.y, headW, headH, x - 4, y - 1, 80, 81); c.restore();
     c.strokeStyle = f.character.color; c.lineWidth = 2; rectangle(c, x, y, 70, 76, 4); c.stroke();
   }

@@ -15,7 +15,7 @@ O áudio inicial aprovado de “Bora NIT” está preservado em `bora-nit-origin
 | `rafael-special.wav` | Abram as crônicas! |
 | `rafael-uppercut.wav` | Viagem pela história! |
 | `rafael-super.wav` | No meu tempo não era assim! Marcha dos séculos! |
-| `gustavo-special.wav` | Carga liberada! |
+| `gustavo-fumaca-v1.wav` | Névoa atômica! |
 | `gustavo-uppercut.wav` | Vai esquentar! |
 | `gustavo-super.wav` | Reagiu, perdeu! Reação em cadeia! |
 
@@ -40,3 +40,7 @@ Clipes clássicos de Street Fighter, originalmente da Capcom, obtidos em 03/10/2
 | `ko.wav` | `audio/defeat.wav` | Nocaute |
 
 Esses WAV foram copiados sem alteração. A fala “Hadouken” foi removida dos arquivos e do código. A música e os sinais de interface são a composição sintetizada original do projeto.
+
+## Névoa Atômica — 2.7.0
+
+Novo arquivo `gustavo-fumaca-v1.wav`, fala “Névoa atômica!”, gerado em português brasileiro com a mesma voz de catálogo **Mark**, `eleven_v3`, `[shouting]`, `pt-br`, velocidade 1.15, usada nos poderes anteriores de Gustavo. Duração 2,56 s; PCM mono de 16 bits, 22.050 Hz, volume normalizado. Todos os WAV anteriores foram preservados byte a byte, inclusive `gustavo-special.wav` (fala antiga “Carga liberada!”). O mapeamento do especial agora usa o clipe novo; antiaéreo e super permanecem com as falas aprovadas.

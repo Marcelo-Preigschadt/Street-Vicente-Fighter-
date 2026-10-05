@@ -93,3 +93,13 @@ Prompts exatos dos nove atlases finais: `alpha-prompts.json`. O renderer extrai 
 `src/fight-fx.js` desenha clarões de contato direcionais de curta duração, centelha curva de bloqueio, poeira ao pousar, anéis de lançamento, núcleos de energia, trilhas curvas e motivos de código, história e química. Não há números de dano sobre os rostos. Relógios de apresentação avançam no hitstop e ficam parados durante pausa. Limites por lista de efeitos evitam acúmulo. Efeitos decorativos são reduzidos por `prefers-reduced-motion`.
 
 Referências primárias e custos próprios das adaptações de Combo Livre, contra de defesa e levantamento rápido estão em `FIGHTING-STYLES.md`. Cenário, todos os atlases anteriores e todos os WAV continuam byte a byte. Vozes e frases aprovadas não são regeneradas. Os impactos fortes ganham reforço grave sintetizado; as vozes permanecem nos mesmos arquivos e canais.
+
+## Trajes completos — versão 2.7.0
+
+Edições com o built-in `image_gen`, usando cada atlas aprovado como alvo e o novo atlas base como referência do traje. Marcelo: sobretudo longo preto inspirado em Neo Anderson de Matrix, roupas e botas pretas, sem óculos. Gustavo: jaleco branco de químico sobre camiseta bege, jeans e calçados marrons. Identidade facial, cabelo, barba, proporções, poses e ordem dos quadros preservadas. Todos os atlases e WAV anteriores continuam intactos. Prompts completos e alvos: [costume-prompts.json](costume-prompts.json).
+
+Arquivos novos: `assets/{marcelo,gustavo}-{base,combat,style,motion,strike,reaction,low}-costume-v1.webp`. São 14 atlases com 208 poses ativas, RGBA transparente, convertidos para WebP com qualidade 94. As sete famílias cobrem guarda, caminhada, passos, ataques, salto, antiaéreo, queda, recuperação, vitória, reações e tontura.
+
+`src/costume-data.js` mantém eixos anatômicos e escala normalizados dos atlases de referência. O renderer aplica a mesma transformação às roupas editadas: as abas do sobretudo/jaleco não deslocam a pelve nem ampliam as colisões do corpo. Passada e técnicas usam a física e os seletor de pose existentes. O atlas walk legado está preservado; as passadas ativas usam os oito quadros completos da família motion, agora com o traje novo.
+
+Névoa Atômica usa um projétil de raio 30 px e vapor desenhado por Canvas, com lóbulos, curvas e dissipação. As caudas são decorativas; o núcleo dirige as colisões. Impactos adicionam vapor que se dissipa, e a tontura química combina a animação existente, estrelas e névoa residual. Modo de movimento reduzido elimina a oscilação do vapor. Os efeitos param na pausa e são limpos no round. A fala é local, com o preset Mark aprovado, sem mudar os outros clipes.

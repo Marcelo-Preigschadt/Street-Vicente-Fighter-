@@ -1,4 +1,21 @@
 const TAU = Math.PI * 2;
+export function drawChemicalSmoke(c,p,clock,reduced=false,opacity=1){
+  const r=p.radius,t=reduced?0:clock;
+  c.save();c.translate(p.x,p.y);c.scale(p.direction??1,1);
+  // Soft overlapping vapor lobes; trailing wisps are decorative, the leading cloud is the hit sphere.
+  for(let i=11;i>=0;i--){
+    const u=i/11,x=-u*r*2.8+Math.sin(t*3+i*1.7)*r*.1,y=Math.sin(t*2.7+i*2.1)*r*(.13+u*.6);
+    const rr=r*(.94+Math.sin(t*2+i)*.12)*(1-u*.3),g=c.createRadialGradient(x-rr*.2,y-rr*.24,0,x,y,rr);
+    g.addColorStop(0,i%3===0?'#cabbdde8':'#c3e3d5e8');g.addColorStop(.58,i%3===0?'#b3a3cba0':'#97bdaeaf');g.addColorStop(1,'#88ada000');
+    c.globalAlpha=opacity*(1-u*.55);c.fillStyle=g;c.beginPath();c.arc(x,y,rr,0,TAU);c.fill();
+  }
+  c.globalAlpha=opacity*.43;c.strokeStyle='#def9e9';c.lineWidth=1.4;
+  for(let i=0;i<3;i++){
+    const x=-r*(.15+i*.65),y=Math.sin(t*2.5+i*2)*r*.24;
+    c.beginPath();c.moveTo(x-r*.38,y+r*.12);c.bezierCurveTo(x+r*.45,y-r*.6,x+r*.6,y+r*.3,x-r*.1,y+r*.45);c.stroke();
+  }
+  c.restore();
+}
 const glow = (c,x,y,r,color,alpha=.7) => {
   const g=c.createRadialGradient(x,y,0,x,y,r);
   g.addColorStop(0,`#ffffff${Math.round(alpha*255).toString(16).padStart(2,'0')}`);
@@ -8,17 +25,18 @@ const glow = (c,x,y,r,color,alpha=.7) => {
 
 export class FightEffects {
   constructor(){this.clear();}
-  clear(){this.impacts=[];this.casts=[];this.dust=[];}
+  clear(){this.impacts=[];this.casts=[];this.dust=[];this.vapors=[];}
   event(e){
     if(['round','roundEnd','selection'].includes(e.type)){this.clear();return;}
     if(['hit','block','clash'].includes(e.type))this.impacts.push({...e,age:0,duration:e.type==='block'?.19:e.strength===2?.29:.23});
+    if(['hit','block'].includes(e.type)&&e.effect==='chemicalSmoke')this.vapors.push({...e,age:0,duration:e.type==='block'?.42:.8});
     if(e.type==='projectile'||e.type==='special'&&e.move==='uppercut'||['customStart','guardCounter'].includes(e.type))
       this.casts.push({...e,age:0,duration:e.move==='super'?.4:.28});
     if(e.type==='land'&&Number.isFinite(e.x))this.dust.push({...e,age:0,duration:.32});
-    this.impacts=this.impacts.slice(-24);this.casts=this.casts.slice(-16);this.dust=this.dust.slice(-8);
+    this.impacts=this.impacts.slice(-24);this.casts=this.casts.slice(-16);this.dust=this.dust.slice(-8);this.vapors=this.vapors.slice(-8);
   }
   update(dt){
-    for(const key of ['impacts','casts','dust']){
+    for(const key of ['impacts','casts','dust','vapors']){
       for(const fx of this[key])fx.age+=Math.max(0,dt);
       this[key]=this[key].filter(fx=>fx.age<fx.duration);
     }
@@ -31,14 +49,17 @@ export class FightEffects {
     for(const fx of this.casts){
       if(!Number.isFinite(fx.x)||!Number.isFinite(fx.y))continue;
       const p=fx.age/fx.duration,r=18+p*(reduced?35:100);
+      if(fx.effect==='chemicalSmoke'){drawChemicalSmoke(c,{x:fx.x,y:fx.y,radius:24+p*17,direction:fx.direction},fx.age,reduced,(1-p)*.6);continue;}
       c.save();c.globalAlpha=(1-p)*.65;c.strokeStyle=fx.color;c.lineWidth=(1-p)*5+1;
       c.beginPath();c.ellipse(fx.x,fx.y,r*.52,r,0,0,TAU);c.stroke();
       if(!reduced)glow(c,fx.x,fx.y,65*(1-p)+25,fx.color,.25);
       c.restore();
     }
+    for(const fx of this.vapors){const p=fx.age/fx.duration;drawChemicalSmoke(c,{x:fx.x,y:fx.y-p*42,radius:36+p*28,direction:fx.direction},fx.age,reduced,(1-p)*.7);}
     for(const fx of this.impacts)this.drawImpact(c,fx,reduced);
   }
   drawImpact(c,fx,reduced){
+    if(fx.effect==='chemicalSmoke'&&fx.type==='hit')return;
     const p=fx.age/fx.duration,heavy=fx.strength===2||['super','uppercut'].includes(fx.move),power=['special','uppercut','super'].includes(fx.move);
     const radius=(heavy?48:32)*(1+Math.min(.45,p)),fade=Math.pow(1-p,1.5),dir=fx.direction??1;
     c.save();c.translate(fx.x,fx.y);c.scale(dir,1);c.globalAlpha=fade;
@@ -71,6 +92,7 @@ export class FightEffects {
 }
 
 export function drawEnergyProjectile(c,p,character,clock,reduced=false){
+  if(p.effect==='chemicalSmoke')return drawChemicalSmoke(c,p,clock,reduced);
   const r=p.radius,superWave=p.move==='super',color=character.color,accent=character.accent,t=reduced?0:clock;
   c.save();c.translate(p.x,p.y);c.scale(p.direction,1);
   c.globalCompositeOperation='lighter';

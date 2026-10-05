@@ -1,8 +1,8 @@
-# Street Vicente Fighter — 2.6.0
+# Street Vicente Fighter — 2.7.0
 
 Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. Gustavo**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
 
-[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=2.6.0)
+[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=2.7.0)
 
 ## Golpes e reações
 
@@ -54,7 +54,7 @@ Poderes têm núcleo de energia, trilhas curvas, anéis de lançamento e explos�
 | Prof Rafael · História | Crônicas | Pergaminhos e páginas | Abram as crônicas! |
 | Prof Rafael · História | Linha do Tempo | Golpe ascendente com marcos em algarismos romanos | Viagem pela história! |
 | Prof Rafael · História | Marcha dos Séculos | Três escudos históricos, com barra cheia | No meu tempo não era assim! Marcha dos séculos! |
-| Prof. Gustavo · Química | Pulso Iônico | Esfera carregada com elétrons em órbita | Carga liberada! |
+| Prof. Gustavo · Química | Névoa Atômica | Fumaça química que atordoa em um acerto sem defesa | Névoa atômica! |
 | Prof. Gustavo · Química | Reação Exotérmica | Golpe ascendente com calor e bolhas energéticas | Vai esquentar! |
 | Prof. Gustavo · Química | Reação em Cadeia | Três ondas de moléculas ligadas, com barra cheia | Reagiu, perdeu! Reação em cadeia! |
 
@@ -115,3 +115,11 @@ npm test
 Não é necessário instalar pacotes. Os 99 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.
+
+## Trajes e fumaça — 2.7.0
+
+Marcelo veste sobretudo longo preto, inspirado no Neo Anderson de Matrix, calça e botas pretas, sem óculos. Gustavo usa jaleco branco de químico sobre camiseta bege, jeans e calçados marrons. Rostos e estilos de luta mantidos em todas as poses ativas, incluindo a tontura. Rafael e cenário mantidos.
+
+Névoa Atômica substitui o Pulso Iônico no comando de poder de Gustavo: H para P1, L para P2, PODER no toque, ou quarto de círculo + soco. Uma nuvem real atravessa a arena; em um acerto sem defesa causa dano leve e 1,9 s de tontura, após a reação ao golpe. A defesa bloqueia a tontura; saltos e invulnerabilidade respeitam as colisões. Acertar o rival tonto encerra a tontura; ao recuperar-se, ele fica protegido de novo atordoamento por 4 s. A barra continua entre os rounds.
+
+Fala: “Névoa atômica!”, em português brasileiro e com a mesma voz Mark dos demais poderes de Gustavo. Os áudios anteriores continuam intactos.

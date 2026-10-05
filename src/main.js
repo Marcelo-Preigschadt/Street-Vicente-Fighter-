@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=14';
-import { Renderer } from './render.js?v=14';
-import { ArcadeAudio } from './audio.js?v=14';
-import { Inputs } from './input.js?v=14';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=15';
+import { Renderer } from './render.js?v=15';
+import { ArcadeAudio } from './audio.js?v=15';
+import { Inputs } from './input.js?v=15';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -15,7 +15,7 @@ function event(e) {
   if (e.type === 'round') $('announcer').textContent = `Round ${e.round}`;
   if (e.type === 'fight') $('announcer').textContent = 'Lutem!';
   if (e.type === 'special') $('announcer').textContent = `${e.name}. ${e.quote}`;
-  if (e.type === 'dizzy') $('announcer').textContent = `${engine.fighters[e.fighter].character.name} ficou tonto após o combo`;
+  if (e.type === 'dizzy') $('announcer').textContent = `${engine.fighters[e.fighter].character.name} ficou tonto ${e.cause === 'chemicalSmoke' ? 'pela Névoa Atômica' : 'após o combo'}`;
   if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round`;
   if (e.type === 'result') {
     const f = engine.fighters[e.winner]; $('winner-name').textContent = `${f.character.name} venceu!`; $('winner-quote').textContent = f.character.quote;
