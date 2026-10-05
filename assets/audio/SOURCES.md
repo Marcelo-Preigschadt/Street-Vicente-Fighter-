@@ -57,3 +57,7 @@ Novo arquivo `marcelo-sentinela-v1.wav`, fala “Sentinela ativada!”, gerado e
 - `gelton-super-v2.wav`: “A arte está no movimento! Roda das artes!”.
 
 Gelton usa o preset Mark em português brasileiro; são falas sintéticas do personagem, sem clonagem de voz da pessoa da fotografia. WAV PCM local, 24 kHz, mono.
+
+## Correção 2.9.1 — voz brasileira de Gelton
+
+Os clipes Mark de Gelton da 2.9.0 foram rejeitados por sotaque estrangeiro. Foram substituídos por **pt-BR-AntonioNeural**, voz de português brasileiro, via Edge TTS. Textos preservados: “Pincelada cromática!”, “Aú das cores!” e “A arte está no movimento! Roda das artes!”. Arquivos `gelton-special-br-v3.wav`, `gelton-uppercut-br-v3.wav`, `gelton-super-br-v3.wav`. Ritmo +12%, normalização -16 LUFS / pico -1,5 dBTP, PCM mono 16 bits a 24 kHz. Durações 1,139 s, 0,846 s e 3,129 s. Os clipes anteriores permanecem preservados. A partida usa somente os WAV locais.

@@ -1,3 +1,7 @@
+## Correção 2.9.1 — Gelton
+
+Substitui as três falas de Gelton por voz nativa pt-BR. Corrige a cabeça cortada na comemoração e a falha de cabelo na pose invertida usada pelo super e pelo antiaéreo. Mantém os ataques e recalibra silhuetas.
+
 ## Atualização 2.9.0 — Prof. Gelton e Enxame de Drones
 
 Gelton é selecionável como P1 e P2, inclusive como adversário da CPU. Possui 32 poses próprias, ginga, esquiva em negativa, meia-lua, armada, rasteira e aú; os perfis de colisão são medidos das silhuetas de cada pose. Pincelada Cromática: H/L; Aú das Cores: U/; ; Roda das Artes com barra inteira: Q/. . As teclas de golpes permanecem as mesmas do elenco.

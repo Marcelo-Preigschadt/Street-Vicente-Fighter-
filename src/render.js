@@ -1,12 +1,14 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=17';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=18';
 
-import { SuperEffects } from './super-fx.js?v=17';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=17';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=17';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=17';
-import { GELTON_LAYOUT } from './gelton-layout.js?v=17';
-import { drawPaintStroke, drawArtRise } from './art-fx.js?v=17';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=17';
+import { SuperEffects } from './super-fx.js?v=18';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=18';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=18';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=18';
+import { GELTON_LAYOUT } from './gelton-layout.js?v=18';
+import { drawPaintStroke, drawArtRise } from './art-fx.js?v=18';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=18';
+
+export const CAPOEIRA_CELL_MARGIN = 96;
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -45,9 +47,10 @@ export class Renderer {
     await this.loadCapoeira();
   }
   async loadCapoeira() {
-    const [baseImage,combatImage]=await Promise.all([loadImage(CHARACTERS.gelton.sprite),loadImage(CHARACTERS.gelton.combatSprite)]);
-    const base=this.sheets.gelton=this.analyzeSheet(baseImage,false,4,40);
-    base.combat=this.analyzeSheet(combatImage,false,4,64);
+    const [baseImage,combatImage,handstandImage]=await Promise.all([loadImage(CHARACTERS.gelton.sprite),loadImage(CHARACTERS.gelton.combatSprite),loadImage(CHARACTERS.gelton.superSprite)]);
+    const base=this.sheets.gelton=this.analyzeSheet(baseImage,false,4,CAPOEIRA_CELL_MARGIN);
+    base.combat=this.analyzeSheet(combatImage,false,4,CAPOEIRA_CELL_MARGIN);
+    base.combat.frames[9]=this.analyzeSheet(handstandImage,false,1,0,1).frames[0];
     // Calibrate complete poses individually from their body dimensions, preserving anatomy.
     const scales=GELTON_LAYOUT;
     for(const [atlas,sheet] of [['base',base],['combat',base.combat]])for(const [i,frame]of sheet.frames.entries()) {
@@ -70,15 +73,15 @@ export class Renderer {
       }
     }
   }
-  analyzeSheet(image, combat = false, rows = 4, cellPadding = null) {
+  analyzeSheet(image, combat = false, rows = 4, cellPadding = null, columns = 4) {
     const frames = [];
     const offscreen = document.createElement('canvas'); offscreen.width = image.width; offscreen.height = image.height;
     const c = offscreen.getContext('2d', { willReadFrequently: true }); c.drawImage(image, 0, 0);
     const pixels = c.getImageData(0, 0, image.width, image.height).data;
-    for (let i = 0; i < 4 * rows; i++) {
-      const column = i % 4, row = Math.floor(i / 4);
-      const sx = Math.round(column * image.width / 4), sy = Math.round(row * image.height / rows);
-      const ex = Math.round((column + 1) * image.width / 4), ey = Math.round((row + 1) * image.height / rows);
+    for (let i = 0; i < columns * rows; i++) {
+      const column = i % columns, row = Math.floor(i / columns);
+      const sx = Math.round(column * image.width / columns), sy = Math.round(row * image.height / rows);
+      const ex = Math.round((column + 1) * image.width / columns), ey = Math.round((row + 1) * image.height / rows);
       // Generated atlases can have a few pixels crossing nominal cell borders.
       // Find the largest connected silhouette in a padded cell, excluding neighboring-pose fragments.
       const padding = cellPadding ?? (combat ? 64 : 12);

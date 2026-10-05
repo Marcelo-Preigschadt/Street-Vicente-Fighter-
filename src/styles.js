@@ -1,6 +1,6 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=17';
-import { CAPOEIRA_STRIKES } from './capoeira.js?v=17';
-import { techniqueStrike } from './technique.js?v=17';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=18';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=18';
+import { techniqueStrike } from './technique.js?v=18';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.

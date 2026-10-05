@@ -1,4 +1,4 @@
-import { TECHNIQUE_HURT, TECHNIQUE_STRIKES } from './technique-data.js?v=17';
+import { TECHNIQUE_HURT, TECHNIQUE_STRIKES } from './technique-data.js?v=18';
 
 // Full drawings share their body axis with collision measurements. No limb warping.
 export function techniqueRow(f) {

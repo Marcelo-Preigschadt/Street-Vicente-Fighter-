@@ -1,11 +1,11 @@
-import { HURT_PROFILES } from './hitboxes.js?v=17';
-import { techniquePose, techniqueHurt } from './technique.js?v=17';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=17';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=17';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=17';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=17';
-export { FIGHTING_STYLES } from './styles.js?v=17';
-export { SENTINEL } from './sentinel.js?v=17';
+import { HURT_PROFILES } from './hitboxes.js?v=18';
+import { techniquePose, techniqueHurt } from './technique.js?v=18';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=18';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=18';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=18';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=18';
+export { FIGHTING_STYLES } from './styles.js?v=18';
+export { SENTINEL } from './sentinel.js?v=18';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -38,10 +38,10 @@ export const CHARACTERS = Object.freeze({
     voiceDuration: {"special": 2.56, "uppercut": 1.73, "super": 3.19},
     strikes: {"punch": {"near": 42, "reach": 147, "height": 195, "h": 42}, "kick": {"near": 60, "reach": 192, "height": 241, "h": 77}, "crouchPunch": {"near": 35, "reach": 158, "height": 130, "h": 42}, "sweep": {"near": 35, "reach": 192, "height": 45, "h": 74}, "airPunch": {"near": 30, "reach": 147, "height": 168, "h": 41}, "airKick": {"near": 30, "reach": 176, "height": 115, "h": 75}, "uppercut": {"near": -25, "reach": 75, "height": 316, "h": 86}}, projectile: {"offset": 177, "height": 185} },
   gelton: {id:'gelton',name:'Prof. Gelton',quote:'A arte está no movimento!',color:'#f5b75a',accent:'#ee7caf',
-    speed:372,backSpeed:334,jumpSpeed:645,power:1.01,sprite:'assets/gelton-base-v1.webp',combatSprite:'assets/gelton-combat-v1.webp',
+    speed:372,backSpeed:334,jumpSpeed:645,power:1.01,sprite:'assets/gelton-base-v1.webp',combatSprite:'assets/gelton-combat-v1.webp',superSprite:'assets/gelton-handstand-v2.webp',
     powers:{special:'Pincelada Cromática',uppercut:'Aú das Cores',super:'Roda das Artes'},
     powerQuotes:{special:'Pincelada cromática!',uppercut:'Aú das cores!',super:'A arte está no movimento! Roda das artes!'},
-    voiceDuration:{special:2.32,uppercut:1.76,super:3.84},
+    voiceDuration:{special:1.139,uppercut:0.846,super:3.129},
     strikes:{punch:{near:35,reach:158,height:218,h:42},kick:{near:48,reach:233,height:237,h:68},
       crouchPunch:{near:20,reach:146,height:118,h:46},sweep:{near:15,reach:237,height:54,h:66},
       airPunch:{near:25,reach:168,height:210,h:46},airKick:{near:35,reach:235,height:164,h:76},
