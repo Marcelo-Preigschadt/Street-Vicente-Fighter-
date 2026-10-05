@@ -1,8 +1,10 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=15';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=16';
 
-import { SuperEffects } from './super-fx.js?v=15';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=15';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=15';
+import { SuperEffects } from './super-fx.js?v=16';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=16';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=16';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=16';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=16';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -18,23 +20,40 @@ export class Renderer {
     this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.superFX = new SuperEffects();
     this.fightFX = new FightEffects();
+    this.portraits = {};
 
   }
   async load() {
     const characters = Object.values(CHARACTERS);
     const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [
-      loadImage(costumeAsset(f.id,'base',f.sprite)),loadImage(costumeAsset(f.id,'combat',f.combatSprite)),loadImage(f.walkSprite),
+      loadImage(costumeAsset(f.id,'base',f.sprite)),loadImage(costumeAsset(f.id,'combat',f.combatSprite)),
       ...['style','motion','strike','reaction','low'].map(atlas=>loadImage(costumeAsset(f.id,atlas,`assets/${f.id}-${atlas}${['strike','reaction','low'].includes(atlas)?'-v3':''}.webp`)))])]);
     this.background = background;
-    characters.forEach((f, i) => {
-      const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 8]);
-      base.combat = this.analyzeSheet(sheets[i * 8 + 1],true); base.walk = this.analyzeSheet(sheets[i * 8 + 2],false,2);
-      base.style = this.analyzeStyleSheet(sheets[i * 8 + 3]); base.motion = this.analyzeMotionSheet(sheets[i * 8 + 4]);
-      base.strike = this.analyzeTechniqueSheet(sheets[i * 8 + 5],'strike'); base.reaction = this.analyzeTechniqueSheet(sheets[i * 8 + 6],'reaction');
-      base.low = this.analyzeTechniqueSheet(sheets[i * 8 + 7],'low');
+    for(const [i,f] of characters.entries()) {
+      const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 7]);
+      base.combat = this.analyzeSheet(sheets[i * 7 + 1],true);
+      base.style = this.analyzeStyleSheet(sheets[i * 7 + 2]); base.motion = this.analyzeMotionSheet(sheets[i * 7 + 3]);
+      base.strike = this.analyzeTechniqueSheet(sheets[i * 7 + 4],'strike'); base.reaction = this.analyzeTechniqueSheet(sheets[i * 7 + 5],'reaction');
+      base.low = this.analyzeTechniqueSheet(sheets[i * 7 + 6],'low');
       alignCostumeSheet(base,f.id,'base');
       for(const atlas of ['combat','style','motion','strike','reaction','low'])alignCostumeSheet(base[atlas],f.id,atlas);
-    });
+      await this.prepareVisualCache(f.id);
+      for(let asset=0;asset<7;asset++)sheets[i*7+asset]=null;
+    }
+  }
+  async prepareVisualCache(id) {
+    const base=this.sheets[id],color=CHARACTERS[id].color;
+    this.portraits[id]=await cachePortrait(base,COSTUME_LAYOUT[id]?.base.portrait);
+    for(const atlas of ['base','combat','style','motion','strike','reaction','low']) {
+      const sheet=atlas==='base'?base:base[atlas];
+      for(const [index,frame] of sheet.frames.entries()) {
+        const variants=[];
+        if(atlas==='base'&&[4,12,13].includes(index)||atlas==='combat'&&[10,11].includes(index))variants.push('power');
+        if(atlas==='reaction'&&index>=4||atlas==='base'&&index===15)variants.push('flash');
+        if(atlas==='reaction'&&[0,14].includes(index))variants.push('guard');
+        if(variants.length)await cacheSpriteEffects(sheet,frame,color,variants);
+      }
+    }
   }
   analyzeSheet(image, combat = false, rows = 4, cellPadding = null) {
     const frames = [];
@@ -187,7 +206,14 @@ export class Renderer {
         walkBlend: f.prevWalkBlend + (f.walkBlend - f.prevWalkBlend) * alpha, actionTime: f.actionTime }));
       for (const f of fighters) this.drawShadow(f);
       for (const f of fighters.sort((a, b) => a.y - b.y)) this.drawFighter(f);
+      for (const drone of engine.drones) {
+        const altitude = WORLD.floor - drone.y;
+        c.fillStyle = `rgba(8,16,16,${Math.max(.08, .22 - altitude / 1800)})`;
+        c.beginPath(); c.ellipse(drone.x, WORLD.floor + 3, 24, 4, 0, 0, Math.PI * 2); c.fill();
+        drawSentinel(c, drone, this.reduced);
+      }
       for (const p of engine.projectiles) this.drawProjectile({ ...p, x: p.prevX + (p.x - p.prevX) * alpha });
+      for (const laser of engine.lasers) drawSentinelLaser(c, laser, this.reduced);
       this.fightFX.draw(c,this.reduced);
       this.drawParticles(dt);
       this.drawSuperScene(fighters);
@@ -219,14 +245,14 @@ export class Renderer {
     // Arcade poses stay opaque. Position interpolation supplies smooth movement.
     const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
     c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing);
-    if (['special', 'super', 'uppercut'].includes(f.state)) { c.shadowColor = f.character.color; c.shadowBlur = 12; }
-    if (f.flash > 0) c.filter = 'brightness(1.5) saturate(.6)';
-    if (f.blockFlash > 0) c.filter = 'brightness(1.3) sepia(.1)';
+    c.shadowBlur = 0; c.filter = 'none';
     if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
     const drawPose = (selected, opacity) => {
       const { sheet, index } = selected, frame = sheet.frames[index], scale = frame.scale ?? sheet.scale; c.globalAlpha = opacity;
-      c.drawImage(frame.cutout, 0, 0, frame.w, frame.h,
-        (frame.x - frame.anchor) * scale, (frame.y - frame.bottom) * scale, frame.w * scale, frame.h * scale);
+      const variant=f.blockFlash>0?'guard':f.flash>0?'flash':['special','super','uppercut','drone'].includes(f.state)?'power':null;
+      const bitmap=frame.effects?.[variant];
+      if(bitmap)c.drawImage(bitmap.image,(frame.x-frame.anchor)*scale-bitmap.padding,(frame.y-frame.bottom)*scale-bitmap.padding);
+      else c.drawImage(frame.cutout,0,0,frame.w,frame.h,(frame.x-frame.anchor)*scale,(frame.y-frame.bottom)*scale,frame.w*scale,frame.h*scale);
     };
     drawPose(current, 1);
     c.globalAlpha = 1; c.restore();
@@ -281,7 +307,7 @@ export class Renderer {
         for (let i = 0; i < 2; i++) { const radius = Math.max(28, 210 - progress * 178 + i * 28); c.beginPath(); c.ellipse(x, y, radius, radius * .66, -.3, 0, Math.PI * 2); c.stroke(); }
       }
       // The caster remains fully opaque and lit against the darkened fight.
-      c.globalAlpha = 1; c.shadowColor = color; c.shadowBlur = 24 * fade; this.drawFighter(f); c.shadowBlur = 0;
+      c.globalAlpha = 1; this.drawFighter(f);
       if (!this.reduced) {
         c.globalAlpha = fade * .85; c.strokeStyle = '#f6ffff'; c.lineWidth = 4;
         const star = 16 + 20 * (1 - progress);
@@ -398,14 +424,10 @@ export class Renderer {
     c.globalAlpha = 1;
   }
   drawPortrait(f, x, y, flip = false) {
-    const c = this.c, sheet = this.sheets[f.character.id], frame = sheet.frames[0];
+    const c = this.c;
     c.save(); rectangle(c, x, y, 70, 76, 4); c.fillStyle = '#2b3c32'; c.fill(); c.clip();
     if (flip) { c.translate(x * 2 + 70, 0); c.scale(-1, 1); }
-    const portrait=COSTUME_LAYOUT[f.character.id]?.base.portrait;
-    const headX=portrait?portrait.x*sheet.image.width-frame.sx:frame.x+frame.w*.37,
-      headY=portrait?portrait.y*sheet.image.height-frame.sy:frame.y,
-      headW=portrait?portrait.w*sheet.image.width:frame.w*.45,headH=portrait?portrait.h*sheet.image.height:frame.h*.30;
-    c.drawImage(frame.cutout, headX - frame.x, headY - frame.y, headW, headH, x - 4, y - 1, 80, 81); c.restore();
+    c.drawImage(this.portraits[f.character.id],x-4,y-1); c.restore();
     c.strokeStyle = f.character.color; c.lineWidth = 2; rectangle(c, x, y, 70, 76, 4); c.stroke();
   }
   drawHUD(engine) {

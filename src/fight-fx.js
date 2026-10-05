@@ -29,8 +29,9 @@ export class FightEffects {
   event(e){
     if(['round','roundEnd','selection'].includes(e.type)){this.clear();return;}
     if(['hit','block','clash'].includes(e.type))this.impacts.push({...e,age:0,duration:e.type==='block'?.19:e.strength===2?.29:.23});
+    if(e.type==='droneDestroyed')this.impacts.push({...e,type:'clash',strength:0,age:0,duration:.23});
     if(['hit','block'].includes(e.type)&&e.effect==='chemicalSmoke')this.vapors.push({...e,age:0,duration:e.type==='block'?.42:.8});
-    if(e.type==='projectile'||e.type==='special'&&e.move==='uppercut'||['customStart','guardCounter'].includes(e.type))
+    if(e.type==='projectile'||e.type==='special'&&e.move==='uppercut'||['customStart','guardCounter','droneDeploy','droneFire'].includes(e.type))
       this.casts.push({...e,age:0,duration:e.move==='super'?.4:.28});
     if(e.type==='land'&&Number.isFinite(e.x))this.dust.push({...e,age:0,duration:.32});
     this.impacts=this.impacts.slice(-24);this.casts=this.casts.slice(-16);this.dust=this.dust.slice(-8);this.vapors=this.vapors.slice(-8);
@@ -60,6 +61,11 @@ export class FightEffects {
   }
   drawImpact(c,fx,reduced){
     if(fx.effect==='chemicalSmoke'&&fx.type==='hit')return;
+    if(fx.effect==='sentinelLaser'&&fx.type==='hit') {
+      const fade=1-fx.age/fx.duration;c.save();c.globalAlpha=fade;c.strokeStyle='#dfffad';c.lineWidth=2;
+      for(let i=0;i<5;i++){const a=i*TAU/5,r=7+fx.age*65;c.beginPath();c.moveTo(fx.x+Math.cos(a)*r*.4,fx.y+Math.sin(a)*r*.4);c.lineTo(fx.x+Math.cos(a)*r,fx.y+Math.sin(a)*r);c.stroke();}
+      c.restore();return;
+    }
     const p=fx.age/fx.duration,heavy=fx.strength===2||['super','uppercut'].includes(fx.move),power=['special','uppercut','super'].includes(fx.move);
     const radius=(heavy?48:32)*(1+Math.min(.45,p)),fade=Math.pow(1-p,1.5),dir=fx.direction??1;
     c.save();c.translate(fx.x,fx.y);c.scale(dir,1);c.globalAlpha=fade;

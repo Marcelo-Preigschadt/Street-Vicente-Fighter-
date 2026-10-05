@@ -1,13 +1,13 @@
 const KEYMAP = [
   { KeyA: 'left', KeyD: 'right', KeyW: 'jump', KeyS: 'down', KeyR: 'block',
     KeyT: 'punch:0', KeyF: 'punch:1', KeyY: 'punch:2', KeyV: 'kick:0', KeyG: 'kick:1', KeyB: 'kick:2',
-    KeyH: 'special:1', KeyU: 'uppercut:1', KeyQ: 'super:1', KeyE: 'throw:1', KeyC:'custom:1', KeyX:'guardCounter:1' },
+    KeyH: 'special:1', KeyU: 'uppercut:1', KeyQ: 'super:1', KeyE: 'throw:1', KeyC:'custom:1', KeyX:'guardCounter:1', KeyZ:'drone:1' },
   { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyO: 'block',
     Numpad7: 'punch:0', Numpad8: 'punch:1', Numpad9: 'punch:2', Numpad4: 'kick:0', Numpad5: 'kick:1', Numpad6: 'kick:2',
-    KeyJ: 'punch:1', KeyK: 'kick:1', KeyL: 'special:1', Semicolon: 'uppercut:1', Period: 'super:1', KeyN: 'throw:1', KeyM:'custom:1', Comma:'guardCounter:1' },
+    KeyJ: 'punch:1', KeyK: 'kick:1', KeyL: 'special:1', Semicolon: 'uppercut:1', Period: 'super:1', KeyN: 'throw:1', KeyM:'custom:1', Comma:'guardCounter:1', KeyI:'drone:1' },
 ];
 const DIRECTIONS = new Set(['left', 'right', 'down', 'jump', 'block']);
-const PAD_ATTACKS = [[2, 'punch', 0], [3, 'punch', 1], [5, 'punch', 2], [0, 'kick', 0], [1, 'kick', 1], [7, 'kick', 2], [8, 'throw', 1], [9,'custom',1], [11,'guardCounter',1]];
+const PAD_ATTACKS = [[2, 'punch', 0], [3, 'punch', 1], [5, 'punch', 2], [0, 'kick', 0], [1, 'kick', 1], [7, 'kick', 2], [8, 'throw', 1], [9,'custom',1], [11,'guardCounter',1], [10,'drone',1]];
 export class Inputs {
   constructor(engine) {
     this.engine = engine; this.held = new Set(); this.touch = new Map(); this.gamepadPrevious = [{}, {}]; this.padInput = [{}, {}];

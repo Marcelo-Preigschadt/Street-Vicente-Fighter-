@@ -1,8 +1,10 @@
-import { HURT_PROFILES } from './hitboxes.js?v=15';
-import { techniquePose, techniqueHurt } from './technique.js?v=15';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=15';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=15';
-export { FIGHTING_STYLES } from './styles.js?v=15';
+import { HURT_PROFILES } from './hitboxes.js?v=16';
+import { techniquePose, techniqueHurt } from './technique.js?v=16';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=16';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=16';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=16';
+export { FIGHTING_STYLES } from './styles.js?v=16';
+export { SENTINEL } from './sentinel.js?v=16';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -12,9 +14,9 @@ export const CHEMISTRY = Object.freeze({ smokeDuration:1.9, smokeRadius:30 });
 export const CHARACTERS = Object.freeze({
   marcelo: { id: 'marcelo', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
     speed: 324, backSpeed: 240, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
-    powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Kernel Panic' },
-    powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Pane no sistema!' },
-    voiceDuration: { special: 1.84, uppercut: 2.40, super: 4.30 },
+    powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Kernel Panic', drone: 'Sentinela Automática' },
+    powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Pane no sistema!', drone: 'Sentinela ativada!' },
+    voiceDuration: { special: 1.84, uppercut: 2.40, super: 4.30, drone: 3.20 },
     strikes: { punch: { near: 42, reach: 155, height: 200, h: 32 }, kick: { near: 60, reach: 201, height: 251, h: 48 },
       crouchPunch: { near: 35, reach: 161, height: 140, h: 34 }, sweep: { near: 35, reach: 208, height: 49, h: 54 },
       airPunch: { near: 30, reach: 170, height: 188, h: 34 }, airKick: { near: 30, reach: 187, height: 128, h: 62 },
@@ -67,20 +69,24 @@ function moveData(name, strength = 1, characterId = null) {
     stun: frames(30), blockstun: frames(22), push: 420, meter: 10, level: 'mid', knockdown: true, launch: 890, invincibility: frames(8) };
   if (name === 'super') return { name, strength, startup: frames(8), active: frames(17), recovery: frames(30), damage: 85,
     stun: frames(26), blockstun: frames(18), push: 250, meter: 0, level: 'mid', projectile: true, chip: .1, speed: 860, cost: 100, invincibility: frames(10) };
+  if (name === 'drone') return characterId && characterId !== 'marcelo' ? null : {
+    name, strength:0, startup:frames(14), active:frames(1), recovery:frames(20),
+    damage:30, stun:frames(14), blockstun:frames(10), push:100, meter:3,
+    level:'mid', chip:0, summon:true, effect:'sentinelLaser' };
   if (name === 'throw') return { name, strength, startup: frames(5), active: frames(2), recovery: frames(23), damage: 130,
     stun: frames(30), blockstun: 0, push: 650, meter: 9, level: 'throw', knockdown: true, launch: 490 };
   if (name === 'guardCounter') return { name, strength:1, startup:frames(5), active:frames(5), recovery:frames(24), damage:65,
     stun:frames(25), blockstun:frames(12), push:450, meter:0, level:'mid', knockdown:true, launch:330, invincibility:frames(10) };
   return null;
 }
-export const MOVES = Object.freeze(Object.fromEntries([...Object.keys(NORMALS), 'special', 'uppercut', 'super', 'throw', 'guardCounter'].map(name => [name, moveData(name)])));
+export const MOVES = Object.freeze(Object.fromEntries([...Object.keys(NORMALS), 'special', 'uppercut', 'super', 'drone', 'throw', 'guardCounter'].map(name => [name, moveData(name)])));
 export const ALPHA = Object.freeze({ customCost:50, customDuration:2.5, customLimit:8, guardCost:25 });
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const approach = (value, target, step) => value + clamp(target - value, -step, step);
 const overlaps = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 const idleInput = () => ({ left: false, right: false, down: false, jump: false, block: false });
 const LEFT_WALL = COMBAT.leftWall, RIGHT_WALL = COMBAT.rightWall, BODY_WIDTH = 112;
-const POWERS = new Set(['special', 'uppercut', 'super']);
+const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
@@ -107,6 +113,7 @@ export function fighterPose(f) {
     case 'ko': case 'knockdown': index = 15; break;
     case 'punch': index = extended ? 7 : 6; break;
     case 'kick': index = extended ? 9 : 8; break;
+    case 'drone': index = f.airborne ? 4 : m && f.actionTime >= m.startup ? 13 : 12; break;
     case 'special': case 'super': index = m && f.actionTime >= m.startup ? 13 : 12; break;
     default: index = Math.floor(f.animTime * 3) % 2;
   }
@@ -178,6 +185,7 @@ export class FightEngine {
   constructor({ random = Math.random, onEvent = () => {} } = {}) {
     this.random = random; this.onEvent = onEvent; this.phase = 'selection'; this.paused = false; this.time = 0;
     this.fighters = [new Fighter('marcelo', 0), new Fighter('rafael', 1)]; this.projectiles = []; this.freeze = 0;
+    this.drones = []; this.lasers = []; this.nextDroneId = 1;
     this.wallTransfers = [];
     this.ai = { timer: 0, input: idleInput(), actionTimer: 0 }; this.cpu = true;
   }
@@ -190,7 +198,7 @@ export class FightEngine {
   }
   newRound() {
     // Keep accumulated super charge for the match; start() creates fresh fighters.
-    this.fighters.forEach(f => f.reset(f.meter)); this.projectiles = []; this.freeze = 0; this.timer = 90;
+    this.fighters.forEach(f => f.reset(f.meter)); this.projectiles = []; this.drones = []; this.lasers = []; this.nextDroneId = 1; this.freeze = 0; this.timer = 90;
     this.phase = 'intro'; this.phaseTime = 0; this.time = 0; this.roundWinner = null;
     this.event('round', { round: this.round });
   }
@@ -231,6 +239,10 @@ export class FightEngine {
     if (move === 'custom') { this.startCustom(f); return; }
     if (move === 'guardCounter') { this.guardCounter(f); return; }
     if (!MOVES[move]) return;
+    if (move === 'drone' && f.character.id !== 'marcelo') return;
+    if (move === 'punch' && f.character.id === 'marcelo' && this.motion(f, [2, 1, 4])) {
+      move = 'drone'; f.directions = []; f.lastDirection = 5;
+    }
     if (move === 'punch' && !f.airborne) {
       if (f.meter >= 100 && this.motion(f, [2, 3, 6, 2, 3, 6], .75)) move = 'super';
       else if (this.motion(f, [6, 2, 3])) move = 'uppercut';
@@ -250,13 +262,15 @@ export class FightEngine {
     const move = this.contextualMove(f, baseMove), m = moveData(move, strength, f.character.id);
     if (!m || f.hp <= 0 || f.hitstun > 0 || f.blockstun > 0 || f.knocked || f.wakeTime > 0 || f.landing > 0 || f.preJump > 0 || f.dizzyPending || f.dizzyTime > 0 || f.state === 'dizzy' || (f.action && !cancel)) return false;
     if (f.footwork && (f.footwork.kind !== 'advance' || f.footwork.time < f.footwork.cancelAt)) return false;
-    if (f.airborne && (!move.startsWith('air') || f.airAttackUsed)) return false;
+    if (f.airborne && ((!move.startsWith('air') && move !== 'drone') || f.airAttackUsed)) return false;
     if (!f.airborne && move.startsWith('air')) return false;
     if (!f.airborne && f.input.block && f.customTime <= 0 && move !== 'guardCounter') return false;
     if (move === 'guardCounter' && !f.guardCounterAuthorized) return false;
     if (f.customTime > 0 && (f.customMoves >= ALPHA.customLimit || ['throw','super'].includes(move))) return false;
     if (m.cost && f.meter < m.cost) return false;
     if (move === 'special' && this.projectiles.some(p => p.owner === f.slot && p.move === 'special' && p.life > 0)) return false;
+    if (move === 'drone' && this.drones.some(d => d.owner === f.slot && !d.dead)) return false;
+    if (move === 'drone') m.airborneDeployment = f.airborne;
     const normalChain = cancel && !!NORMALS[move];
     if (f.customTime > 0) { f.customMoves++; m.recovery = Math.max(frames(6), m.recovery * .55); m.meter = 0; }
     f.chain = NORMALS[move] ? normalChain ? [...f.chain, `${move}:${m.strength}`] : [`${move}:${m.strength}`] : [];
@@ -344,7 +358,10 @@ export class FightEngine {
     ai.timer = .11 + this.random() * .13;
     const dist = Math.abs(f.x - foe.x), toward = Math.sign(foe.x - f.x), id = f.character.id;
     const [near,far] = FOOTWORK[id].range;
-    const threat = foe.action && dist < 260, incoming = this.projectiles.some(p => p.owner !== f.slot && Math.abs(p.x - f.x) < 310);
+    const threat = foe.action && dist < 260, incoming = this.projectiles.some(p => p.owner !== f.slot && Math.abs(p.x - f.x) < 310)
+      || this.drones.some(d => d.owner !== f.slot && !d.dead && !d.fired && d.age >= SENTINEL.delay - .45
+        && (f.x - d.x) * d.direction > 0 && Math.abs(d.y - (f.y - 145)) < 150);
+    const hasDrone = this.drones.some(d => d.owner === f.slot && !d.dead);
     ai.input = idleInput();
     // Boxing retreats into counters; kung fu closes; kickboxing protects kicking distance.
     if (f.blockstun > 0 && f.meter >= ALPHA.guardCost && dist < 180 && this.random() < .18) { this.guardCounter(f); return; }
@@ -359,16 +376,23 @@ export class FightEngine {
     if (dist > 240 && dist < 480 && !incoming && this.random() < (id === 'gustavo' ? .2 : id === 'rafael' ? .02 : .07)) ai.input.jump = true;
     if (!ai.input.block && dist < far && this.random() < (id === 'gustavo' ? .2 : .12)) ai.input.down = true;
     this.setInput(1, ai.input);
+    if (id === 'marcelo' && f.canAct && !f.airborne && !hasDrone && !ai.input.block && !ai.input.jump
+      && (foe.knocked || foe.wakeTime > 0) && dist > 180 && dist < 700) {
+      this.queue(1, 'drone'); ai.actionTimer = .6; return;
+    }
     if (f.canAct && dist > far + 60 && dist < 450 && !ai.input.block && !ai.input.jump && this.random() < (id === 'marcelo' ? .35 : .12)) {
       if (this.beginFootwork(f,'advance')) return;
     }
     if (ai.input.block || ai.actionTimer > 0 || (!f.canAct && !f.airborne)) return;
-    if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
+    if (id === 'marcelo' && f.airborne && f.canAct && !f.airAttackUsed && !hasDrone && f.vy < 0 && dist > 240 && this.random() < .2) {
+      this.queue(1, 'drone'); ai.actionTimer = .6;
+    }
+    else if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
     else if (f.canAct && !f.airborne) {
       if (foe.airborne && dist < 210 && this.random() < .55) this.queue(1, 'uppercut');
       else if (f.meter >= 100 && dist > 210 && this.random() < .6) this.queue(1, 'super');
       else if(f.meter >= ALPHA.customCost && f.customTime <= 0 && dist < 190 && (foe.dizzyTime > 0 || foe.movePhase === 'recovery') && this.random() < .35) this.startCustom(f);
-      else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, 'special');
+      else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, id === 'marcelo' && !hasDrone && this.random() < .4 ? 'drone' : 'special');
       else if (dist < 140 && this.random() < (id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
       else if (dist < (id === 'gustavo' ? 255 : 200)) {
         if (id === 'gustavo' && dist > 175) this.queue(1,'kick',this.random() < .3 ? 2 : 1);
@@ -427,7 +451,7 @@ export class FightEngine {
     const contacts = [];
     for (const f of this.fighters) {
       const m = f.moveData;
-      if (!f.action || f.actionHit || m.projectile || f.actionTime < m.startup || f.actionTime >= m.startup + m.active) continue;
+      if (!f.action || f.actionHit || m.projectile || m.summon || f.actionTime < m.startup || f.actionTime >= m.startup + m.active) continue;
       const target = this.fighters[1 - f.slot];
       if (m.level === 'throw') {
         if (!target.airborne && !target.knocked && target.wakeTime <= 0 && target.invincible <= 0 && target.throwInvincible <= 0 && target.hitstun <= 0 && target.blockstun <= 0
@@ -437,6 +461,10 @@ export class FightEngine {
         continue;
       }
       const strike = f.attackbox, body = strike && target.hurtboxes.find(box => overlaps(strike, box));
+      const drone = strike && this.drones.find(d => d.owner !== f.slot && !d.dead && !d.fired && overlaps(strike, droneHitbox(d)));
+      if (drone && (!body || (drone.x - f.direction * SENTINEL.bodyWidth / 2 - (f.direction > 0 ? body.x : body.x + body.w)) * f.direction < 0)) {
+        f.actionHit = true; f.contactTime = this.time; this.destroyDrone(drone); continue;
+      }
       if (body) {
         f.actionHit = true;
         contacts.push({ attacker: f, target, move: f.action, data: m, x: clamp(f.x + f.direction * styleStrike(f).reach, body.x, body.x + body.w),
@@ -444,6 +472,7 @@ export class FightEngine {
       }
     }
     this.updateProjectiles(dt, contacts);
+    this.updateDrones(dt, contacts);
     // Snapshot posture so simultaneous contacts trade and use the same facing/guard state.
     const guards = this.fighters.map(f => f.guard);
     for (const contact of contacts) this.hit(contact, guards[contact.target.slot]);
@@ -507,6 +536,9 @@ export class FightEngine {
         const count = f.action === 'super' ? 3 : 1;
         while (f.shotsSent < count && f.actionTime >= m.startup + f.shotsSent * .11) { this.spawnProjectile(f, m, f.shotsSent++); }
       }
+      if (m.summon && f.shotsSent === 0 && f.actionTime >= m.startup) {
+        f.shotsSent = 1; this.deployDrone(f, m);
+      }
       const total = m.startup + m.active + m.recovery;
       if (f.actionTime >= total && (f.action !== 'uppercut' || !f.airborne)) this.clearAction(f);
     }
@@ -554,6 +586,41 @@ export class FightEngine {
     this.integrate(f, dt);
   }
   clearAction(f) { f.action = null; f.moveData = null; f.actionTime = 0; f.prevActionTime = 0; }
+  deployDrone(f, data) {
+    this.announcePower(f);
+    const drone = { id:this.nextDroneId++, owner:f.slot, character:f.character.id, direction:f.direction,
+      x:clamp(f.x + f.direction * SENTINEL.offset, 32, WORLD.width - 32),
+      y:f.airborne ? clamp(f.y - SENTINEL.airHeight, 100, WORLD.floor - SENTINEL.groundHeight) : WORLD.floor - SENTINEL.groundHeight,
+      airborne:f.airborne, data:{...data}, createdAt:this.time, age:0, fired:false, dead:false };
+    this.drones.push(drone);
+    this.event('droneDeploy', { ...drone, color:f.character.color });
+  }
+  destroyDrone(drone) {
+    drone.dead = true;
+    this.event('droneDestroyed', { id:drone.id, fighter:drone.owner, character:drone.character,
+      x:drone.x, y:drone.y, color:CHARACTERS[drone.character].color, effect:'sentinelLaser' });
+  }
+  updateDrones(dt, contacts) {
+    for (const laser of this.lasers) { laser.age = this.time - laser.createdAt; laser.life = Math.max(0, SENTINEL.beamDuration - laser.age); }
+    this.lasers = this.lasers.filter(laser => laser.life > 0);
+    for (const drone of this.drones) {
+      drone.age = this.time - drone.createdAt;
+      if (drone.dead || drone.fired) continue;
+      const target = this.fighters[1 - drone.owner];
+      if (drone.age < SENTINEL.delay - 1e-9) continue;
+      drone.fired = true; drone.firedAt = this.time;
+      const ray = sentinelRay(drone, WORLD.width);
+      const body = target.hurtboxes.filter(box => overlaps(ray.box, box)).sort((a, b) => (a.x - b.x) * drone.direction)[0];
+      const endX = body ? clamp(drone.direction > 0 ? body.x : body.x + body.w, 0, WORLD.width) : ray.endX;
+      this.lasers.push({ id:drone.id, owner:drone.owner, x:ray.x, endX, y:ray.y, direction:drone.direction,
+        createdAt:this.time, age:0, life:SENTINEL.beamDuration });
+      if (body) contacts.push({ attacker:this.fighters[drone.owner], target, move:'drone', data:drone.data,
+        x:endX, y:ray.y, direction:drone.direction });
+      this.event('droneFire', { id:drone.id, fighter:drone.owner, character:drone.character, x:ray.x, y:ray.y,
+        endX, direction:drone.direction, color:CHARACTERS[drone.character].color });
+    }
+    this.drones = this.drones.filter(drone => !drone.dead && (!drone.fired || this.time - drone.firedAt < SENTINEL.retireTime));
+  }
   spawnProjectile(f, data, wave) {
     if (wave === 0) this.announcePower(f);
     const { offset, height } = f.character.projectile, x = f.x + f.direction * offset;
@@ -587,6 +654,14 @@ export class FightEngine {
         return Math.min(relativeStart, relativeEnd) - p.radius < right && Math.max(relativeStart, relativeEnd) + p.radius > left
           && p.y + p.radius > box.y && p.y - p.radius < box.y + box.h;
       });
+      const drone = this.drones.filter(d => d.owner !== p.owner && !d.dead && !d.fired).find(d => {
+        const box = droneHitbox(d);
+        return Math.min(p.prevX, p.x) - p.radius < box.x + box.w && Math.max(p.prevX, p.x) + p.radius > box.x
+          && p.y + p.radius > box.y && p.y - p.radius < box.y + box.h;
+      });
+      if (drone && (!body || (drone.x - p.direction * SENTINEL.bodyWidth / 2 - (p.direction > 0 ? body.x : body.x + body.w)) * p.direction < 0)) {
+        p.life = 0; this.destroyDrone(drone); continue;
+      }
       if (body) {
         contacts.push({ attacker: this.fighters[p.owner], target, move: p.move, data: p.data,
           x: clamp(p.x, body.x, body.x + body.w), y: p.y, direction: p.direction }); p.life = 0;
@@ -614,7 +689,7 @@ export class FightEngine {
         f.vx = 0; f.airAttackUsed = false;
         if (!f.knocked && f.hp > 0) {
           const remaining = f.action === 'uppercut' ? Math.max(0, f.moveData.startup + f.moveData.active + f.moveData.recovery - f.actionTime) : 0;
-          if (f.action?.startsWith('air') || f.action === 'uppercut') this.clearAction(f);
+          if (f.action?.startsWith('air') || f.action === 'uppercut' || f.action === 'drone' && f.moveData.airborneDeployment) this.clearAction(f);
           f.landing = Math.max(attacked ? COMBAT.landing : COMBAT.emptyLanding, remaining); f.state = 'landing';
         }
         this.event('land', { fighter: f.slot, x: f.x });
@@ -716,7 +791,7 @@ export class FightEngine {
   }
   endRound() {
     const [a, b] = this.fighters, winner = a.hp === b.hp ? null : a.hp > b.hp ? a : b;
-    this.phase = 'roundEnd'; this.phaseTime = 0; this.projectiles = []; this.freeze = .08;
+    this.phase = 'roundEnd'; this.phaseTime = 0; this.projectiles = []; this.drones = []; this.lasers = []; this.freeze = .08;
     this.fighters.forEach(f => {
       this.clearAction(f); f.buffer = null; f.jumpBuffer = 0; f.input = idleInput(); f.knocked = false; f.wakeTime = 0;
       f.footwork = null; f.dizzyPending = false; f.dizzyTime = 0; f.stunGauge = 0; f.counterWindow = 0;

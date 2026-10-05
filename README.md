@@ -1,8 +1,14 @@
-# Street Vicente Fighter — 2.7.0
+# Street Vicente Fighter — 2.8.0
 
 Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. Gustavo**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
 
-[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=2.7.0)
+[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=2.8.0)
+
+## Deploy Drone — Sentinela Automática
+
+Novo poder de Marcelo: **Z no P1, I no P2, DRONE no toque, L3 no controle ou ↓ ↙ ← + soco**. Pode ser lançado no chão ou no ar e fica na posição e altura de implantação, mirando na direção do lançamento. A carga leva exatamente **2 segundos de combate**, com sinal de mira antes de disparar um único laser fraco. Não consome a barra de super, e há no máximo uma sentinela de Marcelo ativa. A fala é **“Sentinela ativada!”**, com o preset e os parâmetros da voz aprovada do professor.
+
+Marcelo recupera a ação durante a carga e pode preparar ataques na recuperação do rival (*okizeme*). O drone continua funcionando se Marcelo receber um golpe. O rival pode destruí-lo com um golpe ou projétil antes do disparo, defender o laser em pé ou agachado, ou sair da sua altura. A sentinela não acompanha o alvo nem vira depois de instalada. Um lançamento aéreo substitui o ataque desse salto, sem alterar sua trajetória. Pausa e hitstop congelam a carga; round novo e revanche limpam robôs e lasers.
 
 ## Golpes e reações
 
@@ -48,6 +54,7 @@ Poderes têm núcleo de energia, trilhas curvas, anéis de lançamento e explos�
 
 | Professor | Poder | Efeito | Fala |
 | --- | --- | --- | --- |
+| Prof. Marcelo · Informática | Sentinela Automática | Drone estacionário que dispara um laser fraco após 2 s | Sentinela ativada! |
 | Prof. Marcelo · Informática | Rajada de Código | Pacotes de código e trilha de zeros e uns | Código na tela! |
 | Prof. Marcelo · Informática | Firewall | Golpe ascendente com circuitos e uma barreira de energia; invulnerabilidade inicial | Barreira digital ativada! |
 | Prof. Marcelo · Informática | Kernel Panic | Três rajadas de código, com barra cheia | Bora NIT! Pane no sistema! |
@@ -70,6 +77,7 @@ Escolha seu lutador e o adversário, selecione CPU ou dois jogadores locais e pr
 | Socos leve / médio / forte | T / F / Y | Num 7 / 8 / 9; J também faz médio |
 | Segundo ataque leve / médio / forte | V / G / B | Num 4 / 5 / 6; K também faz médio |
 | Poder lançado | H | L |
+| Drone do Marcelo (chão ou ar) | Z | I |
 | Antiaéreo | U | ; |
 | Super com barra cheia | Q | . |
 | Agarrar de perto | E | N |
@@ -83,6 +91,7 @@ Os comandos abaixo são relativos ao lado para o qual o personagem olha. Inverta
 | Comando | Ação |
 | --- | --- |
 | ↓ ↘ → + qualquer soco | Poder lançado |
+| ↓ ↙ ← + qualquer soco | Drone do Marcelo |
 | → ↓ ↘ + qualquer soco | Antiaéreo |
 | ↓ ↘ → ↓ ↘ → + qualquer soco | Super |
 | Baixo + segundo ataque | Chute baixo ou gancho no corpo |
@@ -112,7 +121,13 @@ Abra `http://localhost:8000`. Para verificar as regras de combate, entrada e áu
 npm test
 ```
 
-Não é necessário instalar pacotes. Os 99 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
+Não é necessário instalar pacotes. Os 134 testes cobrem rasteira, contato no calçado, queda e levantar, voadeira, defesa por altura, comandos espelhados, seis botões, cancelamento, agarrão, colisão de projéteis, supers, rounds, entradas simultâneas e equivalência em 30/60/120 Hz. Incluem resposta do direcional, recuperação após aterrissar, punição de rasteira, perna vulnerável, recuo no canto e corpos que não atravessam. Também verificam arquivos WAV e o roteamento de cada fala para o poder correspondente, passada por distância, troca de apoio, aviso único por carga, congelamento do super e duração/limpeza dos efeitos.
+
+A sentinela também é verificada em solo e no ar, no P1 e no P2, com defesa, destruição por ataques, prioridade do contato, direção de lançamento, pausa, invulnerabilidade e equivalência em 30/60/120 Hz.
+
+## Renderização — 2.8.0
+
+As poses que recebem brilho, clarão de acerto ou filtro de defesa são preparadas antes da luta, mantendo as imagens e medidas aprovadas. Os retratos também ficam prontos, o atlas antigo de caminhada sem uso deixou de ser carregado e o controle é consultado uma vez por quadro. A simulação permanece em 120 Hz. A medição local dos poderes passou de 30,10 para 23,33 ms por quadro; os valores são de renderização por software, não uma promessa de FPS no navegador. [Método e limites da medição](assets/PERFORMANCE.md).
 
 O GitHub Pages publica a branch `main`, pasta raiz. As fotografias originais não integram o repositório.
 

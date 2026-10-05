@@ -1,7 +1,7 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=15';
-import { Renderer } from './render.js?v=15';
-import { ArcadeAudio } from './audio.js?v=15';
-import { Inputs } from './input.js?v=15';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=16';
+import { Renderer } from './render.js?v=16';
+import { ArcadeAudio } from './audio.js?v=16';
+import { Inputs } from './input.js?v=16';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -15,6 +15,7 @@ function event(e) {
   if (e.type === 'round') $('announcer').textContent = `Round ${e.round}`;
   if (e.type === 'fight') $('announcer').textContent = 'Lutem!';
   if (e.type === 'special') $('announcer').textContent = `${e.name}. ${e.quote}`;
+  if (e.type === 'droneFire') $('announcer').textContent = 'Sentinela Automática disparou o laser';
   if (e.type === 'dizzy') $('announcer').textContent = `${engine.fighters[e.fighter].character.name} ficou tonto ${e.cause === 'chemicalSmoke' ? 'pela Névoa Atômica' : 'após o combo'}`;
   if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round`;
   if (e.type === 'result') {
@@ -31,6 +32,8 @@ function updateSelection() {
   $('opponent').value = opponent;
   const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
+  $('p1-drone-command').hidden = selected !== 'marcelo'; $('p2-drone-command').hidden = opponent !== 'marcelo';
+  document.querySelector('[data-action="drone"]').hidden = selected !== 'marcelo';
   const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
   touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE' }[selected];
   touchSecond.setAttribute('aria-label',second[selected]);
@@ -83,7 +86,7 @@ window.addEventListener('blur', autopause); document.addEventListener('visibilit
 let last = performance.now(), accumulator = 0;
 function frame(now) {
   const dt = Math.min(.066, (now - last) / 1000); last = now;
-  if (!engine.paused) { accumulator += dt; while (accumulator >= FIXED_STEP) { inputs.update(); engine.update(FIXED_STEP); accumulator -= FIXED_STEP; } }
+  if (!engine.paused) { inputs.update(); accumulator += dt; while (accumulator >= FIXED_STEP) { engine.update(FIXED_STEP); accumulator -= FIXED_STEP; } }
   else accumulator = 0;
   renderer.draw(engine, engine.paused ? 0 : dt, engine.paused ? 1 : accumulator / FIXED_STEP); audio.tick(dt); requestAnimationFrame(frame);
 }

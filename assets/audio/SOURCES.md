@@ -44,3 +44,7 @@ Esses WAV foram copiados sem alteração. A fala “Hadouken” foi removida dos
 ## Névoa Atômica — 2.7.0
 
 Novo arquivo `gustavo-fumaca-v1.wav`, fala “Névoa atômica!”, gerado em português brasileiro com a mesma voz de catálogo **Mark**, `eleven_v3`, `[shouting]`, `pt-br`, velocidade 1.15, usada nos poderes anteriores de Gustavo. Duração 2,56 s; PCM mono de 16 bits, 22.050 Hz, volume normalizado. Todos os WAV anteriores foram preservados byte a byte, inclusive `gustavo-special.wav` (fala antiga “Carga liberada!”). O mapeamento do especial agora usa o clipe novo; antiaéreo e super permanecem com as falas aprovadas.
+
+## Sentinela Automática — 2.8.0
+
+Novo arquivo `marcelo-sentinela-v1.wav`, fala “Sentinela ativada!”, gerado em 05/10/2026 com o mesmo preset **Clint**, modelo `eleven_v3`, interpretação `[shouting]`, velocidade 1.1 e idioma solicitado `pt-br` dos clipes aprovados de Marcelo. Task de origem: `1dce40e2-2504-477e-8bb7-ff64662431bf`. Conversão para PCM mono de 16 bits, 22.050 Hz, normalização de volume e corte apenas do silêncio final, totalizando 3,20 s. Todos os WAV existentes foram preservados byte a byte. A fala toca na implantação, uma vez; o disparo automático usa somente um efeito sonoro curto.

@@ -1,5 +1,6 @@
 export const SOUNDS = Object.freeze({
   'marcelo-special': 'assets/audio/marcelo-special.wav', 'marcelo-uppercut': 'assets/audio/marcelo-uppercut.wav', 'marcelo-super': 'assets/audio/marcelo-super.wav',
+  'marcelo-drone': 'assets/audio/marcelo-sentinela-v1.wav',
   'rafael-special': 'assets/audio/rafael-special.wav', 'rafael-uppercut': 'assets/audio/rafael-uppercut.wav', 'rafael-super': 'assets/audio/rafael-super.wav',
   'gustavo-special': 'assets/audio/gustavo-fumaca-v1.wav', 'gustavo-uppercut': 'assets/audio/gustavo-uppercut.wav', 'gustavo-super': 'assets/audio/gustavo-super.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
@@ -105,6 +106,9 @@ export class ArcadeAudio {
       case 'jump': this.sample(e.fighter === 0 ? 'grunt1' : 'grunt2', .5, e.fighter); break;
       case 'land': this.noise(.04, .035); break;
       case 'clash': this.sample('special', .4); break;
+      case 'droneDeploy': this.tone(320, .12, 'triangle', .08, 640); break;
+      case 'droneFire': this.tone(1250, .09, 'sawtooth', .09, 420); break;
+      case 'droneDestroyed': this.noise(.08, .09); break;
       case 'block': if (!this.sample('light', .35)) this.noise(.05, .08); break;
       case 'hit':
         if (!this.sample(['special', 'uppercut', 'super'].includes(e.move) ? 'special' : e.strength === 2 || ['kick', 'sweep', 'airKick', 'throw'].includes(e.move) ? 'heavy' : 'light', .8)) this.noise(.12, .3);

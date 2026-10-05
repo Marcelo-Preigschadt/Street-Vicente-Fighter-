@@ -7,7 +7,7 @@ function prepare(t) {
   const events=[],game=new FightEngine({onEvent:e=>events.push(e)});game.start('marcelo','local');game.phase='fight';game.fighters[1].x=1000;
   const old={window:globalThis.window,document:globalThis.document,navigator:Object.getOwnPropertyDescriptor(globalThis,'navigator')};
   globalThis.window=new EventTarget();
-  const buttons=['down','kick','special','punch','custom','guardCounter','block'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
+  const buttons=['down','kick','special','punch','custom','guardCounter','block','drone'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
   globalThis.document={querySelectorAll:q=>q==='[data-action]'?buttons:buttons.filter(b=>b.pressed)};
   const pad={axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};let connected=false;
   Object.defineProperty(globalThis,'navigator',{value:{getGamepads:()=>connected?[pad]:[]},configurable:true});
@@ -21,6 +21,23 @@ test('comando direcional do teclado dispara poder sem depender de um frame entre
 test('os seis botões escolhem força e segurar a tecla não repete ataques',t=>{const s=prepare(t);s.key('KeyY');advance(s.game,.03);assert.equal(s.game.fighters[0].moveData.strength,2);s.key('KeyY','keydown',true);advance(s.game,1);assert.equal(s.events.filter(e=>e.type==='swing').length,1);});
 test('toque permite agachar e chutar simultaneamente com dedos distintos',t=>{const s=prepare(t);s.pointer('down','pointerdown',1);s.pointer('kick','pointerdown',2);advance(s.game,.02);assert.equal(s.game.fighters[0].action,'sweep');s.pointer('kick','pointerup',2);assert.equal(s.game.fighters[0].input.down,true);s.pointer('down','pointerup',1);assert.equal(s.game.fighters[0].input.down,false);});
 test('gamepad aplica direcional antes da borda do botão de ataque',t=>{const s=prepare(t);s.connect();s.pad.axes[1]=.8;s.pad.buttons[1].pressed=true;s.input.update();advance(s.game,.02);assert.equal(s.game.fighters[0].action,'sweep');});
+
+test('drone de Marcelo entra por Z, I, toque e L3 sem substituir os botões de defesa',t=>{
+ const s=prepare(t);s.key('KeyZ');advance(s.game,.03);assert.equal(s.game.fighters[0].action,'drone');s.key('KeyZ','keyup');
+ s.game.start('gustavo','local','marcelo');s.game.phase='fight';s.key('KeyI');advance(s.game,.03);assert.equal(s.game.fighters[1].action,'drone');s.key('KeyI','keyup');
+ s.game.start('marcelo','local','gustavo');s.game.phase='fight';s.pointer('drone','pointerdown',4);advance(s.game,.03);assert.equal(s.game.fighters[0].action,'drone');s.pointer('drone','pointerup',4);
+ s.game.clearAction(s.game.fighters[0]);s.connect();s.pad.buttons[10].pressed=true;s.input.update();advance(s.game,.03);assert.equal(s.game.fighters[0].action,'drone');
+ s.key('KeyR');assert.equal(s.game.fighters[0].input.block,true);s.key('KeyO');assert.equal(s.game.fighters[1].input.block,true);
+});
+test('meia-lua para trás espelhada implanta a sentinela nos dois lados',t=>{
+ const s=prepare(t);
+ for(const slot of [0,1]){
+  s.game.start(slot===0?'marcelo':'gustavo','local',slot===0?'gustavo':'marcelo');s.game.phase='fight';s.input.release();
+  const [down,back,punch]=slot===0?['KeyS','KeyA','KeyF']:['ArrowDown','ArrowRight','KeyJ'];
+  s.key(down);s.key(back);s.key(down,'keyup');s.key(punch);advance(s.game,.03);
+  assert.equal(s.game.fighters[slot].action,'drone');s.key(back,'keyup');s.key(punch,'keyup');
+ }
+});
 
 test('rasteira continua sendo rasteira quando baixo é solto antes do próximo frame',t=>{const s=prepare(t);s.key('KeyS');s.key('KeyG');s.key('KeyS','keyup');advance(s.game,.02);assert.equal(s.game.fighters[0].action,'sweep');});
 
