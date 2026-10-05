@@ -3,7 +3,8 @@ export const SOUNDS = Object.freeze({
   'marcelo-drone': 'assets/audio/marcelo-sentinela-v1.wav',
   'rafael-special': 'assets/audio/rafael-special.wav', 'rafael-uppercut': 'assets/audio/rafael-uppercut.wav', 'rafael-super': 'assets/audio/rafael-super.wav',
   'gustavo-special': 'assets/audio/gustavo-fumaca-v1.wav', 'gustavo-uppercut': 'assets/audio/gustavo-uppercut.wav', 'gustavo-super': 'assets/audio/gustavo-super.wav',
-  'gelton-special':'assets/audio/gelton-special-br-v3.wav','gelton-uppercut':'assets/audio/gelton-uppercut-br-v3.wav','gelton-super':'assets/audio/gelton-super-br-v3.wav',
+  'gelton-special':'assets/audio/gelton-special-br-v4.wav','gelton-uppercut':'assets/audio/gelton-uppercut-br-v4.wav','gelton-super':'assets/audio/gelton-super-br-v4.wav',
+  'marcelino-special':'assets/audio/marcelino-special-br-v1.wav','marcelino-uppercut':'assets/audio/marcelino-uppercut-br-v1.wav','marcelino-super':'assets/audio/marcelino-super-br-v1.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
   light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',
 });

@@ -1,4 +1,4 @@
-import { SENTINEL } from './sentinel.js?v=18';
+import { SENTINEL } from './sentinel.js?v=19';
 const TAU = Math.PI * 2;
 
 export function drawSentinel(c, drone, reduced = false) {

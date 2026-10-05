@@ -1,12 +1,14 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=18';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=19';
 
-import { SuperEffects } from './super-fx.js?v=18';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=18';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=18';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=18';
-import { GELTON_LAYOUT } from './gelton-layout.js?v=18';
-import { drawPaintStroke, drawArtRise } from './art-fx.js?v=18';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=18';
+import { SuperEffects } from './super-fx.js?v=19';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=19';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=19';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=19';
+import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=19';
+import { drawImpulse, drawKineticRise } from './physics-fx.js?v=19';
+import { GELTON_LAYOUT } from './gelton-layout.js?v=19';
+import { drawPaintStroke, drawArtRise } from './art-fx.js?v=19';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=19';
 
 export const CAPOEIRA_CELL_MARGIN = 96;
 
@@ -28,7 +30,7 @@ export class Renderer {
 
   }
   async load() {
-    const characters = Object.values(CHARACTERS).filter(f=>f.id!=='gelton');
+    const characters = Object.values(CHARACTERS).filter(f=>!['gelton','marcelino'].includes(f.id));
     const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [
       loadImage(costumeAsset(f.id,'base',f.sprite)),loadImage(costumeAsset(f.id,'combat',f.combatSprite)),
       ...['style','motion','strike','reaction','low'].map(atlas=>loadImage(costumeAsset(f.id,atlas,`assets/${f.id}-${atlas}${['strike','reaction','low'].includes(atlas)?'-v3':''}.webp`)))])]);
@@ -45,6 +47,7 @@ export class Renderer {
       for(let asset=0;asset<7;asset++)sheets[i*7+asset]=null;
     }
     await this.loadCapoeira();
+    await this.loadMuayThai();
   }
   async loadCapoeira() {
     const [baseImage,combatImage,handstandImage]=await Promise.all([loadImage(CHARACTERS.gelton.sprite),loadImage(CHARACTERS.gelton.combatSprite),loadImage(CHARACTERS.gelton.superSprite)]);
@@ -58,6 +61,18 @@ export class Renderer {
     }
     base.style=base;this.portraits.gelton=await cachePortrait(base,0);
     for(const [i,f]of base.combat.frames.entries())if(i>=8)await cacheSpriteEffects(base.combat,f,CHARACTERS.gelton.color,['power']);
+  }
+  async loadMuayThai() {
+    const id='marcelino',character=CHARACTERS[id];
+    const [baseImage,combatImage]=await Promise.all([loadImage(character.sprite),loadImage(character.combatSprite)]);
+    const base=this.sheets[id]=this.analyzeSheet(baseImage,false,4,96);
+    base.combat=this.analyzeSheet(combatImage,false,4,96);
+    for(const [atlas,sheet]of [['base',base],['combat',base.combat]])for(const [i,frame]of sheet.frames.entries()) {
+      const layout=MUAY_THAI_LAYOUT[atlas][i];frame.scale=layout.scale;frame.anchor=frame.x+frame.w*layout.anchor;
+    }
+    base.style=base;this.portraits[id]=await cachePortrait(base,0);
+    await cacheSpriteEffects(base,base.frames[13],character.color,['power']);
+    for(const frame of base.combat.frames)await cacheSpriteEffects(base.combat,frame,character.color,['power']);
   }
   async prepareVisualCache(id) {
     const base=this.sheets[id],color=CHARACTERS[id].color;
@@ -280,7 +295,7 @@ export class Renderer {
       if(f.moveData.effect === 'chemicalSmoke')drawChemicalSmoke(c,{x,y:f.y-release.height,radius:8+strength*17,direction:f.direction},this.clock,this.reduced,.65);
       else this.drawPowerGlyph(x,f.y-release.height,10+strength*18,f.character.id,false);
     }
-    if (f.state === 'uppercut') f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
+    if (f.state === 'uppercut') f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
   }
@@ -420,7 +435,7 @@ export class Renderer {
     }
     c.restore();
   }
-  drawProjectile(p) { p.character==='gelton'?drawPaintStroke(this.c,p,this.clock,this.reduced):drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
+  drawProjectile(p) { p.character==='marcelino'?drawImpulse(this.c,p,this.clock,this.reduced):p.character==='gelton'?drawPaintStroke(this.c,p,this.clock,this.reduced):drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
   drawCustomAura(f) {
     const c=this.c;c.save();c.strokeStyle=`${f.character.color}88`;c.lineWidth=2;
     c.beginPath();c.ellipse(f.x,WORLD.floor+1,68,13,0,0,Math.PI*2);c.stroke();

@@ -1,11 +1,12 @@
-import { HURT_PROFILES } from './hitboxes.js?v=18';
-import { techniquePose, techniqueHurt } from './technique.js?v=18';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=18';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=18';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=18';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=18';
-export { FIGHTING_STYLES } from './styles.js?v=18';
-export { SENTINEL } from './sentinel.js?v=18';
+import { HURT_PROFILES } from './hitboxes.js?v=19';
+import { techniquePose, techniqueHurt } from './technique.js?v=19';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=19';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=19';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=19';
+import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=19';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=19';
+export { FIGHTING_STYLES } from './styles.js?v=19';
+export { SENTINEL } from './sentinel.js?v=19';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -40,12 +41,21 @@ export const CHARACTERS = Object.freeze({
   gelton: {id:'gelton',name:'Prof. Gelton',quote:'A arte está no movimento!',color:'#f5b75a',accent:'#ee7caf',
     speed:372,backSpeed:334,jumpSpeed:645,power:1.01,sprite:'assets/gelton-base-v1.webp',combatSprite:'assets/gelton-combat-v1.webp',superSprite:'assets/gelton-handstand-v2.webp',
     powers:{special:'Pincelada Cromática',uppercut:'Aú das Cores',super:'Roda das Artes'},
-    powerQuotes:{special:'Pincelada cromática!',uppercut:'Aú das cores!',super:'A arte está no movimento! Roda das artes!'},
-    voiceDuration:{special:1.139,uppercut:0.846,super:3.129},
+    powerQuotes:{special:'Olha a pincelada!',uppercut:'É o aú das cores!',super:'Bora pra roda! A arte tá no movimento!'},
+    voiceDuration:{special:1.145,uppercut:1.177,super:2.738},
     strikes:{punch:{near:35,reach:158,height:218,h:42},kick:{near:48,reach:233,height:237,h:68},
       crouchPunch:{near:20,reach:146,height:118,h:46},sweep:{near:15,reach:237,height:54,h:66},
       airPunch:{near:25,reach:168,height:210,h:46},airKick:{near:35,reach:235,height:164,h:76},
       uppercut:{near:-35,reach:160,height:246,h:130}},projectile:{offset:158,height:205}},
+  marcelino:{id:'marcelino',name:'Prof. Marcelino',quote:'Toda ação tem reação!',color:'#9ef5ff',accent:'#f7ae63',
+    speed:318,backSpeed:278,jumpSpeed:590,power:1.07,sprite:'assets/marcelino-base-v1.webp',combatSprite:'assets/marcelino-combat-v1.webp',
+    powers:{special:'Impulso Linear',uppercut:'Joelhada Cinética',super:'Lei da Ação e Reação'},
+    powerQuotes:{special:'Receba esse impulso!',uppercut:'Energia cinética!',super:'Toda ação tem reação! Agora aguenta!'},
+    voiceDuration:{special:1.218,uppercut:1.437,super:2.923},
+    strikes:{punch:{near:28,reach:118,height:225,h:58},kick:{near:45,reach:225,height:215,h:70},
+      crouchPunch:{near:25,reach:145,height:118,h:44},sweep:{near:35,reach:193,height:110,h:58},
+      airPunch:{near:20,reach:157,height:218,h:60},airKick:{near:22,reach:122,height:180,h:84},
+      uppercut:{near:-24,reach:122,height:235,h:112}},projectile:{offset:142,height:205}},
 });
 
 const frames = n => n / 60;
@@ -64,7 +74,7 @@ function moveData(name, strength = 1, characterId = null) {
     const [startup, active, recovery, damage, stun, push] = FIGHTING_STYLES[characterId]?.normals[name]?.[strength] ?? NORMALS[name][strength];
     return { name, strength, startup: frames(startup), active: frames(active), recovery: frames(recovery), damage, stun: frames(stun),
       blockstun: frames(name === 'sweep' ? 10 + strength * 2 : Math.max(9, stun - 5)), push, meter: 5 + strength * 3, level: name === 'sweep' ? 'low' : name.startsWith('air') ? 'overhead' : 'mid',
-      knockdown: name === 'sweep' && characterId !== 'rafael' || characterId === 'rafael' && name === 'kick' && strength === 2,
+      knockdown: name === 'sweep' && characterId !== 'rafael' && (characterId !== 'marcelino' || strength === 2) || characterId === 'rafael' && name === 'kick' && strength === 2,
       ...(characterId === 'rafael' && name === 'sweep' ? { level:'mid' } : {}),
       ...(characterId === 'rafael' && name === 'kick' && strength === 2 ? { launch:450 } : {}),
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
@@ -76,6 +86,12 @@ function moveData(name, strength = 1, characterId = null) {
     stun:frames(25),blockstun:frames(17),push:240,meter:7,level:'mid',projectile:true,chip:.1,speed:510+strength*130,effect:'artPaint',radius:29};
   if (characterId==='gelton'&&name==='super')return {name,strength,startup:frames(10),active:frames(38),recovery:frames(24),damage:66,
     stun:frames(24),blockstun:frames(16),push:120,meter:0,level:'mid',projectile:true,chip:.08,speed:980,cost:100,invincibility:frames(10),effect:'artPaint',waves:5};
+  if(characterId==='marcelino'&&name==='special')return {name,strength,startup:frames(15),active:frames(1),recovery:frames(25),damage:94+strength*10,
+    stun:frames(26),blockstun:frames(18),push:390,meter:8,level:'mid',projectile:true,chip:.08,speed:640+strength*100,effect:'physicsImpulse',radius:27};
+  if(characterId==='marcelino'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(14),recovery:frames(29),damage:114+strength*15,
+    stun:frames(30),blockstun:frames(20),push:350,meter:10,level:'mid',knockdown:true,launch:870,invincibility:frames(7),effect:'kineticKnee'};
+  if(characterId==='marcelino'&&name==='super')return {name,strength,startup:frames(11),active:frames(40),recovery:frames(27),damage:67,
+    stun:frames(25),blockstun:frames(17),push:145,meter:0,level:'mid',projectile:true,chip:.08,speed:1080,cost:100,invincibility:frames(10),effect:'physicsImpulse',waves:5};
   if (name === 'special' && characterId === 'gustavo') return { name,strength,startup:frames(16),active:frames(1),recovery:frames(27),damage:48+strength*6,
     stun:frames(12),blockstun:frames(14),push:110,meter:6,level:'mid',projectile:true,chip:.08,speed:460+strength*100,
     radius:CHEMISTRY.smokeRadius,effect:'chemicalSmoke',dizzyDuration:CHEMISTRY.smokeDuration };
@@ -107,6 +123,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
   if(f.character.id==='gelton')return capoeiraPose(f);
+  if(f.character.id==='marcelino')return muayThaiPose(f);
   const motion = motionPose(f);
   if (motion) return motion;
   const technique = techniquePose(f);
@@ -176,7 +193,7 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = this.character.id==='gelton'?capoeiraHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,

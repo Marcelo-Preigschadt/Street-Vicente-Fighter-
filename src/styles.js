@@ -1,6 +1,7 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=18';
-import { CAPOEIRA_STRIKES } from './capoeira.js?v=18';
-import { techniqueStrike } from './technique.js?v=18';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=19';
+import { MUAY_THAI_STRIKES } from './muay-thai.js?v=19';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=19';
+import { techniqueStrike } from './technique.js?v=19';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
@@ -47,6 +48,15 @@ export const FIGHTING_STYLES = Object.freeze({
       sweep:[[6,5,15,56,22,200],[9,6,21,85,26,280],[12,7,25,108,29,330]]},
     combos:[route('Ginga e Meia-lua','punch:0','punch:1','kick:1'),route('Volta do Mundo','punch:1','kick:1','kick:2'),
       route('Arte da Roda','crouchPunch:0','punch:1','kick:1'),route('Ritmo da Capoeira','punch:0','punch:1','kick:1','kick:2')]},
+  marcelino:{name:'Muay Thai',summary:'Cotoveladas, chutes circulares, low kicks, joelhadas e clinch.',step:23,
+    names:{punch:['Cotovelo rápido','Cotovelada horizontal','Cotovelada de torque'],kick:['Circular rápido','Chute circular','Circular pesado'],
+      crouchPunch:['Soco baixo rápido','Soco no corpo','Soco baixo forte'],sweep:['Low kick rápido','Low kick','Low kick de ruptura'],
+      airPunch:['Cotovelo aéreo rápido','Cotovelada aérea','Cotovelada aérea forte'],airKick:['Joelhada rápida','Joelhada voadora','Joelhada voadora forte']},
+    normals:{punch:[[4,3,9,45,20,105],[6,4,13,72,24,155],[10,5,21,103,28,225]],
+      kick:[[6,4,14,56,22,165],[9,5,20,89,27,230],[13,6,27,123,31,330]],
+      sweep:[[5,4,13,48,21,115],[8,5,18,75,25,170],[12,6,25,108,29,280]]},
+    combos:[route('Torque e Impulso','punch:0','punch:1','kick:1'),route('Quebra de Inércia','punch:1','sweep:1','kick:2'),
+      route('Oito Armas','punch:0','punch:1','punch:2','kick:1')]},
 });
 
 export function styleTechnique(id, name, strength = 1) {
@@ -66,6 +76,7 @@ export function stylePose(f, extended) {
 }
 export function styleStrike(f) {
   if(f.character.id==='gelton')return CAPOEIRA_STRIKES[f.action];
+  if(f.character.id==='marcelino')return MUAY_THAI_STRIKES[f.action];
   const technique = techniqueStrike(f);
   if (technique) return technique;
   const calibrated = STYLE_STRIKES[f.character.id];

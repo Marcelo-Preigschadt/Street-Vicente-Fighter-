@@ -1,3 +1,9 @@
+## Atualização 2.10.0 — Prof. Marcelino / Física / Muay Thai
+
+Quinto professor selecionável nos dois slots e na CPU. 32 poses próprias baseadas na foto, cotoveladas, circulares, low kicks, joelhadas, clinch e três combos. Impulso Linear: H/L; Joelhada Cinética: U/; ; Lei da Ação e Reação: Q/. com barra cheia, cinco ondas vetoriais. Falas de Marcelino em pt-BR com timbre masculino maduro. Dublagem de Gelton refeita com novo timbre e frases coloquiais em pt-BR. Arquivos WAV locais e cache v19. Seleção com cinco cards e distribuição em três linhas no celular.
+
+Validação: 143 testes aprovados, 32 silhuetas calibradas e renderização real dos golpes/poderes.
+
 ## Correção 2.9.1 — Gelton
 
 Substitui as três falas de Gelton por voz nativa pt-BR. Corrige a cabeça cortada na comemoração e a falha de cabelo na pose invertida usada pelo super e pelo antiaéreo. Mantém os ataques e recalibra silhuetas.

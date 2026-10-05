@@ -29,12 +29,12 @@ function bigCombo(s) {
 test('dois toques separados pelo neutro produzem passos diferentes de cada modalidade, nos dois lados',()=>{
  for(const id of Object.keys(FOOTWORK))for(const slot of [0,1])for(const kind of ['advance','retreat']) {
   const {g,f,target}=scene(id,slot);f.x=slot?950:300;target.x=slot?250:1000;
-  tapStep(g,f,kind);assert.equal(f.footwork.kind,kind);assert.equal(fighterPose(f).atlas,id==='gelton'?'base':'motion');
+  tapStep(g,f,kind);assert.equal(f.footwork.kind,kind);assert.equal(fighterPose(f).atlas,['gelton','marcelino'].includes(id)?'base':'motion');
   const x=f.x,sign=f.footwork.sign;g.setInput(slot,{});advance(g,FOOTWORK[id][kind].duration+.01);
   assert.ok(Math.abs(f.x-x-sign*FOOTWORK[id][kind].distance)<1e-7);assert.equal(f.footwork,null);
  }
  assert.ok(FOOTWORK.rafael.retreat.duration<FOOTWORK.gustavo.retreat.duration);
- assert.equal(new Set(Object.values(FOOTWORK).map(v=>v.stride)).size,4);
+ assert.equal(new Set(Object.values(FOOTWORK).map(v=>v.stride)).size,5);
 });
 
 test('segurar uma direção, toques atrasados e comandos diagonais de poder não viram passos',()=>{
