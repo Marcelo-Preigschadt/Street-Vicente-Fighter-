@@ -1,10 +1,11 @@
-import { HURT_PROFILES } from './hitboxes.js?v=16';
-import { techniquePose, techniqueHurt } from './technique.js?v=16';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=16';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=16';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=16';
-export { FIGHTING_STYLES } from './styles.js?v=16';
-export { SENTINEL } from './sentinel.js?v=16';
+import { HURT_PROFILES } from './hitboxes.js?v=17';
+import { techniquePose, techniqueHurt } from './technique.js?v=17';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=17';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=17';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=17';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=17';
+export { FIGHTING_STYLES } from './styles.js?v=17';
+export { SENTINEL } from './sentinel.js?v=17';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -14,9 +15,9 @@ export const CHEMISTRY = Object.freeze({ smokeDuration:1.9, smokeRadius:30 });
 export const CHARACTERS = Object.freeze({
   marcelo: { id: 'marcelo', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
     speed: 324, backSpeed: 240, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
-    powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Kernel Panic', drone: 'Sentinela Automática' },
-    powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Pane no sistema!', drone: 'Sentinela ativada!' },
-    voiceDuration: { special: 1.84, uppercut: 2.40, super: 4.30, drone: 3.20 },
+    powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Enxame de Drones', drone: 'Sentinela Automática' },
+    powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Enxame de drones! Alvo marcado!', drone: 'Sentinela ativada!' },
+    voiceDuration: { special: 1.84, uppercut: 2.40, super: 4.45, drone: 3.20 },
     strikes: { punch: { near: 42, reach: 155, height: 200, h: 32 }, kick: { near: 60, reach: 201, height: 251, h: 48 },
       crouchPunch: { near: 35, reach: 161, height: 140, h: 34 }, sweep: { near: 35, reach: 208, height: 49, h: 54 },
       airPunch: { near: 30, reach: 170, height: 188, h: 34 }, airKick: { near: 30, reach: 187, height: 128, h: 62 },
@@ -36,6 +37,15 @@ export const CHARACTERS = Object.freeze({
     powerQuotes: { special: 'Névoa atômica!', uppercut: 'Vai esquentar!', super: 'Reagiu, perdeu! Reação em cadeia!' },
     voiceDuration: {"special": 2.56, "uppercut": 1.73, "super": 3.19},
     strikes: {"punch": {"near": 42, "reach": 147, "height": 195, "h": 42}, "kick": {"near": 60, "reach": 192, "height": 241, "h": 77}, "crouchPunch": {"near": 35, "reach": 158, "height": 130, "h": 42}, "sweep": {"near": 35, "reach": 192, "height": 45, "h": 74}, "airPunch": {"near": 30, "reach": 147, "height": 168, "h": 41}, "airKick": {"near": 30, "reach": 176, "height": 115, "h": 75}, "uppercut": {"near": -25, "reach": 75, "height": 316, "h": 86}}, projectile: {"offset": 177, "height": 185} },
+  gelton: {id:'gelton',name:'Prof. Gelton',quote:'A arte está no movimento!',color:'#f5b75a',accent:'#ee7caf',
+    speed:372,backSpeed:334,jumpSpeed:645,power:1.01,sprite:'assets/gelton-base-v1.webp',combatSprite:'assets/gelton-combat-v1.webp',
+    powers:{special:'Pincelada Cromática',uppercut:'Aú das Cores',super:'Roda das Artes'},
+    powerQuotes:{special:'Pincelada cromática!',uppercut:'Aú das cores!',super:'A arte está no movimento! Roda das artes!'},
+    voiceDuration:{special:2.32,uppercut:1.76,super:3.84},
+    strikes:{punch:{near:35,reach:158,height:218,h:42},kick:{near:48,reach:233,height:237,h:68},
+      crouchPunch:{near:20,reach:146,height:118,h:46},sweep:{near:15,reach:237,height:54,h:66},
+      airPunch:{near:25,reach:168,height:210,h:46},airKick:{near:35,reach:235,height:164,h:76},
+      uppercut:{near:-35,reach:160,height:246,h:130}},projectile:{offset:158,height:205}},
 });
 
 const frames = n => n / 60;
@@ -60,6 +70,12 @@ function moveData(name, strength = 1, characterId = null) {
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
       cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
+  if (name === 'super' && characterId === 'marcelo') return {name,strength,startup:frames(12),active:frames(1),recovery:frames(48),
+    damage:47,stun:frames(19),blockstun:frames(14),push:75,meter:0,level:'mid',chip:.08,cost:100,invincibility:frames(10),summon:true,swarm:true,effect:'sentinelLaser'};
+  if (characterId==='gelton'&&name==='special')return {name,strength,startup:frames(14),active:frames(1),recovery:frames(23),damage:88+strength*10,
+    stun:frames(25),blockstun:frames(17),push:240,meter:7,level:'mid',projectile:true,chip:.1,speed:510+strength*130,effect:'artPaint',radius:29};
+  if (characterId==='gelton'&&name==='super')return {name,strength,startup:frames(10),active:frames(38),recovery:frames(24),damage:66,
+    stun:frames(24),blockstun:frames(16),push:120,meter:0,level:'mid',projectile:true,chip:.08,speed:980,cost:100,invincibility:frames(10),effect:'artPaint',waves:5};
   if (name === 'special' && characterId === 'gustavo') return { name,strength,startup:frames(16),active:frames(1),recovery:frames(27),damage:48+strength*6,
     stun:frames(12),blockstun:frames(14),push:110,meter:6,level:'mid',projectile:true,chip:.08,speed:460+strength*100,
     radius:CHEMISTRY.smokeRadius,effect:'chemicalSmoke',dizzyDuration:CHEMISTRY.smokeDuration };
@@ -90,6 +106,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='gelton')return capoeiraPose(f);
   const motion = motionPose(f);
   if (motion) return motion;
   const technique = techniquePose(f);
@@ -139,7 +156,7 @@ export class Fighter {
   get airborne() { return this.y < WORLD.floor - .01; }
   get canAct() { return this.hp > 0 && this.state !== 'dizzy' && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
   get crouching() { return !this.airborne && (['crouch', 'crouchPunch', 'lowBlock', 'preJump', 'landing'].includes(this.state)
-    || this.state === 'sweep' && this.character.id === 'rafael' || (this.state === 'hit' && this.hitCrouched)); }
+    || this.state === 'sweep' && ['rafael','gelton'].includes(this.character.id) || (this.state === 'hit' && this.hitCrouched)); }
   get movePhase() {
     if (!this.moveData) return null;
     return this.actionTime < this.moveData.startup ? 'startup' : this.actionTime < this.moveData.startup + this.moveData.active ? 'active' : 'recovery';
@@ -159,7 +176,7 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = ['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='gelton'?capoeiraHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
@@ -239,9 +256,9 @@ export class FightEngine {
     if (move === 'custom') { this.startCustom(f); return; }
     if (move === 'guardCounter') { this.guardCounter(f); return; }
     if (!MOVES[move]) return;
-    if (move === 'drone' && f.character.id !== 'marcelo') return;
+    if (move === 'drone') { if(f.character.id!=='marcelo')return; move='super'; }
     if (move === 'punch' && f.character.id === 'marcelo' && this.motion(f, [2, 1, 4])) {
-      move = 'drone'; f.directions = []; f.lastDirection = 5;
+      move = 'super'; f.directions = []; f.lastDirection = 5;
     }
     if (move === 'punch' && !f.airborne) {
       if (f.meter >= 100 && this.motion(f, [2, 3, 6, 2, 3, 6], .75)) move = 'super';
@@ -259,9 +276,10 @@ export class FightEngine {
     return move;
   }
   beginMove(f, baseMove, strength = 1, cancel = false) {
+    if(baseMove==='drone'){if(f.character.id!=='marcelo')return false;baseMove='super';}
     const move = this.contextualMove(f, baseMove), m = moveData(move, strength, f.character.id);
     if (!m || f.hp <= 0 || f.hitstun > 0 || f.blockstun > 0 || f.knocked || f.wakeTime > 0 || f.landing > 0 || f.preJump > 0 || f.dizzyPending || f.dizzyTime > 0 || f.state === 'dizzy' || (f.action && !cancel)) return false;
-    if (f.footwork && (f.footwork.kind !== 'advance' || f.footwork.time < f.footwork.cancelAt)) return false;
+    if (f.footwork && (f.footwork.kind !== 'advance' || f.footwork.time < f.footwork.cancelAt - 1e-9)) return false;
     if (f.airborne && ((!move.startsWith('air') && move !== 'drone') || f.airAttackUsed)) return false;
     if (!f.airborne && move.startsWith('air')) return false;
     if (!f.airborne && f.input.block && f.customTime <= 0 && move !== 'guardCounter') return false;
@@ -269,7 +287,7 @@ export class FightEngine {
     if (f.customTime > 0 && (f.customMoves >= ALPHA.customLimit || ['throw','super'].includes(move))) return false;
     if (m.cost && f.meter < m.cost) return false;
     if (move === 'special' && this.projectiles.some(p => p.owner === f.slot && p.move === 'special' && p.life > 0)) return false;
-    if (move === 'drone' && this.drones.some(d => d.owner === f.slot && !d.dead)) return false;
+    if (m.swarm && this.drones.some(d => d.owner === f.slot && !d.dead)) return false;
     if (move === 'drone') m.airborneDeployment = f.airborne;
     const normalChain = cancel && !!NORMALS[move];
     if (f.customTime > 0) { f.customMoves++; m.recovery = Math.max(frames(6), m.recovery * .55); m.meter = 0; }
@@ -377,25 +395,22 @@ export class FightEngine {
     if (!ai.input.block && dist < far && this.random() < (id === 'gustavo' ? .2 : .12)) ai.input.down = true;
     this.setInput(1, ai.input);
     if (id === 'marcelo' && f.canAct && !f.airborne && !hasDrone && !ai.input.block && !ai.input.jump
-      && (foe.knocked || foe.wakeTime > 0) && dist > 180 && dist < 700) {
+      && f.meter>=100 && (foe.knocked || foe.wakeTime > 0) && dist > 180 && dist < 700) {
       this.queue(1, 'drone'); ai.actionTimer = .6; return;
     }
     if (f.canAct && dist > far + 60 && dist < 450 && !ai.input.block && !ai.input.jump && this.random() < (id === 'marcelo' ? .35 : .12)) {
       if (this.beginFootwork(f,'advance')) return;
     }
     if (ai.input.block || ai.actionTimer > 0 || (!f.canAct && !f.airborne)) return;
-    if (id === 'marcelo' && f.airborne && f.canAct && !f.airAttackUsed && !hasDrone && f.vy < 0 && dist > 240 && this.random() < .2) {
-      this.queue(1, 'drone'); ai.actionTimer = .6;
-    }
-    else if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
+    if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
     else if (f.canAct && !f.airborne) {
       if (foe.airborne && dist < 210 && this.random() < .55) this.queue(1, 'uppercut');
       else if (f.meter >= 100 && dist > 210 && this.random() < .6) this.queue(1, 'super');
       else if(f.meter >= ALPHA.customCost && f.customTime <= 0 && dist < 190 && (foe.dizzyTime > 0 || foe.movePhase === 'recovery') && this.random() < .35) this.startCustom(f);
-      else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, id === 'marcelo' && !hasDrone && this.random() < .4 ? 'drone' : 'special');
+      else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, 'special');
       else if (dist < 140 && this.random() < (id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
-      else if (dist < (id === 'gustavo' ? 255 : 200)) {
-        if (id === 'gustavo' && dist > 175) this.queue(1,'kick',this.random() < .3 ? 2 : 1);
+      else if (dist < (['gustavo','gelton'].includes(id) ? 255 : 200)) {
+        if (['gustavo','gelton'].includes(id) && dist > 175) this.queue(1,'kick',this.random() < .3 ? 2 : 1);
         else if (id === 'marcelo' && dist < 135 && this.random() < .3) this.queue(1,'kick',1);
         else this.queue(1,'punch',this.random() < .72 ? 0 : 1);
       }
@@ -533,11 +548,11 @@ export class FightEngine {
         this.announcePower(f);
       }
       if (m.projectile) {
-        const count = f.action === 'super' ? 3 : 1;
+        const count = m.waves ?? (f.action === 'super' ? 3 : 1);
         while (f.shotsSent < count && f.actionTime >= m.startup + f.shotsSent * .11) { this.spawnProjectile(f, m, f.shotsSent++); }
       }
       if (m.summon && f.shotsSent === 0 && f.actionTime >= m.startup) {
-        f.shotsSent = 1; this.deployDrone(f, m);
+        f.shotsSent = 1; m.swarm ? this.deploySwarm(f,m) : this.deployDrone(f, m);
       }
       const total = m.startup + m.active + m.recovery;
       if (f.actionTime >= total && (f.action !== 'uppercut' || !f.airborne)) this.clearAction(f);
@@ -586,6 +601,15 @@ export class FightEngine {
     this.integrate(f, dt);
   }
   clearAction(f) { f.action = null; f.moveData = null; f.actionTime = 0; f.prevActionTime = 0; }
+  deploySwarm(f,data) {
+    this.announcePower(f);
+    for(let i=0;i<6;i++) {
+      const drone={id:this.nextDroneId++,owner:f.slot,character:f.character.id,direction:f.direction,swarm:true,index:i,
+        x:clamp(f.x+f.direction*(80+(i%3)*68),40,WORLD.width-40),y:f.y-310-Math.floor(i/3)*80,
+        data:{...data},createdAt:this.time,age:0,fireDelay:.50+i*.17,fired:false,dead:false,aim:null};
+      this.drones.push(drone);this.event('droneDeploy',{...drone,color:f.character.color});
+    }
+  }
   deployDrone(f, data) {
     this.announcePower(f);
     const drone = { id:this.nextDroneId++, owner:f.slot, character:f.character.id, direction:f.direction,
@@ -607,6 +631,29 @@ export class FightEngine {
       drone.age = this.time - drone.createdAt;
       if (drone.dead || drone.fired) continue;
       const target = this.fighters[1 - drone.owner];
+      if(drone.swarm) {
+        const caster=this.fighters[drone.owner];
+        const desiredX=clamp(caster.x+drone.direction*(80+(drone.index%3)*68),40,WORLD.width-40);
+        drone.x=approach(drone.x,desiredX,dt*210);
+        const hover=WORLD.floor-310-Math.floor(drone.index/3)*80;
+        drone.y=approach(drone.y,hover,dt*180);
+        const boxes=target.hurtboxes;
+        const box=boxes.toSorted((a,b)=>b.w*b.h-a.w*a.h)[0];
+        if(drone.age>=drone.fireDelay-.10&&!drone.aim&&box)drone.aim={x:box.x+box.w/2,y:box.y+box.h/2};
+        if(drone.age<drone.fireDelay||!drone.aim) {
+          if(drone.age>drone.fireDelay+1)drone.dead=true;
+          continue;
+        }
+        drone.fired=true;drone.firedAt=this.time;
+        const aim=drone.aim,body=boxes.find(b=>aim.x>=b.x&&aim.x<=b.x+b.w&&aim.y>=b.y&&aim.y<=b.y+b.h);
+        const direction=target.x>=caster.x?1:-1;
+        this.lasers.push({id:drone.id,owner:drone.owner,x:drone.x,y:drone.y,endX:aim.x,endY:aim.y,
+          direction,createdAt:this.time,age:0,life:SENTINEL.beamDuration});
+        if(body)contacts.push({attacker:caster,target,move:'super',data:drone.data,x:aim.x,y:aim.y,direction});
+        this.event('droneFire',{id:drone.id,fighter:drone.owner,character:drone.character,x:drone.x,y:drone.y,
+          endX:aim.x,endY:aim.y,direction,color:caster.character.color});
+        continue;
+      }
       if (drone.age < SENTINEL.delay - 1e-9) continue;
       drone.fired = true; drone.firedAt = this.time;
       const ray = sentinelRay(drone, WORLD.width);
@@ -747,7 +794,7 @@ export class FightEngine {
       target.hp = Math.max(1, target.hp - chip); target.blockFlash = .15; target.blockstun = data.blockstun;
       this.recoil(target, direction, data.push * .10, Math.min(data.blockstun, frames(14)), attacker.slot);
       target.blockLow = guard.low; target.state = guard.low ? 'lowBlock' : 'block'; target.vx = 0;
-      this.addMeter(target, 5); if(attacker.customTime <= 0)this.addMeter(attacker, 4);
+      this.addMeter(target, 5); if(attacker.customTime <= 0 && move!=='super')this.addMeter(attacker, 4);
       this.freeze = Math.max(this.freeze, frames(4)); this.event('block', { x, y, move, fighter:target.slot, character:attacker.character.id, strength:data.strength, direction, color:target.character.color,effect:data.effect }); return;
     }
     const counter = target.action && ['startup','recovery'].includes(target.movePhase);

@@ -86,7 +86,7 @@ test('o uppercut normal do boxe finaliza a sequência sem consumir super nem emi
 });
 
 test('guarda e golpes de estilo usam as mesmas silhuetas vulneráveis nos dois sentidos',()=>{
- for(const id of Object.keys(FIGHTING_STYLES)){
+ for(const id of Object.keys(STYLE_HURT)){
   const {game,f}=scene(id);assert.equal(STYLE_HURT[id].length,16);
   for(const direction of [-1,1])for(const state of ['idle','punch','kick','crouchPunch','sweep','airPunch','airKick','throw']){
    f.direction=direction;f.state=state;f.action=null;f.moveData={startup:.1,active:.2,strength:1};f.actionTime=.12;

@@ -54,7 +54,7 @@ test('pré-carregamento prepara todos os clipes do elenco e reutiliza as mesmas 
 });
 test('cada poder usa seu clipe e esforços não interrompem sua fala', async t => {
   const audio = prepare(t); await audio.load(); audio.unlock(); await audio.decode();
-  for (const id of ['marcelo', 'rafael', 'gustavo']) for (const slot of [0, 1]) for (const move of id === 'marcelo' ? ['special', 'uppercut', 'super', 'drone'] : ['special', 'uppercut', 'super']) {
+  for (const id of ['marcelo', 'rafael', 'gustavo', 'gelton']) for (const slot of [0, 1]) for (const move of id === 'marcelo' ? ['special', 'uppercut', 'super', 'drone'] : ['special', 'uppercut', 'super']) {
     const engine = { fighters: [{ character: { id }, hp: 1000 }, { character: { id }, hp: 1000 }] };
     audio.event({ type: 'special', fighter: slot, move }, engine);
     const channel = `quote:${slot}`, phrase = audio.voices.get(channel);

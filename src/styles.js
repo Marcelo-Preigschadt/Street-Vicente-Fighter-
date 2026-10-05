@@ -1,5 +1,6 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=16';
-import { techniqueStrike } from './technique.js?v=16';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=17';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=17';
+import { techniqueStrike } from './technique.js?v=17';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
@@ -37,6 +38,15 @@ export const FIGHTING_STYLES = Object.freeze({
       route('Final Circular','punch:0','punch:1','kick:2'),
       route('Troca de Altura','punch:0','punch:1','crouchPunch:0','kick:1')],
   },
+  gelton: {name:'Capoeira',summary:'Ginga, esquiva, meia-lua, armada, rasteira e aú.',step:32,
+    names:{punch:['Palma rápida','Palma de frente','Palma forte'],kick:['Meia-lua rápida','Meia-lua de frente','Armada'],
+      crouchPunch:['Palma em negativa','Palma baixa','Palma baixa forte'],sweep:['Rasteira curta','Meia-lua de compasso','Rasteira giratória'],
+      airPunch:['Palma aérea rápida','Palma aérea','Palma aérea forte'],airKick:['Aú rápido','Aú batido','Aú batido forte']},
+    normals:{punch:[[4,3,9,40,19,90],[6,4,12,64,23,125],[10,4,19,92,25,180]],
+      kick:[[6,4,13,52,21,145],[9,6,19,85,26,215],[13,7,25,116,29,300]],
+      sweep:[[6,5,15,56,22,200],[9,6,21,85,26,280],[12,7,25,108,29,330]]},
+    combos:[route('Ginga e Meia-lua','punch:0','punch:1','kick:1'),route('Volta do Mundo','punch:1','kick:1','kick:2'),
+      route('Arte da Roda','crouchPunch:0','punch:1','kick:1'),route('Ritmo da Capoeira','punch:0','punch:1','kick:1','kick:2')]},
 });
 
 export function styleTechnique(id, name, strength = 1) {
@@ -55,6 +65,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='gelton')return CAPOEIRA_STRIKES[f.action];
   const technique = techniqueStrike(f);
   if (technique) return technique;
   const calibrated = STYLE_STRIKES[f.character.id];

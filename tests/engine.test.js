@@ -81,10 +81,10 @@ test('frente, baixo, diagonal + soco faz o golpe ascendente e concede invulnerab
 test('comando direcional vencido não dispara um poder acidentalmente', () => {
   const {game}=arena();game.fighters[1].x=1000;motion(game,0,[2,3,6]);game.setInput(0,{});advance(game,.6);game.queue(0,'punch');advance(game,.02);assert.equal(game.fighters[0].action,'punch');
 });
-test('super exige barra cheia, aceita duas meias-luas e lança três ondas', () => {
+test('super exige barra cheia, aceita duas meias-luas e lança o enxame', () => {
   const {game,events}=arena();game.fighters[0].x=250;game.fighters[1].x=950;game.queue(0,'super');advance(game,.3);assert.equal(events.some(e=>e.move==='super'),false);
   game.fighters[0].meter=100;motion(game,0,[2,3,6,2,3,6]);game.queue(0,'punch');advance(game,.02);assert.equal(game.fighters[0].action,'super');assert.equal(game.fighters[0].meter,0);
-  advance(game,.7);assert.equal(events.filter(e=>e.type==='projectile' && e.move==='super').length,3);assert.equal(events.filter(e=>e.type==='special' && e.move==='super').length,1);
+  advance(game,.7);assert.equal(events.filter(e=>e.type==='droneDeploy').length,6);assert.equal(events.filter(e=>e.type==='special' && e.move==='super').length,1);
 });
 test('poder normal não exige barra, limita um projétil e fala apenas no lançamento', () => {
   const {game,events}=arena();game.fighters[0].x=200;game.fighters[1].x=1050;game.queue(0,'special');advance(game,.15);
@@ -120,8 +120,8 @@ test('varredura registra projétil rápido sem atravessar o alvo', () => {
   assert.equal(hits(events).length,1);assert.ok(game.fighters[1].hp<1000);assert.equal(game.projectiles.length,0);
 });
 test('super acerta em combo e a contagem reinicia depois da recuperação', () => {
-  const {game,events}=arena();game.fighters[0].x=250;game.fighters[1].x=800;game.fighters[0].meter=100;game.queue(0,'super');advance(game,1.7);
-  assert.equal(hits(events).length,3);assert.deepEqual(hits(events).map(e=>e.combo),[1,2,3]);advance(game,1);game.fighters[0].x=450;game.fighters[1].x=580;game.queue(0,'punch');advance(game,.4);assert.equal(hits(events).at(-1).combo,1);
+  const {game,events}=arena();game.fighters[0].x=250;game.fighters[1].x=800;game.fighters[0].meter=100;game.queue(0,'super');advance(game,3);
+  assert.equal(hits(events).length,6);assert.deepEqual(hits(events).map(e=>e.combo),[1,2,3,4,5,6]);advance(game,3);game.fighters[0].x=450;game.fighters[1].x=580;game.queue(0,'punch');advance(game,.4);assert.equal(hits(events).at(-1).combo,1);
 });
 test('corpos respeitam paredes, saltos cruzam por cima e a direção vira ao pousar', () => {
   for(const side of ['left','right']) {const {game}=arena();const[a,b]=game.fighters;a.x=side==='left'?110:1058;b.x=a.x+112;game.setInput(side==='left'?1:0,side==='left'?{left:true}:{right:true});advance(game,1);assert.ok(b.x-a.x>=112-1e-8);assert.ok(a.x>=110 && b.x<=1170);}
@@ -171,7 +171,7 @@ test('o super guardado pode ser usado no próximo round e não recupera carga ga
     assert.equal(game.fighters[slot].meter,0); assert.equal(game.fighters[slot].action,'super');
     assert.equal(events.filter(e=>e.type==='superStart').length,1);
     advance(game,.8);
-    assert.equal(events.filter(e=>e.type==='projectile' && e.move==='super').length,3);
+    assert.equal(events.filter(e=>e.type===(slot===0?'droneDeploy':'projectile') && (slot===0||e.move==='super')).length,slot===0?6:3);
     game.fighters[slot].hp=0; until(game,()=>game.phase==='roundEnd');
     const remaining=game.fighters.map(f=>f.meter); until(game,()=>game.round===3,3.5);
     assert.deepEqual(game.fighters.map(f=>f.meter),remaining); assert.equal(game.fighters[slot].meter,0);

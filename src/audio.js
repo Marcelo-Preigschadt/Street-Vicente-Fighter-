@@ -1,8 +1,9 @@
 export const SOUNDS = Object.freeze({
-  'marcelo-special': 'assets/audio/marcelo-special.wav', 'marcelo-uppercut': 'assets/audio/marcelo-uppercut.wav', 'marcelo-super': 'assets/audio/marcelo-super.wav',
+  'marcelo-special': 'assets/audio/marcelo-special.wav', 'marcelo-uppercut': 'assets/audio/marcelo-uppercut.wav', 'marcelo-super': 'assets/audio/marcelo-enxame-v2.wav',
   'marcelo-drone': 'assets/audio/marcelo-sentinela-v1.wav',
   'rafael-special': 'assets/audio/rafael-special.wav', 'rafael-uppercut': 'assets/audio/rafael-uppercut.wav', 'rafael-super': 'assets/audio/rafael-super.wav',
   'gustavo-special': 'assets/audio/gustavo-fumaca-v1.wav', 'gustavo-uppercut': 'assets/audio/gustavo-uppercut.wav', 'gustavo-super': 'assets/audio/gustavo-super.wav',
+  'gelton-special':'assets/audio/gelton-special-v2.wav','gelton-uppercut':'assets/audio/gelton-uppercut-v2.wav','gelton-super':'assets/audio/gelton-super-v2.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
   light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',
 });

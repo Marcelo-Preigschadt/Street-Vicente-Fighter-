@@ -1,10 +1,12 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=16';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=17';
 
-import { SuperEffects } from './super-fx.js?v=16';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=16';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=16';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=16';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=16';
+import { SuperEffects } from './super-fx.js?v=17';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=17';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=17';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=17';
+import { GELTON_LAYOUT } from './gelton-layout.js?v=17';
+import { drawPaintStroke, drawArtRise } from './art-fx.js?v=17';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=17';
 
 const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Não foi possível carregar ${src}`)); image.src = src;
@@ -24,7 +26,7 @@ export class Renderer {
 
   }
   async load() {
-    const characters = Object.values(CHARACTERS);
+    const characters = Object.values(CHARACTERS).filter(f=>f.id!=='gelton');
     const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [
       loadImage(costumeAsset(f.id,'base',f.sprite)),loadImage(costumeAsset(f.id,'combat',f.combatSprite)),
       ...['style','motion','strike','reaction','low'].map(atlas=>loadImage(costumeAsset(f.id,atlas,`assets/${f.id}-${atlas}${['strike','reaction','low'].includes(atlas)?'-v3':''}.webp`)))])]);
@@ -40,6 +42,19 @@ export class Renderer {
       await this.prepareVisualCache(f.id);
       for(let asset=0;asset<7;asset++)sheets[i*7+asset]=null;
     }
+    await this.loadCapoeira();
+  }
+  async loadCapoeira() {
+    const [baseImage,combatImage]=await Promise.all([loadImage(CHARACTERS.gelton.sprite),loadImage(CHARACTERS.gelton.combatSprite)]);
+    const base=this.sheets.gelton=this.analyzeSheet(baseImage,false,4,40);
+    base.combat=this.analyzeSheet(combatImage,false,4,64);
+    // Calibrate complete poses individually from their body dimensions, preserving anatomy.
+    const scales=GELTON_LAYOUT;
+    for(const [atlas,sheet] of [['base',base],['combat',base.combat]])for(const [i,frame]of sheet.frames.entries()) {
+      const layout=scales[atlas][i];frame.scale=layout.scale;frame.anchor=frame.x+frame.w*layout.anchor;
+    }
+    base.style=base;this.portraits.gelton=await cachePortrait(base,0);
+    for(const [i,f]of base.combat.frames.entries())if(i>=8)await cacheSpriteEffects(base.combat,f,CHARACTERS.gelton.color,['power']);
   }
   async prepareVisualCache(id) {
     const base=this.sheets[id],color=CHARACTERS[id].color;
@@ -262,7 +277,7 @@ export class Renderer {
       if(f.moveData.effect === 'chemicalSmoke')drawChemicalSmoke(c,{x,y:f.y-release.height,radius:8+strength*17,direction:f.direction},this.clock,this.reduced,.65);
       else this.drawPowerGlyph(x,f.y-release.height,10+strength*18,f.character.id,false);
     }
-    if (f.state === 'uppercut') drawEnergyRise(c,f,this.clock,this.reduced);
+    if (f.state === 'uppercut') f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
   }
@@ -402,7 +417,7 @@ export class Renderer {
     }
     c.restore();
   }
-  drawProjectile(p) { drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
+  drawProjectile(p) { p.character==='gelton'?drawPaintStroke(this.c,p,this.clock,this.reduced):drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
   drawCustomAura(f) {
     const c=this.c;c.save();c.strokeStyle=`${f.character.color}88`;c.lineWidth=2;
     c.beginPath();c.ellipse(f.x,WORLD.floor+1,68,13,0,0,Math.PI*2);c.stroke();

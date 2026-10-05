@@ -1,9 +1,10 @@
-import { SENTINEL } from './sentinel.js?v=16';
+import { SENTINEL } from './sentinel.js?v=17';
 const TAU = Math.PI * 2;
 
 export function drawSentinel(c, drone, reduced = false) {
-  const progress = Math.min(1, drone.age / SENTINEL.delay), ready = progress >= .77;
-  const fade = drone.fired ? Math.max(0, 1 - (drone.age - SENTINEL.delay) / SENTINEL.retireTime) : 1;
+  const delay=drone.fireDelay??SENTINEL.delay;
+  const progress = Math.min(1, drone.age / delay), ready = progress >= .77;
+  const fade = drone.fired ? Math.max(0, 1 - (drone.age - (drone.fireDelay??SENTINEL.delay)) / SENTINEL.retireTime) : 1;
   const bob = reduced ? 0 : Math.sin(drone.age * 7) * 2;
   c.save(); c.translate(drone.x, drone.y + bob);
   c.globalAlpha = fade; const scale = Math.min(1, .4 + drone.age * 6); c.scale(scale, scale);
@@ -37,7 +38,7 @@ export function drawSentinel(c, drone, reduced = false) {
     c.strokeStyle = ready ? '#ffe0a0' : '#b8ed68'; c.lineWidth = 2;
     c.beginPath(); c.arc(0, 0, 23, -Math.PI / 2, -Math.PI / 2 + TAU * progress); c.stroke();
     c.font = 'bold 12px monospace'; c.textAlign = 'center'; c.fillStyle = '#e9ffd0';
-    c.fillText(`${Math.max(0, SENTINEL.delay - drone.age).toFixed(1)}s`, 0, -34);
+    c.fillText(`${Math.max(0, delay - drone.age).toFixed(1)}s`, 0, -34);
     if (ready) {
       c.save(); c.scale(drone.direction, 1); c.strokeStyle = '#e4ffc957'; c.lineWidth = 1;
       c.setLineDash([4, 7]); c.beginPath(); c.moveTo(34, 0); c.lineTo(115, 0); c.stroke(); c.restore();
@@ -50,11 +51,11 @@ export function drawSentinelLaser(c, laser, reduced = false) {
   const alpha = Math.max(0, laser.life / SENTINEL.beamDuration);
   c.save(); c.globalAlpha = alpha; c.lineCap = 'butt';
   c.strokeStyle = '#84e98955'; c.lineWidth = reduced ? 6 : 15;
-  c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.y); c.stroke();
+  c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.endY??laser.y); c.stroke();
   c.strokeStyle = '#b8ed68'; c.lineWidth = 5; c.shadowColor = '#b8ed68'; c.shadowBlur = reduced ? 0 : 11;
-  c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.y); c.stroke();
+  c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.endY??laser.y); c.stroke();
   c.strokeStyle = '#f6ffe5'; c.lineWidth = 1.5;
-  c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.y); c.stroke();
+  c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.endY??laser.y); c.stroke();
   c.fillStyle = '#eaffc7'; c.beginPath(); c.arc(laser.x, laser.y, 5 + 4 * alpha, 0, TAU); c.fill();
   c.restore();
 }

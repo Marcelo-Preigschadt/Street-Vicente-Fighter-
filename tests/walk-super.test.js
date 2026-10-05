@@ -50,7 +50,7 @@ test('poses completas avançam e invertem pela distância, sem variar quando o c
 });
 
 test('cada pose completa usa as mesmas áreas vulneráveis no desenho e no combate', () => {
-  for (const id of Object.keys(CHARACTERS)) {
+  for (const id of Object.keys(MOTION_HURT)) {
     const { g } = scene(); g.start(id, 'local'); const f = g.fighters[0];
     f.state = 'walk'; f.walkBlend = 1;
     for (let index = 0; index < WALK_FRAMES; index++) {
@@ -104,7 +104,7 @@ test('o super congela ambos os lutadores, projéteis e cronômetro antes do lan�
     assert.equal(events.some(e => e.type === 'special'), false);
     advance(g, 55);
     assert.equal(events.filter(e => e.type === 'special' && e.move === 'super').length, 1);
-    assert.equal(events.filter(e => e.type === 'projectile' && e.move === 'super').length, 3);
+    assert.equal(events.filter(e => e.type === (f.character.id==='marcelo'?'droneDeploy':'projectile') && (f.character.id==='marcelo'||e.move === 'super')).length,f.character.id==='marcelo'?6:3);
   }
 });
 

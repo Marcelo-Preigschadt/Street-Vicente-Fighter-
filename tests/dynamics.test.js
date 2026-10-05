@@ -29,12 +29,12 @@ function bigCombo(s) {
 test('dois toques separados pelo neutro produzem passos diferentes de cada modalidade, nos dois lados',()=>{
  for(const id of Object.keys(FOOTWORK))for(const slot of [0,1])for(const kind of ['advance','retreat']) {
   const {g,f,target}=scene(id,slot);f.x=slot?950:300;target.x=slot?250:1000;
-  tapStep(g,f,kind);assert.equal(f.footwork.kind,kind);assert.equal(fighterPose(f).atlas,'motion');
+  tapStep(g,f,kind);assert.equal(f.footwork.kind,kind);assert.equal(fighterPose(f).atlas,id==='gelton'?'base':'motion');
   const x=f.x,sign=f.footwork.sign;g.setInput(slot,{});advance(g,FOOTWORK[id][kind].duration+.01);
   assert.ok(Math.abs(f.x-x-sign*FOOTWORK[id][kind].distance)<1e-7);assert.equal(f.footwork,null);
  }
  assert.ok(FOOTWORK.rafael.retreat.duration<FOOTWORK.gustavo.retreat.duration);
- assert.equal(new Set(Object.values(FOOTWORK).map(v=>v.stride)).size,3);
+ assert.equal(new Set(Object.values(FOOTWORK).map(v=>v.stride)).size,4);
 });
 
 test('segurar uma direção, toques atrasados e comandos diagonais de poder não viram passos',()=>{
@@ -78,7 +78,7 @@ test('passos têm o mesmo deslocamento a 30, 60 e 120 Hz e param durante a pausa
 });
 
 test('a silhueta física segue as novas poses de passo, recuo e tontura nos dois sentidos',()=>{
- for(const id of Object.keys(FOOTWORK))for(const direction of [-1,1]) {
+ for(const id of Object.keys(MOTION_HURT))for(const direction of [-1,1]) {
   const {f}=scene(id);f.direction=direction;
   for(const index of [8,9,10,11,12,13,14,15]) {
    f.state=index>=12?'dizzy':'stepIn';f.animTime=(index-12)/7+.001;

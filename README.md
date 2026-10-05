@@ -1,3 +1,11 @@
+## Atualização 2.9.0 — Prof. Gelton e Enxame de Drones
+
+Gelton é selecionável como P1 e P2, inclusive como adversário da CPU. Possui 32 poses próprias, ginga, esquiva em negativa, meia-lua, armada, rasteira e aú; os perfis de colisão são medidos das silhuetas de cada pose. Pincelada Cromática: H/L; Aú das Cores: U/; ; Roda das Artes com barra inteira: Q/. . As teclas de golpes permanecem as mesmas do elenco.
+
+Marcelo tem Enxame de Drones no super de barra cheia: Q/. ou Z/I; ENXAME no toque e L3 no gamepad. Seis drones flutuantes marcam a altura real do rival, travam a mira 0,10 s antes do pulso e disparam lasers diagonais em sequência. A guarda bloqueia os disparos; deslocamento após o travamento da mira pode escapar. Não há sentinela gratuita no chão. Pausa, hitstop, KO e troca de round respeitam o ciclo do enxame.
+
+Validação: `npm test`, inspeção das 32 poses de Gelton e renderização real dos ataques e dos supers.
+
 # Street Vicente Fighter — 2.8.0
 
 Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. Gustavo**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
