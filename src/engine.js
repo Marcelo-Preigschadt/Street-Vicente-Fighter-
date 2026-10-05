@@ -1,12 +1,12 @@
-import { HURT_PROFILES } from './hitboxes.js?v=19';
-import { techniquePose, techniqueHurt } from './technique.js?v=19';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=19';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=19';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=19';
-import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=19';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=19';
-export { FIGHTING_STYLES } from './styles.js?v=19';
-export { SENTINEL } from './sentinel.js?v=19';
+import { HURT_PROFILES } from './hitboxes.js?v=20';
+import { techniquePose, techniqueHurt } from './technique.js?v=20';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=20';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=20';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=20';
+import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=20';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=20';
+export { FIGHTING_STYLES } from './styles.js?v=20';
+export { SENTINEL } from './sentinel.js?v=20';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -48,7 +48,7 @@ export const CHARACTERS = Object.freeze({
       airPunch:{near:25,reach:168,height:210,h:46},airKick:{near:35,reach:235,height:164,h:76},
       uppercut:{near:-35,reach:160,height:246,h:130}},projectile:{offset:158,height:205}},
   marcelino:{id:'marcelino',name:'Prof. Marcelino',quote:'Toda ação tem reação!',color:'#9ef5ff',accent:'#f7ae63',
-    speed:318,backSpeed:278,jumpSpeed:590,power:1.07,sprite:'assets/marcelino-base-v1.webp',combatSprite:'assets/marcelino-combat-v1.webp',
+    speed:318,backSpeed:278,jumpSpeed:590,power:1.07,sprite:'assets/marcelino-base-v2.webp',combatSprite:'assets/marcelino-combat-v2.webp',
     powers:{special:'Impulso Linear',uppercut:'Joelhada Cinética',super:'Lei da Ação e Reação'},
     powerQuotes:{special:'Receba esse impulso!',uppercut:'Energia cinética!',super:'Toda ação tem reação! Agora aguenta!'},
     voiceDuration:{special:1.218,uppercut:1.437,super:2.923},

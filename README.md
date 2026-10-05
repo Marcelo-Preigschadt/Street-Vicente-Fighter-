@@ -1,3 +1,7 @@
+## Atualização 2.10.1 — Calça do Prof. Marcelino
+
+Marcelino usa calça comprida azul-marinho com detalhes cobre nas 32 poses. Os dois atlas e suas escalas e faixas de colisão foram atualizados.
+
 ## Atualização 2.10.0 — Prof. Marcelino / Física / Muay Thai
 
 Quinto professor selecionável nos dois slots e na CPU. 32 poses próprias baseadas na foto, cotoveladas, circulares, low kicks, joelhadas, clinch e três combos. Impulso Linear: H/L; Joelhada Cinética: U/; ; Lei da Ação e Reação: Q/. com barra cheia, cinco ondas vetoriais. Falas de Marcelino em pt-BR com timbre masculino maduro. Dublagem de Gelton refeita com novo timbre e frases coloquiais em pt-BR. Arquivos WAV locais e cache v19. Seleção com cinco cards e distribuição em três linhas no celular.

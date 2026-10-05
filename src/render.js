@@ -1,14 +1,14 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=19';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=20';
 
-import { SuperEffects } from './super-fx.js?v=19';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=19';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=19';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=19';
-import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=19';
-import { drawImpulse, drawKineticRise } from './physics-fx.js?v=19';
-import { GELTON_LAYOUT } from './gelton-layout.js?v=19';
-import { drawPaintStroke, drawArtRise } from './art-fx.js?v=19';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=19';
+import { SuperEffects } from './super-fx.js?v=20';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=20';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=20';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=20';
+import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=20';
+import { drawImpulse, drawKineticRise } from './physics-fx.js?v=20';
+import { GELTON_LAYOUT } from './gelton-layout.js?v=20';
+import { drawPaintStroke, drawArtRise } from './art-fx.js?v=20';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=20';
 
 export const CAPOEIRA_CELL_MARGIN = 96;
 

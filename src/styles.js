@@ -1,7 +1,7 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=19';
-import { MUAY_THAI_STRIKES } from './muay-thai.js?v=19';
-import { CAPOEIRA_STRIKES } from './capoeira.js?v=19';
-import { techniqueStrike } from './technique.js?v=19';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=20';
+import { MUAY_THAI_STRIKES } from './muay-thai.js?v=20';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=20';
+import { techniqueStrike } from './technique.js?v=20';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
