@@ -9,12 +9,12 @@ function prepare(t) {
   globalThis.window=new EventTarget();
   const buttons=['down','kick','special','punch','custom','guardCounter','block','drone'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
   globalThis.document={querySelectorAll:q=>q==='[data-action]'?buttons:buttons.filter(b=>b.pressed)};
-  const pad={axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};let connected=false;
-  Object.defineProperty(globalThis,'navigator',{value:{getGamepads:()=>connected?[pad]:[]},configurable:true});
+  const pad={axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};let connected=false,connectedPads=[pad];
+  Object.defineProperty(globalThis,'navigator',{value:{getGamepads:()=>connected?connectedPads:[]},configurable:true});
   t.after(()=>{for(const key of ['window','document'])if(old[key]===undefined)delete globalThis[key];else globalThis[key]=old[key];if(old.navigator)Object.defineProperty(globalThis,'navigator',old.navigator);else delete globalThis.navigator;});
   const input=new Inputs(game);
   const emit=(target,type,props)=>{const e=new Event(type,{cancelable:true});Object.assign(e,props);target.dispatchEvent(e);};
-  return {game,events,input,buttons,pad,connect:()=>{connected=true;},key:(code,type='keydown',repeat=false)=>emit(window,type,{code,repeat}),pointer:(action,type,id)=>emit(buttons.find(b=>b.dataset.action===action),type,{pointerId:id})};
+  return {game,events,input,buttons,pad,connect:(pads=[pad])=>{connected=true;connectedPads=pads;},key:(code,type='keydown',repeat=false)=>emit(window,type,{code,repeat}),pointer:(action,type,id)=>emit(buttons.find(b=>b.dataset.action===action),type,{pointerId:id})};
 }
 test('teclado captura baixo antes do chute e não perde a rasteira',t=>{const s=prepare(t);s.key('KeyS');s.key('KeyG');advance(s.game,.02);assert.equal(s.game.fighters[0].action,'sweep');});
 test('comando direcional do teclado dispara poder sem depender de um frame entre teclas',t=>{const s=prepare(t);s.key('KeyS');s.key('KeyD');s.key('KeyS','keyup');s.key('KeyF');advance(s.game,.03);assert.equal(s.game.fighters[0].action,'special');});
@@ -65,4 +65,19 @@ test('atalhos dos dois jogadores cancelam somente o impacto bloqueado, por tecla
  const f=s.game.fighters[0];s.pointer('block','pointerdown',1);
  s.game.hit({attacker:s.game.fighters[1],target:f,move:'punch',x:f.x,y:f.y-200});f.meter=100;
  s.pointer('guardCounter','pointerdown',2);assert.equal(f.action,'guardCounter');assert.equal(f.meter,75);
+});
+
+
+test('modo local recebe dois joysticks independentes e atalhos de poder com LT',t=>{
+ const s=prepare(t),pad2={axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};
+ s.connect([null,s.pad,null,pad2]);s.pad.axes[0]=.8;pad2.axes[0]=-.8;
+ s.pad.buttons[2].pressed=true;pad2.buttons[1].pressed=true;s.input.update();advance(s.game,.02);
+ assert.equal(s.game.cpu,false);assert.equal(s.game.fighters[0].action,'punch');assert.equal(s.game.fighters[1].action,'kick');
+ assert.equal(s.game.fighters[0].input.right,true);assert.equal(s.game.fighters[1].input.left,true);
+ for(const [button,move] of [[2,'special'],[3,'uppercut'],[5,'super']]){
+  s.game.start('rafael','local','gustavo');s.game.phase='fight';s.input.release();
+  for(const pad of [s.pad,pad2]){pad.axes=[0,0];pad.buttons.forEach(b=>b.pressed=false);pad.buttons[6].pressed=true;pad.buttons[button].pressed=true;}
+  s.game.fighters.forEach(f=>f.meter=100);s.input.update();advance(s.game,.02);
+  assert.deepEqual(s.game.fighters.map(f=>f.action),[move,move]);
+ }
 });

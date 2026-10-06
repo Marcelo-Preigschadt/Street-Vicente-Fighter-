@@ -59,7 +59,7 @@ test('voadeira exige guarda alta; guarda baixa recebe dano', () => {
   assert.equal(standing.game.fighters[1].hp,1000); assert.ok(standing.events.some(e=>e.type==='block'));
   assert.ok(crouching.game.fighters[1].hp<1000); assert.equal(crouching.events.some(e=>e.type==='block'),false);
 });
-test('salto não pode mudar direção no ar e só aceita um ataque por salto', () => {
+test('salto mantém direção e não sobrepõe ataques durante a recuperação', () => {
   const {game,events}=arena(); game.fighters[1].x=1000; game.setInput(0,{right:true,jump:true}); advance(game,.2); const vx=game.fighters[0].vx;
   game.setInput(0,{left:true}); advance(game,.2); assert.equal(game.fighters[0].vx,vx);
   game.queue(0,'kick'); advance(game,.15); assert.ok(game.fighters[0].airborne); game.queue(0,'punch'); advance(game,.03);

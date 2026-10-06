@@ -1,4 +1,4 @@
-import { CHARACTERS } from './engine.js?v=27';
+import { CHARACTERS } from './engine.js';
 
 export const PROTOCOL='svf-online-3-5-0';
 export const MOVES=new Set(['punch','kick','special','uppercut','super','throw','custom','guardCounter','drone']);
