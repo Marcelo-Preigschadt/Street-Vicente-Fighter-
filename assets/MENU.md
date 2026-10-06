@@ -1,7 +1,5 @@
-# Retratos de seleção — 3.2.1
+# Retratos de seleção — 3.2.2
 
-Atlas próprio de retratos próximos do rosto, criado com imagegen a partir das sete identidades já existentes. Ordem 4×2: Marcelo, Rafael, Gustavo, Gelton; Marcelino, Marcos, João e célula vazia. Sem mãos, braços ou poses de combate; enquadramento e fundo padronizados. Atlas: assets/menu-portraits-atlas-v2.webp. Exportação determinística: python3 scripts/build-menu.py, retratos 320×320 em assets/runtime/*-head-menu-v2.webp.
+Os cards agora usam recortes exatos do quadro base 0 do atlas de combate preparado de cada personagem: assets/runtime/{id}-v1.webp, com coordenadas de assets/runtime/{id}-v1.json. É o mesmo quadro utilizado pela pose lateral do menu. Nenhuma feição foi redesenhada ou gerada novamente. Cabelo, barba, boné e óculos mantêm os pixels dos personagens da luta. O atlas de retratos gerados v2 deixou de ser referenciado pela interface.
 
-Prompt: identidade preservada das referências do jogo; ilustração arcade 2D; cabeça próxima em três quartos, escala e altura dos olhos uniformes; cabelo, boné e óculos completos; fundo azul petróleo; grade exata 4×2 sem texto ou bordas.
-
-Todos os sete personagens aparecem juntos em uma grade 4×2, sem filtros por categoria e sem rolagem interna. Identificação de professor/aluno permanece na descrição individual. Falas de seleção e combate preservadas.
+scripts/build-menu.py contém os sete recortes calibrados individualmente. Aplica apenas enquadramento quadrado, fundo uniforme e redimensionamento proporcional Lanczos para 320×320; saída assets/runtime/{id}-head-menu-v3.webp. Todos os sete personagens permanecem juntos na grade, e as falas foram preservadas.
