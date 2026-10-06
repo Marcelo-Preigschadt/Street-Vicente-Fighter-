@@ -5,6 +5,7 @@ export const SOUNDS = Object.freeze({
   'gustavo-special': 'assets/audio/gustavo-fumaca-v1.wav', 'gustavo-uppercut': 'assets/audio/gustavo-uppercut.wav', 'gustavo-super': 'assets/audio/gustavo-super.wav',
   'gelton-special':'assets/audio/gelton-special-br-v4.wav','gelton-uppercut':'assets/audio/gelton-uppercut-br-v4.wav','gelton-super':'assets/audio/gelton-super-br-v4.wav',
   'marcelino-special':'assets/audio/marcelino-special-br-v1.wav','marcelino-uppercut':'assets/audio/marcelino-uppercut-br-v1.wav','marcelino-super':'assets/audio/marcelino-super-br-v1.wav',
+  'joao-special':'assets/audio/joao-special-br-v1.wav','joao-uppercut':'assets/audio/joao-uppercut-br-v1.wav','joao-super':'assets/audio/joao-super-br-v1.wav',
   'marcos-special':'assets/audio/marcos-special-fluid-br-v1.wav','marcos-uppercut':'assets/audio/marcos-uppercut-fluid-br-v1.wav','marcos-super':'assets/audio/marcos-super-fluid-br-v1.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
   light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',

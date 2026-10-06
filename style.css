@@ -47,3 +47,15 @@
 .fighter-card.marcos{background:linear-gradient(150deg,#244784dd,#172541dd);border-color:#8eb5ff88}.fighter-card.marcos.selected{border-color:#8eb5ff;box-shadow:0 0 24px #8eb5ff33}.marcos .player-chip{color:#8eb5ff}
 @media(min-width:601px){.fighter-name{font-size:clamp(12px,1.25vw,19px)}.quote{font-size:clamp(10px,.9vw,12px)}.fighter-style{font-size:clamp(8px,.7vw,10px)}}
 @media(max-width:600px) and (orientation:portrait){.fighters{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}.fighter-card.marcelino{grid-column:auto;width:100%}.arena:has(.selection:not([hidden])){min-height:1080px}}
+
+/* Categories keep a growing roster in a bounded, scrollable selection. */
+.roster{display:flex;flex-direction:column;gap:12px;min-height:0;height:100%}
+.roster-tabs{display:flex;gap:8px;flex-shrink:0}
+.roster-tabs button{border:1px solid #667d6b;background:#18272b;color:var(--paper);border-radius:6px;padding:9px 17px;font-weight:800;font-size:14px}
+.roster-tabs button[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#142017}
+.roster-tabs span{opacity:.7;margin-left:8px;font-size:12px}
+.roster .fighters{flex:1;min-height:0;overflow-y:auto;align-items:stretch;grid-auto-rows:minmax(180px,1fr);height:auto;grid-template-rows:none;padding-top:5px}
+.fighter-card.joao{background:linear-gradient(150deg,#326331dd,#183124dd);border-color:#c2ff6088}
+.fighter-card.joao.selected{border-color:#c2ff60;box-shadow:0 0 24px #c2ff6033}.joao .player-chip{color:#c2ff60}
+@media(max-width:600px) and (orientation:portrait){.roster .fighters{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:235px}.roster{min-height:260px}.arena:has(.selection:not([hidden])){min-height:1130px}.roster-tabs{justify-content:center}.roster-tabs button{padding:8px 13px}}
+@media(max-height:560px) and (orientation:landscape){.roster .fighters{min-height:150px;grid-auto-rows:150px}.roster-tabs button{padding:5px 12px}.roster{gap:5px}}

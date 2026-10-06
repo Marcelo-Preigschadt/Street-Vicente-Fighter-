@@ -1,9 +1,9 @@
-import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=24';
-import {RollbackGame} from './netplay.js?v=24';
-import {iceConfig} from './ice-config.js?v=24';
+import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=27';
+import {RollbackGame} from './netplay.js?v=27';
+import {iceConfig} from './ice-config.js?v=27';
 
-const QUEUE='street-vicente-fighter-300-waiting';
-const PREFIX='street-vicente-fighter-300-room-';
+const QUEUE='street-vicente-fighter-310-waiting';
+const PREFIX='street-vicente-fighter-310-room-';
 let peerScript;
 export function loadPeer() {
   if(globalThis.Peer)return Promise.resolve(globalThis.Peer);
@@ -24,7 +24,7 @@ export class OnlineMatch {
   status(text) { this.onStatus?.(text); }
   async begin(kind,character,code='',retry=0) {
     this.close();const gen=this.generation;this.active=true;this.character=character;this.kind=kind;this.code='';this.retry=retry;this.events=[];this.seq=0;this.lastSeq=0;this.matchId=null;this.votes=[false,false];
-    if(!validCharacter(character))return this.fail('Escolha um professor.');
+    if(!validCharacter(character))return this.fail('Escolha um lutador.');
     code=normalizeCode(code);
     if(kind==='join'&&!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return this.fail('Digite os 8 caracteres do código da sala.');
     try{
@@ -91,7 +91,7 @@ export class OnlineMatch {
     });
   }
   async preparePair(gen) {
-    this.status('Adversário conectado. Preparando os dois professores…');
+    this.status('Adversário conectado. Preparando os dois lutadores…');
     try{await this.prepare(this.pair,this.slot);if(gen!==this.generation)return;this.localReady=true;
       if(this.slot===0){if(this.remoteReady&&this.remoteSynced)this.startHost();else this.status('Aguardando o outro jogador carregar…');}
       else this.send({t:'ready',matchId:this.matchId,clientTime:this.now()});

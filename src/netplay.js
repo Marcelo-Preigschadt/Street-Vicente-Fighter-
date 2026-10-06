@@ -1,5 +1,5 @@
-import {FIXED_STEP} from './engine.js?v=24';
-import {MOVES,sanitizeInput,snapshot} from './net-state.js?v=24';
+import {FIXED_STEP} from './engine.js?v=27';
+import {MOVES,sanitizeInput,snapshot} from './net-state.js?v=27';
 
 const LIMIT=180;
 const copy=value=>value===undefined?undefined:JSON.parse(JSON.stringify(value));

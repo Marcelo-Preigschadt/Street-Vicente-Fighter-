@@ -1,11 +1,12 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=24';
-import { Renderer } from './render.js?v=24';
-import { ArcadeAudio } from './audio.js?v=24';
-import { Inputs } from './input.js?v=24';
-import { OnlineMatch,normalizeCode } from './online.js?v=25';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=27';
+import { Renderer } from './render.js?v=27';
+import { ArcadeAudio } from './audio.js?v=27';
+import { Inputs } from './input.js?v=27';
+import { OnlineMatch,normalizeCode } from './online.js?v=27';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
+const categorySelection={teachers:'marcelo',students:'joao'};
 let selected = 'marcelo', opponent = 'rafael', ready = true, starting = false;
 const engine = new FightEngine({ onEvent: event });
 const inputs = new Inputs(engine);
@@ -23,7 +24,7 @@ function onlineStatus(message){
   if(online.code&&online.kind==='create'){$('room-share').hidden=false;$('room-code-display').textContent=online.code;}
 }
 function onlineBusy(busy){
-  document.querySelectorAll('[data-fighter], input[name="mode"]').forEach(el=>el.disabled=busy);
+  document.querySelectorAll('[data-fighter], [data-category], input[name="mode"]').forEach(el=>el.disabled=busy);
   for(const id of ['start','create-room','join-room','room-code'])$(id).disabled=busy;
   $('cancel-online').hidden=!busy;
 }
@@ -67,6 +68,14 @@ function event(e) {
 
 function updateSelection() {
   if (opponent === selected) opponent = Object.keys(CHARACTERS).find(id => id !== selected);
+  const category=CHARACTERS[selected].category;
+  categorySelection[category]=selected;
+  document.querySelectorAll('[data-category]').forEach(button=>{
+    const group=button.dataset.category;button.setAttribute('aria-pressed',String(group===category));
+    button.querySelector('span').textContent=Object.values(CHARACTERS).filter(f=>f.category===group).length;
+  });
+  document.querySelector('.fighters').setAttribute('aria-label',category==='students'?'Seleção de alunos':'Seleção de professores');
+  document.querySelectorAll('[data-fighter]').forEach(card=>card.hidden=CHARACTERS[card.dataset.fighter].category!==category);
   const local = getMode() === 'local',network=getMode()==='online';
   $('online-panel').hidden=!network;$('opponent').closest('label').hidden=network;
   document.querySelector('.control-player:has(.p2)').hidden=network;
@@ -75,12 +84,12 @@ function updateSelection() {
   $('opponent-label').textContent = local ? 'Jogador 2' : 'Adversário';
   for (const option of $('opponent').options) option.disabled = option.value === selected;
   $('opponent').value = opponent;
-  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida' };
+  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida',joao:'chute' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
   $('p1-drone-command').hidden = selected !== 'marcelo'; $('p2-drone-command').hidden = opponent !== 'marcelo';
   document.querySelector('[data-action="drone"]').hidden = selected !== 'marcelo';
   const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
-  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA' }[selected];
+  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA',joao:'CHUTE' }[selected];
   touchSecond.setAttribute('aria-label',second[selected]);
   document.querySelectorAll('[data-fighter]').forEach(card => {
     const chosen = card.dataset.fighter === selected;
@@ -90,8 +99,11 @@ function updateSelection() {
   });
 }
 document.querySelectorAll('[data-fighter]').forEach(button => button.addEventListener('click', () => {
-  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23}[selected], .09, 'triangle', .15);
+  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23,joao:440}[selected], .09, 'triangle', .15);
   updateSelection();
+}));
+document.querySelectorAll('[data-category]').forEach(button=>button.addEventListener('click',()=>{
+  selected=categorySelection[button.dataset.category];updateSelection();
 }));
 $('opponent').addEventListener('change', () => { opponent = $('opponent').value; updateSelection(); });
 document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventListener('change', updateSelection));
@@ -133,7 +145,7 @@ $('back').addEventListener('click', selection); $('result-back').addEventListene
 function pause(){if(online.running)online.pause();else engine.togglePause();}
 $('resume').addEventListener('click',pause);$('pause').addEventListener('click',pause);
 $('create-room').addEventListener('click',()=>startOnline('create'));$('join-room').addEventListener('click',()=>startOnline('join'));
-$('cancel-online').addEventListener('click',()=>{online.close();selection();updateSelection();$('load-status').textContent='Busca cancelada. Escolha um professor e encontre outro jogador.';});
+$('cancel-online').addEventListener('click',()=>{online.close();selection();updateSelection();$('load-status').textContent='Busca cancelada. Escolha um lutador e encontre outro jogador.';});
 $('leave-online').addEventListener('click',()=>{selection();updateSelection();});
 $('copy-room').addEventListener('click',async()=>{
   const link=new URL(location.href);link.search='';link.searchParams.set('sala',online.code);
@@ -168,9 +180,9 @@ requestAnimationFrame(frame);
 
 // HTML previews are visible immediately; full animation and audio are loaded per match.
 $('start').disabled=false;updateSelection();
-$('load-status').textContent='Escolha seu professor e encontre um jogador online, ou crie uma sala para convidar alguém.';
+$('load-status').textContent='Escolha seu lutador e encontre um jogador online, ou crie uma sala para convidar alguém.';
 const invitation=normalizeCode(new URLSearchParams(location.search).get('sala')??'');
-if(invitation){$('room-code').value=invitation;$('load-status').textContent='Convite recebido. Escolha seu professor e clique em Entrar na sala.';}
+if(invitation){$('room-code').value=invitation;$('load-status').textContent='Convite recebido. Escolha seu lutador e clique em Entrar na sala.';}
 renderer.loadBackground().catch(error=>console.warn('Cenário indisponível.',error));
 
 // Exposed only on explicit debug requests for reproducible local gameplay checks.

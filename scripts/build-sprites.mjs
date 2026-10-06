@@ -1,3 +1,4 @@
+import {WILD_LAYOUT} from '../src/wild-data.js';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
@@ -18,12 +19,13 @@ async function webp(canvas,path,quality=88){
   execFileSync('python3',['-c','from PIL import Image;import sys;from pathlib import Path;p=Path(sys.argv[1]);Image.open(p).save(sys.argv[2],quality=int(sys.argv[3]));p.unlink()',png,path,String(quality)]);
 }
 for(const [id,f]of Object.entries(CHARACTERS)) {
+  if(process.argv[2]&&process.argv[2]!==id)continue;
   const sheets={};
-  if(['gelton','marcelino','marcos'].includes(id)) {
+  if(['gelton','marcelino','marcos','joao'].includes(id)) {
     sheets.base=r.analyzeSheet(await loadImage(f.sprite),false,4,96);
     sheets.combat=r.analyzeSheet(await loadImage(f.combatSprite),false,4,96);
     if(id==='gelton')sheets.combat.frames[9]=r.analyzeSheet(await loadImage(f.superSprite),false,1,0,1).frames[0];
-    const layout={gelton:GELTON_LAYOUT,marcelino:MUAY_THAI_LAYOUT,marcos:JUDO_LAYOUT}[id];
+    const layout={gelton:GELTON_LAYOUT,marcelino:MUAY_THAI_LAYOUT,marcos:JUDO_LAYOUT,joao:WILD_LAYOUT}[id];
     for(const [atlas,sheet]of Object.entries(sheets))for(const [i,frame]of sheet.frames.entries()){
       frame.scale=layout[atlas][i].scale;frame.anchor=frame.x+frame.w*layout[atlas][i].anchor;
     }

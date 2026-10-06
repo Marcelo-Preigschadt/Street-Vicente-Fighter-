@@ -1,3 +1,16 @@
+## Atualização 3.1.0 — João Machado e categorias
+
+João Machado é o primeiro aluno do elenco, da turma 301. Rosto inspirado na segunda foto enviada; roupa da primeira: camisa verde com mangas dobradas, camiseta escura, jeans largo, tênis e boné preto. 32 poses próprias, óculos e cabeça completos, luta selvagem inspirada no Blanka, mantendo aparência humana.
+
+- H: Super Soco — entrada curta e soco forte; alcance finito, defendível.
+- U: Rolamento Selvagem — investida aérea em bola para frente e para cima, com recuperação punível.
+- Q: Curto-Circuito 301 — consome 100% da barra; descarga de curta distância, defendível, sem projéteis.
+- Voz masculina jovem com interpretação expressiva em português brasileiro; três WAVs locais. Nenhuma fala dos professores foi alterada.
+- Abas Professores e Alunos, memória da escolha em cada categoria, adversários agrupados e confrontos livres entre categorias. Prévia leve e animações/áudios carregados por dupla.
+- Cache de arte mantém até quatro personagens recentes, liberando atlas e canvases antigos ao alternar o elenco. Catálogo de 30–40 personagens é viável com assets otimizados; ainda não houve teste de desempenho com esse total.
+- Duas pessoas por luta online. Total de partidas simultâneas não medido; conexão real entre duas sessões ainda pendente de validação. Não existe promessa de quantidade de jogadores, de latência zero ou de disponibilidade do relay gratuito. Sem banco criado.
+- Protocolo/sala 3.1 isolam clientes antigos, evitando que uma versão sem João entre numa luta nova.
+
 ## Atualização 3.0.1 — Retransmissão de conexão
 
 Conexões tentam STUN direto e também TURN UDP/TCP/TLS do endpoint público static-auth do Open Relay, com credenciais temporárias de uma hora geradas conforme a chave compartilhada publicada pelo provedor. O serviço de retransmissão pode ter limites e não garante latência ou disponibilidade. Nenhum banco ou conta foi criado.

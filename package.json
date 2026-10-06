@@ -1,9 +1,9 @@
 {
   "name": "street-vicente-fighter",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "private": true,
   "type": "module",
-  "description": "Jogo de luta arcade com Prof. Marcelo, Prof Rafael Prof. Gustavo Prof. Gelton Prof. Marcelino e Prof. Marcos",
+  "description": "Jogo de luta arcade do Vicente: professores e alunos, com João Machado da turma 301",
   "scripts": {
     "test": "node --test tests/*.test.js",
     "start": "python3 -m http.server 8000"

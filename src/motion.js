@@ -1,4 +1,4 @@
-import { MOTION_HURT } from './motion-data.js?v=24';
+import { MOTION_HURT } from './motion-data.js?v=27';
 
 // Complete drawings, distance-driven footwork and committed burst steps.
 // A step changes spacing; it never grants whole-body invulnerability.
@@ -14,6 +14,7 @@ export const FOOTWORK = Object.freeze({
   marcelino:{stride:148,advance:{distance:104,duration:16/60,cancelAt:7/60},retreat:{distance:89,duration:17/60},
     counter:.23,range:[125,190],attackAdvance:{punch:[6,10,16],kick:[9,15,20],crouchPunch:[3,5,7],sweep:[4,7,11]}},
   marcos:{stride:154,advance:{distance:97,duration:17/60,cancelAt:7/60},retreat:{distance:91,duration:18/60},counter:.27,range:[105,155],attackAdvance:{punch:[7,11,15],kick:[6,10,13],crouchPunch:[3,6,9],sweep:[5,8,11]}},
+  joao:{stride:144,advance:{distance:122,duration:15/60,cancelAt:6/60},retreat:{distance:102,duration:17/60},counter:.25,range:[135,205],attackAdvance:{punch:[6,10,15],kick:[8,12,18],crouchPunch:[3,5,8],sweep:[4,7,11]}},
 });
 
 export const DIZZY = Object.freeze({ threshold:65, minHits:3, duration:2.35, protection:4, decay:20, escapeInterval:.09, escapeAmount:.055 });

@@ -1,13 +1,14 @@
-import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=24';
-import { HURT_PROFILES } from './hitboxes.js?v=24';
-import { techniquePose, techniqueHurt } from './technique.js?v=24';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=24';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=24';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=24';
-import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=24';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=24';
-export { FIGHTING_STYLES } from './styles.js?v=24';
-export { SENTINEL } from './sentinel.js?v=24';
+import {wildPose,wildHurt,WILD_STRIKES} from './wild.js?v=27';
+import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=27';
+import { HURT_PROFILES } from './hitboxes.js?v=27';
+import { techniquePose, techniqueHurt } from './technique.js?v=27';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=27';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=27';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=27';
+import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=27';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=27';
+export { FIGHTING_STYLES } from './styles.js?v=27';
+export { SENTINEL } from './sentinel.js?v=27';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -15,7 +16,7 @@ export const COMBAT = Object.freeze({ jumpVelocity: -1440, preJump: 3 / 60, inpu
   landing: 4 / 60, emptyLanding: 2 / 60, superFreeze: 14 / 60, leftWall: 110, rightWall: 1170 });
 export const CHEMISTRY = Object.freeze({ smokeDuration:1.9, smokeRadius:30 });
 export const CHARACTERS = Object.freeze({
-  marcelo: { id: 'marcelo', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
+  marcelo: { id: 'marcelo', category:'teachers', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
     speed: 324, backSpeed: 240, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
     powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Enxame de Drones', drone: 'Sentinela Automática' },
     powerQuotes: { special: 'Código na tela!', uppercut: 'Barreira digital ativada!', super: 'Bora NIT! Enxame de drones! Alvo marcado!', drone: 'Sentinela ativada!' },
@@ -24,7 +25,7 @@ export const CHARACTERS = Object.freeze({
       crouchPunch: { near: 35, reach: 161, height: 140, h: 34 }, sweep: { near: 35, reach: 208, height: 49, h: 54 },
       airPunch: { near: 30, reach: 170, height: 188, h: 34 }, airKick: { near: 30, reach: 187, height: 128, h: 62 },
       uppercut: { near: -25, reach: 82, height: 297, h: 100 } }, projectile: { offset: 154, height: 199 } },
-  rafael: { id: 'rafael', name: 'Prof Rafael', quote: 'No meu tempo não era assim', color: '#ffa14c', accent: '#ffd08a',
+  rafael: { id: 'rafael', category:'teachers', name: 'Prof Rafael', quote: 'No meu tempo não era assim', color: '#ffa14c', accent: '#ffd08a',
     speed: 390, backSpeed: 348, jumpSpeed: 630, power: 1, sprite: 'assets/rafael.webp', combatSprite: 'assets/rafael-combat.webp', walkSprite: 'assets/rafael-walk.webp',
     powers: { special: 'Crônicas', uppercut: 'Linha do Tempo', super: 'Marcha dos Séculos' },
     powerQuotes: { special: 'Abram as crônicas!', uppercut: 'Viagem pela história!', super: 'No meu tempo não era assim! Marcha dos séculos!' },
@@ -33,13 +34,13 @@ export const CHARACTERS = Object.freeze({
       crouchPunch: { near: 35, reach: 148, height: 119, h: 30 }, sweep: { near: 35, reach: 205, height: 52, h: 38 },
       airPunch: { near: 30, reach: 157, height: 145, h: 32 }, airKick: { near: 30, reach: 175, height: 110, h: 36 },
       uppercut: { near: -25, reach: 87, height: 303, h: 80 } }, projectile: { offset: 150, height: 214 } },
-  gustavo: { id: 'gustavo', name: 'Prof. Gustavo', quote: 'Reagiu, perdeu!', color: '#77dcf5', accent: '#b39bff',
+  gustavo: { id: 'gustavo', category:'teachers', name: 'Prof. Gustavo', quote: 'Reagiu, perdeu!', color: '#77dcf5', accent: '#b39bff',
     speed: 342, backSpeed: 312, jumpSpeed: 615, power: 1.04, sprite: 'assets/gustavo.webp', combatSprite: 'assets/gustavo-combat.webp', walkSprite: 'assets/gustavo-walk.webp',
     powers: { special: 'Névoa Atômica', uppercut: 'Reação Exotérmica', super: 'Reação em Cadeia' },
     powerQuotes: { special: 'Névoa atômica!', uppercut: 'Vai esquentar!', super: 'Reagiu, perdeu! Reação em cadeia!' },
     voiceDuration: {"special": 2.56, "uppercut": 1.73, "super": 3.19},
     strikes: {"punch": {"near": 42, "reach": 147, "height": 195, "h": 42}, "kick": {"near": 60, "reach": 192, "height": 241, "h": 77}, "crouchPunch": {"near": 35, "reach": 158, "height": 130, "h": 42}, "sweep": {"near": 35, "reach": 192, "height": 45, "h": 74}, "airPunch": {"near": 30, "reach": 147, "height": 168, "h": 41}, "airKick": {"near": 30, "reach": 176, "height": 115, "h": 75}, "uppercut": {"near": -25, "reach": 75, "height": 316, "h": 86}}, projectile: {"offset": 177, "height": 185} },
-  gelton: {id:'gelton',name:'Prof. Gelton',quote:'A arte está no movimento!',color:'#f5b75a',accent:'#ee7caf',
+  gelton: {id:'gelton',category:'teachers',name:'Prof. Gelton',quote:'A arte está no movimento!',color:'#f5b75a',accent:'#ee7caf',
     speed:372,backSpeed:334,jumpSpeed:645,power:1.01,sprite:'assets/gelton-base-v1.webp',combatSprite:'assets/gelton-combat-v1.webp',superSprite:'assets/gelton-handstand-v2.webp',
     powers:{special:'Pincelada Cromática',uppercut:'Aú das Cores',super:'Roda das Artes'},
     powerQuotes:{special:'Olha a pincelada!',uppercut:'É o aú das cores!',super:'Bora pra roda! A arte tá no movimento!'},
@@ -48,7 +49,7 @@ export const CHARACTERS = Object.freeze({
       crouchPunch:{near:20,reach:146,height:118,h:46},sweep:{near:15,reach:237,height:54,h:66},
       airPunch:{near:25,reach:168,height:210,h:46},airKick:{near:35,reach:235,height:164,h:76},
       uppercut:{near:-35,reach:160,height:246,h:130}},projectile:{offset:158,height:205}},
-  marcelino:{id:'marcelino',name:'Prof. Marcelino',quote:'Toda ação tem reação!',color:'#9ef5ff',accent:'#f7ae63',
+  marcelino:{id:'marcelino',category:'teachers',name:'Prof. Marcelino',quote:'Toda ação tem reação!',color:'#9ef5ff',accent:'#f7ae63',
     speed:318,backSpeed:278,jumpSpeed:590,power:1.07,sprite:'assets/marcelino-base-v2.webp',combatSprite:'assets/marcelino-combat-v2.webp',
     powers:{special:'Impulso Linear',uppercut:'Joelhada Cinética',super:'Lei da Ação e Reação'},
     powerQuotes:{special:'Receba esse impulso!',uppercut:'Energia cinética!',super:'Toda ação tem reação! Agora aguenta!'},
@@ -57,12 +58,17 @@ export const CHARACTERS = Object.freeze({
       crouchPunch:{near:25,reach:145,height:118,h:44},sweep:{near:35,reach:193,height:110,h:58},
       airPunch:{near:20,reach:157,height:218,h:60},airKick:{near:22,reach:122,height:180,h:84},
       uppercut:{near:-24,reach:122,height:235,h:112}},projectile:{offset:142,height:205}},
-  marcos:{id:'marcos',name:'Prof. Marcos',quote:'Seu sistema vai pro chão!',color:'#8eb5ff',accent:'#c9dbff',
+  marcos:{id:'marcos',category:'teachers',name:'Prof. Marcos',quote:'Seu sistema vai pro chão!',color:'#8eb5ff',accent:'#c9dbff',
     speed:284,backSpeed:247,jumpSpeed:555,power:1.10,sprite:'assets/marcos-base-v1.webp',combatSprite:'assets/marcos-combat-v1.webp',
     powers:{special:'Sequestro de Sessão',uppercut:'Pilha Reversa',super:'Kernel Panic'},
     powerQuotes:{special:'Sua sessão acabou!',uppercut:'Acesso negado!',super:'Travou o sistema! Agora é chão!'},
     voiceDuration:{"special":2.816,"uppercut":1.699,"super":3.508},strikes:JUDO_STRIKES,projectile:{offset:130,height:200}},
 
+  joao:{id:'joao',category:'students',classroom:'301',name:'João Machado',quote:'A 301 chegou!',color:'#c2ff60',accent:'#f7efad',
+    speed:354,backSpeed:285,jumpSpeed:630,power:1.05,sprite:'assets/joao-base-v1.webp',combatSprite:'assets/joao-combat-v1.webp',
+    powers:{special:'Super Soco',uppercut:'Rolamento Selvagem',super:'Curto-Circuito 301'},
+    powerQuotes:{special:'Segura esse super soco!',uppercut:'Sai da frente!',super:'A trezentos e um chegou! Agora segura essa descarga!'},
+    voiceDuration:{"special": 2.783, "uppercut": 2.16, "super": 4.719},strikes:WILD_STRIKES,projectile:{offset:210,height:190}},
 });
 
 const frames = n => n / 60;
@@ -87,6 +93,12 @@ function moveData(name, strength = 1, characterId = null) {
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
       cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
+  if(characterId==='joao'&&name==='special')return {name,strength,startup:frames(15),active:frames(7),recovery:frames(28),damage:132+strength*12,
+    stun:frames(29),blockstun:frames(18),push:440,meter:9,level:'mid',advance:65,chip:.06,effect:'superPunch'};
+  if(characterId==='joao'&&name==='uppercut')return {name,strength,startup:frames(8),active:frames(24),recovery:frames(30),damage:118+strength*12,
+    stun:frames(30),blockstun:frames(20),push:300,meter:9,level:'mid',knockdown:true,launch:670,invincibility:frames(8),travelSpeed:540,jumpVelocity:-850,effect:'wildRoll'};
+  if(characterId==='joao'&&name==='super')return {name,strength,startup:frames(13),active:frames(25),recovery:frames(38),damage:350,
+    stun:frames(38),blockstun:frames(25),push:440,meter:0,level:'mid',knockdown:true,launch:420,cost:100,chip:.05,invincibility:frames(12),effect:'electric301'};
   if(characterId==='marcos'&&name==='special')return {name,strength,startup:frames(18),active:frames(5),recovery:frames(32),damage:150+strength*10,
     stun:frames(34),blockstun:0,push:360,meter:10,level:'throw',knockdown:true,launch:470,range:143,advance:86,effect:'sessionLock'};
   if(characterId==='marcos'&&name==='uppercut')return {name,strength,startup:frames(7),active:frames(10),recovery:frames(31),damage:118+strength*14,
@@ -137,6 +149,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='joao')return wildPose(f);
   if(f.character.id==='marcos')return judoPose(f);
   if(f.character.id==='gelton')return capoeiraPose(f);
   if(f.character.id==='marcelino')return muayThaiPose(f);
@@ -209,7 +222,7 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
@@ -241,7 +254,7 @@ export class FightEngine {
   }
   event(type, data = {}) { this.onEvent({ type, ...data }); }
   start(id = 'marcelo', mode = 'cpu', opponentId = id === 'marcelo' ? 'rafael' : 'marcelo') {
-    if (!Object.hasOwn(CHARACTERS, id) || !Object.hasOwn(CHARACTERS, opponentId) || (id === opponentId && mode !== 'online')) throw new RangeError('Escolha dois professores diferentes do elenco.');
+    if (!Object.hasOwn(CHARACTERS, id) || !Object.hasOwn(CHARACTERS, opponentId) || (id === opponentId && mode !== 'online')) throw new RangeError('Escolha dois lutadores diferentes do elenco.');
     this.cpu = mode === 'cpu'; this.playerId = id; this.mode = mode;
     this.fighters = [new Fighter(id, 0), new Fighter(opponentId, 1)];
     this.round = 1; this.paused = false; this.ai = { timer: 0, input: idleInput(), actionTimer: 0 }; this.newRound();
@@ -438,9 +451,9 @@ export class FightEngine {
     if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
     else if (f.canAct && !f.airborne) {
       if (foe.airborne && dist < 210 && this.random() < .55) this.queue(1, 'uppercut');
-      else if (f.meter >= 100 && (id==='marcos'?dist<230:dist>210) && this.random() < .6) this.queue(1, 'super');
+      else if (f.meter >= 100 && (['marcos','joao'].includes(id)?dist<230:dist>210) && this.random() < .6) this.queue(1, 'super');
       else if(f.meter >= ALPHA.customCost && f.customTime <= 0 && dist < 190 && (foe.dizzyTime > 0 || foe.movePhase === 'recovery') && this.random() < .35) this.startCustom(f);
-      else if ((id==='marcos'?dist>143&&dist<260:dist>320&&dist<850) && this.random() < .32) this.queue(1, 'special');
+      else if ((id==='joao'?dist>150&&dist<350:id==='marcos'?dist>143&&dist<260:dist>320&&dist<850) && this.random() < .32) this.queue(1, 'special');
       else if (dist < 140 && this.random() < (id === 'marcos' ? .45 : id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
       else if (dist < (['gustavo','gelton'].includes(id) ? 255 : 200)) {
         if (['gustavo','gelton'].includes(id) && dist > 175) this.queue(1,'kick',this.random() < .3 ? 2 : 1);
@@ -577,10 +590,10 @@ export class FightEngine {
     if (f.action) {
       f.actionTime += dt; const m = f.moveData;
       if (f.action === 'uppercut' && f.actionTime >= m.startup && f.shotsSent === 0) {
-        f.shotsSent = 1; if(!m.grounded){f.vy = -1080; f.y -= .02; f.vx = f.direction * 135;}
+        f.shotsSent = 1; if(!m.grounded){f.vy = m.jumpVelocity??-1080; f.y -= .02; f.vx = f.direction * (m.travelSpeed??135);}
         this.announcePower(f);
       }
-      if(f.character.id==='marcos'&&['special','super'].includes(f.action)&&f.shotsSent===0&&f.actionTime>=m.startup){f.shotsSent=1;this.announcePower(f);}
+      if(['marcos','joao'].includes(f.character.id)&&['special','super'].includes(f.action)&&f.shotsSent===0&&f.actionTime>=m.startup){f.shotsSent=1;this.announcePower(f);}
       if (m.projectile) {
         const count = m.waves ?? (f.action === 'super' ? 3 : 1);
         while (f.shotsSent < count && f.actionTime >= m.startup + f.shotsSent * .11) { this.spawnProjectile(f, m, f.shotsSent++); }

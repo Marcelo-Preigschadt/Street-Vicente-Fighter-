@@ -1,8 +1,9 @@
-import { JUDO_STRIKES } from './judo.js?v=24';
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=24';
-import { MUAY_THAI_STRIKES } from './muay-thai.js?v=24';
-import { CAPOEIRA_STRIKES } from './capoeira.js?v=24';
-import { techniqueStrike } from './technique.js?v=24';
+import {WILD_STRIKES} from './wild.js?v=27';
+import { JUDO_STRIKES } from './judo.js?v=27';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=27';
+import { MUAY_THAI_STRIKES } from './muay-thai.js?v=27';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=27';
+import { techniqueStrike } from './technique.js?v=27';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
@@ -68,6 +69,13 @@ export const FIGHTING_STYLES = Object.freeze({
     combos:[route('Kuzushi e Varredura','punch:0','punch:1','kick:1'),route('Controle de Gola','crouchPunch:0','punch:1','kick:1'),
       route('Sequência do Judoca','punch:0','punch:1','punch:2','kick:1')]},
 
+  joao:{name:'Luta Selvagem',summary:'Postura baixa, socos extensos, rasteiras, ataques em bola e eletricidade.',step:28,
+    names:{punch:['Soco rápido','Soco selvagem','Soco pesado'],kick:['Chute curto','Chute selvagem','Chute pesado'],
+      crouchPunch:['Jab baixo','Soco agachado','Soco baixo pesado'],sweep:['Rasteira curta','Rasteira selvagem','Rasteira pesada'],
+      airPunch:['Soco aéreo curto','Soco aéreo','Soco aéreo pesado'],airKick:['Chute aéreo curto','Chute aéreo','Chute aéreo pesado']},
+    normals:{punch:[[4,3,9,43,20,90],[6,4,13,69,24,130],[10,5,20,97,27,195]],
+      kick:[[6,4,13,51,22,140],[8,5,18,81,26,200],[12,6,25,113,29,280]]},
+    combos:[route('Recreio Selvagem','punch:0','punch:1','kick:1'),route('Pressão da 301','punch:0','punch:1','punch:2','kick:1')]},
 });
 
 export function styleTechnique(id, name, strength = 1) {
@@ -86,6 +94,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='joao')return WILD_STRIKES[f.action];
   if(f.character.id==='marcos')return JUDO_STRIKES[f.action];
   if(f.character.id==='gelton')return CAPOEIRA_STRIKES[f.action];
   if(f.character.id==='marcelino')return MUAY_THAI_STRIKES[f.action];
