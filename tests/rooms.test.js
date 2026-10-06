@@ -23,3 +23,10 @@ test('erros não interrompem a fila de encerramento nem são apresentados como l
   assert.equal(errors.length,1);assert.equal(directory.owner,null);
   assert.equal(roomLabel('waiting'),'Aguardando jogador');assert.equal(roomLabel('playing'),'Jogando');
 });
+
+test('fetch padrão conserva o contexto Window exigido pelo navegador',async t=>{
+  const original=globalThis.fetch;let called=false;
+  globalThis.fetch=function(){assert.equal(this,globalThis);called=true;return Promise.resolve({ok:true,status:200,json:async()=>[]});};
+  t.after(()=>{globalThis.fetch=original;});
+  const directory=new RoomDirectory();await directory.refresh();assert.equal(called,true);assert.deepEqual(directory.rooms,[]);
+});
