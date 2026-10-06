@@ -1,3 +1,7 @@
+## Atualização 2.11.1 — Voz expressiva do Marcos
+
+As três falas de Marcos foram refeitas com interpretação de combate em PT-BR, usando os mesmos parâmetros expressivos das falas aprovadas. Novos arquivos evitam o cache da dublagem anterior.
+
 ## Atualização 2.11.0 — Prof. Marcos / Judô e carregamento
 
 - Prof. Marcos baseado na fotografia, com judogi azul e faixa preta, 32 poses, pegadas, desequilíbrio, varridas e projeções próprias.

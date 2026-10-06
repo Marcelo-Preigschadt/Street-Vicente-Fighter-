@@ -1,16 +1,16 @@
-import { loadPreparedSprites } from './sprite-loader.js?v=21';
-import { drawJudoSystem } from './judo-fx.js?v=21';
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=21';
+import { loadPreparedSprites } from './sprite-loader.js?v=22';
+import { drawJudoSystem } from './judo-fx.js?v=22';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=22';
 
-import { SuperEffects } from './super-fx.js?v=21';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=21';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=21';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=21';
-import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=21';
-import { drawImpulse, drawKineticRise } from './physics-fx.js?v=21';
-import { GELTON_LAYOUT } from './gelton-layout.js?v=21';
-import { drawPaintStroke, drawArtRise } from './art-fx.js?v=21';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=21';
+import { SuperEffects } from './super-fx.js?v=22';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=22';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=22';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=22';
+import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=22';
+import { drawImpulse, drawKineticRise } from './physics-fx.js?v=22';
+import { GELTON_LAYOUT } from './gelton-layout.js?v=22';
+import { drawPaintStroke, drawArtRise } from './art-fx.js?v=22';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=22';
 
 export const CAPOEIRA_CELL_MARGIN = 96;
 

@@ -1,13 +1,13 @@
-import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=21';
-import { HURT_PROFILES } from './hitboxes.js?v=21';
-import { techniquePose, techniqueHurt } from './technique.js?v=21';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=21';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=21';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=21';
-import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=21';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=21';
-export { FIGHTING_STYLES } from './styles.js?v=21';
-export { SENTINEL } from './sentinel.js?v=21';
+import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=22';
+import { HURT_PROFILES } from './hitboxes.js?v=22';
+import { techniquePose, techniqueHurt } from './technique.js?v=22';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=22';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=22';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=22';
+import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=22';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=22';
+export { FIGHTING_STYLES } from './styles.js?v=22';
+export { SENTINEL } from './sentinel.js?v=22';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -61,7 +61,7 @@ export const CHARACTERS = Object.freeze({
     speed:284,backSpeed:247,jumpSpeed:555,power:1.10,sprite:'assets/marcos-base-v1.webp',combatSprite:'assets/marcos-combat-v1.webp',
     powers:{special:'Sequestro de Sessão',uppercut:'Pilha Reversa',super:'Kernel Panic'},
     powerQuotes:{special:'Sua sessão acabou!',uppercut:'Acesso negado!',super:'Travou o sistema! Agora é chão!'},
-    voiceDuration:{special:1.98,uppercut:1.877,super:3.659},strikes:JUDO_STRIKES,projectile:{offset:130,height:200}},
+    voiceDuration:{"special":2.816,"uppercut":1.699,"super":3.508},strikes:JUDO_STRIKES,projectile:{offset:130,height:200}},
 
 });
 

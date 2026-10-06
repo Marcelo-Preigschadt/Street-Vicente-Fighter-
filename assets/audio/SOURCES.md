@@ -73,3 +73,7 @@ Todos os seis clipes foram convertidos para WAV PCM local mono, 16 bits, 24 kHz;
 ## Prof. Marcos — PT-BR nativo (2.11.0)
 
 As falas finais usam pt-BR-AntonioNeural, sintetizadas para este personagem com rate +4%, pitch +0 Hz: “Sua sessão acabou!”, “Acesso negado!” e “Travou o sistema! Agora é chão!”. A primeira versão de timbre Bernard foi substituída após o pedido de uma voz mais natural. Arquivos locais WAV PCM mono, 24 kHz, 16 bits; remoção de silêncio inicial e normalização de volume. Sem vocoder, robotização, alteração posterior de pitch ou estiramento temporal. A fotografia orienta a arte, não reproduz a voz real do professor.
+
+## Revisão 2.11.1 — voz expressiva do Marcos
+
+Somente Marcos troca suas três falas: Clint, eleven_v3, idioma pt-br, interpretação [shouting], velocidade 1.1, os mesmos parâmetros expressivos das falas aprovadas de Marcelo e Rafael. Arquivos marcos-*-fluid-br-v1.wav, PCM mono 16 bits a 24 kHz, normalização -16 LUFS / pico -1,5 dBTP e corte do silêncio inicial. Sem vocoder, modulação de pitch ou estiramento temporal posterior. Durações medidas: especial 2,816 s; antiaéreo 1,699 s; super 3,508 s. Todos os clipes e mapeamentos dos outros professores permanecem preservados.

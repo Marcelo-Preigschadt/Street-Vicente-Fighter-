@@ -1,8 +1,8 @@
-import { JUDO_STRIKES } from './judo.js?v=21';
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=21';
-import { MUAY_THAI_STRIKES } from './muay-thai.js?v=21';
-import { CAPOEIRA_STRIKES } from './capoeira.js?v=21';
-import { techniqueStrike } from './technique.js?v=21';
+import { JUDO_STRIKES } from './judo.js?v=22';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=22';
+import { MUAY_THAI_STRIKES } from './muay-thai.js?v=22';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=22';
+import { techniqueStrike } from './technique.js?v=22';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
