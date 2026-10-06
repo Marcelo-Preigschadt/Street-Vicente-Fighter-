@@ -1,4 +1,4 @@
-import { MOTION_HURT } from './motion-data.js?v=23';
+import { MOTION_HURT } from './motion-data.js?v=24';
 
 // Complete drawings, distance-driven footwork and committed burst steps.
 // A step changes spacing; it never grants whole-body invulnerability.

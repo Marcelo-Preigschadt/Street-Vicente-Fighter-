@@ -1,5 +1,6 @@
-import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=23';
-import {RollbackGame} from './netplay.js?v=23';
+import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=24';
+import {RollbackGame} from './netplay.js?v=24';
+import {iceConfig} from './ice-config.js?v=24';
 
 const QUEUE='street-vicente-fighter-300-waiting';
 const PREFIX='street-vicente-fighter-300-room-';
@@ -27,12 +28,12 @@ export class OnlineMatch {
     code=normalizeCode(code);
     if(kind==='join'&&!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return this.fail('Digite os 8 caracteres do código da sala.');
     try{
-      this.status('Conectando ao modo online…');this.PeerClass??=await loadPeer();if(gen!==this.generation)return;
+      this.status('Conectando ao modo online…');this.PeerClass??=await loadPeer();this.ice=await iceConfig();if(gen!==this.generation)return;
       if(kind==='quick')await this.quick(gen);
       else if(kind==='create'){
         this.slot=0;this.code=roomCode();await this.openPeer(PREFIX+this.code,gen);if(gen!==this.generation)return;
         this.status(`Sala ${this.code} criada. Aguardando outro jogador…`);
-      }else{this.slot=1;this.code=code;await this.openPeer(undefined,gen);if(gen!==this.generation)return;this.connect(PREFIX+code,gen);}
+      }else{this.slot=1;this.code=code;await this.openPeer(undefined,gen);if(gen!==this.generation)return;this.status('Entrando na sala…');this.connect(PREFIX+code,gen);}
     }catch(error){if(gen===this.generation)this.fail(this.message(error));}
   }
   async quick(gen) {
@@ -48,7 +49,7 @@ export class OnlineMatch {
   openPeer(id,gen) {
     this.peer?.destroy();
     return new Promise((resolve,reject)=>{
-      const p=new this.PeerClass(id,{secure:true,debug:0});this.peer=p;
+      const p=new this.PeerClass(id,{secure:true,debug:0,config:this.ice});this.peer=p;
       let settled=false;const timer=setTimeout(()=>{if(!settled){settled=true;p.destroy();reject(new Error('O serviço online demorou para responder. Tente novamente.'));}},12000);
       this.openReject=()=>{if(!settled){settled=true;clearTimeout(timer);reject(new Error('Busca cancelada.'));}};
       p.on('open',()=>{if(gen!==this.generation){p.destroy();return;}settled=true;clearTimeout(timer);this.openReject=null;resolve(p);});
@@ -63,6 +64,7 @@ export class OnlineMatch {
           conn.on('open',()=>{conn.send({t:'busy'});setTimeout(()=>conn.close(),100);});return;
         }
         this.attach(conn,gen,true);
+        this.status('Conectando o outro jogador…');
       });
     });
   }

@@ -1,4 +1,4 @@
-import { JUDO_HURT } from './judo-data.js?v=23';
+import { JUDO_HURT } from './judo-data.js?v=24';
 
 export function judoPose(f) {
   const m=f.moveData,stage=!m?0:f.actionTime<m.startup?Number(f.actionTime>=m.startup*.5):f.actionTime<m.startup+m.active?2:3;

@@ -1,8 +1,8 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=23';
-import { Renderer } from './render.js?v=23';
-import { ArcadeAudio } from './audio.js?v=23';
-import { Inputs } from './input.js?v=23';
-import { OnlineMatch,normalizeCode } from './online.js?v=23';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=24';
+import { Renderer } from './render.js?v=24';
+import { ArcadeAudio } from './audio.js?v=24';
+import { Inputs } from './input.js?v=24';
+import { OnlineMatch,normalizeCode } from './online.js?v=24';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();

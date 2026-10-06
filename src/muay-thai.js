@@ -1,4 +1,4 @@
-import { MUAY_THAI_HURT } from './muay-thai-data.js?v=23';
+import { MUAY_THAI_HURT } from './muay-thai-data.js?v=24';
 
 // The full-body pose is shared by rendering and collision detection.
 export function muayThaiPose(f) {
