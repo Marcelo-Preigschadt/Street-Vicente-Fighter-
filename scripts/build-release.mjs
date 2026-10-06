@@ -6,7 +6,7 @@ const directory=`releases/v${version}`;await mkdir(directory,{recursive:true});
 const manifest={version,files:{}};
 for(const file of (await readdir('src')).filter(file=>file.endsWith('.js')).sort()){
   // Every relative module resolves inside one immutable release namespace.
-  const source=(await readFile(`src/${file}`,'utf8')).replace(/\?v=\d+/g,'');
+  const source=(await readFile(`src/${file}`,'utf8')).replace(/((?:from\s*|import\s*\(?\s*)['"][^'"]+)\?v=\d+(['"])/g,'$1$2');
   await writeFile(`${directory}/${file}`,source);
   manifest.files[file]=createHash('sha256').update(source).digest('hex');
 }

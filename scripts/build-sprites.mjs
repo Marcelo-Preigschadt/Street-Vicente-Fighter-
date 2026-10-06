@@ -20,8 +20,8 @@ async function webp(canvas,path,quality=88){
 }
 for(const [id,f]of Object.entries(CHARACTERS)) {
   if(process.argv[2]&&process.argv[2]!==id)continue;
-  if(id==='ruan'){
-    execFileSync('python3',['scripts/build-ruan.py',f.sprite,f.combatSprite],{stdio:'inherit'});
+  if(['ruan','joao'].includes(id)){
+    execFileSync('python3',[`scripts/build-${id}.py`,f.sprite,f.combatSprite],{stdio:'inherit'});
     continue;
   }
   const sheets={};
