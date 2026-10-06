@@ -1,10 +1,10 @@
 import {RoomDirectory,roomLabel} from './rooms.js';
 import { SELECTION_QUOTES } from './selection-data.js';
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=27';
-import { Renderer } from './render.js?v=27';
-import { ArcadeAudio } from './audio.js?v=27';
-import { Inputs } from './input.js?v=27';
-import { OnlineMatch,normalizeCode } from './online.js?v=27';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js';
+import { Renderer } from './render.js';
+import { ArcadeAudio } from './audio.js';
+import { Inputs } from './input.js';
+import { OnlineMatch,normalizeCode } from './online.js';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -74,7 +74,7 @@ function event(e) {
   }
 }
 
-const portraitPath=id=>`assets/runtime/${id}-head-menu-v${['joao','gelton'].includes(id)?4:3}.webp${id==='ruan'?'?v=361':id==='joao'?'?v=360':''}`;
+const portraitPath=id=>`assets/runtime/${id}-head-menu-v${['joao','gelton'].includes(id)?4:3}.webp${id==='ruan'?'':id==='joao'?'':''}`;
 let previewed = selected;
 function previewFighter(id) {
   previewed=id;
@@ -82,7 +82,7 @@ function previewFighter(id) {
   $('left-name').textContent=CHARACTERS[id].name;
   $('left-style').textContent=card.querySelector('.fighter-style').textContent;
   $('left-portrait').src=portraitPath(id);
-  $('left-stance').src=`assets/runtime/${id}-preview-v1.webp${id==='ruan'?'?v=361':id==='joao'?'?v=360':''}`;
+  $('left-stance').src=`assets/runtime/${id}-preview-v1.webp${id==='ruan'?'':id==='joao'?'':''}`;
   $('left-stance').alt=`${CHARACTERS[id].name} em pose de luta`;
   $('selection-quote').textContent=id===selected?SELECTION_QUOTES[id]:'Confirme para escolher';
   $('preview-left').style.setProperty('--fighter-color',CHARACTERS[id].color);
@@ -106,7 +106,7 @@ function updateSelection() {
   $('right-name').textContent=network&&!lobby?'DESAFIANTE':CHARACTERS[opponent].name;
   $('right-style').textContent=network&&!lobby?'MULTIPLAYER ONLINE':document.querySelector(`[data-fighter="${opponent}"] .fighter-style`).textContent;
   $('right-portrait').src=portraitPath(opponent);
-  $('right-stance').src=`assets/runtime/${opponent}-preview-v1.webp${opponent==='ruan'?'?v=361':opponent==='joao'?'?v=360':''}`;
+  $('right-stance').src=`assets/runtime/${opponent}-preview-v1.webp${opponent==='ruan'?'':opponent==='joao'?'':''}`;
   $('right-stance').alt=network&&!lobby?'':`${CHARACTERS[opponent].name} em pose de luta`;
   $('rival-slot').textContent=network?(lobby?`ADVERSÁRIO · P${2-online.slot}`:'PLAYER 2'):local?'JOGADOR 2':'COMPUTADOR';
   $('own-slot').textContent=network&&lobby?`VOCÊ · P${online.slot+1}`:network?'VOCÊ':'P1';

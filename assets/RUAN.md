@@ -7,3 +7,5 @@ Arte gerada com ImageGen integrado: dois atlas transparentes de 16 poses complet
 Poderes: Pulso de Choque é um projétil azul/violeta; Punho de Trovão é um golpe ascendente; Kata da Tempestade exige barra cheia e lança três ondas, derrubando na última. Efeitos elétricos próprios, diferentes da descarga verde corporal do João. Socos, chutes e poderes também funcionam no ar.
 
 Voz original de personagem em português brasileiro, sem clonagem da voz real. Preset Brodie / eleven_v3, interpretação expressiva e velocidade 1.08. WAV mono, 24 kHz, PCM 16 bits. Frases: “Pode vir! Meu Karatê vai te dar um choque!”, “Pulso de choque!”, “Punho de trovão!”, “Agora é a tempestade do Karatê!”.
+
+Revisão 3.6.1: extração por componente conectado na imagem completa, preservando membros que atravessam a grade e excluindo fragmentos vizinhos. Escala das poses de rasteira corrigida para manter o tamanho do corpo. Pose de rasteira revisada em assets/ruan-sweep-v2.webp para mostrar o braço de guarda. Build requer Pillow, NumPy e SciPy.
