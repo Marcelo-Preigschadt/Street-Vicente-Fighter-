@@ -1,5 +1,24 @@
 ## Correção 3.1.1 — Publicação consistente
 
+## Atualização 4.0.0 — Operação Resgate do NIT
+
+Escolha **Modo História** e depois **História solo**, **Cooperativo no mesmo PC** ou **Cooperativo online**. O modo **1 × 1** continua com todo o elenco, os controles, os poderes e os sprites da versão 3.6.2.
+
+A campanha usa Marcelo (Kung Fu), Rafael (Boxe) e Gustavo (Kickboxing). São quatro blocos com rolagem lateral, três ondas por ato, equipamentos corrompidos, objetos e armadilhas, seguidos de um duelo de chefe. A.U.L.A. 3.0 tem holograma e exoesqueleto como fases separadas. Os diálogos de entrada e a premissa seguem o roteiro de Operação Resgate do NIT.
+
+- Pátio e cantina: drones de lanches, catracas de serras, robôs de limpeza, mesas/cadeiras arremessáveis e latas explosivas de máquinas atingidas. Chefe: Inspetor-Geral do Bloco A.
+- Química: androides e provetas explosivas, ácido e névoa gelada com aviso antes da ativação. Chefe: Robô de Bordo da Feira de Ciências, com lança-chamas.
+- Biblioteca: scanners laser, livros virtuais, projetores e drones arqueólogos; estantes derrubáveis que atingem ambos os lados. Chefe: Professor Substituto Corrompido.
+- NIT: guardas cibernéticos, robôs de Kung Fu, cabos elétricos e servidores verdes. Chefe: A.U.L.A. 3.0, com teleporte no holograma e golpes hidráulicos no exoesqueleto. Overclock dá carga cheia à equipe no confronto final.
+
+No cooperativo não há dano entre professores. Nas ondas os dois lutam juntos; no chefe, um entra no duelo e outro fica na reserva. **Tab**, **Start no joystick** ou o botão **Trocar professor** alternam a reserva quando o personagem pode agir. Se ele cair, o parceiro assume. Um parceiro caído nas ondas retorna após a limpeza do encontro; uma derrota da equipe permite tentar o ato novamente.
+
+**Enter / Start** avançam diálogos. **E / N / Select no joystick** arremessam mesas/cadeiras próximas ou derrubam estantes. Os outros golpes e poderes usam os comandos existentes, inclusive no ar. A Névoa Atômica atordoa robôs. Kits de recuperação aparecem ao limpar uma onda. O turno tem 15 minutos de combate; diálogos e pausa não gastam tempo.
+
+Solo e local salvam um checkpoint no início de cada ato no dispositivo. **Continuar campanha** restaura equipe, ato e tempo de entrada. O cooperativo online começa uma campanha nova, sincroniza narrativa, ondas, inimigos, cenários, poderes, chefes, pausa e tentativas por rollback. O convite inclui o modo e as salas usam `game_mode` e `protocol` para impedir misturas de modos/versões. A migração preserva RLS, tokens de proprietário e heartbeat existentes em `svf_rooms`.
+
+Validação: `npm test`; `npm run build`. Testes cobrem progressão completa, duas fases finais, dano entre equipes, golpes aéreos, objetos/armadilhas, reserva, snapshots, rollback com atraso e início/pausa/retry via relay. `scripts/check-story-render.mjs` renderiza oito cenas com o renderer do jogo para conferência visual; requer `@napi-rs/canvas` no runtime. Testes de rede simulados não garantem a mesma latência em toda conexão.
+
 O teste ao vivo encontrou HTML 3.1.0 e catálogo de personagens antigo carregados juntos. Agora o HTML aponta para releases/v3.1.1/main.js e style.css. Todos os módulos da versão ficam na mesma pasta e importam apenas arquivos dela; o catálogo e as categorias não dependem do cache dos caminhos src antigos. npm run build gera a pasta da versão do package.json e um manifesto de integridade. Incrementar a versão antes de publicar alterações.
 
 ## Atualização 3.1.0 — João Machado e categorias

@@ -1,3 +1,4 @@
+import {loadStoryArt,drawStory} from './story-render.js';
 import {drawKaratePulse,drawKarateCharge} from './karate-fx.js';
 import {drawWildPower} from './wild-fx.js?v=27';
 import { loadPreparedSprites } from './sprite-loader.js?v=27';
@@ -33,6 +34,7 @@ export class Renderer {
     this.portraits = {};
 
   }
+  loadStory() { return this.storyLoad??=loadStoryArt(this).catch(error=>{this.storyLoad=null;throw error;}); }
   loadBackground() {
     return this.backgroundPromise??=loadImage('assets/arena.webp').then(image=>{this.background=image;});
   }
@@ -240,6 +242,7 @@ export class Renderer {
     const c = this.c; this.clock += dt; this.shake *= Math.exp(-dt * 14); this.flash = Math.max(0, this.flash - dt);
     this.superFX.update(dt); this.fightFX.update(dt);
     if (engine.phase === 'selection') { this.superFX.clear(); this.fightFX.clear(); }
+    if(engine.storyActive&&engine.phase!=='selection'){drawStory(this,engine,dt,alpha);return;}
     c.save();
     if (this.shake > .1) c.translate((Math.random() - .5) * this.shake, (Math.random() - .5) * this.shake);
     this.drawBackground(engine);

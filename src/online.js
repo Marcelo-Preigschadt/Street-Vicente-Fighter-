@@ -1,9 +1,10 @@
+import {STORY_HEROES} from './story-data.js';
 import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=27';
 import {RollbackGame} from './netplay.js?v=27';
 import {RelayPeer} from './relay.js?v=27';
 
-const QUEUE='street-vicente-fighter-362-waiting';
-const PREFIX='street-vicente-fighter-362-room-';
+const QUEUE='street-vicente-fighter-400-waiting';
+const PREFIX='street-vicente-fighter-400-room-';
 export function loadPeer() { return Promise.resolve(RelayPeer); }
 export function roomCode(random=crypto.getRandomValues(new Uint8Array(8))) {
   const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from(random,n=>alphabet[n%32]).join('');
@@ -13,10 +14,11 @@ export class OnlineMatch {
   constructor({engine,prepare,onStart,onStatus,onEnd,onCorrection=()=>{},onLobby=()=>{},directory=null,PeerClass=null,now=()=>performance.now()}={}) {
     Object.assign(this,{engine,prepare,onStart,onStatus,onEnd,onCorrection,onLobby,directory,PeerClass,now});this.generation=0;this.active=false;this.running=false;this.slot=0;
   }
-  status(text) { this.onStatus?.(text); }
-  async begin(kind,character,code='',retry=0) {
-    this.close();const gen=this.generation;this.active=true;this.character=character;this.kind=kind;this.code='';this.retry=retry;this.events=[];this.seq=0;this.lastSeq=0;this.matchId=null;this.votes=[false,false];this.lobby=false;this.preparing=false;this.pair=null;this.confirmed=[false,false];this.choiceSerial=0;this.serials=[0,0];this.lobbyRevision=-1;
-    if(!validCharacter(character))return this.fail('Escolha um lutador.');
+  validChoice(id){return validCharacter(id)&&(this.gameMode!=='story'||STORY_HEROES.includes(id));}
+  status(text) { if(this.gameMode==='story')text=text.replaceAll('adversário','parceiro').replaceAll('Adversário','Parceiro').replace('Partida online','Resgate cooperativo online');this.onStatus?.(text); }
+  async begin(kind,character,code='',retry=0,gameMode=this.gameMode??'versus') {
+    this.close();this.gameMode=gameMode==='story'?'story':'versus';this.directory?.setMode?.(this.gameMode);const gen=this.generation;this.active=true;this.character=character;this.kind=kind;this.code='';this.retry=retry;this.events=[];this.seq=0;this.lastSeq=0;this.matchId=null;this.votes=[false,false];this.lobby=false;this.preparing=false;this.pair=null;this.confirmed=[false,false];this.choiceSerial=0;this.serials=[0,0];this.lobbyRevision=-1;
+    if(!this.validChoice(character))return this.fail('Escolha um lutador.');
     code=normalizeCode(code);
     if(kind==='join'&&!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return this.fail('Digite os 8 caracteres do código da sala.');
     try{
@@ -24,25 +26,25 @@ export class OnlineMatch {
       if(kind==='quick'&&this.PeerClass.relay){
         if(!this.directory)throw new Error('A lista de salas não está disponível.');
         await this.directory.refresh();if(gen!==this.generation)return;
-        const room=this.directory.rooms.find(r=>r.status==='waiting');
+        const room=this.directory.rooms.find(r=>r.status==='waiting'&&(r.game_mode??'versus')===this.gameMode&&(!r.protocol||r.protocol===PROTOCOL));
         return this.begin(room?'join':'create',character,room?.code??'');
       }
       if(kind==='quick')await this.quick(gen);
       else if(kind==='create'){
         this.slot=0;this.code=roomCode();await this.openPeer(PREFIX+this.code,gen);if(gen!==this.generation)return;
-        this.directory?.register(this.code,this.character).catch(()=>{});
+        this.directory?.register(this.code,this.character,this.gameMode).catch(()=>{});
         this.status(`Sala ${this.code} criada. Aguardando outro jogador…`);
       }else{this.slot=1;this.code=code;await this.openPeer(undefined,gen);if(gen!==this.generation)return;this.status('Entrando na sala…');this.connect(PREFIX+code,gen);}
     }catch(error){if(gen===this.generation)this.fail(this.message(error));}
   }
   async quick(gen) {
     this.slot=0;
-    try{await this.openPeer(QUEUE,gen);if(gen!==this.generation)return;this.status('Procurando adversário… Deixe esta aba aberta.');}
+    try{await this.openPeer(QUEUE+'-'+this.gameMode,gen);if(gen!==this.generation)return;this.status('Procurando adversário… Deixe esta aba aberta.');}
     catch(error){
       if(gen!==this.generation)return;
       if(error.type!=='unavailable-id')throw error;
       this.slot=1;await this.openPeer(undefined,gen);if(gen!==this.generation)return;
-      this.status('Jogador encontrado. Conectando a luta…');this.connect(QUEUE,gen);
+      this.status('Jogador encontrado. Conectando a luta…');this.connect(QUEUE+'-'+this.gameMode,gen);
     }
   }
   openPeer(id,gen) {
@@ -59,7 +61,7 @@ export class OnlineMatch {
         else if(!this.running&&error.type==='peer-unavailable')this.failedConnection(gen);
       });
       p.on('connection',conn=>{
-        if(gen!==this.generation||this.slot!==0||this.conn||conn.metadata?.protocol!==PROTOCOL||!validCharacter(conn.metadata?.character)){
+        if(gen!==this.generation||this.slot!==0||this.conn||conn.metadata?.protocol!==PROTOCOL||!this.validChoice(conn.metadata?.character)||(conn.metadata?.gameMode??'versus')!==this.gameMode){
           conn.on('open',()=>{conn.send({t:'busy'});setTimeout(()=>conn.close(),100);});return;
         }
         this.attach(conn,gen,true);
@@ -68,7 +70,7 @@ export class OnlineMatch {
     });
   }
   connect(id,gen) {
-    const c=this.peer.connect(id,{reliable:true,serialization:'json',metadata:{protocol:PROTOCOL,character:this.character}});
+    const c=this.peer.connect(id,{reliable:true,serialization:'json',metadata:{protocol:PROTOCOL,character:this.character,gameMode:this.gameMode}});
     this.attach(c,gen,false);
   }
   attach(conn,gen,host) {
@@ -98,7 +100,7 @@ export class OnlineMatch {
   }
   publishLobby() {
     this.lobbyRevision++;
-    this.send({t:'lobby',protocol:PROTOCOL,matchId:this.matchId,pair:this.pair,confirmed:this.confirmed,serials:this.serials,revision:this.lobbyRevision,locked:this.preparing});
+    this.send({t:'lobby',protocol:PROTOCOL,gameMode:this.gameMode,matchId:this.matchId,pair:this.pair,confirmed:this.confirmed,serials:this.serials,revision:this.lobbyRevision,locked:this.preparing});
     this.notifyLobby();
     if(!this.preparing&&this.confirmed.every(Boolean)){
       this.preparing=true;this.localReady=false;this.remoteReady=false;this.remoteSynced=false;
@@ -106,7 +108,7 @@ export class OnlineMatch {
     }
   }
   selectCharacter(character) {
-    if(!this.active||this.running||this.preparing||this.confirmed?.[this.slot]||!validCharacter(character))return false;
+    if(!this.active||this.running||this.preparing||this.confirmed?.[this.slot]||!this.validChoice(character))return false;
     this.character=character;
     if(this.kind==='create')this.directory?.update(this.conn?.open?'playing':'waiting',character).catch(()=>{});
     if(!this.lobby)return true;
@@ -143,7 +145,7 @@ export class OnlineMatch {
     if(m.t==='ping'){this.send({t:'pong',sent:m.sent});return;}
     if(m.t==='pong'){this.ping=Math.max(0,Math.round(this.now()-m.sent));return;}
     if(m.t==='lobby'&&this.slot===1&&!this.running){
-      if(m.protocol!==PROTOCOL||typeof m.matchId!=='string'||!Array.isArray(m.pair)||m.pair.length!==2||!m.pair.every(validCharacter)||
+      if(m.protocol!==PROTOCOL||(m.gameMode??'versus')!==this.gameMode||typeof m.matchId!=='string'||!Array.isArray(m.pair)||m.pair.length!==2||!m.pair.every(id=>this.validChoice(id))||
         !Array.isArray(m.confirmed)||m.confirmed.length!==2||!m.confirmed.every(x=>typeof x==='boolean')||
         !Array.isArray(m.serials)||m.serials.length!==2||!m.serials.every(x=>Number.isSafeInteger(x)&&x>=0)||
         !Number.isSafeInteger(m.revision)||typeof m.locked!=='boolean')return this.fail('As versões do jogo são diferentes. Atualize a página.');
@@ -163,7 +165,7 @@ export class OnlineMatch {
     }
     if(m.matchId!==this.matchId||!this.matchId)return;
     if(m.t==='choice'&&this.slot===0&&this.lobby&&!this.running&&!this.preparing){
-      if(!validCharacter(m.character)||typeof m.confirmed!=='boolean'||!Number.isSafeInteger(m.serial)||m.serial<=this.serials[1])return;
+      if(!this.validChoice(m.character)||typeof m.confirmed!=='boolean'||!Number.isSafeInteger(m.serial)||m.serial<=this.serials[1])return;
       this.serials[1]=m.serial;this.pair[1]=m.character;this.confirmed[1]=m.confirmed;this.publishLobby();return;
     }
     if(m.t==='ready'&&this.slot===0&&this.preparing&&Number.isFinite(m.clientTime)){
@@ -175,7 +177,7 @@ export class OnlineMatch {
     }
     if(m.t==='synced'&&this.slot===0&&this.preparing){this.remoteSynced=true;if(this.localReady&&!this.running)this.startHost();return;}
     if(m.t==='start'&&this.slot===1&&(!this.running||this.engine.phase==='result')&&this.preparing&&this.confirmed.every(Boolean)&&this.localReady&&Number.isFinite(m.startAt)){
-      this.netplay=null;this.lastSeq=0;this.running=true;this.votes=[false,false];this.engine.start(...[this.pair[0],'online',this.pair[1]]);
+      this.netplay=null;this.lastSeq=0;this.running=true;this.votes=[false,false];this.engine.start(this.pair[0],this.gameMode==='story'?'story-online':'online',this.pair[1]);
       if(!applySnapshot(this.engine,m.state,0))return this.fail('Não foi possível sincronizar a luta. Entre na sala novamente.');
       this.lastSeq=m.state.seq;
       this.createNetplay(m.startAt-(this.clockOffset??0));
@@ -196,7 +198,7 @@ export class OnlineMatch {
   startHost() {
     if(this.running&&this.engine.phase!=='result')return;
     if(!this.preparing||!this.confirmed.every(Boolean)||!this.localReady||!this.remoteReady||!this.remoteSynced)return;
-    this.netplay=null;this.running=true;this.events=[];this.votes=[false,false];this.seq=0;this.engine.start(this.pair[0],'online',this.pair[1]);
+    this.netplay=null;this.running=true;this.events=[];this.votes=[false,false];this.seq=0;this.engine.start(this.pair[0],this.gameMode==='story'?'story-online':'online',this.pair[1]);
     const startAt=this.now()+350;this.createNetplay(startAt);
     this.send({t:'start',matchId:this.matchId,startAt,state:snapshot(this.engine,++this.seq,[])});this.events=[];
     clearTimeout(this.connectTimer);this.lastReceived=this.now();this.onStart(this.pair,0);this.status('Partida online · Você é P1');

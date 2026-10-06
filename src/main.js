@@ -1,3 +1,6 @@
+import {StoryEngine} from './story.js';
+import {STORY_HEROES} from './story-data.js';
+import {syncStoryUI,readCheckpoint,saveCheckpoint,clearCheckpoint} from './story-ui.js';
 import {RoomDirectory,roomLabel} from './rooms.js';
 import { SELECTION_QUOTES } from './selection-data.js';
 import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=27';
@@ -9,7 +12,7 @@ import { OnlineMatch,normalizeCode } from './online.js?v=27';
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
 let selected = 'marcelo', opponent = 'rafael', ready = true, starting = false;
-const engine = new FightEngine({ onEvent: event });
+const engine = new StoryEngine({ onEvent: event });
 const inputs = new Inputs(engine);
 const directory=new RoomDirectory({onChange:renderRooms,onError:message=>{$('rooms-message').textContent=message;}});
 const online=new OnlineMatch({engine,directory,prepare:prepareOnline,onStart:showOnlineMatch,onStatus:onlineStatus,onEnd:endedOnline,onLobby:showOnlineLobby,onCorrection:()=>{
@@ -18,8 +21,11 @@ const online=new OnlineMatch({engine,directory,prepare:prepareOnline,onStart:sho
     $('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches;
   }
   audio.playing=!engine.paused&&engine.phase!=='result';
+  if(engine.storyActive&&engine.phase==='fight')$('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches||getMode()==='local';
 }});
 const getMode=()=>document.querySelector('input[name="mode"]:checked').value;
+const isStory=()=>document.querySelector('input[name="game-type"]:checked').value==='story';
+const battleMode=()=>isStory()?`story-${getMode()==='cpu'?'solo':getMode()}`:getMode();
 function onlineStatus(message){
   $('online-status').textContent=message;
   if(!$('selection').hidden)$('load-status').textContent=message;
@@ -27,7 +33,7 @@ function onlineStatus(message){
 }
 function onlineBusy(busy){
   document.querySelectorAll('[data-fighter]').forEach(el=>el.disabled=!!(online.preparing||online.lobby&&online.confirmed[online.slot]));
-  document.querySelectorAll('input[name="mode"]').forEach(el=>el.disabled=busy);
+  document.querySelectorAll('input[name="mode"],input[name="game-type"]').forEach(el=>el.disabled=busy);
   for(const id of ['create-room','join-room','room-code'])$(id).disabled=busy;
   $('start').disabled=busy&&(!online.lobby||online.preparing);
   $('cancel-online').hidden=!busy;renderRooms(directory.rooms);
@@ -38,7 +44,7 @@ function showOnlineLobby({pair,slot}){
 }
 async function prepareOnline(pair,slot){
   inputs.release();audio.unlock();audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
-  await renderer.load(pair);
+  await Promise.all([renderer.load(pair),...(online.gameMode==='story'?[renderer.loadStory()]:[])]);
 }
 function showOnlineMatch(pair,slot){
   selected=pair[slot];opponent=pair[1-slot];updateSelection();inputs.network(online,slot);
@@ -46,7 +52,7 @@ function showOnlineMatch(pair,slot){
   $('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches;$('pause').disabled=false;$('pause').textContent='Pausar';
   $('restart').hidden=true;$('rematch').disabled=false;$('rematch').textContent='Revanche';
   $('online-hud').hidden=false;audio.playing=true;accumulator=0;
-  $('game').setAttribute('aria-label',`Partida online: ${CHARACTERS[pair[0]].name} contra ${CHARACTERS[pair[1]].name}. Você é P${slot+1}.`);
+  if(engine.storyActive)$('game').setAttribute('aria-label','Operação Resgate do NIT em cooperativo online.');else $('game').setAttribute('aria-label',`Partida online: ${CHARACTERS[pair[0]].name} contra ${CHARACTERS[pair[1]].name}. Você é P${slot+1}.`);
 }
 function endedOnline(message){
   inputs.network();onlineBusy(false);selection(false);$('room-share').hidden=true;
@@ -55,7 +61,7 @@ function endedOnline(message){
 function startOnline(kind='quick'){
   if(online.active||starting)return;
   audio.unlock();inputs.release();onlineBusy(true);$('room-share').hidden=true;
-  online.begin(kind,selected,$('room-code').value);updateSelection();onlineBusy(true);
+  online.begin(kind,selected,$('room-code').value,0,isStory()?'story':'versus');updateSelection();onlineBusy(true);
 }
 
 function event(e) {
@@ -66,7 +72,9 @@ function event(e) {
   if (e.type === 'fight') $('announcer').textContent = 'Lutem!';
   if (e.type === 'special') $('announcer').textContent = `${e.name}. ${e.quote}`;
   if (e.type === 'droneFire') $('announcer').textContent = 'Enxame de Drones disparou';
-  if (e.type === 'dizzy') $('announcer').textContent = `${engine.fighters[e.fighter].character.name} ficou tonto ${e.cause === 'chemicalSmoke' ? 'pela Névoa Atômica' : 'após o combo'}`;
+  if(e.type==='storyAct'){$('pause-screen').hidden=true;$('pause').textContent='Pausar';saveCheckpoint(engine);$('pause').disabled=false;audio.playing=true;$('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches||getMode()==='local';}
+  if(e.type==='storyResult'){audio.playing=false;if(e.won)clearCheckpoint(engine);}
+  if (e.type === 'dizzy' && e.fighter<2) $('announcer').textContent = `${engine.fighters[e.fighter].character.name} ficou tonto ${e.cause === 'chemicalSmoke' ? 'pela Névoa Atômica' : 'após o combo'}`;
   if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round`;
   if (e.type === 'result') {
     const f = engine.fighters[e.winner]; $('winner-name').textContent = `${f.character.name} venceu!`; $('winner-quote').textContent = f.character.quote;
@@ -89,17 +97,32 @@ function previewFighter(id) {
   document.querySelectorAll('[data-fighter]').forEach(button=>button.classList.toggle('cursor',button.dataset.fighter===id));
 }
 function updateSelection() {
-  if (getMode()!=='online'&&opponent === selected) opponent = Object.keys(CHARACTERS).find(id => id !== selected);
+  const story=isStory();
+  if(story&&!STORY_HEROES.includes(selected))selected='marcelo';
+  if(story&&!STORY_HEROES.includes(opponent))opponent=STORY_HEROES.find(id=>id!==selected);
+  if (getMode()!=='online'&&opponent === selected) opponent = (story?STORY_HEROES:Object.keys(CHARACTERS)).find(id => id !== selected);
+  $('selection-title').textContent=story?'OPERAÇÃO RESGATE DO NIT':'PLAYER SELECT';
+  $('story-summary').hidden=!story;
+  $('restart').textContent=story?'Recomeçar este ato':'Recomeçar a luta';
+  document.querySelector('#pause-screen h2').textContent=story?'Resgate pausado':'Luta pausada';
+  document.querySelector('.arena').classList.toggle('story-selection',story);
+  $('mode-online-label').textContent=story?'Cooperativo online':'Multiplayer online';
+  $('mode-local-label').textContent=story?'Cooperativo no mesmo PC':'2 jogadores no mesmo PC';
+  $('mode-solo-label').textContent=story?'História solo':'Contra o computador';
+  $('continue-story').hidden=!story||getMode()==='online'||!readCheckpoint(battleMode());
+  directory.setMode(story?'story':'versus');
   document.querySelector('.fighters').setAttribute('aria-label','Seleção de todos os personagens');
-  document.querySelectorAll('[data-fighter]').forEach(card=>card.hidden=false);
+  document.querySelectorAll('[data-fighter]').forEach(card=>card.hidden=story&&!STORY_HEROES.includes(card.dataset.fighter));
   const local = getMode() === 'local',network=getMode()==='online',lobby=network&&online.lobby;
   if(lobby)opponent=online.pair[1-online.slot];
-  $('room-directory').hidden=!network;$('online-panel').hidden=!network;$('opponent').closest('label').hidden=network;
-  document.querySelector('.control-player:has(.p2)').hidden=network;
+  $('room-directory').hidden=!network;$('online-panel').hidden=!network;$('opponent').closest('label').hidden=network||(story&&getMode()==='cpu');
+  document.querySelector('.match-rules').hidden=story;
+  document.querySelector('.control-player:has(.p2)').hidden=network||(story&&getMode()==='cpu');
   document.querySelector('.control-label.p1').textContent=network?'VOCÊ':'P1';
-  if(!starting)$('start').textContent=network?(online.preparing?'Carregando lutadores…':lobby?(online.confirmed[online.slot]?'Alterar personagem':'Confirmar personagem'):online.active?'Aguardando adversário…':'Encontrar jogador'):'Começar a luta';
-  $('opponent-label').textContent = local ? 'Jogador 2' : 'Adversário';
+  if(!starting)$('start').textContent=network?(online.preparing?'Carregando lutadores…':lobby?(online.confirmed[online.slot]?'Alterar personagem':'Confirmar personagem'):online.active?'Aguardando adversário…':(story?'Encontrar parceiro':'Encontrar jogador')):(story?'Iniciar campanha':'Começar a luta');
+  $('opponent-label').textContent = story?'Parceiro · P2':local ? 'Jogador 2' : 'Adversário';
   for (const option of $('opponent').options) option.disabled = option.value === selected;
+  for(const option of $('opponent').options)option.hidden=story&&!STORY_HEROES.includes(option.value);
   $('opponent').value = opponent;
   previewFighter(selected);
   $('preview-right').classList.toggle('waiting',network&&!lobby);
@@ -108,14 +131,15 @@ function updateSelection() {
   $('right-portrait').src=portraitPath(opponent);
   $('right-stance').src=`assets/runtime/${opponent}-preview-v1.webp${opponent==='ruan'?'?v=362':opponent==='joao'?'?v=362':''}`;
   $('right-stance').alt=network&&!lobby?'':`${CHARACTERS[opponent].name} em pose de luta`;
-  $('rival-slot').textContent=network?(lobby?`ADVERSÁRIO · P${2-online.slot}`:'PLAYER 2'):local?'JOGADOR 2':'COMPUTADOR';
+  $('rival-slot').textContent=network?(lobby?`${story?'PARCEIRO':'ADVERSÁRIO'} · P${2-online.slot}`:'PLAYER 2'):local?(story?'PARCEIRO · P2':'JOGADOR 2'):story?'EQUIPE DO RESGATE':'COMPUTADOR';
+  if(story){document.querySelector('.roster-caption').innerHTML='EQUIPE DO RESGATE <span>TRÊS PROFESSORES · UMA MISSÃO</span>'; $('rival-note').textContent=getMode()==='cpu'?'Campanha solo. Os três professores participam da narrativa.':'Juntos contra a IA. Sem dano entre parceiros.';}else document.querySelector('.roster-caption').innerHTML='TODOS OS LUTADORES <span>PROFESSORES E ALUNOS</span>';
   $('own-slot').textContent=network&&lobby?`VOCÊ · P${online.slot+1}`:network?'VOCÊ':'P1';
   $('left-ready').hidden=$('right-ready').hidden=!lobby;
   $('left-ready').textContent=lobby?(online.confirmed[online.slot]?'CONFIRMADO':'ESCOLHENDO…'):'';
   $('right-ready').textContent=lobby?(online.confirmed[1-online.slot]?'CONFIRMADO':'ESCOLHENDO…'):'';
   $('left-ready').classList.toggle('ready',!!(lobby&&online.confirmed[online.slot]));
   $('right-ready').classList.toggle('ready',!!(lobby&&online.confirmed[1-online.slot]));
-  $('rival-note').textContent=network&&!lobby?'Encontre um jogador ou convide alguém para sua sala.':SELECTION_QUOTES[opponent];
+  $('rival-note').textContent=story?(getMode()==='cpu'?'Campanha solo. Os três professores participam da narrativa.':'Juntos contra a IA. Sem dano entre parceiros.'):network&&!lobby?'Encontre um jogador ou convide alguém para sua sala.':SELECTION_QUOTES[opponent];
   $('preview-right').style.setProperty('--fighter-color',CHARACTERS[opponent].color);
   const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida',joao:'chute',ruan:'chute' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
@@ -128,7 +152,7 @@ function updateSelection() {
     const chosen = card.dataset.fighter === selected;
     card.classList.toggle('selected', chosen); card.classList.toggle('opponent', (!network||lobby)&&card.dataset.fighter === opponent);
     card.setAttribute('aria-pressed', String(chosen));
-    card.querySelector('.player-chip').textContent = chosen ? network?'VOCÊ':'JOGADOR 1' : (!network||lobby)&&card.dataset.fighter === opponent ? local ? 'JOGADOR 2' : 'ADVERSÁRIO' : 'ESCOLHER';
+    card.querySelector('.player-chip').textContent = chosen ? network?'VOCÊ':'JOGADOR 1' : (!network||lobby)&&card.dataset.fighter === opponent ? story?'PARCEIRO':local ? 'JOGADOR 2' : 'ADVERSÁRIO' : 'ESCOLHER';
   });
   onlineBusy(online.active);
 }
@@ -150,22 +174,25 @@ document.querySelectorAll('[data-fighter]').forEach(button=>{
   });
 });
 $('opponent').addEventListener('change', () => { opponent = $('opponent').value; updateSelection(); });
-document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventListener('change', updateSelection));
+document.querySelectorAll('input[name="mode"],input[name="game-type"]').forEach(input => input.addEventListener('change', updateSelection));
 updateSelection();
 
-async function start() {
+async function start(checkpoint=null) {
+  if(engine.storyActive&&engine.phase==='result'&&!engine.story.ending){inputs.queue(0,'storyRetry',1);audio.playing=true;return;}
+  if(checkpoint instanceof Event)checkpoint=null;
   if(getMode()==='online'){
     if(engine.phase==='result'&&online.running){online.rematch();$('rematch').disabled=true;$('rematch').textContent='Aguardando adversário…';return;}
     if(online.lobby&&!online.running){online.confirm();return;}
     startOnline();return;
   }
   if (!ready || starting) return;
-  const pair=[selected,opponent],mode=document.querySelector('input[name="mode"]:checked').value;
+  if(checkpoint){[selected,opponent]=checkpoint.pair;updateSelection();}
+  const pair=[selected,opponent],mode=battleMode();
   starting=true;$('start').disabled=true;$('start').textContent='Preparando a luta…';
   $('load-status').textContent=`Carregando ${CHARACTERS[pair[0]].name} e ${CHARACTERS[pair[1]].name}…`;
   inputs.release();audio.unlock();
   audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
-  try{await renderer.load(pair);}catch(error){
+  try{await Promise.all([renderer.load(pair),...(isStory()?[renderer.loadStory()]:[])]);}catch(error){
     $('load-status').textContent=`${error.message}. Pressione Começar para tentar novamente.`;
     starting=false;$('start').disabled=false;$('start').textContent='Começar a luta';return;
   }
@@ -175,17 +202,22 @@ async function start() {
   audio.playing = true;
   inputs.network();$('restart').hidden=false;$('online-hud').hidden=true;
   $('selection').hidden = true; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('pause').disabled = false; $('pause').textContent = 'Pausar';
-  $('touch-controls').hidden = !(matchMedia('(pointer: coarse)').matches && mode === 'cpu');
-  engine.start(selected, mode, opponent);
-  $('game').setAttribute('aria-label', `Jogo de luta: ${CHARACTERS[selected].name} contra ${CHARACTERS[opponent].name}. Os comandos estão no botão de informações dos personagens.`);
+  $('touch-controls').hidden = !(matchMedia('(pointer: coarse)').matches && ['cpu','story-solo','story-online'].includes(mode));
+  engine.start(selected, mode, opponent,checkpoint?{act:checkpoint.act,timer:checkpoint.timer}:{});
+  if(isStory())$('game').setAttribute('aria-label','Operação Resgate do NIT: campanha em quatro atos. Avance, desative equipamentos e enfrente os chefes.');
+  else $('game').setAttribute('aria-label', `Jogo de luta: ${CHARACTERS[selected].name} contra ${CHARACTERS[opponent].name}. Os comandos estão no botão de informações dos personagens.`);
 }
 function selection(closeNetwork=true) {
   if(closeNetwork&&online.active)online.close();inputs.network();onlineBusy(false);$('online-hud').hidden=true;$('room-share').hidden=true;
   renderer.event({ type: 'selection' });
+  $('story-dialog').hidden=true;$('story-hud').hidden=true;$('story-dialog').dataset.scene='';
   engine.phase = 'selection'; engine.paused = false; inputs.release(); audio.playing = false; audio.stopSamples();
   $('selection').hidden = false; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('touch-controls').hidden = true; $('pause').disabled = true; $('start').focus();
 }
-$('start').addEventListener('click', start); $('restart').addEventListener('click', start); $('rematch').addEventListener('click', start);
+$('continue-story').addEventListener('click',()=>start(readCheckpoint(battleMode())));
+$('story-next').addEventListener('click',()=>inputs.queue(0,'storyNext',1));
+$('story-swap').addEventListener('click',()=>inputs.queue(0,'storySwap',1));
+$('start').addEventListener('click', start); $('restart').addEventListener('click',()=>{if(engine.storyActive){inputs.release();engine.paused=false;engine.retryAct();}else start();}); $('rematch').addEventListener('click', start);
 $('back').addEventListener('click', selection); $('result-back').addEventListener('click', selection);
 function pause(){if(online.running)online.pause();else engine.togglePause();}
 $('resume').addEventListener('click',pause);$('pause').addEventListener('click',pause);
@@ -193,7 +225,7 @@ $('create-room').addEventListener('click',()=>startOnline('create'));$('join-roo
 $('cancel-online').addEventListener('click',()=>{online.close();selection();updateSelection();$('load-status').textContent='Busca cancelada. Escolha um lutador e encontre outro jogador.';});
 $('leave-online').addEventListener('click',()=>{selection();updateSelection();});
 $('copy-room').addEventListener('click',async()=>{
-  const link=new URL(location.href);link.search='';link.searchParams.set('sala',online.code);
+  const link=new URL(location.href);link.search='';link.searchParams.set('sala',online.code);if(online.gameMode==='story')link.searchParams.set('modo','historia');
   try{await navigator.clipboard.writeText(link.href);$('copy-room').textContent='Convite copiado';}catch{$('load-status').textContent=`Envie o código ${online.code} para o outro jogador.`;}
 });
 $('sound').addEventListener('click', () => { audio.unlock(); const enabled = audio.toggle(); $('sound-state').textContent = enabled ? 'ON' : 'OFF'; $('sound').setAttribute('aria-pressed', String(enabled)); });
@@ -206,9 +238,10 @@ document.addEventListener('fullscreenchange', () => { $('fullscreen').textConten
 window.addEventListener('keydown', e => {
   if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)||e.target.closest('[data-fighter]'))return;
   if (e.code === 'Escape' || e.code === 'KeyP') { e.preventDefault(); pause(); }
+  if(e.code==='Enter'&&!e.repeat&&engine.storyActive&&engine.phase==='storyDialog'){e.preventDefault();inputs.queue(0,'storyNext',1);return;}
   if (e.code === 'Enter' && !e.repeat && (engine.phase === 'selection' || engine.phase === 'result')) { e.preventDefault(); start(); }
 });
-function autopause() { if (!engine.paused && ['intro', 'fight', 'roundEnd'].includes(engine.phase)) pause(); }
+function autopause() { if (!engine.paused && ['intro', 'fight', 'roundEnd','storyDialog'].includes(engine.phase)) pause(); }
 window.addEventListener('blur', autopause); document.addEventListener('visibilitychange', () => { if (document.hidden) autopause(); });
 
 let last = performance.now(), accumulator = 0;
@@ -219,6 +252,7 @@ function frame(now) {
   else accumulator = 0;
   online.tick();
   const alpha=online.running?1:accumulator/FIXED_STEP;
+  syncStoryUI(engine,online);
   renderer.draw(engine, engine.paused ? 0 : dt, engine.paused ? 1 : alpha); audio.tick(dt); requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -227,7 +261,7 @@ requestAnimationFrame(frame);
 $('start').disabled=false;updateSelection();
 $('load-status').textContent='Escolha seu lutador e encontre um jogador online, ou crie uma sala para convidar alguém.';
 const invitation=normalizeCode(new URLSearchParams(location.search).get('sala')??'');
-if(invitation){$('room-code').value=invitation;$('load-status').textContent='Convite recebido. Escolha seu lutador e clique em Entrar na sala.';}
+if(invitation){if(new URLSearchParams(location.search).get('modo')==='historia'){document.querySelector('input[name="game-type"][value="story"]').checked=true;updateSelection();}$('room-code').value=invitation;$('load-status').textContent='Convite recebido. Escolha seu lutador e clique em Entrar na sala.';}
 renderer.loadBackground().catch(error=>console.warn('Cenário indisponível.',error));
 
 // Exposed only on explicit debug requests for reproducible local gameplay checks.
@@ -238,7 +272,7 @@ function renderRooms(rooms){
   $('rooms-message').textContent=rooms.length?`${rooms.length} sala${rooms.length===1?'':'s'} online`:'Nenhuma sala aberta. Crie uma sala para jogar.';
   for(const room of rooms){
     const row=document.createElement('li'),code=document.createElement('strong'),name=document.createElement('span'),state=document.createElement('span'),button=document.createElement('button');
-    code.textContent=room.code;name.textContent=CHARACTERS[room.character]?.name??'Jogador';state.textContent=roomLabel(room.status);state.className=`room-state ${room.status}`;
+    code.textContent=room.code;name.textContent=`${room.game_mode==='story'?'História · ':''}${CHARACTERS[room.character]?.name??'Jogador'}`;state.textContent=roomLabel(room.status);state.className=`room-state ${room.status}`;
     button.type='button';button.className='secondary-button';button.textContent=room.code===online.code?'Sua sala':'Entrar';button.disabled=online.active||starting||room.status!=='waiting';
     button.addEventListener('click',()=>{if(online.active||starting)return;$('room-code').value=room.code;startOnline('join');});
     row.append(code,name,state,button);list.append(row);

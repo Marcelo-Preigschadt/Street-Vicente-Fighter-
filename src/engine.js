@@ -650,7 +650,7 @@ export class FightEngine {
     else if (f.airborne) f.state = 'jump'; // Horizontal jump velocity is locked at takeoff.
     else {
       const backwards = movement * f.direction < 0, speed = backwards ? f.character.backSpeed : f.character.speed;
-      const opponent = this.fighters[1 - f.slot], enemyStrike = styleStrike(opponent);
+      const opponent = this.opponentFor(f), enemyStrike = styleStrike(opponent);
       const nearbyStrike = enemyStrike && opponent.movePhase !== 'recovery' && opponent.direction === -f.direction && Math.abs(opponent.x - f.x) <= enemyStrike.reach + 60;
       const nearbyProjectile = this.projectiles.some(p => p.owner !== f.slot && p.direction === -f.direction && (p.x - f.x) * f.direction >= 0 && Math.abs(p.x - f.x) < 150);
       const guardReady = f.guard.active && (nearbyStrike || nearbyProjectile);
@@ -805,6 +805,7 @@ export class FightEngine {
     }
     if (this.phase === 'roundEnd') f.vx = approach(f.vx, 0, 9000 * dt);
   }
+  opponentFor(f) { return this.fighters[1 - f.slot]; }
   updateFacing() {
     for (const f of this.fighters) {
       if (f.action || f.footwork || f.dizzyPending || f.dizzyTime > 0 || f.airborne || f.knocked || f.preJump > 0 || f.hitstun > 0 || f.blockstun > 0 || f.wakeTime > 0) continue;

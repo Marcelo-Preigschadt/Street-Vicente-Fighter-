@@ -7,6 +7,7 @@ function restore(engine,state){
   for(const key of ['phase','phaseTime','paused','time','timer','round','roundWinner','freeze','nextDroneId'])engine[key]=state[key];
   state.fighters.forEach((data,i)=>{for(const key of Object.keys(engine.fighters[i]))if(key!=='character'&&key!=='slot'&&Object.hasOwn(data,key))engine.fighters[i][key]=copy(data[key]);});
   for(const key of ['projectiles','drones','lasers'])engine[key]=copy(state[key]);
+  if(state.campaign)engine.importStoryState(state.campaign);
 }
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 export class RollbackGame {

@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111719">
-  <meta name="description" content="Professores e alunos se enfrentam no jogo de luta arcade do Vicente. João Machado, aluno da turma 301, entrou na arena.">
+  <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v3.6.2/style.css">
-  <script type="module" src="releases/v3.6.2/main.js"></script>
+  <link rel="stylesheet" href="releases/v4.0.0/style.css">
+  <script type="module" src="releases/v4.0.0/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="3.6.2">
+  <main class="cabinet" data-game-version="4.0.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -24,7 +24,8 @@
     <section id="arena" class="arena" aria-label="Arena de luta">
       <canvas id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>
       <div id="selection" class="screen selection">
-        <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1>PLAYER SELECT</h1></div>
+        <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1 id="selection-title">PLAYER SELECT</h1></div>
+        <fieldset class="game-types"><legend class="sr-only">Experiência de jogo</legend><label><input type="radio" name="game-type" value="versus" checked><span>1 × 1 <small>VERSUS</small></span></label><label><input type="radio" name="game-type" value="story"><span>Modo História <small>OPERAÇÃO RESGATE DO NIT</small></span></label></fieldset>
         <div class="select-stage">
           <aside class="fighter-showcase" id="preview-left"><img class="large-portrait" id="left-portrait" alt=""><span class="showcase-slot" id="own-slot">VOCÊ</span><img class="stance-preview" id="left-stance" alt=""><h2 id="left-name"></h2><p id="left-style"></p><p id="selection-quote" aria-live="polite"></p><span class="lobby-ready" id="left-ready" role="status" hidden></span></aside>
           <div class="roster">
@@ -66,9 +67,10 @@
           <aside class="fighter-showcase rival-showcase" id="preview-right"><img class="large-portrait" id="right-portrait" alt=""><span class="showcase-slot" id="rival-slot">ADVERSÁRIO</span><img class="stance-preview" id="right-stance" alt=""><h2 id="right-name"></h2><p id="right-style"></p><p id="rival-note"></p><span class="lobby-ready" id="right-ready" role="status" hidden></span></aside>
         </div>
         <div class="start-panel">
-          <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span>Multiplayer online</span></label><label><input type="radio" name="mode" value="local"><span>2 jogadores no mesmo PC</span></label><label><input type="radio" name="mode" value="cpu"><span>Contra o computador</span></label></fieldset>
+          <p id="story-summary" class="story-summary" hidden><strong>O sinal bateu. A luta começou.</strong> Quatro atos, equipamentos corrompidos e duelos de chefe. Escolha Marcelo, Rafael ou Gustavo para recuperar o NIT antes do fim do turno.</p>
+          <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span id="mode-online-label">Multiplayer online</span></label><label><input type="radio" name="mode" value="local"><span id="mode-local-label">2 jogadores no mesmo PC</span></label><label><input type="radio" name="mode" value="cpu"><span id="mode-solo-label">Contra o computador</span></label></fieldset>
           <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><optgroup label="Professores"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option></optgroup><optgroup label="Alunos"><option value="joao">João Machado · 301</option><option value="ruan">Aluno Ruan</option></optgroup></select></label>
-          <button id="start" class="primary-button" type="button">Encontrar jogador</button>
+          <div class="start-actions"><button id="start" class="primary-button" type="button">Encontrar jogador</button><button id="continue-story" class="text-button" type="button" hidden>Continuar campanha</button></div>
           <div id="online-panel" class="online-panel">
             <button id="create-room" class="secondary-button" type="button">Criar sala</button>
             <label for="room-code">Código da sala<input id="room-code" maxlength="10" placeholder="Ex.: AB23CD45" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
@@ -84,6 +86,10 @@
           <p id="load-status" class="load-status" role="status">Selecione o personagem e pressione Enter ou Começar a luta</p>
         </div>
       </div>
+      <section id="story-dialog" class="screen story-dialog" hidden aria-label="Narrativa da campanha">
+        <img id="story-scene" class="story-scene" alt="">
+        <div class="story-panel"><div class="story-route" id="story-route"></div><span id="story-act" class="eyebrow"></span><h2 id="story-title"></h2><p id="story-body"></p><div class="story-dialogue"><img id="story-speaker-image" alt=""><div><strong id="story-speaker"></strong><blockquote id="story-quote"></blockquote></div></div><button id="story-next" class="primary-button" type="button">Iniciar o ato</button><span class="story-hint">Enter ou Start no controle · Avançar</span></div>
+      </section>
       <div id="pause-screen" class="screen modal-screen" hidden>
         <div class="modal"><span class="eyebrow">INTERVALO</span><h2>Luta pausada</h2><button id="resume" class="primary-button" type="button">Continuar</button><button id="restart" class="secondary-button" type="button">Recomeçar a luta</button><button id="back" class="text-button" type="button">Seleção de personagens</button></div>
       </div>
@@ -95,6 +101,7 @@
         <div class="touch-attacks"><button data-action="block" class="guard">DEF</button><button data-action="special" class="special">ESP</button><button data-action="drone" aria-label="Enxame de Drones, barra cheia">ENXAME</button><button data-action="uppercut" aria-label="Poder ascendente">ANTI</button><button data-action="super">SUPER</button><button data-action="throw" aria-label="Agarrar">AGAR</button><button data-action="custom" aria-label="Combo Livre, meia barra">LIVRE</button><button data-action="guardCounter" aria-label="Contra-ataque de defesa, um quarto da barra">CONTRA</button><button data-action="punch">SOCO</button><button data-action="kick">CHUTE</button><button data-action="punch" data-strength="0" aria-label="Ataque leve">LEVE</button><button data-action="punch" data-strength="2" aria-label="Soco forte">FORTE</button><button data-action="kick" data-strength="2" aria-label="Segundo ataque forte">FINAL</button></div>
       </div>
     </section>
+    <div id="story-hud" class="story-hud" hidden><div><strong id="story-current"></strong><p id="story-help"></p></div><button id="story-swap" class="secondary-button" type="button" hidden>Trocar professor</button></div>
     <div id="online-hud" class="online-hud" hidden><span id="online-status" role="status"></span><button id="leave-online" class="text-button" type="button">Sair da partida</button></div>
 
     <footer class="controls-strip">

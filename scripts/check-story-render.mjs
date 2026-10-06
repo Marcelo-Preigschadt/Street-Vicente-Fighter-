@@ -1,0 +1,21 @@
+// Offline visual check of all campaign scenes using the same browser renderer.
+import {createRequire} from 'node:module';
+import {readFile,writeFile} from 'node:fs/promises';
+import {Renderer} from '../src/render.js';
+import {StoryEngine} from '../src/story.js';
+import {loadPreparedSprites} from '../src/sprite-loader.js';
+const require=createRequire(import.meta.url);
+const {createCanvas,loadImage,Image}=require(`${process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES}/@napi-rs/canvas`);
+globalThis.document={createElement:()=>createCanvas(1,1)};globalThis.matchMedia=()=>({matches:false});globalThis.Image=Image;
+globalThis.fetch=async path=>new Response(await readFile(path.split('?')[0]));
+const canvas=createCanvas(1280,720),renderer=new Renderer(canvas);
+for(const id of ['marcelo','rafael','gustavo']){const {base,portrait}=await loadPreparedSprites(id,loadImage);renderer.sheets[id]=base;renderer.portraits[id]=portrait;}
+renderer.storyArt={backgrounds:await Promise.all(['patio','quimica','biblioteca','nit'].map(id=>loadImage(`assets/story/${id}.webp`))),enemies:await Promise.all(Array.from({length:16},(_,i)=>loadImage(`assets/story/enemy-${i}.webp`)))};
+const engine=new StoryEngine({onEvent:e=>renderer.event(e)});
+for(let act=0;act<4;act++){
+ engine.start('marcelo','story-local','rafael',{act});engine.queue(0,'storyNext');engine.fighters[0].x=420;engine.fighters[1].x=540;
+ for(const f of engine.fighters){f.prevX=f.x;f.y=625;f.prevY=625;}
+ engine.spawnWave();renderer.draw(engine,.01,1);await writeFile(`/tmp/svf-story-act-${act+1}.png`,canvas.toBuffer('image/png'));
+ engine.beginBoss();engine.queue(0,'storyNext');renderer.draw(engine,.01,1);await writeFile(`/tmp/svf-story-boss-${act+1}.png`,canvas.toBuffer('image/png'));
+}
+console.log('8 campaign scene renders completed');

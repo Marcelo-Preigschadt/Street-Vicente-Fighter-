@@ -167,7 +167,7 @@ test('a sala pública acompanha criação, adversário, personagem e encerrament
   const cs=clients(fakePeers()),[host,guest]=cs,calls=[];
   host.net.directory={register:async(...args)=>calls.push(['register',...args]),update:async(...args)=>calls.push(['update',...args]),remove:async()=>calls.push(['remove'])};
   t.after(()=>cs.forEach(c=>c.net.close()));
-  await host.net.begin('create','marcelo');assert.deepEqual(calls.at(-1),['register',host.net.code,'marcelo']);
+  await host.net.begin('create','marcelo');assert.deepEqual(calls.at(-1),['register',host.net.code,'marcelo','versus']);
   host.net.selectCharacter('rafael');assert.deepEqual(calls.at(-1),['update','waiting','rafael']);
   await guest.net.begin('join','gustavo',host.net.code);await flush();
   assert.deepEqual(calls.at(-1),['update','playing','rafael']);assert.equal(host.net.running,false);assert.equal(guest.net.running,false);
