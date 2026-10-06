@@ -77,3 +77,7 @@ As falas finais usam pt-BR-AntonioNeural, sintetizadas para este personagem com 
 ## Revisão 2.11.1 — voz expressiva do Marcos
 
 Somente Marcos troca suas três falas: Clint, eleven_v3, idioma pt-br, interpretação [shouting], velocidade 1.1, os mesmos parâmetros expressivos das falas aprovadas de Marcelo e Rafael. Arquivos marcos-*-fluid-br-v1.wav, PCM mono 16 bits a 24 kHz, normalização -16 LUFS / pico -1,5 dBTP e corte do silêncio inicial. Sem vocoder, modulação de pitch ou estiramento temporal posterior. Durações medidas: especial 2,816 s; antiaéreo 1,699 s; super 3,508 s. Todos os clipes e mapeamentos dos outros professores permanecem preservados.
+
+## Seleção arcade 3.2.0
+
+Sete falas novas e originais em PT-BR para confirmação da escolha. Timbres e parâmetros dos clipes atuais: Marcelo/Rafael/Marcos Clint v3 1.1; Gustavo Mark v3 1.15; Gelton Clint multilíngue v2 1.0; Marcelino Martin multilíngue v2 1.0; João Chad v3 1.05. Interpretação excited nas falas v3. WAV mono PCM 16 bits 24 kHz, normalização e corte do silêncio inicial, sem alteração posterior de pitch. Os áudios de combate foram preservados. Textos em src/selection-data.js.

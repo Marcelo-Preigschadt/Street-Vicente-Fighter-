@@ -7,11 +7,11 @@
   <meta name="description" content="Professores e alunos se enfrentam no jogo de luta arcade do Vicente. João Machado, aluno da turma 301, entrou na arena.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v3.1.1/style.css">
-  <script type="module" src="releases/v3.1.1/main.js"></script>
+  <link rel="stylesheet" href="releases/v3.2.0/style.css">
+  <script type="module" src="releases/v3.2.0/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="3.1.1">
+  <main class="cabinet" data-game-version="3.2.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -24,39 +24,43 @@
     <section id="arena" class="arena" aria-label="Arena de luta">
       <canvas id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão abaixo da arena."></canvas>
       <div id="selection" class="screen selection">
-        <div class="selection-heading"><span class="eyebrow">ESCOLHA SEU LUTADOR</span><h1>O sinal bateu. <br><span>A luta começou.</span></h1></div>
-        <div class="roster">
+        <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1>PLAYER SELECT</h1></div>
+        <div class="select-stage">
+          <aside class="fighter-showcase" id="preview-left"><img class="large-portrait" id="left-portrait" alt=""><span class="showcase-slot">VOCÊ</span><img class="stance-preview" id="left-stance" alt=""><h2 id="left-name"></h2><p id="left-style"></p><p id="selection-quote" aria-live="polite"></p></aside>
+          <div class="roster">
           <div class="roster-tabs" role="group" aria-label="Categorias de lutadores"><button type="button" data-category="teachers" aria-pressed="true">Professores <span>6</span></button><button type="button" data-category="students" aria-pressed="false">Alunos <span>1</span></button></div>
           <div class="fighters" role="group" aria-label="Seleção de professores">
-          <button class="fighter-card selected marcelo" data-fighter="marcelo" aria-pressed="true" type="button">
-            <span class="player-chip">JOGADOR 1</span><img class="fighter-preview" src="assets/runtime/marcelo-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+          <button class="fighter-card selected marcelo" data-fighter="marcelo" aria-label="Escolher Prof. Marcelo" aria-pressed="true" type="button">
+            <span class="player-chip">JOGADOR 1</span><img class="fighter-preview" src="assets/runtime/marcelo-head-menu-v1.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Marcelo</span><span class="quote">Bora NIT</span><span class="fighter-style">KUNG FU · INFORMÁTICA</span>
           </button>
-          <button class="fighter-card rafael" data-fighter="rafael" aria-pressed="false" type="button">
-            <span class="player-chip">ADVERSÁRIO</span><img class="fighter-preview" src="assets/runtime/rafael-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+          <button class="fighter-card rafael" data-fighter="rafael" aria-label="Escolher Prof. Rafael" aria-pressed="false" type="button">
+            <span class="player-chip">ADVERSÁRIO</span><img class="fighter-preview" src="assets/runtime/rafael-head-menu-v1.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof Rafael</span><span class="quote">No meu tempo não era assim</span><span class="fighter-style">BOXE · HISTÓRIA</span>
           </button>
-          <button class="fighter-card gustavo" data-fighter="gustavo" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gustavo-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+          <button class="fighter-card gustavo" data-fighter="gustavo" aria-label="Escolher Prof. Gustavo" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gustavo-head-menu-v1.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Gustavo</span><span class="quote">Reagiu, perdeu!</span><span class="fighter-style">KICKBOXING · QUÍMICA</span>
           </button>
-          <button class="fighter-card gelton" data-fighter="gelton" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gelton-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+          <button class="fighter-card gelton" data-fighter="gelton" aria-label="Escolher Prof. Gelton" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gelton-head-menu-v1.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Gelton</span><span class="quote">A arte está no movimento!</span><span class="fighter-style">CAPOEIRA · ARTES</span>
           </button>
-          <button class="fighter-card marcelino" data-fighter="marcelino" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/marcelino-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+          <button class="fighter-card marcelino" data-fighter="marcelino" aria-label="Escolher Prof. Marcelino" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/marcelino-head-menu-v1.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Marcelino</span><span class="quote">Toda ação tem reação!</span><span class="fighter-style">MUAY THAI · FÍSICA</span>
           </button>
-          <button class="fighter-card marcos" data-fighter="marcos" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/marcos-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+          <button class="fighter-card marcos" data-fighter="marcos" aria-label="Escolher Prof. Marcos" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/marcos-head-menu-v1.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Marcos</span><span class="quote">Seu sistema vai pro chão!</span><span class="fighter-style">JUDÔ · INFORMÁTICA</span>
           </button>
-          <button class="fighter-card joao" data-fighter="joao" aria-pressed="false" type="button" hidden>
-            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/joao-preview-v1.webp" width="240" height="300" alt="" decoding="async">
+          <button class="fighter-card joao" data-fighter="joao" aria-label="Escolher João Machado" aria-pressed="false" type="button" hidden>
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/joao-head-menu-v1.webp" width="160" height="160" alt="" decoding="async">
             <span class="fighter-name">João Machado</span><span class="quote">A 301 chegou!</span><span class="fighter-style">LUTA SELVAGEM · ALUNO 301</span>
           </button>
           </div>
+        </div>
+          <aside class="fighter-showcase rival-showcase" id="preview-right"><img class="large-portrait" id="right-portrait" alt=""><span class="showcase-slot" id="rival-slot">ADVERSÁRIO</span><img class="stance-preview" id="right-stance" alt=""><h2 id="right-name"></h2><p id="right-style"></p><p id="rival-note"></p></aside>
         </div>
         <div class="start-panel">
           <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span>Multiplayer online</span></label><label><input type="radio" name="mode" value="cpu"><span>Contra o computador</span></label></fieldset>
