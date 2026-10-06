@@ -1,4 +1,4 @@
-import { GELTON_HURT } from './gelton-hurt.js?v=22';
+import { GELTON_HURT } from './gelton-hurt.js?v=23';
 // Dedicated whole-body capoeira poses. The same pose selects rendering and collisions.
 export function capoeiraPose(f) {
   const m=f.moveData, stage=m ? f.actionTime<m.startup ? Number(f.actionTime>=m.startup*.5) : f.actionTime<m.startup+m.active ? 2 : 3 : 0;

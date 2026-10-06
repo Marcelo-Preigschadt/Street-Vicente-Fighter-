@@ -10,24 +10,24 @@ const DIRECTIONS = new Set(['left', 'right', 'down', 'jump', 'block']);
 const PAD_ATTACKS = [[2, 'punch', 0], [3, 'punch', 1], [5, 'punch', 2], [0, 'kick', 0], [1, 'kick', 1], [7, 'kick', 2], [8, 'throw', 1], [9,'custom',1], [11,'guardCounter',1], [10,'drone',1]];
 export class Inputs {
   constructor(engine) {
-    this.engine = engine; this.held = new Set(); this.touch = new Map(); this.gamepadPrevious = [{}, {}]; this.padInput = [{}, {}];
+    this.engine = engine; this.sink=engine;this.onlineSlot=null;this.held = new Set(); this.touch = new Map(); this.gamepadPrevious = [{}, {}]; this.padInput = [{}, {}];
     window.addEventListener('keydown', e => {
       if (engine.phase === 'selection' || engine.phase === 'result' || engine.paused) return;
-      const slot = KEYMAP.findIndex(m => m[e.code]); if (slot < 0 || (slot === 1 && engine.cpu)) return;
+      const slot = KEYMAP.findIndex(m => m[e.code]); if (slot < 0 || (slot === 1 && (engine.cpu || this.onlineSlot!==null))) return;
       e.preventDefault(); this.held.add(e.code);
       // Capture the held direction before the attack edge, including fast diagonal inputs.
       this.applyHeld(slot);
       const action = KEYMAP[slot][e.code];
-      if (!e.repeat && !DIRECTIONS.has(action)) { const [move, strength] = action.split(':'); engine.queue(slot, move, Number(strength)); }
+      if (!e.repeat && !DIRECTIONS.has(action)) { const [move, strength] = action.split(':'); this.queue(slot, move, Number(strength)); }
     });
-    window.addEventListener('keyup', e => { this.held.delete(e.code); const slot = KEYMAP.findIndex(m => m[e.code]); if (slot >= 0 && !(slot === 1 && engine.cpu)) this.applyHeld(slot); });
+    window.addEventListener('keyup', e => { this.held.delete(e.code); const slot = KEYMAP.findIndex(m => m[e.code]); if (slot >= 0 && !(slot === 1 && (engine.cpu||this.onlineSlot!==null))) this.applyHeld(slot); });
     window.addEventListener('blur', () => this.release());
     document.querySelectorAll('[data-action]').forEach(button => {
       const action = button.dataset.action;
       button.addEventListener('pointerdown', e => {
         e.preventDefault(); if (engine.paused || engine.phase !== 'fight') return;
         button.setPointerCapture(e.pointerId); this.touch.set(e.pointerId, action); button.classList.add('pressed'); this.applyHeld(0);
-        if (!DIRECTIONS.has(action)) engine.queue(0, action, Number(button.dataset.strength ?? 1));
+        if (!DIRECTIONS.has(action)) this.queue(0, action, Number(button.dataset.strength ?? 1));
       });
       const up = e => {
         e.preventDefault(); this.touch.delete(e.pointerId); if (![...this.touch.values()].includes(action)) button.classList.remove('pressed'); this.applyHeld(0);
@@ -35,24 +35,28 @@ export class Inputs {
       button.addEventListener('pointerup', up); button.addEventListener('pointercancel', up); button.addEventListener('lostpointercapture', up);
     });
   }
+  network(sink=null,slot=null) { this.release();this.sink=sink??this.engine;this.onlineSlot=slot; }
+  queue(slot,move,strength) { this.sink.queue(this.onlineSlot??slot,move,strength); }
   applyHeld(slot) {
     const input = { left: false, right: false, jump: false, down: false, block: false };
     for (const code of this.held) { const action = KEYMAP[slot][code]; if (DIRECTIONS.has(action)) input[action] = true; }
     if (slot === 0) for (const action of this.touch.values()) if (DIRECTIONS.has(action)) input[action] = true;
     for (const action of DIRECTIONS) input[action] ||= !!this.padInput[slot][action];
-    this.engine.setInput(slot, input);
+    this.sink.setInput(this.onlineSlot??slot, input);
   }
   release() {
     this.held.clear(); this.touch.clear(); this.padInput = [{}, {}]; this.gamepadPrevious = [{}, {}];
-    for (let slot = 0; slot < 2; slot++) if (!(slot === 1 && this.engine.cpu)) {
-      this.engine.setInput(slot, {}); this.engine.fighters[slot].buffer = null; this.engine.fighters[slot].jumpBuffer = 0;
+    for (let slot = 0; slot < (this.onlineSlot===null?2:1); slot++) if (!(slot === 1 && this.engine.cpu)) {
+      this.sink.setInput(this.onlineSlot??slot, {});
+      if(this.onlineSlot!==null)continue;
+      this.engine.fighters[slot].buffer = null; this.engine.fighters[slot].jumpBuffer = 0;
       this.engine.fighters[slot].tapDirection = 0; this.engine.fighters[slot].tapReleased = false;
     }
     document.querySelectorAll('.touch-controls .pressed').forEach(b => b.classList.remove('pressed'));
   }
   update() {
     const pads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
-    for (let slot = 0; slot < 2; slot++) {
+    for (let slot = 0; slot < (this.onlineSlot===null?2:1); slot++) {
       if (slot === 1 && this.engine.cpu) continue;
       const pad = pads[slot];
       this.padInput[slot] = pad ? {
@@ -64,7 +68,7 @@ export class Inputs {
       if (!pad) { this.gamepadPrevious[slot] = {}; continue; }
       for (const [button, move, strength] of PAD_ATTACKS) {
         const pressed = !!pad.buttons[button]?.pressed;
-        if (pressed && !this.gamepadPrevious[slot][button]) this.engine.queue(slot, move, strength);
+        if (pressed && !this.gamepadPrevious[slot][button]) this.queue(slot, move, strength);
         this.gamepadPrevious[slot][button] = pressed;
       }
     }

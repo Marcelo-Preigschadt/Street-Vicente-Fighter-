@@ -35,6 +35,15 @@
 
 /* Six professors; previews arrive independently of game preparation. */
 .fighters{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.online-panel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.online-panel label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.online-panel input{background:#15282c;color:var(--paper);border:1px solid #6e8a7e;border-radius:5px;padding:8px;width:145px;font:700 14px monospace;text-transform:uppercase}
+.online-panel .secondary-button{padding:9px 14px;font-size:13px;margin:0}.online-panel .text-button{padding:5px 8px}
+.online-hud{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#1c3235;border:1px solid #68857b;border-radius:5px;margin-top:10px;font-size:14px}
+#room-share{width:100%;text-align:center;color:var(--green);font-size:14px}#room-code-display{font:800 18px monospace;letter-spacing:2px;user-select:all}
+[hidden]{display:none!important}
+@media(max-width:600px){.online-panel{gap:7px}.online-panel label{font-size:12px}.online-panel input{width:130px}.online-panel .secondary-button{padding:8px 10px}.online-hud{font-size:12px;gap:4px}.arena:has(.selection:not([hidden])){min-height:1180px}}
+@media(max-height:560px) and (orientation:landscape){.selection{overflow-y:auto}.online-panel{gap:6px}.online-panel .secondary-button{padding:5px 9px}.online-panel input{padding:5px}}
 .fighter-card.marcos{background:linear-gradient(150deg,#244784dd,#172541dd);border-color:#8eb5ff88}.fighter-card.marcos.selected{border-color:#8eb5ff;box-shadow:0 0 24px #8eb5ff33}.marcos .player-chip{color:#8eb5ff}
 @media(min-width:601px){.fighter-name{font-size:clamp(12px,1.25vw,19px)}.quote{font-size:clamp(10px,.9vw,12px)}.fighter-style{font-size:clamp(8px,.7vw,10px)}}
 @media(max-width:600px) and (orientation:portrait){.fighters{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}.fighter-card.marcelino{grid-column:auto;width:100%}.arena:has(.selection:not([hidden])){min-height:1080px}}

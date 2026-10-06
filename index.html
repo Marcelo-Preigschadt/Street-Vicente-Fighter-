@@ -7,11 +7,11 @@
   <meta name="description" content="Prof. Marcelo, Prof Rafael, Prof. Gustavo, Prof. Gelton e Prof. Marcelino se enfrentam em um jogo de luta arcade do Vicente.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=22">
-  <script type="module" src="src/main.js?v=22"></script>
+  <link rel="stylesheet" href="style.css?v=23">
+  <script type="module" src="src/main.js?v=23"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="2.11.1">
+  <main class="cabinet" data-game-version="3.0.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -52,9 +52,16 @@
           </button>
         </div>
         <div class="start-panel">
-          <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="cpu" checked><span>Contra o computador</span></label><label><input type="radio" name="mode" value="local"><span>2 jogadores</span></label></fieldset>
+          <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span>Multiplayer online</span></label><label><input type="radio" name="mode" value="cpu"><span>Contra o computador</span></label></fieldset>
           <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option></select></label>
-          <button id="start" class="primary-button" type="button">Começar a luta</button>
+          <button id="start" class="primary-button" type="button">Encontrar jogador</button>
+          <div id="online-panel" class="online-panel">
+            <button id="create-room" class="secondary-button" type="button">Criar sala</button>
+            <label for="room-code">Código da sala<input id="room-code" maxlength="10" placeholder="Ex.: AB23CD45" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+            <button id="join-room" class="secondary-button" type="button">Entrar na sala</button>
+            <button id="cancel-online" class="text-button" type="button" hidden>Cancelar busca</button>
+            <span id="room-share" hidden>Sala <strong id="room-code-display"></strong> <button id="copy-room" class="text-button" type="button">Copiar convite</button></span>
+          </div>
           <p id="load-status" class="load-status" role="status">Selecione o personagem e pressione Enter ou Começar a luta</p>
         </div>
       </div>
@@ -69,6 +76,7 @@
         <div class="touch-attacks"><button data-action="block" class="guard">DEF</button><button data-action="special" class="special">ESP</button><button data-action="drone" aria-label="Enxame de Drones, barra cheia">ENXAME</button><button data-action="uppercut" aria-label="Poder ascendente">ANTI</button><button data-action="super">SUPER</button><button data-action="throw" aria-label="Agarrar">AGAR</button><button data-action="custom" aria-label="Combo Livre, meia barra">LIVRE</button><button data-action="guardCounter" aria-label="Contra-ataque de defesa, um quarto da barra">CONTRA</button><button data-action="punch">SOCO</button><button data-action="kick">CHUTE</button><button data-action="punch" data-strength="0" aria-label="Ataque leve">LEVE</button><button data-action="punch" data-strength="2" aria-label="Soco forte">FORTE</button><button data-action="kick" data-strength="2" aria-label="Segundo ataque forte">FINAL</button></div>
       </div>
     </section>
+    <div id="online-hud" class="online-hud" hidden><span id="online-status" role="status"></span><button id="leave-online" class="text-button" type="button">Sair da partida</button></div>
 
     <footer class="controls-strip">
       <div class="control-player"><span class="control-label p1">P1</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> mover</span><span><kbd>F</kbd> soco</span><span><kbd>G</kbd> <span id="p1-second-label">chute</span></span><span><kbd>H</kbd> poder</span><span id="p1-drone-command"><kbd>Z</kbd> enxame · 100%</span><span><kbd>U</kbd> antiaéreo</span><span><kbd>E</kbd> agarrar</span><span><kbd>Q</kbd> super</span></div>

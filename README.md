@@ -1,3 +1,13 @@
+## Atualização 3.0.0 — Multiplayer online e rollback
+
+- Multiplayer online substitui o modo de duas pessoas no mesmo computador na interface. Encontrar jogador usa uma fila pública; Criar sala gera código de 8 caracteres e convite; Entrar na sala conecta o segundo aparelho. A CPU continua disponível.
+- Teclado WASD/F/G/H/U/Q/E/C/X/Z, controle ou botões de toque operam o personagem de quem está naquele aparelho, seja P1 ou P2. Personagens iguais são permitidos online.
+- WebRTC/PeerJS 1.5.5, biblioteca local sob MIT, sinalização gratuita do PeerServer Cloud. Sem banco, contas, ranking ou alterações nos projetos Supabase. Um lugar de espera público é liberado assim que a dupla se conecta.
+- Rollback em 120 passos/s, previsão local sem aguardar a rede, comandos pequenos em lotes a aproximadamente 60 envios/s; histórico máximo de 180 frames. Direções e ataques são reaplicados na mesma ordem nos dois aparelhos. Relógios sincronizados antes da contagem; latência exibida durante a partida.
+- Pacotes atrasados ou fora de ordem corrigem apenas o trecho afetado. Som e efeitos iguais não se repetem durante a correção. Sob congestionamento, aba suspensa ou atraso excessivo, a partida pausa em um frame comum, em vez de acumular comandos. Revanche depende dos dois jogadores; saída ou conexão perdida encerra a sessão.
+- Limite de conexão: PeerServer faz sinalização, não retransmite a partida. Redes com NAT simétrico, Wi-Fi corporativo/escolar restrito ou WebRTC bloqueado podem exigir um servidor TURN. Sem TURN configurado, o jogo informa a falha e permite tentar outra rede. Não há promessa de latência zero; o rollback reduz o atraso percebido dos comandos.
+- Testes com atraso de 300 ms, jitter de 20–189 ms, reordenação, seis professores, supers simultâneos, enxame, pausa e revanche. Testes simulados não garantem a mesma experiência em toda rede.
+
 ## Atualização 2.11.1 — Voz expressiva do Marcos
 
 As três falas de Marcos foram refeitas com interpretação de combate em PT-BR, usando os mesmos parâmetros expressivos das falas aprovadas. Novos arquivos evitam o cache da dublagem anterior.

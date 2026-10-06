@@ -1,13 +1,13 @@
-import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=22';
-import { HURT_PROFILES } from './hitboxes.js?v=22';
-import { techniquePose, techniqueHurt } from './technique.js?v=22';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=22';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=22';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=22';
-import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=22';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=22';
-export { FIGHTING_STYLES } from './styles.js?v=22';
-export { SENTINEL } from './sentinel.js?v=22';
+import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=23';
+import { HURT_PROFILES } from './hitboxes.js?v=23';
+import { techniquePose, techniqueHurt } from './technique.js?v=23';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=23';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=23';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=23';
+import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=23';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=23';
+export { FIGHTING_STYLES } from './styles.js?v=23';
+export { SENTINEL } from './sentinel.js?v=23';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -241,7 +241,7 @@ export class FightEngine {
   }
   event(type, data = {}) { this.onEvent({ type, ...data }); }
   start(id = 'marcelo', mode = 'cpu', opponentId = id === 'marcelo' ? 'rafael' : 'marcelo') {
-    if (!Object.hasOwn(CHARACTERS, id) || !Object.hasOwn(CHARACTERS, opponentId) || id === opponentId) throw new RangeError('Escolha dois professores diferentes do elenco.');
+    if (!Object.hasOwn(CHARACTERS, id) || !Object.hasOwn(CHARACTERS, opponentId) || (id === opponentId && mode !== 'online')) throw new RangeError('Escolha dois professores diferentes do elenco.');
     this.cpu = mode === 'cpu'; this.playerId = id; this.mode = mode;
     this.fighters = [new Fighter(id, 0), new Fighter(opponentId, 1)];
     this.round = 1; this.paused = false; this.ai = { timer: 0, input: idleInput(), actionTimer: 0 }; this.newRound();
