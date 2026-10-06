@@ -31,12 +31,13 @@ function fakePeers(){
   };
 }
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
+async function confirmBoth(cs){cs.forEach(c=>assert.equal(c.net.confirm(),true));await flush();await flush();}
 function clients(PeerClass){
   let clock=0;
   const out=Array.from({length:2},()=>{
-    const events=[],statuses=[],engine=new FightEngine({onEvent:e=>{events.push(e);net.event(e);}});
-    const net=new OnlineMatch({engine,PeerClass,now:()=>clock,prepare:async()=>{},onStart:()=>{},onStatus:s=>statuses.push(s),onEnd:()=>{}});
-    return {engine,net,events,statuses};
+    const events=[],statuses=[],lobbies=[],preparations=[],engine=new FightEngine({onEvent:e=>{events.push(e);net.event(e);}});
+    const net=new OnlineMatch({engine,PeerClass,now:()=>clock,prepare:async pair=>{preparations.push([...pair]);},onLobby:state=>lobbies.push(state),onStart:()=>{},onStatus:s=>statuses.push(s),onEnd:()=>{}});
+    return {engine,net,events,statuses,lobbies,preparations};
   });out.step=async(seconds)=>{
     for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++){
       clock+=FIXED_STEP*1000;
@@ -56,6 +57,7 @@ test('salas normalizam códigos e snapshots mantêm os protótipos de Fighter',(
 test('dois clientes independentes entram por código e compartilham golpes, vida e eventos',async t=>{
   const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
   await host.net.begin('create','marcos');await guest.net.begin('join','marcelino',host.net.code);await flush();await flush();
+  await confirmBoth(cs);
   assert.ok(host.net.running&&guest.net.running);assert.equal(host.net.slot,0);assert.equal(guest.net.slot,1);
   await cs.step(2.85);assert.equal(guest.engine.phase,'fight');
   for(const c of cs){c.engine.fighters[0].x=450;c.engine.fighters[1].x=570;}
@@ -72,13 +74,16 @@ test('dois clientes independentes entram por código e compartilham golpes, vida
 test('busca pública reúne dois jogadores e libera a fila para a próxima dupla',async t=>{
   const Peer=fakePeers(),a=clients(Peer),b=clients(Peer);t.after(()=>[...a,...b].forEach(c=>c.net.close()));
   await a[0].net.begin('quick','gelton');await a[1].net.begin('quick','gelton');await flush();await flush();
+  await confirmBoth(a);
   assert.ok(a.every(c=>c.net.running));assert.equal(a[0].engine.fighters[0].character.id,a[0].engine.fighters[1].character.id);
   await b[0].net.begin('quick','marcelo');await b[1].net.begin('quick','rafael');await flush();await flush();
+  await confirmBoth(b);
   assert.ok(b.every(c=>c.net.running));assert.notEqual(a[0].net.matchId,b[0].net.matchId);
 });
 test('pausa é compartilhada, revanche exige os dois e desconexão encerra a sessão',async t=>{
   const cs=clients(fakePeers()),[a,b]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
   await a.net.begin('create','marcos');await b.net.begin('join','rafael',a.net.code);await flush();await flush();
+  await confirmBoth(cs);
   b.net.pause();await flush();await cs.step(.1);assert.ok(a.engine.paused&&b.engine.paused);
   a.net.pause();await cs.step(.1);assert.equal(b.engine.paused,false);
   for(const c of cs)c.engine.phase='result';await cs.step(.1);assert.equal(b.engine.phase,'result');
@@ -88,7 +93,7 @@ test('pausa é compartilhada, revanche exige os dois e desconexão encerra a ses
 });
 test('pacotes duplicados e golpes inválidos não alteram os comandos já confirmados',async t=>{
   const cs=clients(fakePeers()),[a,b]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
-  await a.net.begin('create','marcos');await b.net.begin('join','rafael',a.net.code);await flush();await flush();await cs.step(2.85);
+  await a.net.begin('create','marcos');await b.net.begin('join','rafael',a.net.code);await flush();await flush();await confirmBoth(cs);await cs.step(2.85);
   const frame=a.net.netplay.lastRemote,original=a.net.netplay.remote.get(frame);
   b.net.send({t:'frames',matchId:a.net.matchId,frames:[{frame,input:{right:true},attacks:[]}]});await flush();
   assert.deepEqual(a.net.netplay.remote.get(frame),original);
@@ -97,4 +102,63 @@ test('pacotes duplicados e golpes inválidos não alteram os comandos já confir
   assert.equal(a.net.netplay.remote.has(next),false);
   b.net.send({t:'frames',matchId:'outra-sala',frames:[{frame:next,input:{right:true},attacks:[]}]});await flush();
   assert.equal(a.net.netplay.remote.has(next),false);
+});
+
+test('entrar na sala permanece na seleção sem carregar ou iniciar a luta; escolhas sincronizam antes de duas confirmações',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','marcelo');await guest.net.begin('join','marcelo',host.net.code);await flush();await flush();
+  assert.ok(cs.every(c=>c.net.lobby&&!c.net.running));assert.ok(cs.every(c=>c.engine.phase==='selection'));
+  assert.deepEqual(host.preparations,[]);assert.deepEqual(guest.preparations,[]);
+  assert.equal(host.net.selectCharacter('gelton'),true);assert.equal(guest.net.selectCharacter('joao'),true);await flush();await flush();
+  for(const c of cs)assert.deepEqual(c.net.pair,['gelton','joao']);
+  host.net.confirm();await flush();assert.equal(host.net.running,false);assert.deepEqual(host.preparations,[]);
+  assert.equal(host.net.selectCharacter('marcos'),false,'escolha confirmada fica bloqueada até Alterar');
+  guest.net.confirm();await flush();await flush();
+  for(const c of cs){assert.equal(c.net.running,true);assert.deepEqual(c.preparations,[['gelton','joao']]);assert.deepEqual(c.engine.fighters.map(f=>f.character.id),['gelton','joao']);}
+});
+test('desconfirmar libera a troca e mensagens atrasadas não restauram personagens antigos',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','rafael');await guest.net.begin('join','marcelo',host.net.code);await flush();await flush();
+  guest.net.confirm();await flush();assert.equal(host.net.confirmed[1],true);
+  guest.net.confirm();assert.equal(guest.net.selectCharacter('marcelino'),true);assert.equal(guest.net.selectCharacter('marcos'),true);
+  await flush();await flush();assert.deepEqual(host.net.pair,['rafael','marcos']);assert.deepEqual(guest.net.pair,host.net.pair);
+  guest.net.send({t:'choice',matchId:host.net.matchId,character:'marcelo',confirmed:true,serial:1});await flush();
+  assert.equal(host.net.pair[1],'marcos');assert.equal(host.net.confirmed[1],false);
+  host.net.receive({t:'ready',matchId:host.net.matchId,clientTime:0},host.net.generation);
+  host.net.receive({t:'synced',matchId:host.net.matchId},host.net.generation);
+  assert.equal(host.net.running,false);assert.deepEqual(host.preparations,[]);
+  await confirmBoth(cs);assert.equal(guest.engine.fighters[1].character.id,'marcos');
+});
+test('a sala permanece aberta durante a seleção e a desconexão limpa as confirmações',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','gustavo');await guest.net.begin('join','gelton',host.net.code);await flush();await flush();
+  await cs.step(40);assert.ok(cs.every(c=>c.net.lobby&&c.net.active&&!c.net.running));assert.deepEqual(host.preparations,[]);
+  guest.net.close();await flush();assert.equal(host.net.active,false);assert.equal(host.net.lobby,false);assert.deepEqual(host.net.confirmed,[false,false]);
+});
+test('carregamento de um cliente lento aguarda ambos sem iniciar com personagens de reserva',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  let release;guest.net.prepare=()=>new Promise(resolve=>{release=resolve;});
+  await host.net.begin('create','marcos');await guest.net.begin('join','joao',host.net.code);await flush();await flush();
+  host.net.confirm();guest.net.confirm();await flush();
+  assert.equal(host.net.preparing,true);assert.equal(host.net.running,false);assert.equal(guest.net.running,false);
+  assert.equal(guest.net.selectCharacter('marcelo'),false);release();await flush();await flush();
+  assert.ok(cs.every(c=>c.net.running));assert.deepEqual(guest.engine.fighters.map(f=>f.character.id),['marcos','joao']);
+});
+
+test('escolha feita pelo visitante durante a conexão prevalece sobre os metadados antigos',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','marcelo');
+  const joining=guest.net.begin('join','marcelo',host.net.code);
+  assert.equal(guest.net.selectCharacter('joao'),true);await joining;await flush();await flush();
+  assert.deepEqual(host.net.pair,['marcelo','joao']);assert.deepEqual(guest.net.pair,host.net.pair);assert.equal(guest.net.character,'joao');
+  await confirmBoth(cs);assert.equal(guest.engine.fighters[1].character.id,'joao');
+});
+test('duas escolhas rápidas com confirmação preservam a última e ignoram start duplicado',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','gelton');await guest.net.begin('join','marcelo',host.net.code);await flush();await flush();
+  host.net.confirm();guest.net.selectCharacter('rafael');guest.net.selectCharacter('joao');guest.net.confirm();await flush();await flush();
+  assert.deepEqual(host.net.pair,['gelton','joao']);assert.deepEqual(guest.net.pair,host.net.pair);assert.ok(cs.every(c=>c.net.running));
+  guest.engine.fighters[0].hp=700;
+  guest.net.receive({t:'start',matchId:host.net.matchId,startAt:350,state:snapshot(host.engine,3)},guest.net.generation);
+  assert.equal(guest.engine.fighters[0].hp,700);
 });
