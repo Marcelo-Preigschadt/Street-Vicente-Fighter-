@@ -1,3 +1,7 @@
+## Correção 3.1.1 — Publicação consistente
+
+O teste ao vivo encontrou HTML 3.1.0 e catálogo de personagens antigo carregados juntos. Agora o HTML aponta para releases/v3.1.1/main.js e style.css. Todos os módulos da versão ficam na mesma pasta e importam apenas arquivos dela; o catálogo e as categorias não dependem do cache dos caminhos src antigos. npm run build gera a pasta da versão do package.json e um manifesto de integridade. Incrementar a versão antes de publicar alterações.
+
 ## Atualização 3.1.0 — João Machado e categorias
 
 João Machado é o primeiro aluno do elenco, da turma 301. Rosto inspirado na segunda foto enviada; roupa da primeira: camisa verde com mangas dobradas, camiseta escura, jeans largo, tênis e boné preto. 32 poses próprias, óculos e cabeça completos, luta selvagem inspirada no Blanka, mantendo aparência humana.
