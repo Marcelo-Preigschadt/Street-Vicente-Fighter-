@@ -1,3 +1,4 @@
+import {KARATE_STRIKES} from './karate.js';
 import {WILD_STRIKES} from './wild.js?v=27';
 import { JUDO_STRIKES } from './judo.js?v=27';
 import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=27';
@@ -76,6 +77,14 @@ export const FIGHTING_STYLES = Object.freeze({
     normals:{punch:[[4,3,9,43,20,90],[6,4,13,69,24,130],[10,5,20,97,27,195]],
       kick:[[6,4,13,51,22,140],[8,5,18,81,26,200],[12,6,25,113,29,280]]},
     combos:[route('Recreio Selvagem','punch:0','punch:1','kick:1'),route('Pressão da 301','punch:0','punch:1','punch:2','kick:1')]},
+  ruan:{name:'Karatê',summary:'Guarda firme, hikite, gyaku-zuki, mae-geri, yoko-geri e varreduras.',step:25,
+    names:{punch:['Kizami-zuki','Gyaku-zuki','Oi-zuki'],kick:['Mae-geri curto','Mae-geri','Mae-geri forte'],
+      crouchPunch:['Zuki baixo rápido','Gyaku-zuki baixo','Zuki baixo forte'],sweep:['Ashi-barai curto','Ashi-barai','Ashi-barai forte'],
+      airPunch:['Zuki aéreo rápido','Zuki aéreo','Zuki aéreo forte'],airKick:['Yoko-geri aéreo curto','Yoko-geri aéreo','Yoko-geri aéreo forte']},
+    normals:{punch:[[4,3,9,43,19,100],[6,4,12,68,23,150],[9,5,19,96,27,220]],
+      kick:[[5,4,12,51,21,135],[8,5,17,82,25,200],[11,6,23,113,29,285]]},
+    combos:[route('Kihon Elétrico','punch:0','punch:1','kick:1'),route('Kata do Trovão','punch:0','punch:1','punch:2','kick:1')]},
+
 });
 
 export function styleTechnique(id, name, strength = 1) {
@@ -94,6 +103,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='ruan')return KARATE_STRIKES[f.action];
   if(f.character.id==='joao')return WILD_STRIKES[f.action];
   if(f.character.id==='marcos')return JUDO_STRIKES[f.action];
   if(f.character.id==='gelton')return CAPOEIRA_STRIKES[f.action];

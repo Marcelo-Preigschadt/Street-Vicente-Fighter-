@@ -1,7 +1,8 @@
 // Silhouette extraction is done at build time. Browsers only decode and draw rectangles.
 export async function loadPreparedSprites(id,loadImage) {
   const stem=`assets/runtime/${id}-v1`;
-  const [image,response]=await Promise.all([loadImage(`${stem}.webp`),fetch(`${stem}.json`)]);
+  const revision=['joao','ruan'].includes(id)?'?v=360':'';
+  const [image,response]=await Promise.all([loadImage(`${stem}.webp${revision}`),fetch(`${stem}.json${revision}`)]);
   if(!response.ok)throw new Error(`Não foi possível preparar ${id}: HTTP ${response.status}`);
   const metadata=await response.json(),sheets={};
   for(const [atlas,profile] of Object.entries(metadata.atlases)) {

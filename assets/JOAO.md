@@ -1,6 +1,8 @@
 # João Machado — Aluno da turma 301
 
-Referências: segunda fotografia enviada para identidade (rosto redondo, cabelo ondulado preto, óculos retangulares grandes, bigode/cavanhaque leves); primeira fotografia somente para roupa (camisa verde com punhos dobrados brancos, camiseta escura, jeans largo, tênis cinza, boné preto para trás). Aparência humana, postura baixa e luta selvagem inspirada no Blanka.
+Referências: segunda fotografia enviada para identidade (rosto redondo, cabelo ondulado preto, óculos retangulares grandes, bigode/cavanhaque leves); primeira fotografia somente para roupa (camisa branca com punhos dobrados, camiseta escura, jeans largo, tênis cinza, boné preto para trás). Aparência humana, postura baixa e luta selvagem inspirada no Blanka.
+
+Revisão 3.6.0: rosto refeito a partir da foto original IMG-20261005-WA0022.jpg, preservando bochechas, nariz, cabelo ondulado, armação metálica e barba leve; camisa exterior branca em todas as poses.
 
 Arte criada com ImageGen integrado, transparência preservada. Arquivos finais: assets/joao-base-v1.webp, assets/joao-combat-v1.webp. 16 quadros por atlas, poses completas orientadas à direita. src/wild-data.js contém escalas, eixos e silhuetas físicas calculadas dos mesmos recortes usados no desenho. scripts/calibrate-joao.mjs calibra os originais; scripts/build-sprites.mjs joao prepara atlas, metadados e prévia leve em assets/runtime.
 

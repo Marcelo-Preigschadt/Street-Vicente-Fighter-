@@ -1,3 +1,4 @@
+import {karatePose,karateHurt,KARATE_STRIKES} from './karate.js';
 import {wildPose,wildHurt,WILD_STRIKES} from './wild.js?v=27';
 import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=27';
 import { HURT_PROFILES } from './hitboxes.js?v=27';
@@ -69,6 +70,12 @@ export const CHARACTERS = Object.freeze({
     powers:{special:'Super Soco',uppercut:'Rolamento Selvagem',super:'Curto-Circuito 301'},
     powerQuotes:{special:'Segura esse super soco!',uppercut:'Sai da frente!',super:'A trezentos e um chegou! Agora segura essa descarga!'},
     voiceDuration:{"special": 2.783, "uppercut": 2.16, "super": 4.719},strikes:WILD_STRIKES,projectile:{offset:210,height:190}},
+  ruan:{id:'ruan',category:'students',name:'Aluno Ruan',quote:'Meu Karatê vai te dar um choque!',color:'#72e6ff',accent:'#b5a2ff',
+    speed:360,backSpeed:300,jumpSpeed:625,power:1.03,sprite:'assets/ruan-base-v1.webp',combatSprite:'assets/ruan-combat-v1.webp',
+    powers:{special:'Pulso de Choque',uppercut:'Punho de Trovão',super:'Kata da Tempestade'},
+    powerQuotes:{special:'Pulso de choque!',uppercut:'Punho de trovão!',super:'Agora é a tempestade do Karatê!'},
+    voiceDuration:{special:1.76,uppercut:2,super:2.32},strikes:KARATE_STRIKES,projectile:{offset:160,height:190}},
+
 });
 
 const frames = n => n / 60;
@@ -93,6 +100,12 @@ function moveData(name, strength = 1, characterId = null) {
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
       cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
+  if(characterId==='ruan'&&name==='special')return {name,strength,startup:frames(13),active:frames(1),recovery:frames(24),damage:88+strength*10,
+    stun:frames(26),blockstun:frames(17),push:230,meter:7,level:'mid',projectile:true,chip:.08,speed:720+strength*80,effect:'karateLightning',radius:20};
+  if(characterId==='ruan'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(15),recovery:frames(28),damage:115+strength*12,
+    stun:frames(29),blockstun:frames(18),push:260,meter:9,level:'mid',knockdown:true,launch:660,invincibility:frames(7),jumpVelocity:-1000,travelSpeed:150,effect:'karateLightning'};
+  if(characterId==='ruan'&&name==='super')return {name,strength,startup:frames(9),active:frames(28),recovery:frames(29),damage:99,
+    stun:frames(27),blockstun:frames(18),push:140,meter:0,level:'mid',projectile:true,waves:3,finalKnockdown:true,launch:400,chip:.08,speed:1050,cost:100,invincibility:frames(9),effect:'karateLightning',radius:23};
   if(characterId==='joao'&&name==='special')return {name,strength,startup:frames(15),active:frames(7),recovery:frames(28),damage:132+strength*12,
     stun:frames(29),blockstun:frames(18),push:440,meter:9,level:'mid',advance:65,chip:.06,effect:'superPunch'};
   if(characterId==='joao'&&name==='uppercut')return {name,strength,startup:frames(8),active:frames(24),recovery:frames(30),damage:118+strength*12,
@@ -149,6 +162,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='ruan')return karatePose(f);
   if(f.character.id==='joao')return wildPose(f);
   if(f.character.id==='marcos')return judoPose(f);
   if(f.character.id==='gelton')return capoeiraPose(f);
@@ -222,7 +236,7 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
@@ -718,7 +732,7 @@ export class FightEngine {
   spawnProjectile(f, data, wave) {
     if (wave === 0) this.announcePower(f);
     const { offset, height } = f.character.projectile, x = f.x + f.direction * offset;
-    this.projectiles.push({ owner: f.slot, character: f.character.id, direction: f.direction, move: f.action, data: { ...data }, wave,
+    this.projectiles.push({ owner: f.slot, character: f.character.id, direction: f.direction, move: f.action, data: { ...data, ...(data.finalKnockdown?{knockdown:wave===(data.waves??3)-1}:{}) }, wave,
       x, prevX: x, y: f.y - height, radius: data.radius ?? (f.action === 'super' ? 32 : 27), speed: data.speed, life: 3.1, effect:data.effect ?? 'energy' });
     this.event('projectile', { fighter:f.slot, move:f.action, character:f.character.id, color:f.character.color, x, y:f.y-height, direction:f.direction, wave,effect:data.effect });
   }

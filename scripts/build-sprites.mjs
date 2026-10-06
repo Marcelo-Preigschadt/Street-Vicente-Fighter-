@@ -20,6 +20,10 @@ async function webp(canvas,path,quality=88){
 }
 for(const [id,f]of Object.entries(CHARACTERS)) {
   if(process.argv[2]&&process.argv[2]!==id)continue;
+  if(id==='ruan'){
+    execFileSync('python3',['scripts/build-ruan.py',f.sprite,f.combatSprite],{stdio:'inherit'});
+    continue;
+  }
   const sheets={};
   if(['gelton','marcelino','marcos','joao'].includes(id)) {
     sheets.base=r.analyzeSheet(await loadImage(f.sprite),false,4,96);

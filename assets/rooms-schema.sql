@@ -2,7 +2,7 @@ create table public.svf_rooms (
  code text primary key check (code ~ '^[A-HJ-NP-Z2-9]{8}$'),
  owner_hash text not null check (owner_hash ~ '^[a-f0-9]{64}$'),
  status text not null default 'waiting' check (status in ('waiting','playing')),
- character text not null check (character in ('marcelo','rafael','gustavo','gelton','marcelino','marcos','joao')),
+ character text not null check (character in ('marcelo','rafael','gustavo','gelton','marcelino','marcos','joao','ruan')),
  created_at timestamptz not null default now(),
  expires_at timestamptz not null default now() + interval '3 minutes'
 );

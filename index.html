@@ -7,11 +7,11 @@
   <meta name="description" content="Professores e alunos se enfrentam no jogo de luta arcade do Vicente. João Machado, aluno da turma 301, entrou na arena.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v3.5.0/style.css">
-  <script type="module" src="releases/v3.5.0/main.js"></script>
+  <link rel="stylesheet" href="releases/v3.6.0/style.css">
+  <script type="module" src="releases/v3.6.0/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="3.5.0">
+  <main class="cabinet" data-game-version="3.6.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -55,8 +55,11 @@
             <span class="fighter-name">Prof. Marcos</span><span class="quote">Seu sistema vai pro chão!</span><span class="fighter-style">JUDÔ · INFORMÁTICA</span>
           </button>
           <button class="fighter-card joao" data-fighter="joao" aria-label="Escolher João Machado" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/joao-head-menu-v4.webp" width="160" height="160" alt="" decoding="async">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/joao-head-menu-v4.webp?v=360" width="160" height="160" alt="" decoding="async">
             <span class="fighter-name">João Machado</span><span class="quote">A 301 chegou!</span><span class="fighter-style">LUTA SELVAGEM · ALUNO 301</span>
+          </button>
+          <button class="fighter-card ruan" data-fighter="ruan" aria-label="Escolher Aluno Ruan" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/ruan-head-menu-v3.webp?v=360" alt="Aluno Ruan" loading="lazy"><span class="fighter-name">Aluno Ruan</span><span class="fighter-style">KARATÊ · ALUNO</span><span class="quote">Meu Karatê vai te dar um choque!</span>
           </button>
           </div>
         </div>
@@ -64,7 +67,7 @@
         </div>
         <div class="start-panel">
           <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span>Multiplayer online</span></label><label><input type="radio" name="mode" value="local"><span>2 jogadores no mesmo PC</span></label><label><input type="radio" name="mode" value="cpu"><span>Contra o computador</span></label></fieldset>
-          <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><optgroup label="Professores"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option></optgroup><optgroup label="Alunos"><option value="joao">João Machado · 301</option></optgroup></select></label>
+          <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><optgroup label="Professores"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option></optgroup><optgroup label="Alunos"><option value="joao">João Machado · 301</option><option value="ruan">Aluno Ruan</option></optgroup></select></label>
           <button id="start" class="primary-button" type="button">Encontrar jogador</button>
           <div id="online-panel" class="online-panel">
             <button id="create-room" class="secondary-button" type="button">Criar sala</button>
@@ -109,6 +112,7 @@
 <div><h3>Prof. Marcelino · Física / Muay Thai</h3><p><strong>Normais:</strong> F cotovelada; G chute circular; S + G low kick; pulo + G joelhada voadora; E clinch. Torque e Impulso: T → F → G. Oito Armas: T → F → Y → G.</p><p><strong>Impulso Linear · H/L:</strong> onda vetorial que empurra o rival. Fala: “Receba esse impulso!”.</p><p><strong>Joelhada Cinética · U/;:</strong> joelhada ascendente contra ataques aéreos. Fala: “Energia cinética!”.</p><p><strong>Lei da Ação e Reação · Q/.:</strong> barra cheia; sequência de cotovelo, joelho e circular com cinco ondas de choque. Fala: “Toda ação tem reação! Agora aguenta!”.</p></div>
           <div><h3>Prof. Marcos · Judô / Informática</h3><p><strong>F/J:</strong> pegada e kuzushi. <strong>G/K:</strong> varrida de pé. <strong>↓ + G/K:</strong> ko uchi gari. <strong>E/N:</strong> ippon seoi nage.</p><p><strong>H/L — Sequestro de Sessão:</strong> aproximação e agarrão; curta distância. No ar, agarra adversários próximos na mesma altura. Vence a guarda. “Sua sessão acabou!”</p><p><strong>U/; — Pilha Reversa:</strong> projeção antiaérea de quadril, disponível no chão e no ar. “Acesso negado!”</p><p><strong>Q/. — Kernel Panic:</strong> barra completa; entrada curta e projeção potente de ombro. No ar, pode agarrar um rival próximo na mesma altura. Pode errar contra salto distante ou recuo. “Travou o sistema! Agora é chão!”</p></div>
           <div><h3>João Machado · Aluno da turma 301</h3><p><strong>Luta Selvagem:</strong> postura baixa, socos extensos, rasteiras, salto em bola e descarga elétrica. T → F → G: Recreio Selvagem. T → F → Y → G: Pressão da 301.</p><p><strong>H — Super Soco:</strong> aproximação curta e soco poderoso, com alcance limitado. “Segura esse super soco!”</p><p><strong>U — Rolamento Selvagem:</strong> investida em bola para frente e para cima. Pode interceptar saltos; tem recuperação longa. “Sai da frente!”</p><p><strong>Q — Curto-Circuito 301:</strong> barra cheia; descarga ao redor do João que derruba o rival próximo. Pode ser defendida ou evitada com distância. “A trezentos e um chegou! Agora segura essa descarga!”</p></div>
+          <div><h3>Aluno Ruan · Karatê</h3><p><strong>Karatê:</strong> guarda firme, socos retos com hikite, mae-geri, yoko-geri e ashi-barai. T → F → G: Kihon Elétrico. T → F → Y → G: Kata do Trovão. Socos, chutes e poderes também funcionam no ar.</p><p><strong>H/L — Pulso de Choque:</strong> pulso elétrico azul-violeta lançado para a frente. Pressiona à distância; pode ser bloqueado ou evitado com salto.</p><p><strong>U/; — Punho de Trovão:</strong> soco ascendente elétrico; intercepta saltos e derruba o adversário.</p><p><strong>Q/. — Kata da Tempestade:</strong> consome a barra completa; Ruan executa um kata e lança três pulsos elétricos consecutivos. O último derruba. A eletricidade é direcionada pelos golpes, em vez da descarga ao redor do corpo do João.</p></div>
         </div>
       </details>
     </footer>

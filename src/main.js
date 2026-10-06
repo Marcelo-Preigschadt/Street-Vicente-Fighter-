@@ -74,7 +74,7 @@ function event(e) {
   }
 }
 
-const portraitPath=id=>`assets/runtime/${id}-head-menu-v${['joao','gelton'].includes(id)?4:3}.webp`;
+const portraitPath=id=>`assets/runtime/${id}-head-menu-v${['joao','gelton'].includes(id)?4:3}.webp${['joao','ruan'].includes(id)?'?v=360':''}`;
 let previewed = selected;
 function previewFighter(id) {
   previewed=id;
@@ -82,7 +82,7 @@ function previewFighter(id) {
   $('left-name').textContent=CHARACTERS[id].name;
   $('left-style').textContent=card.querySelector('.fighter-style').textContent;
   $('left-portrait').src=portraitPath(id);
-  $('left-stance').src=`assets/runtime/${id}-preview-v1.webp`;
+  $('left-stance').src=`assets/runtime/${id}-preview-v1.webp${['joao','ruan'].includes(id)?'?v=360':''}`;
   $('left-stance').alt=`${CHARACTERS[id].name} em pose de luta`;
   $('selection-quote').textContent=id===selected?SELECTION_QUOTES[id]:'Confirme para escolher';
   $('preview-left').style.setProperty('--fighter-color',CHARACTERS[id].color);
@@ -106,7 +106,7 @@ function updateSelection() {
   $('right-name').textContent=network&&!lobby?'DESAFIANTE':CHARACTERS[opponent].name;
   $('right-style').textContent=network&&!lobby?'MULTIPLAYER ONLINE':document.querySelector(`[data-fighter="${opponent}"] .fighter-style`).textContent;
   $('right-portrait').src=portraitPath(opponent);
-  $('right-stance').src=`assets/runtime/${opponent}-preview-v1.webp`;
+  $('right-stance').src=`assets/runtime/${opponent}-preview-v1.webp${['joao','ruan'].includes(opponent)?'?v=360':''}`;
   $('right-stance').alt=network&&!lobby?'':`${CHARACTERS[opponent].name} em pose de luta`;
   $('rival-slot').textContent=network?(lobby?`ADVERSÁRIO · P${2-online.slot}`:'PLAYER 2'):local?'JOGADOR 2':'COMPUTADOR';
   $('own-slot').textContent=network&&lobby?`VOCÊ · P${online.slot+1}`:network?'VOCÊ':'P1';
@@ -117,12 +117,12 @@ function updateSelection() {
   $('right-ready').classList.toggle('ready',!!(lobby&&online.confirmed[1-online.slot]));
   $('rival-note').textContent=network&&!lobby?'Encontre um jogador ou convide alguém para sua sala.':SELECTION_QUOTES[opponent];
   $('preview-right').style.setProperty('--fighter-color',CHARACTERS[opponent].color);
-  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida',joao:'chute' };
+  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida',joao:'chute',ruan:'chute' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
   $('p1-drone-command').hidden = selected !== 'marcelo'; $('p2-drone-command').hidden = opponent !== 'marcelo';
   document.querySelector('[data-action="drone"]').hidden = selected !== 'marcelo';
   const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
-  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA',joao:'CHUTE' }[selected];
+  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA',joao:'CHUTE',ruan:'CHUTE' }[selected];
   touchSecond.setAttribute('aria-label',second[selected]);
   document.querySelectorAll('[data-fighter]').forEach(card => {
     const chosen = card.dataset.fighter === selected;
@@ -134,7 +134,7 @@ function updateSelection() {
 }
 document.querySelectorAll('[data-fighter]').forEach(button => button.addEventListener('click', () => {
   if(online.active&&!online.selectCharacter(button.dataset.fighter))return;
-  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23,joao:440}[selected], .09, 'triangle', .15);
+  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23,joao:440,ruan:523.25}[selected], .09, 'triangle', .15);
   updateSelection();
   audio.confirmSelection(selected).catch(()=>{$('load-status').textContent='Fala indisponível. Você pode continuar a jogar.';});
 }));
