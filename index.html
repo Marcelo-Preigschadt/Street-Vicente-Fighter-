@@ -7,11 +7,11 @@
   <meta name="description" content="Professores e alunos se enfrentam no jogo de luta arcade do Vicente. João Machado, aluno da turma 301, entrou na arena.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v3.3.0/style.css">
-  <script type="module" src="releases/v3.3.0/main.js"></script>
+  <link rel="stylesheet" href="releases/v3.3.1/style.css">
+  <script type="module" src="releases/v3.3.1/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="3.3.0">
+  <main class="cabinet" data-game-version="3.3.1">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -73,6 +73,11 @@
             <button id="cancel-online" class="text-button" type="button" hidden>Cancelar busca</button>
             <span id="room-share" hidden>Sala <strong id="room-code-display"></strong> <button id="copy-room" class="text-button" type="button">Copiar convite</button></span>
           </div>
+          <section id="room-directory" class="room-directory" aria-label="Salas online">
+            <div class="rooms-heading"><strong>Salas online</strong><button id="refresh-rooms" class="text-button" type="button">Atualizar</button></div>
+            <p id="rooms-message" role="status">Carregando salas…</p>
+            <ul id="rooms-list"></ul>
+          </section>
           <p id="load-status" class="load-status" role="status">Selecione o personagem e pressione Enter ou Começar a luta</p>
         </div>
       </div>
