@@ -7,11 +7,11 @@
   <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v4.0.1/style.css">
-  <script type="module" src="releases/v4.0.1/main.js"></script>
+  <link rel="stylesheet" href="releases/v4.1.0/style.css">
+  <script type="module" src="releases/v4.1.0/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="4.0.1">
+  <main class="cabinet" data-game-version="4.1.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -67,7 +67,7 @@
           <aside class="fighter-showcase rival-showcase" id="preview-right"><img class="large-portrait" id="right-portrait" alt=""><span class="showcase-slot" id="rival-slot">ADVERSÁRIO</span><img class="stance-preview" id="right-stance" alt=""><h2 id="right-name"></h2><p id="right-style"></p><p id="rival-note"></p><span class="lobby-ready" id="right-ready" role="status" hidden></span></aside>
         </div>
         <div class="start-panel">
-          <p id="story-summary" class="story-summary" hidden><strong>O sinal bateu. A luta começou.</strong> Quatro atos, equipamentos corrompidos e duelos de chefe. Escolha Marcelo, Rafael ou Gustavo para recuperar o NIT antes do fim do turno.</p>
+          <p id="story-summary" class="story-summary" hidden><strong>O sinal bateu. A luta começou.</strong> Quatro atos, equipamentos corrompidos e duelos de chefe. Escolha qualquer um dos oito lutadores. Ande em quatro direções, salte, encadeie golpes e abra caminho até o NIT.</p>
           <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span id="mode-online-label">Multiplayer online</span></label><label><input type="radio" name="mode" value="local"><span id="mode-local-label">2 jogadores no mesmo PC</span></label><label><input type="radio" name="mode" value="cpu"><span id="mode-solo-label">Contra o computador</span></label></fieldset>
           <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><optgroup label="Professores"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option></optgroup><optgroup label="Alunos"><option value="joao">João Machado · 301</option><option value="ruan">Aluno Ruan</option></optgroup></select></label>
           <div class="start-actions"><button id="start" class="primary-button" type="button">Encontrar jogador</button><button id="continue-story" class="text-button" type="button" hidden>Continuar campanha</button></div>
@@ -97,8 +97,8 @@
         <div class="modal result-modal"><span class="eyebrow">FIM DE JOGO</span><h2 id="winner-name"></h2><p id="winner-quote"></p><button id="rematch" class="primary-button" type="button">Revanche</button><button id="result-back" class="secondary-button" type="button">Trocar personagem</button></div>
       </div>
       <div id="touch-controls" class="touch-controls" hidden aria-label="Controles de toque">
-        <div class="touch-dpad"><button data-action="jump" class="up" aria-label="Pular">▲</button><button data-action="left" class="left" aria-label="Esquerda">◀</button><button data-action="right" class="right" aria-label="Direita">▶</button><button data-action="down" class="down" aria-label="Agachar">▼</button></div>
-        <div class="touch-attacks"><button data-action="block" class="guard">DEF</button><button data-action="special" class="special">ESP</button><button data-action="drone" aria-label="Enxame de Drones, barra cheia">ENXAME</button><button data-action="uppercut" aria-label="Poder ascendente">ANTI</button><button data-action="super">SUPER</button><button data-action="throw" aria-label="Agarrar">AGAR</button><button data-action="custom" aria-label="Combo Livre, meia barra">LIVRE</button><button data-action="guardCounter" aria-label="Contra-ataque de defesa, um quarto da barra">CONTRA</button><button data-action="punch">SOCO</button><button data-action="kick">CHUTE</button><button data-action="punch" data-strength="0" aria-label="Ataque leve">LEVE</button><button data-action="punch" data-strength="2" aria-label="Soco forte">FORTE</button><button data-action="kick" data-strength="2" aria-label="Segundo ataque forte">FINAL</button></div>
+        <div class="touch-dpad"><button data-action="jump" data-story-action="up" class="up" aria-label="Pular">▲</button><button data-action="left" class="left" aria-label="Esquerda">◀</button><button data-action="right" class="right" aria-label="Direita">▶</button><button data-action="down" class="down" aria-label="Agachar">▼</button></div>
+        <div class="touch-attacks"><button id="story-jump" data-action="jump" hidden aria-label="Saltar">PULAR</button><button data-action="block" class="guard">DEF</button><button data-action="special" class="special">ESP</button><button data-action="drone" aria-label="Enxame de Drones, barra cheia">ENXAME</button><button data-action="uppercut" aria-label="Poder ascendente">ANTI</button><button data-action="super">SUPER</button><button data-action="throw" aria-label="Agarrar">AGAR</button><button data-action="custom" aria-label="Combo Livre, meia barra">LIVRE</button><button data-action="guardCounter" aria-label="Contra-ataque de defesa, um quarto da barra">CONTRA</button><button data-action="punch">SOCO</button><button data-action="kick">CHUTE</button><button data-action="punch" data-strength="0" aria-label="Ataque leve">LEVE</button><button data-action="punch" data-strength="2" aria-label="Soco forte">FORTE</button><button data-action="kick" data-strength="2" aria-label="Segundo ataque forte">FINAL</button></div>
       </div>
     </section>
     <div id="story-hud" class="story-hud" hidden><div><strong id="story-current"></strong><p id="story-help"></p></div><button id="story-swap" class="secondary-button" type="button" hidden>Trocar professor</button></div>
@@ -107,7 +107,7 @@
     <footer class="controls-strip">
       <details class="move-guide" id="character-info"><summary>Informações dos personagens e controles</summary>
         <div class="guide-controls">
-      <div class="control-player"><span class="control-label p1">P1</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> mover</span><span><kbd>F</kbd> soco</span><span><kbd>G</kbd> <span id="p1-second-label">chute</span></span><span><kbd>H</kbd> poder</span><span id="p1-drone-command"><kbd>Z</kbd> enxame · 100%</span><span><kbd>U</kbd> antiaéreo</span><span><kbd>E</kbd> agarrar</span><span><kbd>Q</kbd> super</span></div>
+      <p id="story-keys" hidden>História: WASD / setas andam pelo chão · Espaço / Shift direito pulam · dois toques para correr · F / J soco e G / K chute encadeiam golpes · joystick: direcional anda, A / × pula, X / □ soca, B / ○ chuta.</p><div class="control-player"><span class="control-label p1">P1</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> mover</span><span><kbd>F</kbd> soco</span><span><kbd>G</kbd> <span id="p1-second-label">chute</span></span><span><kbd>H</kbd> poder</span><span id="p1-drone-command"><kbd>Z</kbd> enxame · 100%</span><span><kbd>U</kbd> antiaéreo</span><span><kbd>E</kbd> agarrar</span><span><kbd>Q</kbd> super</span></div>
       <div class="control-player"><span class="control-label p2">P2</span><span><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> mover</span><span><kbd>J</kbd> soco</span><span><kbd>K</kbd> <span id="p2-second-label">gancho</span></span><span><kbd>L</kbd> poder</span><span id="p2-drone-command" hidden><kbd>I</kbd> enxame · 100%</span><span><kbd>;</kbd> antiaéreo</span><span><kbd>N</kbd> agarrar</span><span><kbd>.</kbd> super</span></div>
       <div class="match-rules"><span><kbd>↓</kbd> + segundo ataque: golpe baixo</span><span>No ar: socos, chutes e poderes</span><span>Segure para trás: defender</span><span>2 toques: entrada / recuo</span><span><kbd>C</kbd> combo livre · ½ barra</span><span><kbd>X</kbd> contra de defesa · ¼ barra</span><span>Super: barra completa</span><span><kbd>Esc</kbd> pausa</span></div>
         </div>

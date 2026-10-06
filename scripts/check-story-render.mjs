@@ -9,8 +9,9 @@ const {createCanvas,loadImage,Image}=require(`${process.env.CODEX_PRIMARY_RUNTIM
 globalThis.document={createElement:()=>createCanvas(1,1)};globalThis.matchMedia=()=>({matches:false});globalThis.Image=Image;
 globalThis.fetch=async path=>new Response(await readFile(path.split('?')[0]));
 const canvas=createCanvas(1280,720),renderer=new Renderer(canvas);
-for(const id of ['marcelo','rafael','gustavo']){const {base,portrait}=await loadPreparedSprites(id,loadImage);renderer.sheets[id]=base;renderer.portraits[id]=portrait;}
-renderer.storyArt={backgrounds:await Promise.all(['patio','quimica','biblioteca','nit'].map(id=>loadImage(`assets/story/${id}.webp`))),enemies:await Promise.all(Array.from({length:16},(_,i)=>loadImage(`assets/story/enemy-${i}.webp`)))};
+for(const id of ['marcelo','rafael','gustavo','gelton','marcelino','marcos','joao','ruan']){const {base,portrait}=await loadPreparedSprites(id,path=>loadImage(path.split('?')[0]));renderer.sheets[id]=base;renderer.portraits[id]=portrait;}
+renderer.storyArt={backgrounds:await Promise.all(['patio','quimica','biblioteca','nit'].map(id=>loadImage(`assets/story/${id}-panorama-v2.webp`))),enemies:await Promise.all(Array.from({length:16},(_,i)=>loadImage(`assets/story/enemy-${i}.webp`)))};
+renderer.storyArt.inspector=await Promise.all(Array.from({length:4},(_,i)=>loadImage(`assets/story/inspector-pose-${i}-v2.webp`)));renderer.storyArt.inspectorFrames=JSON.parse(await readFile('assets/story/inspector-poses-v2.json','utf8'));
 const engine=new StoryEngine({onEvent:e=>renderer.event(e)});
 for(let act=0;act<4;act++){
  engine.start('marcelo','story-local','rafael',{act});engine.queue(0,'storyNext');engine.fighters[0].x=420;engine.fighters[1].x=540;

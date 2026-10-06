@@ -1,10 +1,10 @@
 ## Correção 3.1.1 — Publicação consistente
 
-## Atualização 4.0.0 — Operação Resgate do NIT
+## Atualização 4.1.0 — campanha com movimentação em profundidade
 
 Escolha **Modo História** e depois **História solo**, **Cooperativo no mesmo PC** ou **Cooperativo online**. O modo **1 × 1** continua com todo o elenco, os controles, os poderes e os sprites da versão 3.6.2.
 
-A campanha usa Marcelo (Kung Fu), Rafael (Boxe) e Gustavo (Kickboxing). São quatro blocos com rolagem lateral, três ondas por ato, equipamentos corrompidos, objetos e armadilhas, seguidos de um duelo de chefe. A.U.L.A. 3.0 tem holograma e exoesqueleto como fases separadas. Os diálogos de entrada e a premissa seguem o roteiro de Operação Resgate do NIT.
+A campanha permite selecionar os oito professores e alunos. Os três professores originais continuam como narradores dos atos. No solo, apenas o jogador selecionado entra em campo; o segundo retrato fica oculto. São quatro blocos com rolagem lateral, três ondas por ato, equipamentos corrompidos, objetos e armadilhas, seguidos de um duelo de chefe. A.U.L.A. 3.0 tem holograma e exoesqueleto como fases separadas. Os diálogos de entrada e a premissa seguem o roteiro de Operação Resgate do NIT.
 
 - Pátio e cantina: drones de lanches, catracas de serras, robôs de limpeza, mesas/cadeiras arremessáveis e latas explosivas de máquinas atingidas. Chefe: Inspetor-Geral do Bloco A.
 - Química: androides e provetas explosivas, ácido e névoa gelada com aviso antes da ativação. Chefe: Robô de Bordo da Feira de Ciências, com lança-chamas.
@@ -14,6 +14,12 @@ A campanha usa Marcelo (Kung Fu), Rafael (Boxe) e Gustavo (Kickboxing). São qua
 No cooperativo não há dano entre professores. Nas ondas os dois lutam juntos; no chefe, um entra no duelo e outro fica na reserva. **Tab**, **Start no joystick** ou o botão **Trocar professor** alternam a reserva quando o personagem pode agir. Se ele cair, o parceiro assume. Um parceiro caído nas ondas retorna após a limpeza do encontro; uma derrota da equipe permite tentar o ato novamente.
 
 **Enter / Start** avançam diálogos. **E / N / Select no joystick** arremessam mesas/cadeiras próximas ou derrubam estantes. Os outros golpes e poderes usam os comandos existentes, inclusive no ar. A Névoa Atômica atordoa robôs. Kits de recuperação aparecem ao limpar uma onda. O turno tem 15 minutos de combate; diálogos e pausa não gastam tempo.
+
+A mecânica da campanha agora usa um plano de chão com profundidade, separado da altura do salto. WASD / setas movem em quatro direções; Espaço / Shift direito pulam; dois toques horizontais correm. Socos e chutes podem encadear golpes, com derrubada no terceiro golpe. Os poderes e ataques aéreos continuam disponíveis para todo o elenco. No joystick, o direcional anda e A / × pula; X / □ soca, B / ○ chuta, Select arremessa objetos. O versus mantém seus comandos anteriores.
+
+Cenários panorâmicos contínuos substituem a imagem com deslocamento mínimo; chão e objetos acompanham a câmera, e as paredes usam paralaxe. Personagens e objetos são ordenados pela profundidade, sem mudar a escala dos sprites do elenco. Inimigos chegam pela frente e por trás, alinham sua faixa de ataque e comprometem a direção durante o aviso. Defender tem desgaste; chefes também agarram. Há menos cura entre ondas. O Inspetor tem poses novas sem recortes, recuperação própria e ataques que não se cancelam indevidamente durante a execução.
+
+Validação: `npm run build`, `npm test` (263 testes), `node scripts/check-story-render.mjs` (oito cenas) e `node scripts/check-story-live.mjs` (dois clientes reais, sala visível e estado igual após rollback; remove somente sua própria sala temporária).
 
 Solo e local salvam um checkpoint no início de cada ato no dispositivo. **Continuar campanha** restaura equipe, ato e tempo de entrada. O cooperativo online começa uma campanha nova, sincroniza narrativa, ondas, inimigos, cenários, poderes, chefes, pausa e tentativas por rollback. O convite inclui o modo e as salas usam `game_mode` e `protocol` para impedir misturas de modos/versões. A migração preserva RLS, tokens de proprietário e heartbeat existentes em `svf_rooms`.
 

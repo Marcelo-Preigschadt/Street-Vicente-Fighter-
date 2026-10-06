@@ -24,10 +24,10 @@ test('relay cooperativo confirma professores e compartilha diálogos, ondas, gol
  host.setInput(0,{right:true});guest.setInput(1,{right:true});await cs.step(190);host.setInput(0,{});guest.setInput(1,{});host.queue(0,'special',2);guest.queue(1,'special',2);await cs.step(170);
  assert.equal(host.engine.story.wave,1);assert.deepEqual(snapshot(host.engine,1),snapshot(guest.engine,1));
  guest.pause();await flush();assert.ok(cs.every(c=>c.engine.paused));host.pause();await flush();assert.ok(cs.every(c=>!c.engine.paused));await cs.step(55);
- for(const c of cs){c.engine.fighters.forEach(f=>f.hp=0);c.engine.update(1/120);}assert.equal(host.engine.phase,'result');guest.queue(1,'storyRetry');await cs.step(12);assert.equal(host.engine.phase,'storyDialog');assert.deepEqual(host.engine.exportStoryState(),guest.engine.exportStoryState());
+ for(const c of cs){c.engine.freeze=0;c.engine.fighters.forEach(f=>f.hp=0);c.engine.update(1/120);}assert.equal(host.engine.phase,'result');guest.queue(1,'storyRetry');await cs.step(12);assert.equal(host.engine.phase,'storyDialog');assert.deepEqual(host.engine.exportStoryState(),guest.engine.exportStoryState());
 });
-test('sala história não aceita jogadores do versus e não permite aluno na equipe',async t=>{
- const cs=clients(),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.close()));await host.begin('create','marcelo','',0,'story');assert.equal(host.selectCharacter('ruan'),false);
+test('sala história não aceita jogadores do versus e aceita alunos na equipe',async t=>{
+ const cs=clients(),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.close()));await host.begin('create','marcelo','',0,'story');assert.equal(host.selectCharacter('ruan'),true);
  await guest.begin('join','rafael',host.code,0,'versus');await flush();await flush();assert.equal(host.lobby,false);assert.equal(guest.running,false);assert.equal(host.active,true);
 });
 test('diretório registra modo e protocolo sem segredo e uma resposta antiga não repõe salas do outro modo',async()=>{

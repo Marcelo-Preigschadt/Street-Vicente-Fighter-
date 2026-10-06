@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {StoryEngine} from '../src/story.js';
 import { Inputs } from '../src/input.js';
 import { FightEngine, FIXED_STEP } from '../src/engine.js';
 const advance = (g,s) => {for(let i=0;i<Math.ceil(s/FIXED_STEP);i++)g.update(FIXED_STEP);};
-function prepare(t) {
-  const events=[],game=new FightEngine({onEvent:e=>events.push(e)});game.start('marcelo','local');game.phase='fight';game.fighters[1].x=1000;
+function prepare(t, Engine=FightEngine) {
+  const events=[],game=new Engine({onEvent:e=>events.push(e)});game.start('marcelo','local');game.phase='fight';game.fighters[1].x=1000;
   const old={window:globalThis.window,document:globalThis.document,navigator:Object.getOwnPropertyDescriptor(globalThis,'navigator')};
   globalThis.window=new EventTarget();
   const buttons=['down','kick','special','punch','custom','guardCounter','block','drone'].map(action=>{const b=new EventTarget();b.dataset={action};b.pressed=false;b.setPointerCapture=()=>{};b.classList={add:()=>{b.pressed=true;},remove:()=>{b.pressed=false;}};return b;});
@@ -80,4 +81,12 @@ test('modo local recebe dois joysticks independentes e atalhos de poder com LT',
   s.game.fighters.forEach(f=>f.meter=100);s.input.update();advance(s.game,.02);
   assert.deepEqual(s.game.fighters.map(f=>f.action),[move,move]);
  }
+});
+
+
+test('História usa quatro direções e salto separado nos dois teclados',t=>{
+ const s=prepare(t,StoryEngine);s.game.start('ruan','story-local','joao');s.game.queue(0,'storyNext');s.key('KeyW');s.key('ArrowUp');advance(s.game,.25);assert.ok(s.game.fighters.every(f=>!f.airborne&&f.lane<610));s.key('Space');s.key('ShiftRight');advance(s.game,.15);assert.ok(s.game.fighters.every(f=>f.airborne));
+});
+test('História usa A / × para saltar, sem soltar chute junto, e direcional para profundidade',t=>{
+ const s=prepare(t,StoryEngine);s.game.start('gelton','story-solo','rafael');s.game.queue(0,'storyNext');s.connect();s.pad.axes[1]=-.8;s.input.update();advance(s.game,.25);assert.ok(s.game.fighters[0].lane<600);assert.equal(s.game.fighters[0].airborne,false);s.pad.axes[1]=0;s.pad.buttons[0].pressed=true;s.input.update();advance(s.game,.15);assert.equal(s.game.fighters[0].airborne,true);assert.equal(s.game.fighters[0].action,null);assert.equal(s.game.fighters[1].hp,0);
 });

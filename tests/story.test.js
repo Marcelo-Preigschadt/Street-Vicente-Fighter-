@@ -8,10 +8,10 @@ import {RollbackGame} from '../src/netplay.js';
 const advance=(e,seconds)=>{for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++)e.update(FIXED_STEP);};
 const start=(mode='story-solo',id='marcelo',act=0)=>{const e=new StoryEngine();e.start(id,mode,id==='rafael'?'gustavo':'rafael',{act});e.queue(0,'storyNext');return e;};
 
-test('história tem quatro atos, três professores e versus mantém todos os personagens',()=>{
+test('história tem quatro atos, oito lutadores e versus mantém todos os personagens',()=>{
   assert.equal(STORY_ACTS.length,4);assert.equal(Object.keys(ENEMY_TYPES).length,16);
   const e=start();assert.equal(e.cpu,true);assert.equal(e.heroes.length,1);assert.equal(e.fighters[1].hp,0);assert.equal(e.timer,900);
-  assert.throws(()=>e.start('ruan','story-solo','rafael'),RangeError);
+  e.start('ruan','story-solo','rafael');assert.equal(e.heroes.length,1);assert.equal(e.heroes[0].character.id,'ruan');assert.throws(()=>e.start('inexistente','story-solo','rafael'),RangeError);
   e.start('ruan','local','joao');assert.equal(e.storyActive,false);assert.equal(e.phase,'intro');assert.equal(e.fighters[1].character.id,'joao');
 });
 test('narrativa e pausa não consomem o turno e a tentativa reinicia o checkpoint do ato',()=>{
@@ -54,7 +54,7 @@ test('chefes usam duelo individual, permitem troca segura e a reserva assume ap�
 });
 test('cada padrão de chefe é anunciado antes do ataque e bloqueio frontal protege o jogador',()=>{
   for(const kind of ['inspector','fairRobot','substitute','aula','exo']){
-    const e=start();e.beginBoss();e.enemies=[];const boss=e.spawnEnemy(kind,700);const f=e.fighters[0];f.x=500;e.queue(0,'storyNext');boss.aiTime=0;boss.cooldown=0;e.update(FIXED_STEP);assert.ok(boss.telegraph>0,kind);assert.equal(f.hp,1000);e.setInput(0,{block:true,down:kind==='exo'});advance(e,1);assert.equal(f.hp,1000,kind);
+    const e=start();e.beginBoss();e.enemies=[];const boss=e.spawnEnemy(kind,700);const f=e.fighters[0];f.x=500;e.queue(0,'storyNext');boss.aiTime=0;boss.cooldown=0;e.update(FIXED_STEP);assert.ok(boss.telegraph>0,kind);assert.equal(f.hp,1000);e.setInput(0,{block:true,down:kind==='exo'});advance(e,1);assert.ok(f.hp>850,kind);if(kind==='inspector')assert.ok(f.hp<1000,`bloqueio tem desgaste: ${kind}`);
   }
 });
 test('A.U.L.A. passa ao exoesqueleto e a campanha só termina após derrotar as duas fases',()=>{
