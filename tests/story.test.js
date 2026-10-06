@@ -85,3 +85,6 @@ test('rollback do cooperativo restaura a onda e os projéteis sem duplicar inimi
 test('Névoa Atômica atordoa robôs por 1,9 s e não faz um drone flutuante cair por gravidade',()=>{
  const e=start('story-solo','gustavo'),f=e.fighters[0];f.x=350;const enemy=e.spawnEnemy('snack',650);enemy.aiTime=5;e.queue(0,'special',2);advance(e,.7);assert.ok(enemy.dizzyTime>1);const y=enemy.y;advance(e,.2);assert.ok(enemy.hitstun>0);assert.equal(enemy.y,y);
 });
+test('uma atualização longa para imediatamente no fim do turno e emite derrota só uma vez',()=>{
+ const events=[],e=new StoryEngine({onEvent:e=>events.push(e)});e.start('marcelo','story-solo','rafael');e.queue(0,'storyNext');e.timer=.004;e.update(.1);assert.equal(e.phase,'result');assert.equal(e.timer,0);assert.equal(events.filter(e=>e.type==='storyResult').length,1);
+});
