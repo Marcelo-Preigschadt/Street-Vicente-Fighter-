@@ -22,8 +22,8 @@ export class OnlineMatch {
     Object.assign(this,{engine,prepare,onStart,onStatus,onEnd,onCorrection,PeerClass,now});this.generation=0;this.active=false;this.running=false;this.slot=0;
   }
   status(text) { this.onStatus?.(text); }
-  async begin(kind,character,code='') {
-    this.close();const gen=this.generation;this.active=true;this.character=character;this.kind=kind;this.code='';this.events=[];this.seq=0;this.lastSeq=0;this.matchId=null;this.votes=[false,false];
+  async begin(kind,character,code='',retry=0) {
+    this.close();const gen=this.generation;this.active=true;this.character=character;this.kind=kind;this.code='';this.retry=retry;this.events=[];this.seq=0;this.lastSeq=0;this.matchId=null;this.votes=[false,false];
     if(!validCharacter(character))return this.fail('Escolha um professor.');
     code=normalizeCode(code);
     if(kind==='join'&&!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return this.fail('Digite os 8 caracteres do código da sala.');
@@ -49,7 +49,7 @@ export class OnlineMatch {
   openPeer(id,gen) {
     this.peer?.destroy();
     return new Promise((resolve,reject)=>{
-      const p=new this.PeerClass(id,{secure:true,debug:0,config:this.ice});this.peer=p;
+      const p=new this.PeerClass(id,{secure:true,debug:1,config:this.ice});this.peer=p;
       let settled=false;const timer=setTimeout(()=>{if(!settled){settled=true;p.destroy();reject(new Error('O serviço online demorou para responder. Tente novamente.'));}},12000);
       this.openReject=()=>{if(!settled){settled=true;clearTimeout(timer);reject(new Error('Busca cancelada.'));}};
       p.on('open',()=>{if(gen!==this.generation){p.destroy();return;}settled=true;clearTimeout(timer);this.openReject=null;resolve(p);});
@@ -74,7 +74,11 @@ export class OnlineMatch {
   }
   attach(conn,gen,host) {
     this.conn=conn;this.connectedAt=this.now();this.lastReceived=this.now();this.lastSnapshot=0;this.lastPing=0;this.lastInput=-1000;this.lastInputKey='';this.lastRemoteInput=-1;this.inputSequence=0;
-    this.connectTimer=setTimeout(()=>{if(gen===this.generation&&!this.running)this.failedConnection(gen);},20000);
+    this.connectTimer=setTimeout(()=>{if(gen===this.generation&&!this.running)this.failedConnection(gen);},35000);
+    const pc=conn.peerConnection;
+    pc?.addEventListener('iceconnectionstatechange',()=>console.info(`[online] ICE: ${pc.iceConnectionState}`));
+    pc?.addEventListener('icecandidate',e=>{if(e.candidate)console.info(`[online] candidate: ${e.candidate.type}`);});
+    pc?.addEventListener('icecandidateerror',e=>console.warn(`[online] ICE error ${e.errorCode}: ${e.errorText}`));
     conn.on('error',()=>{if(gen===this.generation)this.failedConnection(gen);});
     conn.on('close',()=>{if(gen===this.generation)this.fail('O outro jogador saiu da partida. Encontre um novo adversário.');});
     conn.on('data',data=>{if(gen===this.generation)this.receive(data,gen);});
@@ -184,8 +188,8 @@ export class OnlineMatch {
   }
   failedConnection(gen) {
     if(gen!==this.generation)return;
-    if(this.kind==='quick'&&!this.running){
-      this.status('Reorganizando a busca de adversário…');this.begin('quick',this.character);return;
+    if(this.kind==='quick'&&!this.running&&this.retry<2){
+      this.status('Reorganizando a busca de adversário…');this.begin('quick',this.character,'',this.retry+1);return;
     }
     this.fail('Não foi possível conectar à sala. Confira o código e mantenha as duas abas abertas. Se necessário, tente outra rede.');
   }
