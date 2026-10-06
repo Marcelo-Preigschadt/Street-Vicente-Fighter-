@@ -1,6 +1,6 @@
-import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=27';
-import {RollbackGame} from './netplay.js?v=27';
-import {iceConfig} from './ice-config.js?v=27';
+import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js';
+import {RollbackGame} from './netplay.js';
+import {iceConfig} from './ice-config.js';
 
 const QUEUE='street-vicente-fighter-330-waiting';
 const PREFIX='street-vicente-fighter-330-room-';

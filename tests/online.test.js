@@ -162,3 +162,14 @@ test('duas escolhas rápidas com confirmação preservam a última e ignoram sta
   guest.net.receive({t:'start',matchId:host.net.matchId,startAt:350,state:snapshot(host.engine,3)},guest.net.generation);
   assert.equal(guest.engine.fighters[0].hp,700);
 });
+
+test('a sala pública acompanha criação, adversário, personagem e encerramento sem iniciar luta na seleção',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs,calls=[];
+  host.net.directory={register:async(...args)=>calls.push(['register',...args]),update:async(...args)=>calls.push(['update',...args]),remove:async()=>calls.push(['remove'])};
+  t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','marcelo');assert.deepEqual(calls.at(-1),['register',host.net.code,'marcelo']);
+  host.net.selectCharacter('rafael');assert.deepEqual(calls.at(-1),['update','waiting','rafael']);
+  await guest.net.begin('join','gustavo',host.net.code);await flush();
+  assert.deepEqual(calls.at(-1),['update','playing','rafael']);assert.equal(host.net.running,false);assert.equal(guest.net.running,false);
+  host.net.close();assert.deepEqual(calls.at(-1),['remove']);
+});
