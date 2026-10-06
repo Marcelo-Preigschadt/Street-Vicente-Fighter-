@@ -316,7 +316,7 @@ export class Renderer {
   drawDizzy(f) {
     const c = this.c, angle = this.reduced ? 0 : f.animTime*5;
     if(f.dizzyCause === 'chemicalSmoke')drawChemicalSmoke(c,{x:f.x,y:f.y-233,radius:35,direction:f.direction},this.clock,this.reduced,.27);
-    const { sheet,index } = this.poseFor(f), frame = sheet.frames[index], top = f.y-(frame.h-1)*sheet.scale-18;
+    const { sheet,index } = this.poseFor(f), frame = sheet.frames[index], top = f.y+(frame.y-frame.bottom)*(frame.scale??sheet.scale)-18;
     c.save(); c.strokeStyle = '#ffe78977'; c.lineWidth = 2;
     c.beginPath(); c.ellipse(f.x,top,42,10,0,0,Math.PI*2); c.stroke();
     for (let n = 0; n < 3; n++) {

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {Fighter,CHARACTERS,fighterPose} from '../src/engine.js';
+import {Renderer} from '../src/render.js';
 
 test('todos os personagens têm quadros e colisões válidos em cada fase dos golpes, nos dois lados',()=>{
  for(const id of Object.keys(CHARACTERS)){
@@ -66,3 +67,14 @@ test('publicação conserva a versão dos sprites e remove somente versões de i
  assert.match(readFileSync(`releases/v${version}/main.js`,'utf8'),/\?v=362/);
  assert.doesNotMatch(readFileSync(`releases/v${version}/engine.js`,'utf8'),/\.js\?v=\d/);
 });
+
+ test('estrelas de atordoamento acompanham o topo real de cada personagem',()=>{
+  for(const id of Object.keys(CHARACTERS)){
+   const f=new Fighter(id,0);f.state='dizzy';
+   const metadata=JSON.parse(readFileSync(`assets/runtime/${id}-v1.json`));
+   const pose=fighterPose(f),sheet=metadata.atlases[pose.atlas],frame=sheet.frames[pose.index];
+   let ellipse;const c={save(){},restore(){},beginPath(){},stroke(){},closePath(){},fill(){},lineTo(){},fillText(){},ellipse(...args){ellipse=args;}};
+   Renderer.prototype.drawDizzy.call({c,reduced:true,poseFor:()=>({sheet,index:pose.index})},f);
+   assert.equal(ellipse[1],f.y+(frame.y-frame.bottom)*(frame.scale??sheet.scale)-18);
+  }
+ });
