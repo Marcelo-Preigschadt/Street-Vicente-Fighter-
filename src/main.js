@@ -1,11 +1,11 @@
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=20';
-import { Renderer } from './render.js?v=20';
-import { ArcadeAudio } from './audio.js?v=20';
-import { Inputs } from './input.js?v=20';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=21';
+import { Renderer } from './render.js?v=21';
+import { ArcadeAudio } from './audio.js?v=21';
+import { Inputs } from './input.js?v=21';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
-let selected = 'marcelo', opponent = 'rafael', ready = false;
+let selected = 'marcelo', opponent = 'rafael', ready = true, starting = false;
 const engine = new FightEngine({ onEvent: event });
 const inputs = new Inputs(engine);
 
@@ -30,12 +30,12 @@ function updateSelection() {
   $('opponent-label').textContent = local ? 'Jogador 2' : 'Adversário';
   for (const option of $('opponent').options) option.disabled = option.value === selected;
   $('opponent').value = opponent;
-  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute' };
+  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
   $('p1-drone-command').hidden = selected !== 'marcelo'; $('p2-drone-command').hidden = opponent !== 'marcelo';
   document.querySelector('[data-action="drone"]').hidden = selected !== 'marcelo';
   const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
-  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE' }[selected];
+  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA' }[selected];
   touchSecond.setAttribute('aria-label',second[selected]);
   document.querySelectorAll('[data-fighter]').forEach(card => {
     const chosen = card.dataset.fighter === selected;
@@ -45,18 +45,29 @@ function updateSelection() {
   });
 }
 document.querySelectorAll('[data-fighter]').forEach(button => button.addEventListener('click', () => {
-  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25}[selected], .09, 'triangle', .15);
+  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23}[selected], .09, 'triangle', .15);
   updateSelection();
 }));
 $('opponent').addEventListener('change', () => { opponent = $('opponent').value; updateSelection(); });
 document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventListener('change', updateSelection));
 updateSelection();
 
-function start() {
-  if (!ready) return;
-  inputs.release(); audio.unlock(); audio.playing = true;
+async function start() {
+  if (!ready || starting) return;
+  const pair=[selected,opponent],mode=document.querySelector('input[name="mode"]:checked').value;
+  starting=true;$('start').disabled=true;$('start').textContent='Preparando a luta…';
+  $('load-status').textContent=`Carregando ${CHARACTERS[pair[0]].name} e ${CHARACTERS[pair[1]].name}…`;
+  inputs.release();audio.unlock();
+  audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
+  try{await renderer.load(pair);}catch(error){
+    $('load-status').textContent=`${error.message}. Pressione Começar para tentar novamente.`;
+    starting=false;$('start').disabled=false;$('start').textContent='Começar a luta';return;
+  }
+  selected=pair[0];opponent=pair[1];updateSelection();
+  starting=false;$('start').disabled=false;$('start').textContent='Começar a luta';
+  $('load-status').textContent='Selecione o personagem e pressione Enter ou Começar a luta';
+  audio.playing = true;
   $('selection').hidden = true; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('pause').disabled = false; $('pause').textContent = 'Pausar';
-  const mode = document.querySelector('input[name="mode"]:checked').value;
   $('touch-controls').hidden = !(matchMedia('(pointer: coarse)').matches && mode === 'cpu');
   engine.start(selected, mode, opponent);
   $('game').setAttribute('aria-label', `Jogo de luta: ${CHARACTERS[selected].name} contra ${CHARACTERS[opponent].name}. Os comandos estão abaixo da arena.`);
@@ -92,15 +103,10 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 
-try {
-  const [, audioReady] = await Promise.all([renderer.load(), audio.load()]);
-  document.querySelectorAll('[data-preview]').forEach(canvas => renderer.preview(canvas, canvas.dataset.preview));
-  ready = true; $('start').disabled = false; $('start').textContent = 'Começar a luta';
-  $('load-status').textContent = audioReady ? 'Selecione o personagem e pressione Enter ou Começar a luta' : 'Áudio de combate indisponível. Recarregue a página para tentar novamente.';
-} catch (error) {
-  $('load-status').textContent = `${error.message}. Recarregue a página para tentar novamente.`; $('start').textContent = 'Recarregar'; $('start').disabled = false;
-  $('start').addEventListener('click', () => { if (!ready) location.reload(); });
-}
+// HTML previews are visible immediately; full animation and audio are loaded per match.
+$('start').disabled=false;$('start').textContent='Começar a luta';
+$('load-status').textContent='Selecione o personagem e pressione Enter ou Começar a luta';
+renderer.loadBackground().catch(error=>console.warn('Cenário indisponível.',error));
 
 // Exposed only on explicit debug requests for reproducible local gameplay checks.
 if (new URLSearchParams(location.search).has('debug')) window.streetVicente = { engine, renderer, inputs, audio, start, selection };

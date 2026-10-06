@@ -1,12 +1,13 @@
-import { HURT_PROFILES } from './hitboxes.js?v=20';
-import { techniquePose, techniqueHurt } from './technique.js?v=20';
-import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=20';
-import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=20';
-import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=20';
-import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=20';
-import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=20';
-export { FIGHTING_STYLES } from './styles.js?v=20';
-export { SENTINEL } from './sentinel.js?v=20';
+import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=21';
+import { HURT_PROFILES } from './hitboxes.js?v=21';
+import { techniquePose, techniqueHurt } from './technique.js?v=21';
+import { FOOTWORK, DIZZY, motionPose, motionHurt, stepDistance } from './motion.js?v=21';
+import { FIGHTING_STYLES, stylePose, styleStrike, styleHurt, styleTechnique, canStyleChain, completedStyleCombo } from './styles.js?v=21';
+import { capoeiraPose, capoeiraHurt } from './capoeira.js?v=21';
+import { muayThaiPose, muayThaiHurt } from './muay-thai.js?v=21';
+import { SENTINEL, droneHitbox, sentinelRay } from './sentinel.js?v=21';
+export { FIGHTING_STYLES } from './styles.js?v=21';
+export { SENTINEL } from './sentinel.js?v=21';
 
 export const WORLD = Object.freeze({ width: 1280, height: 720, floor: 625, gravity: 4320 });
 export const FIXED_STEP = 1 / 120;
@@ -56,6 +57,12 @@ export const CHARACTERS = Object.freeze({
       crouchPunch:{near:25,reach:145,height:118,h:44},sweep:{near:35,reach:193,height:110,h:58},
       airPunch:{near:20,reach:157,height:218,h:60},airKick:{near:22,reach:122,height:180,h:84},
       uppercut:{near:-24,reach:122,height:235,h:112}},projectile:{offset:142,height:205}},
+  marcos:{id:'marcos',name:'Prof. Marcos',quote:'Seu sistema vai pro chão!',color:'#8eb5ff',accent:'#c9dbff',
+    speed:284,backSpeed:247,jumpSpeed:555,power:1.10,sprite:'assets/marcos-base-v1.webp',combatSprite:'assets/marcos-combat-v1.webp',
+    powers:{special:'Sequestro de Sessão',uppercut:'Pilha Reversa',super:'Kernel Panic'},
+    powerQuotes:{special:'Sua sessão acabou!',uppercut:'Acesso negado!',super:'Travou o sistema! Agora é chão!'},
+    voiceDuration:{special:1.98,uppercut:1.877,super:3.659},strikes:JUDO_STRIKES,projectile:{offset:130,height:200}},
+
 });
 
 const frames = n => n / 60;
@@ -80,6 +87,14 @@ function moveData(name, strength = 1, characterId = null) {
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
       cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
+  if(characterId==='marcos'&&name==='special')return {name,strength,startup:frames(18),active:frames(5),recovery:frames(32),damage:150+strength*10,
+    stun:frames(34),blockstun:0,push:360,meter:10,level:'throw',knockdown:true,launch:470,range:143,advance:86,effect:'sessionLock'};
+  if(characterId==='marcos'&&name==='uppercut')return {name,strength,startup:frames(7),active:frames(10),recovery:frames(31),damage:118+strength*14,
+    stun:frames(30),blockstun:frames(19),push:280,meter:9,level:'mid',knockdown:true,launch:720,invincibility:frames(8),grounded:true,effect:'reverseStack'};
+  if(characterId==='marcos'&&name==='super')return {name,strength,startup:frames(10),active:frames(5),recovery:frames(44),damage:360,
+    stun:frames(42),blockstun:0,push:410,meter:0,level:'throw',knockdown:true,launch:690,range:152,advance:105,cost:100,invincibility:frames(10),effect:'kernelPanic'};
+  if(characterId==='marcos'&&name==='throw')return {name,strength,startup:frames(5),active:frames(3),recovery:frames(26),damage:150,
+    stun:frames(34),blockstun:0,push:350,meter:10,level:'throw',knockdown:true,launch:570,range:143,technique:'Ippon seoi nage'};
   if (name === 'super' && characterId === 'marcelo') return {name,strength,startup:frames(12),active:frames(1),recovery:frames(48),
     damage:47,stun:frames(19),blockstun:frames(14),push:75,meter:0,level:'mid',chip:.08,cost:100,invincibility:frames(10),summon:true,swarm:true,effect:'sentinelLaser'};
   if (characterId==='gelton'&&name==='special')return {name,strength,startup:frames(14),active:frames(1),recovery:frames(23),damage:88+strength*10,
@@ -122,6 +137,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='marcos')return judoPose(f);
   if(f.character.id==='gelton')return capoeiraPose(f);
   if(f.character.id==='marcelino')return muayThaiPose(f);
   const motion = motionPose(f);
@@ -193,7 +209,7 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
@@ -311,7 +327,7 @@ export class FightEngine {
     f.chain = NORMALS[move] ? normalChain ? [...f.chain, `${move}:${m.strength}`] : [`${move}:${m.strength}`] : [];
     if (normalChain) m.advance = FIGHTING_STYLES[f.character.id].step;
     else if (!f.airborne && (Number(f.input.right)-Number(f.input.left))*f.direction > 0)
-      m.advance = FOOTWORK[f.character.id].attackAdvance[move]?.[m.strength] ?? 0;
+      m.advance = FOOTWORK[f.character.id].attackAdvance[move]?.[m.strength] ?? m.advance ?? 0;
     f.footwork = null;
     f.action = move; f.moveData = m; f.actionTime = 0; f.prevActionTime = 0; f.actionHit = false; f.contactTime = -10; f.shotsSent = 0; f.state = move; f.animTime = 0;
     if (f.airborne) f.airAttackUsed = true;
@@ -422,10 +438,10 @@ export class FightEngine {
     if (f.airborne && !f.airAttackUsed && f.vy > 0 && dist < 245) { this.queue(1, 'kick', 1); ai.actionTimer = .35; }
     else if (f.canAct && !f.airborne) {
       if (foe.airborne && dist < 210 && this.random() < .55) this.queue(1, 'uppercut');
-      else if (f.meter >= 100 && dist > 210 && this.random() < .6) this.queue(1, 'super');
+      else if (f.meter >= 100 && (id==='marcos'?dist<230:dist>210) && this.random() < .6) this.queue(1, 'super');
       else if(f.meter >= ALPHA.customCost && f.customTime <= 0 && dist < 190 && (foe.dizzyTime > 0 || foe.movePhase === 'recovery') && this.random() < .35) this.startCustom(f);
-      else if (dist > 320 && dist < 850 && this.random() < .32) this.queue(1, 'special');
-      else if (dist < 140 && this.random() < (id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
+      else if ((id==='marcos'?dist>143&&dist<260:dist>320&&dist<850) && this.random() < .32) this.queue(1, 'special');
+      else if (dist < 140 && this.random() < (id === 'marcos' ? .45 : id === 'marcelo' ? .28 : .08)) this.queue(1, 'throw');
       else if (dist < (['gustavo','gelton'].includes(id) ? 255 : 200)) {
         if (['gustavo','gelton'].includes(id) && dist > 175) this.queue(1,'kick',this.random() < .3 ? 2 : 1);
         else if (id === 'marcelo' && dist < 135 && this.random() < .3) this.queue(1,'kick',1);
@@ -487,7 +503,7 @@ export class FightEngine {
       const target = this.fighters[1 - f.slot];
       if (m.level === 'throw') {
         if (!target.airborne && !target.knocked && target.wakeTime <= 0 && target.invincible <= 0 && target.throwInvincible <= 0 && target.hitstun <= 0 && target.blockstun <= 0
-          && target.hp > 0 && Math.abs(f.x - target.x) <= 143) {
+          && target.hp > 0 && Math.abs(f.x - target.x) <= (m.range??143)) {
           f.actionHit = true; contacts.push({ attacker: f, target, move: f.action, data: m, x: target.x, y: target.y - 145 });
         }
         continue;
@@ -561,9 +577,10 @@ export class FightEngine {
     if (f.action) {
       f.actionTime += dt; const m = f.moveData;
       if (f.action === 'uppercut' && f.actionTime >= m.startup && f.shotsSent === 0) {
-        f.shotsSent = 1; f.vy = -1080; f.y -= .02; f.vx = f.direction * 135;
+        f.shotsSent = 1; if(!m.grounded){f.vy = -1080; f.y -= .02; f.vx = f.direction * 135;}
         this.announcePower(f);
       }
+      if(f.character.id==='marcos'&&['special','super'].includes(f.action)&&f.shotsSent===0&&f.actionTime>=m.startup){f.shotsSent=1;this.announcePower(f);}
       if (m.projectile) {
         const count = m.waves ?? (f.action === 'super' ? 3 : 1);
         while (f.shotsSent < count && f.actionTime >= m.startup + f.shotsSent * .11) { this.spawnProjectile(f, m, f.shotsSent++); }

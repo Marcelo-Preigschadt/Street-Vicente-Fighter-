@@ -11,7 +11,7 @@ function scene(slot=0,other='rafael') {
   return {g,events,slot,f:g.fighters[slot],target:g.fighters[1-slot]};
 }
 test('Marcelino possui 32 poses e perfis completos de Muay Thai sem alterar o elenco anterior',()=>{
-  assert.equal(Object.keys(CHARACTERS).length,5);assert.equal(FIGHTING_STYLES.marcelino.name,'Muay Thai');
+  assert.equal(Object.keys(CHARACTERS).length,6);assert.equal(FIGHTING_STYLES.marcelino.name,'Muay Thai');
   assert.equal(CHARACTERS.marcelo.quote,'Bora NIT');
   for(const atlas of ['base','combat']){
     assert.equal(MUAY_THAI_LAYOUT[atlas].length,16);assert.equal(MUAY_THAI_HURT[atlas].length,16);

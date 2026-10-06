@@ -32,3 +32,9 @@
 .fighter-card.marcelino.selected{border-color:#9ef5ff;box-shadow:0 0 24px #9ef5ff33}.marcelino .player-chip{color:#9ef5ff}
 @media(min-width:601px){.fighter-name{font-size:clamp(13px,1.45vw,21px)}.quote{font-size:clamp(10px,1vw,13px)}.fighter-style{font-size:clamp(8px,.8vw,11px)}.selection{padding-left:22px;padding-right:22px}}
 @media(max-width:600px) and (orientation:portrait){.arena:has(.selection:not([hidden])){min-height:1080px}.fighters{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}.fighter-card.marcelino{grid-column:1/-1;width:calc(50% - 4px);justify-self:center}.fighter-preview{height:155px}}
+
+/* Six professors; previews arrive independently of game preparation. */
+.fighters{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.fighter-card.marcos{background:linear-gradient(150deg,#244784dd,#172541dd);border-color:#8eb5ff88}.fighter-card.marcos.selected{border-color:#8eb5ff;box-shadow:0 0 24px #8eb5ff33}.marcos .player-chip{color:#8eb5ff}
+@media(min-width:601px){.fighter-name{font-size:clamp(12px,1.25vw,19px)}.quote{font-size:clamp(10px,.9vw,12px)}.fighter-style{font-size:clamp(8px,.7vw,10px)}}
+@media(max-width:600px) and (orientation:portrait){.fighters{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}.fighter-card.marcelino{grid-column:auto;width:100%}.arena:has(.selection:not([hidden])){min-height:1080px}}

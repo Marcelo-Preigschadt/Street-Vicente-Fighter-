@@ -1,3 +1,12 @@
+## Atualização 2.11.0 — Prof. Marcos / Judô e carregamento
+
+- Prof. Marcos baseado na fotografia, com judogi azul e faixa preta, 32 poses, pegadas, desequilíbrio, varridas e projeções próprias.
+- Sequestro de Sessão: entrada curta e agarrão que vence a guarda, vulnerável a salto e recuo. Pilha Reversa: projeção antiaérea executada no chão. Kernel Panic: projeção de ombro com barra completa, sem projéteis ou drones.
+- Falas locais em PT-BR nativo: “Sua sessão acabou!”, “Acesso negado!” e “Travou o sistema! Agora é chão!”.
+- Prévias HTML em WebP independentes dos atlas e áudios. Cerca de 100 KB para mostrar os seis personagens.
+- Atlas limpos e retângulos pré-calculados em assets/runtime, com animações baixadas somente para os dois lutadores da partida. O navegador não executa extração de silhuetas na inicialização. Áudios da dupla carregam em paralelo e não bloqueiam a seleção.
+- scripts/build-sprites.mjs reproduz os atlas e metadados a partir dos originais, mantendo escalas, âncoras e poses. Requer Node, @napi-rs/canvas e Python com Pillow; executar na raiz do projeto. Os originais são preservados.
+
 ## Atualização 2.10.1 — Calça do Prof. Marcelino
 
 Marcelino usa calça comprida azul-marinho com detalhes cobre nas 32 poses. Os dois atlas e suas escalas e faixas de colisão foram atualizados.

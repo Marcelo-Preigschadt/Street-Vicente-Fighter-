@@ -7,11 +7,11 @@
   <meta name="description" content="Prof. Marcelo, Prof Rafael, Prof. Gustavo, Prof. Gelton e Prof. Marcelino se enfrentam em um jogo de luta arcade do Vicente.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20">
-  <script type="module" src="src/main.js?v=20"></script>
+  <link rel="stylesheet" href="style.css?v=21">
+  <script type="module" src="src/main.js?v=21"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="2.10.1">
+  <main class="cabinet" data-game-version="2.11.0">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <div class="utility">
@@ -27,31 +27,35 @@
         <div class="selection-heading"><span class="eyebrow">ESCOLHA SEU LUTADOR</span><h1>O sinal bateu. <br><span>A luta começou.</span></h1></div>
         <div class="fighters" role="group" aria-label="Seleção do jogador 1">
           <button class="fighter-card selected marcelo" data-fighter="marcelo" aria-pressed="true" type="button">
-            <span class="player-chip">JOGADOR 1</span><canvas class="fighter-preview" data-preview="marcelo" width="320" height="360" aria-hidden="true"></canvas>
+            <span class="player-chip">JOGADOR 1</span><img class="fighter-preview" src="assets/runtime/marcelo-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Marcelo</span><span class="quote">Bora NIT</span><span class="fighter-style">KUNG FU · INFORMÁTICA</span>
           </button>
           <button class="fighter-card rafael" data-fighter="rafael" aria-pressed="false" type="button">
-            <span class="player-chip">ADVERSÁRIO</span><canvas class="fighter-preview" data-preview="rafael" width="320" height="360" aria-hidden="true"></canvas>
+            <span class="player-chip">ADVERSÁRIO</span><img class="fighter-preview" src="assets/runtime/rafael-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof Rafael</span><span class="quote">No meu tempo não era assim</span><span class="fighter-style">BOXE · HISTÓRIA</span>
           </button>
           <button class="fighter-card gustavo" data-fighter="gustavo" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><canvas class="fighter-preview" data-preview="gustavo" width="320" height="360" aria-hidden="true"></canvas>
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gustavo-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Gustavo</span><span class="quote">Reagiu, perdeu!</span><span class="fighter-style">KICKBOXING · QUÍMICA</span>
           </button>
           <button class="fighter-card gelton" data-fighter="gelton" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><canvas class="fighter-preview" data-preview="gelton" width="320" height="360" aria-hidden="true"></canvas>
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gelton-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Gelton</span><span class="quote">A arte está no movimento!</span><span class="fighter-style">CAPOEIRA · ARTES</span>
           </button>
           <button class="fighter-card marcelino" data-fighter="marcelino" aria-pressed="false" type="button">
-            <span class="player-chip">ESCOLHER</span><canvas class="fighter-preview" data-preview="marcelino" width="320" height="360" aria-hidden="true"></canvas>
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/marcelino-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
             <span class="fighter-name">Prof. Marcelino</span><span class="quote">Toda ação tem reação!</span><span class="fighter-style">MUAY THAI · FÍSICA</span>
+          </button>
+          <button class="fighter-card marcos" data-fighter="marcos" aria-pressed="false" type="button">
+            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/marcos-preview-v1.webp" width="240" height="300" alt="" decoding="async" fetchpriority="high">
+            <span class="fighter-name">Prof. Marcos</span><span class="quote">Seu sistema vai pro chão!</span><span class="fighter-style">JUDÔ · INFORMÁTICA</span>
           </button>
         </div>
         <div class="start-panel">
           <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="cpu" checked><span>Contra o computador</span></label><label><input type="radio" name="mode" value="local"><span>2 jogadores</span></label></fieldset>
-          <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option></select></label>
-          <button id="start" class="primary-button" type="button" disabled>Preparando lutadores…</button>
-          <p id="load-status" class="load-status" role="status">Carregando personagens e cenário</p>
+          <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option></select></label>
+          <button id="start" class="primary-button" type="button">Começar a luta</button>
+          <p id="load-status" class="load-status" role="status">Selecione o personagem e pressione Enter ou Começar a luta</p>
         </div>
       </div>
       <div id="pause-screen" class="screen modal-screen" hidden>
@@ -77,6 +81,7 @@
           <div><h3>Prof. Gelton · Artes</h3><p><strong>Capoeira:</strong> ginga contínua, esquiva em negativa, meia-lua de frente, armada, rasteira e aú batido. <kbd>T</kbd> → <kbd>F</kbd> → <kbd>G</kbd>: Ginga e Meia-lua. <kbd>F</kbd> → <kbd>G</kbd> → <kbd>B</kbd>: Volta do Mundo. <kbd>S</kbd> + <kbd>G</kbd>: rasteira de capoeira. Pulo + <kbd>G</kbd>: aú batido.</p><p><strong>Pincelada Cromática:</strong> <kbd>H</kbd> / P2 <kbd>L</kbd>. Uma pincelada de tinta com cinco cores atravessa a arena.</p><p><strong>Aú das Cores:</strong> <kbd>U</kbd> / P2 <kbd>;</kbd>. Golpe invertido ascendente, com arco de cores e pernas apoiadas na roda.</p><p><strong>Roda das Artes:</strong> <kbd>Q</kbd> / P2 <kbd>.</kbd>. Com a barra inteira, Gelton executa uma sequência de aús e lança cinco ondas cromáticas.</p></div>
           <div><h3>Prof. Gustavo · Química</h3><p><strong>Névoa Atômica:</strong> Gustavo lança uma nuvem de fumaça química. Um acerto sem defesa deixa o rival tonto por até 1,9 s. “Névoa atômica!” Defenda em pé ou agachado, ou salte para a frente por cima. Após recuperar-se, o rival tem proteção temporária contra outra tontura.</p><p><strong>Reação Exotérmica:</strong> golpe ascendente com liberação de calor. “Vai esquentar!”</p><p><strong>Reação em Cadeia:</strong> três ondas de moléculas ligadas, com barra cheia. “Reagiu, perdeu! Reação em cadeia!”</p><h3>Seis botões de ataque</h3><p><strong>P1 socos:</strong> <kbd>T</kbd> leve, <kbd>F</kbd> médio, <kbd>Y</kbd> forte.<br><strong>P1 segundo ataque:</strong> <kbd>V</kbd> leve, <kbd>G</kbd> médio, <kbd>B</kbd> forte.</p><p><strong>P2 teclado numérico:</strong> <kbd>7</kbd><kbd>8</kbd><kbd>9</kbd> socos; <kbd>4</kbd><kbd>5</kbd><kbd>6</kbd> segundo ataque. Do leve ao forte.</p><p><strong>Controle:</strong> X / Y / RB para socos; A / B / RT para o segundo ataque. Direcional para comandos e defesa; LB para defender, Select para agarrar, Start para Combo Livre, R3 para contra de defesa e L3 para o enxame do Marcelo, com barra cheia.</p><p>Golpes fortes causam mais dano e deixam mais tempo de recuperação. Socos que acertam ou são bloqueados podem ser cancelados em poderes; golpes no vazio precisam terminar.</p><p>Melhor de três rounds de 90 segundos.</p></div>
 <div><h3>Prof. Marcelino · Física / Muay Thai</h3><p><strong>Normais:</strong> F cotovelada; G chute circular; S + G low kick; pulo + G joelhada voadora; E clinch. Torque e Impulso: T → F → G. Oito Armas: T → F → Y → G.</p><p><strong>Impulso Linear · H/L:</strong> onda vetorial que empurra o rival. Fala: “Receba esse impulso!”.</p><p><strong>Joelhada Cinética · U/;:</strong> joelhada ascendente contra ataques aéreos. Fala: “Energia cinética!”.</p><p><strong>Lei da Ação e Reação · Q/.:</strong> barra cheia; sequência de cotovelo, joelho e circular com cinco ondas de choque. Fala: “Toda ação tem reação! Agora aguenta!”.</p></div>
+          <div><h3>Prof. Marcos · Judô / Informática</h3><p><strong>F/J:</strong> pegada e kuzushi. <strong>G/K:</strong> varrida de pé. <strong>↓ + G/K:</strong> ko uchi gari. <strong>E/N:</strong> ippon seoi nage.</p><p><strong>H/L — Sequestro de Sessão:</strong> aproximação e agarrão; curta distância e alvo no chão. Vence a guarda. “Sua sessão acabou!”</p><p><strong>U/; — Pilha Reversa:</strong> projeção antiaérea de quadril, executada no chão. “Acesso negado!”</p><p><strong>Q/. — Kernel Panic:</strong> barra completa; entrada curta e projeção potente de ombro. Pode errar contra salto ou recuo. “Travou o sistema! Agora é chão!”</p></div>
         </div>
       </details>
     </footer>

@@ -69,3 +69,7 @@ Gelton: substitui novamente as três falas rejeitadas pelo usuário. Voz de cat�
 Marcelino: voz de catálogo Martin, timbre masculino maduro/áspero para o personagem, mesmo modelo multilíngue, idioma solicitado `pt-br`, velocidade 1.0. Casting artístico; a voz real da pessoa não foi inferida nem clonada da fotografia. Falas: “Receba esse impulso!”, “Energia cinética!”, “Toda ação tem reação! Agora aguenta!”. Arquivos `marcelino-special-br-v1.wav`, `marcelino-uppercut-br-v1.wav`, `marcelino-super-br-v1.wav`. Durações: 1,218 s; 1,437 s; 2,923 s.
 
 Todos os seis clipes foram convertidos para WAV PCM local mono, 16 bits, 24 kHz; normalização -16 LUFS / pico -1,5 dBTP e remoção apenas do silêncio inicial/final. Os testes validam áudio, mapeamentos e integridade; não avaliam perceptualmente sotaque. A partida não depende de TTS externo. Novos nomes de arquivos e versão de módulos v19 evitam reutilizar as falas antigas do cache.
+
+## Prof. Marcos — PT-BR nativo (2.11.0)
+
+As falas finais usam pt-BR-AntonioNeural, sintetizadas para este personagem com rate +4%, pitch +0 Hz: “Sua sessão acabou!”, “Acesso negado!” e “Travou o sistema! Agora é chão!”. A primeira versão de timbre Bernard foi substituída após o pedido de uma voz mais natural. Arquivos locais WAV PCM mono, 24 kHz, 16 bits; remoção de silêncio inicial e normalização de volume. Sem vocoder, robotização, alteração posterior de pitch ou estiramento temporal. A fotografia orienta a arte, não reproduz a voz real do professor.

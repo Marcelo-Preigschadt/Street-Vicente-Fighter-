@@ -1,7 +1,8 @@
-import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=20';
-import { MUAY_THAI_STRIKES } from './muay-thai.js?v=20';
-import { CAPOEIRA_STRIKES } from './capoeira.js?v=20';
-import { techniqueStrike } from './technique.js?v=20';
+import { JUDO_STRIKES } from './judo.js?v=21';
+import { STYLE_HURT, STYLE_STRIKES } from './styles-data.js?v=21';
+import { MUAY_THAI_STRIKES } from './muay-thai.js?v=21';
+import { CAPOEIRA_STRIKES } from './capoeira.js?v=21';
+import { techniqueStrike } from './technique.js?v=21';
 
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
@@ -57,6 +58,16 @@ export const FIGHTING_STYLES = Object.freeze({
       sweep:[[5,4,13,48,21,115],[8,5,18,75,25,170],[12,6,25,108,29,280]]},
     combos:[route('Torque e Impulso','punch:0','punch:1','kick:1'),route('Quebra de Inércia','punch:1','sweep:1','kick:2'),
       route('Oito Armas','punch:0','punch:1','punch:2','kick:1')]},
+  marcos:{name:'Judô',summary:'Pegadas de manga e gola, desequilíbrio, varridas de pé e projeções de ombro e quadril.',step:21,
+    names:{punch:['Pegada rápida','Desequilíbrio de gola','Kuzushi forte'],kick:['De ashi barai curto','De ashi barai','De ashi barai forte'],
+      crouchPunch:['Pegada baixa rápida','Pegada baixa','Kuzushi baixo'],sweep:['Varrida curta','Ko uchi gari','Ko uchi gari forte'],
+      airPunch:['Pegada aérea curta','Pegada aérea','Pegada aérea forte'],airKick:['Varrida aérea curta','Varrida aérea','Varrida aérea forte']},
+    normals:{punch:[[5,3,9,44,21,75],[7,4,13,67,25,105],[10,5,19,93,28,150]],
+      kick:[[6,4,14,49,22,100],[9,5,20,79,27,160],[12,5,25,106,29,210]],
+      sweep:[[6,4,14,51,23,110],[9,5,20,82,27,175],[13,5,26,109,30,230]]},
+    combos:[route('Kuzushi e Varredura','punch:0','punch:1','kick:1'),route('Controle de Gola','crouchPunch:0','punch:1','kick:1'),
+      route('Sequência do Judoca','punch:0','punch:1','punch:2','kick:1')]},
+
 });
 
 export function styleTechnique(id, name, strength = 1) {
@@ -75,6 +86,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='marcos')return JUDO_STRIKES[f.action];
   if(f.character.id==='gelton')return CAPOEIRA_STRIKES[f.action];
   if(f.character.id==='marcelino')return MUAY_THAI_STRIKES[f.action];
   const technique = techniqueStrike(f);

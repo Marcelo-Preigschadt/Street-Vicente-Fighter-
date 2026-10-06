@@ -1,14 +1,16 @@
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=20';
+import { loadPreparedSprites } from './sprite-loader.js?v=21';
+import { drawJudoSystem } from './judo-fx.js?v=21';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=21';
 
-import { SuperEffects } from './super-fx.js?v=20';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=20';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=20';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=20';
-import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=20';
-import { drawImpulse, drawKineticRise } from './physics-fx.js?v=20';
-import { GELTON_LAYOUT } from './gelton-layout.js?v=20';
-import { drawPaintStroke, drawArtRise } from './art-fx.js?v=20';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=20';
+import { SuperEffects } from './super-fx.js?v=21';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=21';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=21';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=21';
+import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=21';
+import { drawImpulse, drawKineticRise } from './physics-fx.js?v=21';
+import { GELTON_LAYOUT } from './gelton-layout.js?v=21';
+import { drawPaintStroke, drawArtRise } from './art-fx.js?v=21';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=21';
 
 export const CAPOEIRA_CELL_MARGIN = 96;
 
@@ -29,25 +31,27 @@ export class Renderer {
     this.portraits = {};
 
   }
-  async load() {
-    const characters = Object.values(CHARACTERS).filter(f=>!['gelton','marcelino'].includes(f.id));
-    const [background, ...sheets] = await Promise.all([loadImage('assets/arena.webp'), ...characters.flatMap(f => [
-      loadImage(costumeAsset(f.id,'base',f.sprite)),loadImage(costumeAsset(f.id,'combat',f.combatSprite)),
-      ...['style','motion','strike','reaction','low'].map(atlas=>loadImage(costumeAsset(f.id,atlas,`assets/${f.id}-${atlas}${['strike','reaction','low'].includes(atlas)?'-v3':''}.webp`)))])]);
-    this.background = background;
-    for(const [i,f] of characters.entries()) {
-      const base = this.sheets[f.id] = this.analyzeSheet(sheets[i * 7]);
-      base.combat = this.analyzeSheet(sheets[i * 7 + 1],true);
-      base.style = this.analyzeStyleSheet(sheets[i * 7 + 2]); base.motion = this.analyzeMotionSheet(sheets[i * 7 + 3]);
-      base.strike = this.analyzeTechniqueSheet(sheets[i * 7 + 4],'strike'); base.reaction = this.analyzeTechniqueSheet(sheets[i * 7 + 5],'reaction');
-      base.low = this.analyzeTechniqueSheet(sheets[i * 7 + 6],'low');
-      alignCostumeSheet(base,f.id,'base');
-      for(const atlas of ['combat','style','motion','strike','reaction','low'])alignCostumeSheet(base[atlas],f.id,atlas);
-      await this.prepareVisualCache(f.id);
-      for(let asset=0;asset<7;asset++)sheets[i*7+asset]=null;
-    }
-    await this.loadCapoeira();
-    await this.loadMuayThai();
+  loadBackground() {
+    return this.backgroundPromise??=loadImage('assets/arena.webp').then(image=>{this.background=image;});
+  }
+  async load(ids=Object.keys(CHARACTERS)) {
+    this.characterLoads??=new Map();
+    await Promise.all([this.loadBackground(),...new Set(ids)].map(item=>typeof item==='string'?this.loadCharacter(item):item));
+  }
+  loadCharacter(id) {
+    this.characterLoads??=new Map();
+    if(this.characterLoads.has(id))return this.characterLoads.get(id);
+    const task=(async()=>{
+      const {base,portrait}=await loadPreparedSprites(id,loadImage);
+      this.sheets[id]=base;this.portraits[id]=portrait;
+      if(['gelton','marcelino','marcos'].includes(id)) {
+        await cacheSpriteEffects(base,base.frames[13],CHARACTERS[id].color,['power']);
+        for(const frame of base.combat.frames)await cacheSpriteEffects(base.combat,frame,CHARACTERS[id].color,['power']);
+      } else await this.prepareVisualCache(id);
+    })();
+    this.characterLoads.set(id,task);
+    task.catch(()=>{this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];});
+    return task;
   }
   async loadCapoeira() {
     const [baseImage,combatImage,handstandImage]=await Promise.all([loadImage(CHARACTERS.gelton.sprite),loadImage(CHARACTERS.gelton.combatSprite),loadImage(CHARACTERS.gelton.superSprite)]);
@@ -76,7 +80,7 @@ export class Renderer {
   }
   async prepareVisualCache(id) {
     const base=this.sheets[id],color=CHARACTERS[id].color;
-    this.portraits[id]=await cachePortrait(base,COSTUME_LAYOUT[id]?.base.portrait);
+    this.portraits[id]??=await cachePortrait(base,COSTUME_LAYOUT[id]?.base.portrait);
     for(const atlas of ['base','combat','style','motion','strike','reaction','low']) {
       const sheet=atlas==='base'?base:base[atlas];
       for(const [index,frame] of sheet.frames.entries()) {
@@ -285,17 +289,18 @@ export class Renderer {
       const variant=f.blockFlash>0?'guard':f.flash>0?'flash':['special','super','uppercut','drone'].includes(f.state)?'power':null;
       const bitmap=frame.effects?.[variant];
       if(bitmap)c.drawImage(bitmap.image,(frame.x-frame.anchor)*scale-bitmap.padding,(frame.y-frame.bottom)*scale-bitmap.padding);
-      else c.drawImage(frame.cutout,0,0,frame.w,frame.h,(frame.x-frame.anchor)*scale,(frame.y-frame.bottom)*scale,frame.w*scale,frame.h*scale);
+      else c.drawImage(frame.image??frame.cutout,...(frame.rect??[0,0,frame.w,frame.h]),(frame.x-frame.anchor)*scale,(frame.y-frame.bottom)*scale,frame.w*scale,frame.h*scale);
     };
     drawPose(current, 1);
     c.globalAlpha = 1; c.restore();
-    if (['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
+    if (f.character.id!=='marcos' && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       const x = f.x + f.direction * (55 + strength * (release.offset - 55));
       if(f.moveData.effect === 'chemicalSmoke')drawChemicalSmoke(c,{x,y:f.y-release.height,radius:8+strength*17,direction:f.direction},this.clock,this.reduced,.65);
       else this.drawPowerGlyph(x,f.y-release.height,10+strength*18,f.character.id,false);
     }
-    if (f.state === 'uppercut') f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
+    if(f.character.id==='marcos')drawJudoSystem(c,f,this.clock,this.reduced);
+    if (f.state === 'uppercut' && f.character.id!=='marcos') f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
   }

@@ -5,6 +5,7 @@ export const SOUNDS = Object.freeze({
   'gustavo-special': 'assets/audio/gustavo-fumaca-v1.wav', 'gustavo-uppercut': 'assets/audio/gustavo-uppercut.wav', 'gustavo-super': 'assets/audio/gustavo-super.wav',
   'gelton-special':'assets/audio/gelton-special-br-v4.wav','gelton-uppercut':'assets/audio/gelton-uppercut-br-v4.wav','gelton-super':'assets/audio/gelton-super-br-v4.wav',
   'marcelino-special':'assets/audio/marcelino-special-br-v1.wav','marcelino-uppercut':'assets/audio/marcelino-uppercut-br-v1.wav','marcelino-super':'assets/audio/marcelino-super-br-v1.wav',
+  'marcos-special':'assets/audio/marcos-special-br-v1.wav','marcos-uppercut':'assets/audio/marcos-uppercut-br-v1.wav','marcos-super':'assets/audio/marcos-super-br-v1.wav',
   grunt1: 'assets/audio/grunt-1.wav', grunt2: 'assets/audio/grunt-2.wav', grunt3: 'assets/audio/grunt-3.wav',
   light: 'assets/audio/hit-light.wav', heavy: 'assets/audio/hit-heavy.wav', special: 'assets/audio/hit-special.wav', ko: 'assets/audio/ko.wav',
 });
@@ -28,6 +29,26 @@ export class ArcadeAudio {
     });
     return this.loadPromise;
   }
+  loadFighters(ids) {
+    this.clipLoads??=new Map();
+    const paths=Object.entries(SOUNDS).filter(([key])=>!key.includes('-')||ids.some(id=>key.startsWith(`${id}-`)));
+    return Promise.all(paths.map(([key,path])=>{
+      if(!this.clipLoads.has(key)) {
+        const task=(async()=>{
+          if(!this.bytes.has(key)){const response=await fetch(path);if(!response.ok)throw new Error(`Áudio ${path}: HTTP ${response.status}`);this.bytes.set(key,await response.arrayBuffer());}
+          if(this.context&&!this.buffers.has(key))this.buffers.set(key,await this.context.decodeAudioData(this.bytes.get(key).slice(0)));
+        })();
+        this.clipLoads.set(key,task);task.catch(()=>this.clipLoads.delete(key));
+      }
+      return this.clipLoads.get(key);
+    }));
+  }
+  async decodeAvailable() {
+    if(!this.context)return;
+    await Promise.allSettled([...this.bytes].filter(([key])=>!this.buffers.has(key)).map(async([key,bytes])=>{
+      this.buffers.set(key,await this.context.decodeAudioData(bytes.slice(0)));
+    }));
+  }
   decode() {
     if (!this.context) return Promise.resolve(false);
     if (this.decodePromise) return this.decodePromise;
@@ -50,7 +71,7 @@ export class ArcadeAudio {
       const limiter = this.context.createDynamicsCompressor(); limiter.threshold.value = -8; limiter.knee.value = 12; limiter.ratio.value = 6;
       this.master.connect(limiter); limiter.connect(this.context.destination);
     }
-    this.context.resume().catch(() => {}); this.decode();
+    this.context.resume().catch(() => {}); this.loadPromise?this.decode():this.decodeAvailable();
   }
   stopSamples() {
     for (const source of this.sources) { try { source.stop(); } catch {} }
