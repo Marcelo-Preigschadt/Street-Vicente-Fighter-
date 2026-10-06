@@ -16,7 +16,7 @@ const online=new OnlineMatch({engine,prepare:prepareOnline,onStart:showOnlineMat
   }
   audio.playing=!engine.paused&&engine.phase!=='result';
 }});
-const mode=()=>document.querySelector('input[name="mode"]:checked').value;
+const getMode=()=>document.querySelector('input[name="mode"]:checked').value;
 function onlineStatus(message){
   $('online-status').textContent=message;
   if(!$('selection').hidden)$('load-status').textContent=message;
@@ -67,7 +67,7 @@ function event(e) {
 
 function updateSelection() {
   if (opponent === selected) opponent = Object.keys(CHARACTERS).find(id => id !== selected);
-  const local = mode() === 'local',network=mode()==='online';
+  const local = getMode() === 'local',network=getMode()==='online';
   $('online-panel').hidden=!network;$('opponent').closest('label').hidden=network;
   document.querySelector('.control-player:has(.p2)').hidden=network;
   document.querySelector('.control-label.p1').textContent=network?'VOCÊ':'P1';
@@ -98,7 +98,7 @@ document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventL
 updateSelection();
 
 async function start() {
-  if(mode()==='online'){
+  if(getMode()==='online'){
     if(engine.phase==='result'&&online.running){online.rematch();$('rematch').disabled=true;$('rematch').textContent='Aguardando adversário…';return;}
     startOnline();return;
   }
