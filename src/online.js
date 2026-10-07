@@ -3,8 +3,8 @@ import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-stat
 import {RollbackGame} from './netplay.js?v=27';
 import {RelayPeer} from './relay.js?v=27';
 
-const QUEUE='street-vicente-fighter-442-waiting';
-const PREFIX='street-vicente-fighter-442-room-';
+const QUEUE='street-vicente-fighter-450-waiting';
+const PREFIX='street-vicente-fighter-450-room-';
 export function loadPeer() { return Promise.resolve(RelayPeer); }
 export function roomCode(random=crypto.getRandomValues(new Uint8Array(8))) {
   const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from(random,n=>alphabet[n%32]).join('');

@@ -1,3 +1,4 @@
+import {savatePose,savateHurt,SAVATE_STRIKES} from './savate.js';
 import {karatePose,karateHurt,KARATE_STRIKES} from './karate.js';
 import {wildPose,wildHurt,WILD_STRIKES} from './wild.js?v=27';
 import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=27';
@@ -70,6 +71,7 @@ export const CHARACTERS = Object.freeze({
     powers:{special:'Super Soco',uppercut:'Rolamento Selvagem',super:'Curto-Circuito 301'},
     powerQuotes:{special:'Segura esse super soco!',uppercut:'Sai da frente!',super:'A trezentos e um chegou! Agora segura essa descarga!'},
     voiceDuration:{"special": 2.783, "uppercut": 2.16, "super": 4.719},strikes:WILD_STRIKES,projectile:{offset:210,height:190}},
+  tais:{id:'tais',category:'teachers',name:'Prof. Tais',quote:'Hoje a aula é de movimento!',color:'#56e1d7',accent:'#ffd975',speed:378,backSpeed:315,jumpSpeed:650,power:1,sprite:'assets/tais-base-v1.webp',combatSprite:'assets/tais-combat-v1.webp',powers:{special:'Pulso Atlético',uppercut:'Salto Olímpico',super:'Circuito Campeão'},powerQuotes:{special:'Pulso atlético!',uppercut:'Salto olímpico!',super:'Até o último segundo! Circuito campeão!'},voiceDuration:{special:1.681,uppercut:1.723,super:3.355},strikes:SAVATE_STRIKES,projectile:{offset:215,height:185}},
   ruan:{id:'ruan',category:'students',name:'Aluno Ruan',quote:'Meu Karatê vai te dar um choque!',color:'#72e6ff',accent:'#b5a2ff',
     speed:360,backSpeed:300,jumpSpeed:625,power:1.03,sprite:'assets/ruan-base-v1.webp',combatSprite:'assets/ruan-combat-v1.webp',
     powers:{special:'Pulso de Choque',uppercut:'Punho de Trovão',super:'Kata da Tempestade'},
@@ -100,6 +102,9 @@ function moveData(name, strength = 1, characterId = null) {
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
       cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
+  if(characterId==='tais'&&name==='special')return {name,strength,startup:frames(14),active:frames(1),recovery:frames(25),damage:90+strength*10,stun:frames(25),blockstun:frames(17),push:280,meter:8,level:'mid',projectile:true,chip:.08,speed:680+strength*100,effect:'athleticPulse',radius:24};
+  if(characterId==='tais'&&name==='uppercut')return {name,strength,startup:frames(7),active:frames(14),recovery:frames(29),damage:112+strength*13,stun:frames(29),blockstun:frames(18),push:300,meter:9,level:'mid',knockdown:true,launch:760,invincibility:frames(7),jumpVelocity:-1020,travelSpeed:190,effect:'olympicJump'};
+  if(characterId==='tais'&&name==='super')return {name,strength,startup:frames(11),active:frames(36),recovery:frames(30),damage:74,stun:frames(26),blockstun:frames(17),push:140,meter:0,level:'mid',projectile:true,waves:4,finalKnockdown:true,launch:470,chip:.08,speed:970,cost:100,invincibility:frames(9),effect:'athleticPulse',radius:27};
   if(characterId==='ruan'&&name==='special')return {name,strength,startup:frames(13),active:frames(1),recovery:frames(24),damage:88+strength*10,
     stun:frames(26),blockstun:frames(17),push:230,meter:7,level:'mid',projectile:true,chip:.08,speed:720+strength*80,effect:'karateLightning',radius:20};
   if(characterId==='ruan'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(15),recovery:frames(28),damage:115+strength*12,
@@ -162,6 +167,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='tais')return savatePose(f);
   if(f.character.id==='ruan')return karatePose(f);
   if(f.character.id==='joao')return wildPose(f);
   if(f.character.id==='marcos')return judoPose(f);
@@ -236,7 +242,7 @@ export class Fighter {
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     const pose = fighterPose(this);
-    const profile = this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => ({
       x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,

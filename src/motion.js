@@ -15,6 +15,7 @@ export const FOOTWORK = Object.freeze({
     counter:.23,range:[125,190],attackAdvance:{punch:[6,10,16],kick:[9,15,20],crouchPunch:[3,5,7],sweep:[4,7,11]}},
   marcos:{stride:154,advance:{distance:97,duration:17/60,cancelAt:7/60},retreat:{distance:91,duration:18/60},counter:.27,range:[105,155],attackAdvance:{punch:[7,11,15],kick:[6,10,13],crouchPunch:[3,6,9],sweep:[5,8,11]}},
   joao:{stride:144,advance:{distance:122,duration:15/60,cancelAt:6/60},retreat:{distance:102,duration:17/60},counter:.25,range:[135,205],attackAdvance:{punch:[6,10,15],kick:[8,12,18],crouchPunch:[3,5,8],sweep:[4,7,11]}},
+  tais:{stride:170,advance:{distance:122,duration:15/60,cancelAt:6/60},retreat:{distance:108,duration:16/60},counter:.26,range:[155,230],attackAdvance:{punch:[6,11,17],kick:[10,17,24],crouchPunch:[3,5,8],sweep:[5,8,12]}},
   ruan:{stride:156,advance:{distance:110,duration:14/60,cancelAt:5/60},retreat:{distance:96,duration:15/60},counter:.26,range:[125,205],attackAdvance:{punch:[7,12,18],kick:[10,16,22],crouchPunch:[3,5,8],sweep:[5,8,12]}},
 });
 

@@ -81,3 +81,7 @@ Somente Marcos troca suas três falas: Clint, eleven_v3, idioma pt-br, interpret
 ## Seleção arcade 3.2.0
 
 Sete falas novas e originais em PT-BR para confirmação da escolha. Timbres e parâmetros dos clipes atuais: Marcelo/Rafael/Marcos Clint v3 1.1; Gustavo Mark v3 1.15; Gelton Clint multilíngue v2 1.0; Marcelino Martin multilíngue v2 1.0; João Chad v3 1.05. Interpretação excited nas falas v3. WAV mono PCM 16 bits 24 kHz, normalização e corte do silêncio inicial, sem alteração posterior de pitch. Os áudios de combate foram preservados. Textos em src/selection-data.js.
+
+## Prof. Tais — PT-BR nativo (4.5.0)
+
+Casting feminino brasileiro `pt-BR-FranciscaNeural`, rate +6%, pitch +0 Hz. Falas locais `tais-select-br-v3.wav` (3,974 s), `tais-special-br-v3.wav` (1,681 s), `tais-uppercut-br-v3.wav` (1,723 s), `tais-super-br-v3.wav` (3,355 s). Textos: “Aqueceu? Então vem! Hoje a aula é de movimento!”, “Pulso atlético!”, “Salto olímpico!”, “Até o último segundo! Circuito campeão!”. WAV PCM mono, normalização -16 LUFS / pico -1,5 dBTP e corte apenas do silêncio inicial. Sem alteração posterior de pitch ou tempo. A voz é uma interpretação escolhida para a personagem, não clonagem da pessoa fotografada. As versões v1 rejeitadas não são utilizadas.

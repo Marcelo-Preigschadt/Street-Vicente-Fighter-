@@ -13,7 +13,7 @@ function scene(slot=0,distance=210){
 }
 test('aluno 301 tem 32 poses calibradas e pode ser selecionado online sem remover professores',()=>{
   assert.equal(CHARACTERS.joao.category,'students');assert.equal(CHARACTERS.joao.classroom,'301');assert.ok(validCharacter('joao'));
-  assert.equal(Object.values(CHARACTERS).filter(f=>f.category==='teachers').length,6);
+  assert.equal(Object.values(CHARACTERS).filter(f=>f.category==='teachers').length,7);
   for(const atlas of ['base','combat']){
     assert.equal(WILD_LAYOUT[atlas].length,16);assert.equal(WILD_HURT[atlas].length,16);
     for(const bands of WILD_HURT[atlas])assert.ok(bands.every(b=>b.every(Number.isFinite)&&b[2]>0&&b[3]>0));
