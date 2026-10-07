@@ -1,4 +1,4 @@
-import {smoothCamera,schoolEnemyFrame,interpolateEntity} from './story-presentation.js';
+import {smoothCamera,schoolEnemyFrame,interpolateEntity,storyDepthScale} from './story-presentation.js';
 import {WORLD} from './engine.js';
 import {STORY_ACTS,STORY_RULES,ENEMY_TYPES} from './story-data.js';
 import {drawSentinel,drawSentinelLaser} from './sentinel-fx.js';
@@ -107,7 +107,7 @@ c.fillStyle='#09212922';c.fillRect(0,0,1280,720);
 
   const heroes=e.heroes.map(f=>({...f,x:f.prevX+(f.x-f.prevX)*alpha,y:f.prevY+(f.y-f.prevY)*alpha,lane:(f.prevLane??f.lane)+((f.lane??625)-(f.prevLane??f.lane))*alpha,walkDistance:f.walkDistance,walkBlend:f.walkBlend}));
   const entities=[...heroes.map(f=>({kind:'hero',value:f,lane:f.lane})),...e.enemies.map(n=>{const value=interpolateEntity(n,alpha);return {kind:'enemy',value,lane:value.lane};}),...e.props.map(p=>({kind:'prop',value:p,lane:p.lane??625})),...e.hazards.map(h=>({kind:'hazard',value:h,lane:h.lane??625}))].sort((a,b)=>a.lane-b.lane);
-  for(const item of entities){const v=item.value;c.save();c.translate(0,item.lane-WORLD.floor);
+  for(const item of entities){const v=item.value;c.save();c.translate(0,item.lane-WORLD.floor);c.translate(v.x,WORLD.floor);c.scale(storyDepthScale(item.lane),storyDepthScale(item.lane));c.translate(-v.x,-WORLD.floor);
     if(item.kind==='prop')prop(c,v,r.clock,art);
     else if(item.kind==='hazard'){c.translate(0,625-item.lane);hazard(c,v,r.clock,art);}
     else{c.fillStyle='#07101566';c.beginPath();c.ellipse(v.x,WORLD.floor+4,item.kind==='hero'?45:v.profile.w*.3,9,0,0,Math.PI*2);c.fill();if(item.kind==='hero'){r.drawFighter({...v,storyLocomotion:true,storyRunning:v.runUntil>e.time},storyPose(r,{...v,storyRunning:v.runUntil>e.time},art));if(v.carry)drawStoryObject(c,v.carry.kind,art,v.x+v.direction*55,v.y-140,{scale:.85});}else enemy(c,v,art,r.clock,r.reduced);}
@@ -116,7 +116,7 @@ c.fillStyle='#09212922';c.fillRect(0,0,1280,720);
   for(const d of e.drones){c.save();c.translate(0,(d.lane??625)-625);drawSentinel(c,d,r.reduced);c.restore();}
   for(const l of e.lasers){c.save();c.translate(0,(l.lane??625)-625);drawSentinelLaser(c,l,r.reduced);c.restore();}
   for(const p of e.projectiles){c.save();c.translate(0,(p.lane??625)-625);if(p.character!=='enemy')r.drawProjectile(p);else{c.save();c.translate(p.x,p.y);c.fillStyle=p.color;c.shadowColor=p.color;c.shadowBlur=16;c.beginPath();c.ellipse(0,0,p.radius*1.6,p.radius,0,0,Math.PI*2);c.fill();c.restore();}c.restore();}
-  for(const p of e.thrown){c.save();c.translate(p.x,p.y+(p.lane??625)-625);c.rotate(p.angle);const frame=art.propFrames?.[p.kind];if(frame)drawStoryObject(c,p.kind,art,0,frame.height*.5);c.restore();}
+  for(const p of e.thrown){const lane=p.lane??625;c.save();c.translate(p.x,lane);c.scale(storyDepthScale(lane),storyDepthScale(lane));c.translate(-p.x,-lane);c.translate(p.x,p.y+lane-625);c.rotate(p.angle);const frame=art.propFrames?.[p.kind];if(frame)drawStoryObject(c,p.kind,art,0,frame.height*.5);c.restore();}
 
   r.fightFX.draw(c,r.reduced);r.drawParticles(dt);r.drawSuperScene(heroes.map(f=>({...f,y:f.y+f.lane-625})));r.drawSuperImpacts();
   c.restore();hud(r,e);

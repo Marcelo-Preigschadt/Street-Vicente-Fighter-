@@ -36,7 +36,7 @@ test('poderes e socos no ar funcionam para cada professor em campanha',()=>{
   }
 });
 test('mesa e cadeira arremessadas atingem inimigos sem ferir o parceiro',()=>{
-  const e=start('story-local'),f=e.fighters[0];f.x=600;const robot=e.spawnEnemy('cleaner',830),before=robot.hp;
+  const e=start('story-local'),f=e.fighters[0],table=e.props.find(p=>p.kind==='table');e.camera=Math.max(0,table.x-200);f.x=table.x;f.lane=table.lane;const robot=e.spawnEnemy('cleaner',table.x+230,table.lane),before=robot.hp;
   e.queue(0,'throw');assert.equal(e.thrown[0].kind,'table');advance(e,.5);assert.ok(robot.hp<before);assert.equal(e.fighters[1].hp,1000);
 });
 test('máquina lança lata explosiva quando atingida e só aceita o próximo golpe depois do intervalo',()=>{

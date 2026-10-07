@@ -12,3 +12,4 @@ export function schoolEnemyFrame(e){
   return 0;
 }
 export function interpolateEntity(e,alpha){return {...e,profile:e.profile,x:e.prevX+(e.x-e.prevX)*alpha,y:e.prevY+(e.y-e.prevY)*alpha,lane:(e.prevLane??e.lane)+(e.lane-(e.prevLane??e.lane))*alpha,attackbox:e.attackbox};}
+export function storyDepthScale(lane){return .9+Math.max(0,Math.min(1,((lane??590)-520)/140))*.2;}

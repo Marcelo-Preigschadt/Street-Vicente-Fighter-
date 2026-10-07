@@ -5,11 +5,11 @@ import {snapshot,applySnapshot,MOVES} from '../src/net-state.js';
 const start=()=>{const e=new StoryEngine();e.start('ruan','story-solo');e.queue(0,'storyNext');return e;};
 const advance=(e,t)=>{for(let i=0;i<Math.ceil(t*120);i++)e.update(1/120);};
 test('soco pega, transporta e arremessa cadeira sem atingir o parceiro',()=>{
- const e=start(),f=e.fighters[0],p=e.props.find(p=>p.kind==='chair');f.x=p.x;f.lane=p.lane;e.queue(0,'punch');assert.equal(f.carry.kind,'chair');assert.equal(e.thrown.length,0);
+ const e=start(),f=e.fighters[0],p=e.props.find(p=>p.kind==='chair');e.camera=Math.max(0,p.x-200);e.story.wave=3;f.x=p.x;f.lane=p.lane;e.queue(0,'punch');assert.equal(f.carry.kind,'chair');assert.equal(e.thrown.length,0);
  e.setInput(0,{right:true});advance(e,.3);assert.ok(f.x>p.x);e.setInput(0,{});e.queue(0,'punch');assert.equal(f.carry,null);assert.equal(e.thrown[0].kind,'chair');assert.equal(e.thrown[0].lane,f.lane);
 });
 test('alvo em alcance recebe soco e não perde prioridade para objeto',()=>{
- const e=start(),f=e.fighters[0],p=e.props.find(p=>p.kind==='chair');f.x=p.x;f.lane=p.lane;const enemy=e.spawnEnemy('cleaner',f.x+120,f.lane);e.queue(0,'punch');assert.equal(f.carry,null);advance(e,.18);assert.ok(enemy.hp<enemy.maxHp);assert.equal(p.used,false);
+ const e=start(),f=e.fighters[0],p=e.props.find(p=>p.kind==='chair');e.camera=Math.max(0,p.x-200);f.x=p.x;f.lane=p.lane;const enemy=e.spawnEnemy('cleaner',f.x+120,f.lane);e.queue(0,'punch');assert.equal(f.carry,null);advance(e,.18);assert.ok(enemy.hp<enemy.maxHp);assert.equal(p.used,false);
 });
 test('objeto transportado é sincronizado e cai ao sofrer dano',()=>{
  const e=start(),f=e.fighters[0],p=e.props.find(p=>p.kind==='chair');f.x=p.x;f.lane=p.lane;e.queue(0,'punch');const peer=start();assert.ok(applySnapshot(peer,snapshot(e,1)));assert.deepEqual(peer.fighters[0].carry,f.carry);

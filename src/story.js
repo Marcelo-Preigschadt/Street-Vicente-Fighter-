@@ -77,8 +77,8 @@ export class StoryEngine extends FightEngine {
   setupProps(){
     const a=this.story.act;
     for(let i=0;i<3;i++){
-      const x=[640,1650,2590][i];
-      if(a===0)this.props.push({id:`table${i}`,kind:'table',lane:595,x,hp:160,maxHp:160,used:false},{id:`chair${i}`,kind:'chair',lane:610,x:x+170,hp:80,maxHp:80,used:false},{id:`seat${i}`,kind:'chair',lane:565,x:x-150,hp:80,maxHp:80,used:false},{id:`soda${i}`,kind:'soda',lane:540,x:x+470,hp:200,maxHp:200,used:false,cooldown:0});
+      const x=(a===0?[2100,2650,3200]:[640,1650,2590])[i];
+      if(a===0){this.props.push({id:`table${i}`,kind:'table',lane:595,x,hp:160,maxHp:160,used:false},{id:`chair${i}`,kind:'chair',lane:610,x:x+160,hp:80,maxHp:80,used:false},{id:`seat${i}`,kind:'chair',lane:565,x:x-150,hp:80,maxHp:80,used:false});if(i<2)this.props.push({id:`soda${i}`,kind:'soda',lane:540,x:[1800,3500][i],hp:200,maxHp:200,used:false,cooldown:0});}
       if(a===1)this.hazards.push({id:`tube${i}`,kind:i%2?'frost':'acid',lane:595,x:x+280,w:190,clock:i*1.2,period:7,warning:1.3,active:2.4,hits:{}});
       if(a===2)this.props.push({id:`shelf${i}`,kind:'shelf',lane:550,x:x+240,hp:110,used:false,fall:0,hits:{}});
       if(a===3)this.hazards.push({id:`cable${i}`,kind:'cable',lane:560,x:x+320,w:150,clock:i*1.7,period:6.5,warning:1.25,active:1.6,hits:{}});
