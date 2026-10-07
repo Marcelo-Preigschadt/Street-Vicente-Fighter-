@@ -8,4 +8,4 @@ Turnstile and cleaner use separate chassis, shoulder/elbow links, wheels, saw/ba
 
 Delivery drones also use a separate body and rotor texture: the outer guard cage stays fixed while the blades spin inside, and the chassis banks during lateral movement.
 
-Generated parts: assets/story/turnstile-rig-v5.webp, cleaner-rig-v5.webp and snack-rig-v5.webp. Built-in image_gen.imagegen, reference-preserving prompts in assets/story/machine-rigs-v5-prompt.txt and snack-rig-v5-prompt.txt; reproducible atlas extraction in scripts/prepare-machine-rigs.py. Original artwork is retained.
+Final generated parts (4.4.3): assets/story/turnstile-rig-v6.webp, cleaner-rig-v6.webp and snack-rig-v6.webp. Built-in image_gen.imagegen, reference-preserving prompts in assets/story/machine-rigs-v5-prompt.txt and snack-rig-v5-prompt.txt; reproducible atlas extraction in scripts/prepare-machine-rigs.py. Connected-component crops exclude alpha noise and adjacent atlas parts so arm pivots remain accurate. Original artwork and earlier released atlases are retained.
