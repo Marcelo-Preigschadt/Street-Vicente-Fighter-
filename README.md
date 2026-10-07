@@ -1,6 +1,6 @@
 ## Correção 3.1.1 — Publicação consistente
 
-## Atualização 4.1.0 — campanha com movimentação em profundidade
+## Atualização 4.2.0 — campanha com movimentação em profundidade
 
 Escolha **Modo História** e depois **História solo**, **Cooperativo no mesmo PC** ou **Cooperativo online**. O modo **1 × 1** continua com todo o elenco, os controles, os poderes e os sprites da versão 3.6.2.
 
@@ -229,3 +229,11 @@ Marcelo veste sobretudo longo preto, inspirado no Neo Anderson de Matrix, calça
 Névoa Atômica substitui o Pulso Iônico no comando de poder de Gustavo: H para P1, L para P2, PODER no toque, ou quarto de círculo + soco. Uma nuvem real atravessa a arena; em um acerto sem defesa causa dano leve e 1,9 s de tontura, após a reação ao golpe. A defesa bloqueia a tontura; saltos e invulnerabilidade respeitam as colisões. Acertar o rival tonto encerra a tontura; ao recuperar-se, ele fica protegido de novo atordoamento por 4 s. A barra continua entre os rounds.
 
 Fala: “Névoa atômica!”, em português brasileiro e com a mesma voz Mark dos demais poderes de Gustavo. Os áudios anteriores continuam intactos.
+
+### Campanha 4.2.0
+
+Quatro botões na tela: Soco, Chute, Pular e Especial. Perto de uma mesa ou cadeira, sem inimigo em alcance de ataque, Soco pega o objeto; outro Soco arremessa. Objetos carregados caem ao sofrer dano. Especial usa o poder normal, ou o super com a barra cheia. Teclado: F/G/Espaço/H (P1), J/K/Shift direito/L (P2). Gamepad: X/□, B/○, A/×, Y/△.
+
+O deslocamento tem aceleração e frenagem em ambos os eixos, normalização diagonal e passadas sincronizadas à distância real. Gelton, Marcelino, Marcos, João e Ruan receberam oito quadros completos de caminhada; Marcelo, Rafael e Gustavo mantêm seus oito quadros de movimento preparados. O versus conserva sua movimentação e controles.
+
+Sprites de objetos com perspectiva, textura, sombras de contato e fragmentos de quebra substituem os desenhos geométricos. Novos assets: `assets/story/*-prop-v3.webp`, `assets/story/*-walk-v3.webp`; prompts e referências de geração: `assets/story/art-prompts-v3.json` (ferramenta image_gen).

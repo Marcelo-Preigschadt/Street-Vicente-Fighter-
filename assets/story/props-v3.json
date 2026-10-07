@@ -1,0 +1,42 @@
+{
+  "table": {
+    "height": 115,
+    "width": 207.92,
+    "file": "assets/story/table-prop-v3.webp"
+  },
+  "chair": {
+    "height": 120,
+    "width": 78.57,
+    "file": "assets/story/chair-prop-v3.webp"
+  },
+  "soda": {
+    "height": 250,
+    "width": 137.55,
+    "file": "assets/story/soda-prop-v3.webp"
+  },
+  "shelf": {
+    "height": 310,
+    "width": 185.08,
+    "file": "assets/story/shelf-prop-v3.webp"
+  },
+  "tank": {
+    "height": 160,
+    "width": 108.9,
+    "file": "assets/story/tank-prop-v3.webp"
+  },
+  "cabinet": {
+    "height": 260,
+    "width": 166.49,
+    "file": "assets/story/cabinet-prop-v3.webp"
+  },
+  "medkit": {
+    "height": 42,
+    "width": 55.76,
+    "file": "assets/story/medkit-prop-v3.webp"
+  },
+  "can": {
+    "height": 34,
+    "width": 18.99,
+    "file": "assets/story/can-prop-v3.webp"
+  }
+}

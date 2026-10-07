@@ -1,7 +1,7 @@
 import {STORY_HEROES} from './story-data.js';
-import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=27';
-import {RollbackGame} from './netplay.js?v=27';
-import {RelayPeer} from './relay.js?v=27';
+import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js';
+import {RollbackGame} from './netplay.js';
+import {RelayPeer} from './relay.js';
 
 const QUEUE='street-vicente-fighter-420-waiting';
 const PREFIX='street-vicente-fighter-420-room-';
