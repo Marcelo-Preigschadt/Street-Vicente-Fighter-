@@ -46,7 +46,7 @@ test('ácido atinge quem fica no chão e um salto atravessa a área sem dano',()
   const e=start('story-local','marcelo',1),h=e.hazards[0],[a,b]=e.fighters;h.clock=h.warning+.2;a.x=b.x=h.x;b.y=420;b.vy=-250;e.update(FIXED_STEP);assert.ok(a.hp<1000);assert.equal(b.hp,1000);
 });
 test('estante anuncia a queda e pode ferir jogador e inimigo na área',()=>{
-  const e=start('story-solo','marcelo',2),f=e.fighters[0],s=e.props[0];f.x=s.x+100;f.lane=s.lane;const robot=e.spawnEnemy('scanner',s.x+150,s.lane);e.damageProp(s,200,f);assert.ok(s.fall>0);advance(e,.9);assert.ok(robot.hp<robot.maxHp);assert.ok(f.hp<1000);
+  const e=start('story-solo','marcelo',2),f=e.fighters[0],s=e.props[0];f.x=s.x+100;f.lane=s.lane;const robot=e.spawnEnemy('scanner',s.x+150,s.lane);robot.hitstun=100;e.damageProp(s,200,f);assert.ok(s.fall>0);advance(e,.9);assert.ok(robot.hp<robot.maxHp);assert.ok(f.hp<1000);
 });
 test('chefes usam duelo individual, permitem troca segura e a reserva assume após KO',()=>{
   const e=start('story-local');e.beginBoss();e.queue(0,'storyNext');assert.equal(e.heroes.length,1);assert.equal(e.story.duelist,0);
