@@ -23,4 +23,5 @@ for(let act=0;act<4;act++){
  engine.spawnWave();renderer.draw(engine,.01,1);await writeFile(`/tmp/svf-story-act-${act+1}.png`,canvas.toBuffer('image/png'));
  engine.beginBoss();engine.queue(0,'storyNext');renderer.draw(engine,.01,1);await writeFile(`/tmp/svf-story-boss-${act+1}.png`,canvas.toBuffer('image/png'));
 }
-console.log('8 campaign scene renders completed');
+engine.start('ruan','story-solo');engine.queue(0,'storyNext');engine.fighters[0].x=600;engine.spawnWave();for(const n of engine.enemies){n.brawlerFrame=14;n.attackLife=.2;n.attackMode='melee';}renderer.draw(engine,.01,1);await writeFile('/tmp/svf-story-contact-431.png',canvas.toBuffer('image/png'));
+console.log('8 scenes and contact frame rendered');

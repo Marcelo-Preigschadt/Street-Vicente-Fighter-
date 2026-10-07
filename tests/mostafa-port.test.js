@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {StoryEngine} from '../src/story.js';
 import {animateMostafa,mostafaEnemyIntent,mostafaCamera} from '../src/mostafa-port.js';
 import {snapshot,applySnapshot} from '../src/net-state.js';
+import {readFile} from 'node:fs/promises';
 const game=()=>{const e=new StoryEngine();e.start('ruan','story-online','joao');e.queue(0,'storyNext');return e;};
 test('Mostafa aproxima em X/Z sem ganhar velocidade diagonal e percorre quadros de corrida',()=>{
  const e=game(),f=e.fighters[0],n=e.spawnEnemy('elite',650,520);n.cooldown=0;const x=n.x,z=n.lane;
@@ -36,4 +37,15 @@ test('zona morta da câmera respeita parceiro atrasado e só avança quando cruz
  assert.equal(mostafaCamera(0,[{x:200},{x:450}],2320),0);
  assert.equal(mostafaCamera(0,[{x:900},{x:1000}],2320),450);
  assert.equal(mostafaCamera(300,[{x:400},{x:1200}],2320),300);
+});
+test('atlas respeita células originais, sem incluir poses da linha seguinte ou padding BMP',async()=>{
+ const atlas=JSON.parse(await readFile('assets/story/mostafa/frames.json','utf8'));
+ for(const [id,cw,ch,cols] of [['ferris',120,90,6],['gneiss',120,90,6],['butcher',200,130,3]]){
+  for(const [i,f] of atlas[id].frames.entries()){
+   assert.deepEqual(f.rect,[i%cols*cw,Math.floor(i/cols)*ch,cw,ch]);
+   assert.ok(f.bottom<=ch&&f.height<=ch);
+  }
+  assert.ok(atlas[id].scale>0);
+ }
+ assert.ok(atlas.ferris.frames[19].height<atlas.ferris.frames[0].height);
 });

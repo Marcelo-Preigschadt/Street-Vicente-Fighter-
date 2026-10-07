@@ -6,7 +6,7 @@ parser.add_argument("--source-dir",type=Path,required=True)
 args=parser.parse_args()
 out=Path('assets/story/mostafa');out.mkdir(exist_ok=True)
 meta={}
-for name,cw,ch,cols,n in [('ferris',120,100,6,30),('gneiss',120,100,6,30),('butcher',200,149,3,15)]:
+for name,cw,ch,cols,n in [('ferris',120,90,6,30),('gneiss',120,90,6,30),('butcher',200,130,3,15)]:
  src={'ferris':'enemy-1','gneiss':'enemy-2','butcher':'enemy-butcher'}[name]
  im=Image.open(args.source_dir/(src+'.bmp')).convert('RGBA')
  data=list(im.getdata());im.putdata([(r,g,b,0 if (r,g,b)==(0,0,248) else 255) for r,g,b,a in data])

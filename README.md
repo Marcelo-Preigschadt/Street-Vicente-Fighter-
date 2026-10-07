@@ -1,8 +1,8 @@
-## Atualização 4.3.0 — port da base Mostafa
+## Atualização 4.3.1 — port da base Mostafa
 
 A campanha utiliza o port em JavaScript da aproximação, cerco, preparação do soco, animação por quadros e câmera do [Mostafa](https://github.com/shahfarhadreza/mostafa-the-game). Os inimigos terrestres usam as sequências completas de Ferris/Gneiss; os chefes usam a sequência de Butcher. Os oito personagens Vicente, cenários, poderes e cooperativo online continuam no adaptador da campanha. A origem, as adaptações e a licença estão em [vendor/mostafa/README.md](vendor/mostafa/README.md).
 
-No PC os botões de toque ficam ocultos; teclado e joysticks continuam ativos. Informações de comandos ficam no botão de informações. A seleção dos oito personagens agora usa duas linhas de quatro retratos. No online, animação, alvo, cerco e recuperação fazem parte do estado compartilhado. A versão 4.3.0 usa salas separadas de versões anteriores para evitar motores incompatíveis.
+No PC os botões de toque ficam ocultos; teclado e joysticks continuam ativos. Informações de comandos ficam no botão de informações. A seleção dos oito personagens agora usa duas linhas de quatro retratos. No online, animação, alvo, cerco e recuperação fazem parte do estado compartilhado. A versão 4.3.1 usa salas separadas de versões anteriores para evitar motores incompatíveis.
 
 ## Correção 3.1.1 — Publicação consistente
 
