@@ -4,6 +4,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {Renderer} from '../src/render.js';
 import {StoryEngine} from '../src/story.js';
 import {loadPreparedSprites} from '../src/sprite-loader.js';
+import {STORY_PROP_DIMENSIONS} from '../src/story-props.js';
 const require=createRequire(import.meta.url);
 const {createCanvas,loadImage,Image}=require(`${process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES}/@napi-rs/canvas`);
 globalThis.document={createElement:()=>createCanvas(1,1)};globalThis.matchMedia=()=>({matches:false});globalThis.Image=Image;
@@ -13,9 +14,11 @@ for(const id of ['marcelo','rafael','gustavo','gelton','marcelino','marcos','joa
 renderer.storyArt={backgrounds:await Promise.all(['patio','quimica','biblioteca','nit'].map(id=>loadImage(`assets/story/${id}-panorama-v2.webp`))),enemies:await Promise.all(Array.from({length:16},(_,i)=>loadImage(`assets/story/enemy-${i}.webp`)))};
 renderer.storyArt.inspector=await Promise.all(Array.from({length:4},(_,i)=>loadImage(`assets/story/inspector-pose-${i}-v2.webp`)));renderer.storyArt.inspectorFrames=JSON.parse(await readFile('assets/story/inspector-poses-v2.json','utf8'));
 renderer.storyArt.propFrames=JSON.parse(await readFile('assets/story/props-v3.json','utf8'));
+for(const [kind,size] of Object.entries(STORY_PROP_DIMENSIONS))Object.assign(renderer.storyArt.propFrames[kind],size);
 renderer.storyArt.props=Object.fromEntries(await Promise.all(Object.entries(renderer.storyArt.propFrames).map(async([kind,frame])=>[kind,await loadImage(frame.file)])));
 renderer.storyArt.walks=Object.fromEntries(await Promise.all(['gelton','marcelino','marcos','joao','ruan'].map(async id=>[id,{image:await loadImage(`assets/story/${id}-walk-v3.webp`),frames:JSON.parse(await readFile(`assets/story/${id}-walk-v3.json`,'utf8'))}])));
 const metadata=JSON.parse(await readFile('assets/story/enemy-animation-v4.json','utf8'));renderer.storyArt.animations=Object.fromEntries(await Promise.all(Object.entries(metadata).map(async([id,v])=>[id,{...v,image:await loadImage(v.file)}])));
+const rigsMeta=JSON.parse(await readFile('assets/story/machine-rigs-v5.json','utf8'));renderer.storyArt.rigs=Object.fromEntries(await Promise.all(Object.entries(rigsMeta).map(async([id,v])=>[id,{...v,image:await loadImage(v.file)}])));
 const engine=new StoryEngine({onEvent:e=>renderer.event(e)});
 for(let act=0;act<4;act++){
  engine.start('marcelo','story-local','rafael',{act});engine.queue(0,'storyNext');engine.fighters[0].x=420;engine.fighters[1].x=540;
