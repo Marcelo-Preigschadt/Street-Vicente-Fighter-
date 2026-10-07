@@ -15,7 +15,7 @@ renderer.storyArt.inspector=await Promise.all(Array.from({length:4},(_,i)=>loadI
 renderer.storyArt.propFrames=JSON.parse(await readFile('assets/story/props-v3.json','utf8'));
 renderer.storyArt.props=Object.fromEntries(await Promise.all(Object.entries(renderer.storyArt.propFrames).map(async([kind,frame])=>[kind,await loadImage(frame.file)])));
 renderer.storyArt.walks=Object.fromEntries(await Promise.all(['gelton','marcelino','marcos','joao','ruan'].map(async id=>[id,{image:await loadImage(`assets/story/${id}-walk-v3.webp`),frames:JSON.parse(await readFile(`assets/story/${id}-walk-v3.json`,'utf8'))}])));
-const metadata=JSON.parse(await readFile('assets/story/mostafa/frames.json','utf8'));renderer.storyArt.brawler=Object.fromEntries(await Promise.all(Object.entries(metadata).map(async([id,v])=>[id,{...v,image:await loadImage(v.file)}])));
+const metadata=JSON.parse(await readFile('assets/story/enemy-animation-v4.json','utf8'));renderer.storyArt.animations=Object.fromEntries(await Promise.all(Object.entries(metadata).map(async([id,v])=>[id,{...v,image:await loadImage(v.file)}])));
 const engine=new StoryEngine({onEvent:e=>renderer.event(e)});
 for(let act=0;act<4;act++){
  engine.start('marcelo','story-local','rafael',{act});engine.queue(0,'storyNext');engine.fighters[0].x=420;engine.fighters[1].x=540;

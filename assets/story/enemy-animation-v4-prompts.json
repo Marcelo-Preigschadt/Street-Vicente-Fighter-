@@ -1,0 +1,12 @@
+{
+  "tool": "image_gen.imagegen",
+  "use_case": "identity-preserve",
+  "layout": "4x4, sixteen frames: idle, eight walk, anticipation, contact, follow-through, recoil, three fall frames",
+  "references": {
+    "lab": "enemy-3.webp",
+    "elite": "enemy-8.webp",
+    "kungfu": "enemy-9.webp",
+    "inspector": "inspector-pose-0-v2.webp"
+  },
+  "constraints": "Preserve own school enemy identity, face, outfit, colors, equipment; all face right; transparent; full body; fixed per-character scale, including fall. No reference-game characters."
+}

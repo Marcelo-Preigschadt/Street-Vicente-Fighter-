@@ -7,13 +7,15 @@
   <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v4.3.1/style.css">
-  <script type="module" src="releases/v4.3.1/main.js"></script>
+  <link rel="stylesheet" href="releases/v4.4.0/style.css">
+  <script type="module" src="releases/v4.4.0/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="4.3.1">
+  <main class="cabinet" data-game-version="4.4.0">
+    <div id="game-shell" class="game-shell">
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
+      <nav class="experience-nav" aria-label="Experiência de jogo"><button type="button" data-experience="versus" aria-pressed="true">1 × 1</button><button type="button" data-experience="story" aria-pressed="false">História</button></nav>
       <div class="utility">
         <button id="sound" class="utility-button" type="button" aria-pressed="true" title="Ativar ou desativar áudio">Áudio <span id="sound-state">ON</span></button>
         <button id="fullscreen" class="utility-button" type="button">Tela cheia</button>
@@ -22,7 +24,7 @@
     </header>
 
     <section id="arena" class="arena" aria-label="Arena de luta">
-      <canvas id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>
+      <canvas tabindex="-1" id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>
       <div id="selection" class="screen selection">
         <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1 id="selection-title">PLAYER SELECT</h1></div>
         <fieldset class="game-types"><legend class="sr-only">Experiência de jogo</legend><label><input type="radio" name="game-type" value="versus" checked><span>1 × 1 <small>VERSUS</small></span></label><label><input type="radio" name="game-type" value="story"><span>Modo História <small>OPERAÇÃO RESGATE DO NIT</small></span></label></fieldset>
@@ -101,6 +103,7 @@
         <div class="touch-attacks"><button id="story-jump" data-action="jump" hidden aria-label="Saltar">PULAR</button><button data-action="block" class="guard">DEF</button><button data-action="special" class="special">ESP</button><button data-action="drone" aria-label="Enxame de Drones, barra cheia">ENXAME</button><button data-action="uppercut" aria-label="Poder ascendente">ANTI</button><button data-action="super">SUPER</button><button data-action="throw" aria-label="Agarrar">AGAR</button><button data-action="custom" aria-label="Combo Livre, meia barra">LIVRE</button><button data-action="guardCounter" aria-label="Contra-ataque de defesa, um quarto da barra">CONTRA</button><button data-action="punch">SOCO</button><button data-action="kick">CHUTE</button><button data-action="punch" data-strength="0" aria-label="Ataque leve">LEVE</button><button data-action="punch" data-strength="2" aria-label="Soco forte">FORTE</button><button data-action="kick" data-strength="2" aria-label="Segundo ataque forte">FINAL</button></div>
       </div>
     </section>
+    </div>
     <div id="story-hud" class="story-hud" hidden><div><strong id="story-current"></strong><p id="story-help"></p></div><button id="story-swap" class="secondary-button" type="button" hidden>Trocar professor</button></div>
     <div id="online-hud" class="online-hud" hidden><span id="online-status" role="status"></span><button id="leave-online" class="text-button" type="button">Sair da partida</button></div>
 

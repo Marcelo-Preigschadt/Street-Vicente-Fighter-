@@ -1,0 +1,730 @@
+{
+  "elite": {
+    "file": "assets/story/elite-animation-v4.webp",
+    "scale": 0.982759,
+    "frames": [
+      {
+        "rect": [
+          3,
+          2,
+          269,
+          287
+        ],
+        "height": 287,
+        "anchorX": 114.5,
+        "bottom": 287
+      },
+      {
+        "rect": [
+          278,
+          2,
+          221,
+          287
+        ],
+        "height": 287,
+        "anchorX": 71.5,
+        "bottom": 287
+      },
+      {
+        "rect": [
+          505,
+          2,
+          236,
+          288
+        ],
+        "height": 288,
+        "anchorX": 98.5,
+        "bottom": 288
+      },
+      {
+        "rect": [
+          747,
+          2,
+          196,
+          293
+        ],
+        "height": 293,
+        "anchorX": 94.5,
+        "bottom": 293
+      },
+      {
+        "rect": [
+          949,
+          2,
+          257,
+          291
+        ],
+        "height": 291,
+        "anchorX": 94.75,
+        "bottom": 291
+      },
+      {
+        "rect": [
+          1212,
+          2,
+          232,
+          292
+        ],
+        "height": 292,
+        "anchorX": 92.0,
+        "bottom": 292
+      },
+      {
+        "rect": [
+          1450,
+          2,
+          248,
+          291
+        ],
+        "height": 291,
+        "anchorX": 91.75,
+        "bottom": 291
+      },
+      {
+        "rect": [
+          1704,
+          2,
+          221,
+          290
+        ],
+        "height": 290,
+        "anchorX": 71.0,
+        "bottom": 290
+      },
+      {
+        "rect": [
+          1931,
+          2,
+          276,
+          281
+        ],
+        "height": 281,
+        "anchorX": 101.75,
+        "bottom": 281
+      },
+      {
+        "rect": [
+          2213,
+          2,
+          253,
+          298
+        ],
+        "height": 298,
+        "anchorX": 135.25,
+        "bottom": 298
+      },
+      {
+        "rect": [
+          2472,
+          2,
+          311,
+          261
+        ],
+        "height": 261,
+        "anchorX": 117.25,
+        "bottom": 261
+      },
+      {
+        "rect": [
+          2789,
+          2,
+          260,
+          275
+        ],
+        "height": 275,
+        "anchorX": 140.25,
+        "bottom": 275
+      },
+      {
+        "rect": [
+          3055,
+          2,
+          281,
+          267
+        ],
+        "height": 267,
+        "anchorX": 124.75,
+        "bottom": 267
+      },
+      {
+        "rect": [
+          3342,
+          2,
+          273,
+          251
+        ],
+        "height": 251,
+        "anchorX": 136.5,
+        "bottom": 251
+      },
+      {
+        "rect": [
+          3621,
+          2,
+          279,
+          223
+        ],
+        "height": 223,
+        "anchorX": 139.5,
+        "bottom": 223
+      },
+      {
+        "rect": [
+          3906,
+          2,
+          299,
+          116
+        ],
+        "height": 116,
+        "anchorX": 149.5,
+        "bottom": 116
+      }
+    ]
+  },
+  "kungfu": {
+    "file": "assets/story/kungfu-animation-v4.webp",
+    "scale": 0.989761,
+    "frames": [
+      {
+        "rect": [
+          3,
+          2,
+          266,
+          291
+        ],
+        "height": 291,
+        "anchorX": 132.5,
+        "bottom": 291
+      },
+      {
+        "rect": [
+          275,
+          2,
+          234,
+          290
+        ],
+        "height": 290,
+        "anchorX": 102.5,
+        "bottom": 290
+      },
+      {
+        "rect": [
+          515,
+          2,
+          235,
+          292
+        ],
+        "height": 292,
+        "anchorX": 107.0,
+        "bottom": 292
+      },
+      {
+        "rect": [
+          756,
+          2,
+          208,
+          289
+        ],
+        "height": 289,
+        "anchorX": 113.0,
+        "bottom": 289
+      },
+      {
+        "rect": [
+          970,
+          2,
+          253,
+          299
+        ],
+        "height": 299,
+        "anchorX": 119.0,
+        "bottom": 299
+      },
+      {
+        "rect": [
+          1229,
+          2,
+          233,
+          295
+        ],
+        "height": 295,
+        "anchorX": 92.5,
+        "bottom": 295
+      },
+      {
+        "rect": [
+          1468,
+          2,
+          248,
+          296
+        ],
+        "height": 296,
+        "anchorX": 118.0,
+        "bottom": 296
+      },
+      {
+        "rect": [
+          1722,
+          2,
+          208,
+          297
+        ],
+        "height": 297,
+        "anchorX": 117.5,
+        "bottom": 297
+      },
+      {
+        "rect": [
+          1936,
+          2,
+          246,
+          293
+        ],
+        "height": 293,
+        "anchorX": 118.75,
+        "bottom": 293
+      },
+      {
+        "rect": [
+          2188,
+          2,
+          280,
+          286
+        ],
+        "height": 286,
+        "anchorX": 142.75,
+        "bottom": 286
+      },
+      {
+        "rect": [
+          2474,
+          2,
+          299,
+          288
+        ],
+        "height": 288,
+        "anchorX": 150.0,
+        "bottom": 288
+      },
+      {
+        "rect": [
+          2779,
+          2,
+          262,
+          287
+        ],
+        "height": 287,
+        "anchorX": 143.25,
+        "bottom": 287
+      },
+      {
+        "rect": [
+          3047,
+          2,
+          264,
+          268
+        ],
+        "height": 268,
+        "anchorX": 132.0,
+        "bottom": 268
+      },
+      {
+        "rect": [
+          3317,
+          2,
+          278,
+          267
+        ],
+        "height": 267,
+        "anchorX": 139.0,
+        "bottom": 267
+      },
+      {
+        "rect": [
+          3601,
+          2,
+          278,
+          169
+        ],
+        "height": 169,
+        "anchorX": 139.0,
+        "bottom": 169
+      },
+      {
+        "rect": [
+          3885,
+          2,
+          310,
+          96
+        ],
+        "height": 96,
+        "anchorX": 155.0,
+        "bottom": 96
+      }
+    ]
+  },
+  "inspector": {
+    "file": "assets/story/inspector-animation-v4.webp",
+    "scale": 0.925325,
+    "frames": [
+      {
+        "rect": [
+          3,
+          2,
+          261,
+          308
+        ],
+        "height": 308,
+        "anchorX": 98.0,
+        "bottom": 308
+      },
+      {
+        "rect": [
+          270,
+          2,
+          272,
+          305
+        ],
+        "height": 305,
+        "anchorX": 116.0,
+        "bottom": 305
+      },
+      {
+        "rect": [
+          548,
+          2,
+          270,
+          306
+        ],
+        "height": 306,
+        "anchorX": 107.0,
+        "bottom": 306
+      },
+      {
+        "rect": [
+          824,
+          2,
+          255,
+          308
+        ],
+        "height": 308,
+        "anchorX": 110.5,
+        "bottom": 308
+      },
+      {
+        "rect": [
+          1085,
+          2,
+          275,
+          310
+        ],
+        "height": 310,
+        "anchorX": 96.0,
+        "bottom": 310
+      },
+      {
+        "rect": [
+          1366,
+          2,
+          260,
+          309
+        ],
+        "height": 309,
+        "anchorX": 91.25,
+        "bottom": 309
+      },
+      {
+        "rect": [
+          1632,
+          2,
+          275,
+          310
+        ],
+        "height": 310,
+        "anchorX": 126.5,
+        "bottom": 310
+      },
+      {
+        "rect": [
+          1913,
+          2,
+          264,
+          310
+        ],
+        "height": 310,
+        "anchorX": 117.0,
+        "bottom": 310
+      },
+      {
+        "rect": [
+          2183,
+          2,
+          276,
+          306
+        ],
+        "height": 306,
+        "anchorX": 109.5,
+        "bottom": 306
+      },
+      {
+        "rect": [
+          2465,
+          2,
+          297,
+          297
+        ],
+        "height": 297,
+        "anchorX": 150.75,
+        "bottom": 297
+      },
+      {
+        "rect": [
+          2768,
+          2,
+          311,
+          284
+        ],
+        "height": 284,
+        "anchorX": 138.0,
+        "bottom": 284
+      },
+      {
+        "rect": [
+          3085,
+          2,
+          305,
+          299
+        ],
+        "height": 299,
+        "anchorX": 148.5,
+        "bottom": 299
+      },
+      {
+        "rect": [
+          3396,
+          2,
+          285,
+          285
+        ],
+        "height": 285,
+        "anchorX": 137.0,
+        "bottom": 285
+      },
+      {
+        "rect": [
+          3687,
+          2,
+          285,
+          293
+        ],
+        "height": 293,
+        "anchorX": 142.5,
+        "bottom": 293
+      },
+      {
+        "rect": [
+          3978,
+          2,
+          302,
+          230
+        ],
+        "height": 230,
+        "anchorX": 151.0,
+        "bottom": 230
+      },
+      {
+        "rect": [
+          4286,
+          2,
+          307,
+          133
+        ],
+        "height": 133,
+        "anchorX": 153.5,
+        "bottom": 133
+      }
+    ]
+  },
+  "lab": {
+    "file": "assets/story/lab-animation-v4.webp",
+    "scale": 0.986159,
+    "frames": [
+      {
+        "rect": [
+          3,
+          2,
+          267,
+          285
+        ],
+        "height": 285,
+        "anchorX": 104.5,
+        "bottom": 285
+      },
+      {
+        "rect": [
+          276,
+          2,
+          231,
+          284
+        ],
+        "height": 284,
+        "anchorX": 115.75,
+        "bottom": 284
+      },
+      {
+        "rect": [
+          513,
+          2,
+          229,
+          283
+        ],
+        "height": 283,
+        "anchorX": 115.0,
+        "bottom": 283
+      },
+      {
+        "rect": [
+          748,
+          2,
+          224,
+          291
+        ],
+        "height": 291,
+        "anchorX": 127.0,
+        "bottom": 291
+      },
+      {
+        "rect": [
+          978,
+          2,
+          237,
+          287
+        ],
+        "height": 287,
+        "anchorX": 99.25,
+        "bottom": 287
+      },
+      {
+        "rect": [
+          1221,
+          2,
+          248,
+          290
+        ],
+        "height": 290,
+        "anchorX": 114.5,
+        "bottom": 290
+      },
+      {
+        "rect": [
+          1475,
+          2,
+          236,
+          292
+        ],
+        "height": 292,
+        "anchorX": 138.5,
+        "bottom": 292
+      },
+      {
+        "rect": [
+          1717,
+          2,
+          226,
+          290
+        ],
+        "height": 290,
+        "anchorX": 135.0,
+        "bottom": 290
+      },
+      {
+        "rect": [
+          1949,
+          2,
+          245,
+          289
+        ],
+        "height": 289,
+        "anchorX": 132.5,
+        "bottom": 289
+      },
+      {
+        "rect": [
+          2200,
+          2,
+          256,
+          289
+        ],
+        "height": 289,
+        "anchorX": 97.5,
+        "bottom": 289
+      },
+      {
+        "rect": [
+          2462,
+          2,
+          311,
+          264
+        ],
+        "height": 264,
+        "anchorX": 134.0,
+        "bottom": 264
+      },
+      {
+        "rect": [
+          2779,
+          2,
+          272,
+          271
+        ],
+        "height": 271,
+        "anchorX": 141.75,
+        "bottom": 271
+      },
+      {
+        "rect": [
+          3057,
+          2,
+          271,
+          281
+        ],
+        "height": 281,
+        "anchorX": 111.0,
+        "bottom": 281
+      },
+      {
+        "rect": [
+          3334,
+          2,
+          292,
+          259
+        ],
+        "height": 259,
+        "anchorX": 146.0,
+        "bottom": 259
+      },
+      {
+        "rect": [
+          3632,
+          2,
+          291,
+          214
+        ],
+        "height": 214,
+        "anchorX": 145.5,
+        "bottom": 214
+      },
+      {
+        "rect": [
+          3929,
+          2,
+          291,
+          144
+        ],
+        "height": 144,
+        "anchorX": 145.5,
+        "bottom": 144
+      }
+    ]
+  }
+}
