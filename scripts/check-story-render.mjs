@@ -1,7 +1,6 @@
 // Offline visual check of all campaign scenes using the same browser renderer.
 import {createRequire} from 'node:module';
 import {readFile,writeFile} from 'node:fs/promises';
-import {prepareSavateFaces} from '../src/savate-face.js';
 import {Renderer} from '../src/render.js';
 import {StoryEngine} from '../src/story.js';
 import {loadPreparedSprites} from '../src/sprite-loader.js';
@@ -11,14 +10,13 @@ const {createCanvas,loadImage,Image}=require(`${process.env.CODEX_PRIMARY_RUNTIM
 globalThis.document={createElement:()=>createCanvas(1,1)};globalThis.matchMedia=()=>({matches:false});globalThis.Image=Image;
 globalThis.fetch=async path=>new Response(await readFile(path.split('?')[0]));
 const canvas=createCanvas(1280,720),renderer=new Renderer(canvas);
-for(const id of ['marcelo','rafael','gustavo','gelton','marcelino','marcos','joao','ruan','tais']){const {base,portrait}=await loadPreparedSprites(id,path=>loadImage(path.split('?')[0]));if(id==='tais')prepareSavateFaces(base,await loadImage('assets/tais-identity-head-v1.webp'),JSON.parse(await readFile('assets/runtime/tais-head-anchors-v1.json','utf8')));renderer.sheets[id]=base;renderer.portraits[id]=portrait;}
+for(const id of ['marcelo','rafael','gustavo','gelton','marcelino','marcos','joao','ruan','tais']){const {base,portrait}=await loadPreparedSprites(id,path=>loadImage(path.split('?')[0]));renderer.sheets[id]=base;renderer.portraits[id]=portrait;}
 renderer.storyArt={backgrounds:await Promise.all(['patio','quimica','biblioteca','nit'].map(id=>loadImage(`assets/story/${id}-panorama-v2.webp`))),enemies:await Promise.all(Array.from({length:16},(_,i)=>loadImage(`assets/story/enemy-${i}.webp`)))};
 renderer.storyArt.inspector=await Promise.all(Array.from({length:4},(_,i)=>loadImage(`assets/story/inspector-pose-${i}-v2.webp`)));renderer.storyArt.inspectorFrames=JSON.parse(await readFile('assets/story/inspector-poses-v2.json','utf8'));
 renderer.storyArt.propFrames=JSON.parse(await readFile('assets/story/props-v3.json','utf8'));
 for(const [kind,size] of Object.entries(STORY_PROP_DIMENSIONS))Object.assign(renderer.storyArt.propFrames[kind],size);
 renderer.storyArt.props=Object.fromEntries(await Promise.all(Object.entries(renderer.storyArt.propFrames).map(async([kind,frame])=>[kind,await loadImage(frame.file)])));
-renderer.storyArt.walks=Object.fromEntries(await Promise.all(['gelton','marcelino','marcos','joao','ruan','tais'].map(async id=>[id,{image:await loadImage(`assets/story/${id}-walk-v3.webp`),frames:JSON.parse(await readFile(`assets/story/${id}-walk-v3.json`,'utf8'))}])));
-const tw=renderer.storyArt.walks.tais,ts={scale:1,frames:tw.frames.map(f=>({...f,image:tw.image}))};prepareSavateFaces(ts,await loadImage('assets/tais-identity-head-v1.webp'),{base:JSON.parse(await readFile('assets/story/tais-walk-head-anchors-v1.json','utf8'))});tw.frames=ts.frames;renderer.sheets.tais.motion=ts;
+renderer.storyArt.walks=Object.fromEntries(await Promise.all(['gelton','marcelino','marcos','joao','ruan','tais'].map(async id=>[id,{image:await loadImage(`assets/story/${id}-walk-v${id==='tais'?4:3}.webp`),frames:JSON.parse(await readFile(`assets/story/${id}-walk-v${id==='tais'?4:3}.json`,'utf8'))}])));
 const metadata=JSON.parse(await readFile('assets/story/enemy-animation-v4.json','utf8'));renderer.storyArt.animations=Object.fromEntries(await Promise.all(Object.entries(metadata).map(async([id,v])=>[id,{...v,image:await loadImage(v.file)}])));
 const rigsMeta=JSON.parse(await readFile('assets/story/machine-rigs-v6.json','utf8'));renderer.storyArt.rigs=Object.fromEntries(await Promise.all(Object.entries(rigsMeta).map(async([id,v])=>[id,{...v,image:await loadImage(v.file)}])));
 const engine=new StoryEngine({onEvent:e=>renderer.event(e)});
