@@ -53,7 +53,7 @@ test('Combo Livre entra por teclado, toque e gamepad sem repetir o custo ao segu
  const s=prepare(t),f=s.game.fighters[0];f.meter=100;s.key('KeyC');assert.equal(f.meter,50);assert.ok(f.customTime>0);
  s.key('KeyC','keydown',true);assert.equal(f.meter,50);s.key('KeyC','keyup');
  f.customTime=0;f.meter=100;s.pointer('custom','pointerdown',4);assert.equal(f.meter,50);s.pointer('custom','pointerup',4);
- f.customTime=0;f.meter=100;s.connect();s.pad.buttons[9].pressed=true;s.input.update();assert.equal(f.meter,50);s.input.update();assert.equal(f.meter,50);
+ f.customTime=0;f.meter=100;s.connect();s.pad.buttons[6].pressed=true;s.pad.buttons[9].pressed=true;s.input.update();assert.equal(f.meter,50);s.input.update();assert.equal(f.meter,50);
 });
 test('atalhos dos dois jogadores cancelam somente o impacto bloqueado, por teclado e toque',t=>{
  const s=prepare(t);

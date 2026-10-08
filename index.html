@@ -7,22 +7,42 @@
   <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v4.6.11/style.css">
-  <script type="module" src="releases/v4.6.11/main.js"></script>
+  <link rel="stylesheet" href="releases/v4.6.12/style.css">
+  <script type="module" src="releases/v4.6.12/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="4.6.11">
+  <main class="cabinet" data-game-version="4.6.12">
     <div id="game-shell" class="game-shell">
     <header class="topbar">
       <a class="wordmark" id="home-link" href="./" aria-label="Voltar ao menu de Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
       <button id="menu-home" class="menu-home utility-button" type="button" hidden>Menu principal</button>
       <div class="utility">
         <button id="sound" class="utility-button" type="button" aria-pressed="true" title="Ativar ou desativar áudio">Áudio <span id="sound-state">ON</span></button>
+        <button id="gamepad-config" class="utility-button" type="button" aria-controls="gamepad-panel" aria-expanded="false">🎮 Controle USB</button>
         <button id="fullscreen" class="utility-button" type="button">Tela cheia</button>
         <button id="pause" class="utility-button" type="button" disabled>Pausar</button>
       </div>
     </header>
 
+    <section id="gamepad-panel" class="gamepad-panel" hidden aria-label="Configuração de controle USB">
+      <h2>Controle USB</h2>
+      <p id="gamepad-info" role="status">Conecte o controle e pressione um botão para ativá-lo no navegador.</p>
+      <p id="gamepad-live" class="gamepad-live">Nenhuma entrada detectada</p>
+      <p class="gamepad-help">Se um comando estiver incorreto, selecione a ação e aperte o botão correspondente no controle. Os ajustes ficam salvos neste navegador.</p>
+      <div class="gamepad-binds">
+        <button type="button" data-pad-bind="jump">Pular <strong data-pad-number="jump">0</strong></button>
+        <button type="button" data-pad-bind="kick">Chute <strong data-pad-number="kick">1</strong></button>
+        <button type="button" data-pad-bind="punch">Soco <strong data-pad-number="punch">2</strong></button>
+        <button type="button" data-pad-bind="special">Poder <strong data-pad-number="special">3</strong></button>
+        <button type="button" data-pad-bind="block">Defender <strong data-pad-number="block">4</strong></button>
+        <button type="button" data-pad-bind="pause">Start / Pausar <strong data-pad-number="pause">9</strong></button>
+      </div>
+      <p id="gamepad-feedback" role="status">A: confirmar · B: voltar · direcional: navegar</p>
+      <div class="gamepad-footer">
+        <button id="gamepad-reset" class="secondary-button" type="button">Restaurar botões</button>
+        <button id="gamepad-close" class="primary-button" type="button">Fechar</button>
+      </div>
+    </section>
     <section id="arena" class="arena" aria-label="Arena de luta">
       <canvas tabindex="-1" id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>
       <section id="menu-screen" class="screen main-menu" aria-label="Menu principal">
