@@ -22,6 +22,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Existing atlas test dependencies
+        run: python3 -m pip install numpy Pillow scipy
       - name: Unit and gameplay regression
         run: npm ci && npm test
       - name: Verify immutable release
