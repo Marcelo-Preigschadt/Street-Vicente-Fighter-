@@ -34,7 +34,7 @@ jobs:
       - name: Install visual verification tools
         run: npm install --no-save --package-lock=false @napi-rs/canvas@0.1.80 playwright@1.55.0 && npx playwright install --with-deps chromium
       - name: Canvas contact and proportion verification
-        run: node scripts/check-locomotion.mjs /tmp/svf-visual
+        run: SVF_EMIT_VISUAL=1 node scripts/check-locomotion.mjs /tmp/svf-visual
       - name: Browser movement verification
         run: SVF_EMIT_VISUAL=1 node scripts/check-locomotion-browser.mjs /tmp/svf-browser
       - uses: actions/upload-artifact@v4

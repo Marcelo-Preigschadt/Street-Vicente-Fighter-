@@ -44,6 +44,8 @@ for(let i=0;i<80;i++)e.update(FIXED_STEP);e.queue(0,'punch');for(let i=0;i<40;i+
 const timings=[];
 for(const kind of ['versus','story']){const engine=kind==='versus'?new FightEngine():new StoryEngine();engine.start('marcelo',kind==='versus'?'local':'story-local','rafael');if(kind==='versus')engine.phase='fight';else{engine.queue(0,'storyNext');engine.spawnWave();}engine.setInput(0,{right:true});const samples=[];
  for(let i=0;i<180;i++){const start=performance.now();engine.update(1/60);r.draw(engine,1/60,.5);samples.push(performance.now()-start);}samples.sort((a,b)=>a-b);timings.push({kind,p50:samples[90],p95:samples[171],mean:samples.reduce((a,b)=>a+b,0)/samples.length});}
-await writeFile(`${directory}/timings.json`,JSON.stringify(timings,null,2)+'\n');
+await writeFile(`${directory}/timings.json`,JSON.stringify(timings,null,2)+'\n');console.log('CANVAS_TIMINGS '+JSON.stringify(timings));
 for(const metric of metrics)if(metric.maxSupportDrift>.01||metric.maxSoleDrift>.01||metric.maxLegLengthRatio>1.08)throw new Error(`Apoio/anatomia fora do limite: ${JSON.stringify(metric)}`);
 await writeFile(`${directory}/metrics.json`,JSON.stringify(metrics,null,2)+'\n');console.log(JSON.stringify({directory,metrics}));
+
+if(process.env.SVF_EMIT_VISUAL==='1')console.log('SVF_VISUAL carry.png '+await readFile(`${directory}/carry.png`,'base64'));
