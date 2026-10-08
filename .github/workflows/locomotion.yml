@@ -1,0 +1,43 @@
+name: Movement regression
+on:
+  push:
+    branches: [main, codex/locomotion-stop-recovery]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'releases/**'
+      - 'package*.json'
+      - 'index.html'
+      - '.github/workflows/locomotion.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  movement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unit and gameplay regression
+        run: npm ci && npm test
+      - name: Verify immutable release
+        run: npm run build && git diff --exit-code -- index.html releases/v4.6.1
+      - name: Install visual verification tools
+        run: npm install --no-save --package-lock=false @napi-rs/canvas@0.1.80 playwright@1.55.0 && npx playwright install --with-deps chromium
+      - name: Canvas contact and proportion verification
+        run: node scripts/check-locomotion.mjs /tmp/svf-visual
+      - name: Browser movement verification
+        run: SVF_EMIT_VISUAL=1 node scripts/check-locomotion-browser.mjs /tmp/svf-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: locomotion-visual
+          path: |
+            /tmp/svf-visual
+            /tmp/svf-browser
+          if-no-files-found: ignore
+          retention-days: 14

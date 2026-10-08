@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="../"><title>Street Vicente Fighter · laboratório de movimento</title>
+<style>
+body{margin:0;background:#0e141b;color:#eef3f7;font:16px system-ui,sans-serif}
+main{max-width:1280px;margin:20px auto;padding:0 16px}
+h1{font-size:24px}p{line-height:1.5}button,a{color:inherit}
+button{background:#25313e;border:1px solid #637486;border-radius:5px;padding:9px 14px;margin-right:8px;cursor:pointer}
+canvas{display:block;width:100%;height:auto;background:#000;border:1px solid #344253}
+output{display:block;white-space:pre-wrap;padding:12px 0;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body><main data-lab-version="4.6.1">
+<h1>Laboratório de movimento · 4.6.1</h1>
+<p>Canvas e animação do pacote publicado, com fundo preto. Kung Fu, Boxe, Kickboxing e Savate executam a mesma sequência de idle, avanço, parada, recuo e ataques. Pause para observar o apoio dos pés e a base de cada estilo.</p>
+<p><button id="play" type="button">Pausar</button><button id="next" type="button">Próxima ação</button><a href="./?v=4.6.1">Abrir o jogo</a></p>
+<canvas id="lab" width="1280" height="760" aria-label="Marcelo, Rafael, Gustavo e Tais animados sobre fundo preto"></canvas>
+<output id="state" aria-live="polite">Carregando artes originais…</output>
+<output id="metrics"></output>
+<p>FPS e tempo de processamento são medições deste navegador. O teste compara também os vértices desenhados das solas durante o apoio; não inclui uma garantia de desempenho para outros dispositivos.</p>
+</main><script type="module" src="scripts/locomotion-lab.js"></script></body></html>

@@ -1,4 +1,4 @@
-# Movimento 4.6.0
+# Movimento 4.6.1
 
 ## Diagnóstico antes da edição
 
@@ -55,3 +55,9 @@ Os testes de simulação não dependem de Canvas. Incluem os dois slots, quatro 
 A conferência visual executa o compositor de produção com as artes reais: quatro estilos sobre fundo preto, avanço/recuo, 1×1, quatro atos, cadeira carregada, golpe e arremesso. Mede **também os vértices desenhados da sola**, além dos anchors. No ensaio de 120 frames por estilo, o desvio máximo durante apoio ficou abaixo de 0,01 px; extensão máxima de perna abaixo de 8% (tolerância à perspectiva pintada), em vez dos alongamentos de até 54% encontrados durante a primeira iteração.
 
 Medição por software no ambiente de desenvolvimento, 180 frames, incluindo update + desenho: 1×1 p50 2,77 ms / p95 3,47 ms; campanha p50 3,40 ms / p95 5,80 ms. São valores deste ensaio, não garantia de 60 FPS em qualquer dispositivo. O script grava métricas, timings e imagens para repetir a conferência. Não altera salas, serviços ou banco de dados; somente o identificador do protocolo acompanha a versão da física para impedir pares incompatíveis.
+
+## Recuperação após passos curtos
+
+A observação da versão publicada mostrou que uma parada curta podia terminar com os pés próximos demais. A recuperação levanta e recoloca somente um pé em até 140 ms, com o outro apoio fixo e sem mudar a posição global. MOVE_STOP cobre essa colocação mesmo depois que a velocidade chega a zero. A vista interpolada também preserva explicitamente os getters airborne, crouching e movePhase do Fighter, para que golpes aéreos conservem o pivô e o estado corretos.
+
+O [laboratório visual](../tests/locomotion-lab.html) utiliza o pacote publicado e o compositor Canvas real em fundo preto. Compare idle, avanço, recuo, parada, walk → attack e attack → walk dos quatro estilos; pause para inspecionar os pés. As métricas do navegador são observações do dispositivo em uso, não uma garantia universal de 60 FPS.

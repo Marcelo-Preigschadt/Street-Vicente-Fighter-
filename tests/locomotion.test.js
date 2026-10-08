@@ -115,3 +115,16 @@ test('golpe com cadeira preserva as mãos ocupadas e só causa dano durante os f
  const e=story('tais'),f=e.fighters[0];f.carry={kind:'chair',id:'fixture'};f.carryTime=0;e.queue(0,'kick');e.update(FIXED_STEP);assert.ok(usesRig(f));const held=heldObjectTransform(f),box=carryStrikeBox(f),n=e.spawnEnemy('lab',box.x+box.w*.5);n.lane=f.lane;n.hitstun=10;n.y=WORLD.floor-40;
  const before=n.hp;e.update(FIXED_STEP);assert.equal(n.hp,before);advance(e,.25);assert.ok(n.hp<before);assert.equal(f.carry.kind,'chair');const after=n.hp;advance(e,.5);assert.equal(n.hp,after);assert.ok(Number.isFinite(held.x));
 });
+
+test('paradas após passos curtos recuperam a base sem mover a raiz nem arrastar o apoio',()=>{
+ for(const id of ids)for(const t of [.05,.08,.12,.18,.26,.35]){
+  const e=versus(id),f=e.fighters[0];e.setInput(0,{right:true});advance(e,t);e.setInput(0,{});advance(e,.05);const x=f.x;
+  for(let tick=0;tick<60;tick++){const before=f.motion.feet.map(foot=>({...foot}));e.update(FIXED_STEP);assert.equal(f.x,x);for(let side=0;side<2;side++)if(before[side].support&&f.motion.feet[side].support){assert.equal(f.motion.feet[side].x,before[side].x);assert.equal(f.motion.feet[side].lane,before[side].lane);}}
+  assert.ok(Math.abs(f.motion.feet[1].x-f.motion.feet[0].x)>40,id+' '+t);assert.equal(f.motion.state,'IDLE');assert.ok(f.motion.feet.every(foot=>foot.support&&foot.lift===0));
+ }
+});
+test('vista interpolada preserva getters de fase, agachamento e estado aéreo',()=>{
+ const e=versus('marcelo'),f=e.fighters[0];e.queue(0,'punch');e.update(FIXED_STEP);const out={motion:{feet:[{},{}]}};
+ for(const y of [WORLD.floor,WORLD.floor-50]){f.y=y;f.state=y===WORLD.floor?'crouch':'uppercut';const view=interpolateFighter(f,.5,out);assert.equal(view.airborne,f.airborne);assert.equal(view.crouching,f.crouching);assert.equal(view.movePhase,f.movePhase);}
+ assert.equal(f.airborne,true);assert.equal(f.movePhase,'startup');
+});
