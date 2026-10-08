@@ -13,30 +13,56 @@ RUNTIME.mkdir(exist_ok=True)
 
 def frames(path):
     image = Image.open(path).convert('RGBA')
+    pixels = np.asarray(image)
+    # Shoes, raised fists and high kicks intentionally cross grid boundaries.
+    # Segment the complete figure on the source sheet, then assign it to its
+    # pose. A rectangular cell crop would leave a shoe in the next animation.
+    labels, _ = ndimage.label(pixels[:, :, 3] > 110,
+                              np.ones((3, 3), dtype=bool))
     result = []
+    yy, xx = np.indices(labels.shape)
     for index in range(16):
         col, row = index % 4, index // 4
         left = round(col * image.width / 4)
         top = round(row * image.height / 4)
         right = round((col + 1) * image.width / 4)
         bottom = round((row + 1) * image.height / 4)
-        cell = image.crop((left, top, right, bottom))
-        alpha = cell.getchannel('A').point(lambda value: 255 if value > 56 else 0)
-        bounds = alpha.getbbox()
-        if bounds is None:
-            raise ValueError(f'Empty pose {index} in {path}')
-        if path.name == 'luciana-base-v1.webp' and index == 15:
-            # A sneaker from the pose above overlaps the KO cell at its top.
-            # Only the connected body on the floor belongs to this frame.
-            labels, count = ndimage.label(np.asarray(cell.getchannel('A')) > 110,
-                                          np.ones((3, 3), dtype=bool))
-            largest = max(range(1, count + 1), key=lambda component: (labels == component).sum())
-            ys, xs = np.nonzero(labels == largest)
-            bounds = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
-        # Stay inside the cell: no fragment from the next pose can enter the frame.
-        bounds = (max(0, bounds[0] - 1), max(0, bounds[1] - 1),
-                  min(cell.width, bounds[2] + 1), min(cell.height, bounds[3] + 1))
-        result.append(cell.crop(bounds))
+        cell_labels = labels[top:bottom, left:right]
+        counts = np.bincount(cell_labels.ravel())
+        counts[0] = 0
+        subject = int(counts.argmax())
+        if not subject or counts[subject] < 10000:
+            raise ValueError(f'No fighter found in {path} pose {index}')
+        mask = labels == subject
+        if path.name == 'luciana-base-v1.webp' and index in (10, 14):
+            # A planted shoe in pose 10 touches the victory fist in pose 14.
+            # Their shared source component needs a short anatomical seam.
+            shoe = (yy < 930) | ((yy < 960) & (xx < 710)) | \
+                   ((yy < 945) & (xx > 820))
+            mask &= shoe if index == 10 else ~shoe
+            # A few pixels of the opposite pose can survive the seam. Keep
+            # only the silhouette attached to this fighter.
+            parts, _ = ndimage.label(mask, np.ones((3, 3), dtype=bool))
+            sizes = np.bincount(parts.ravel())
+            sizes[0] = 0
+            mask = parts == sizes.argmax()
+        # Keep the source antialiasing along the contour, without importing
+        # detached pixels belonging to the adjacent pose.
+        mask = ndimage.binary_dilation(mask, iterations=1)
+        mask &= pixels[:, :, 3] > 0
+        ys, xs = np.nonzero(mask)
+        bounds = (max(0, int(xs.min()) - 1), max(0, int(ys.min()) - 1),
+                  min(image.width, int(xs.max()) + 2),
+                  min(image.height, int(ys.max()) + 2))
+        isolated = pixels[bounds[1]:bounds[3], bounds[0]:bounds[2]].copy()
+        isolated[~mask[bounds[1]:bounds[3], bounds[0]:bounds[2]]] = 0
+        silhouette = isolated[:, :, 3] > 110
+        components, _ = ndimage.label(silhouette,
+                                      np.ones((3, 3), dtype=bool))
+        areas = np.bincount(components.ravel())
+        if len(areas) < 2 or areas[1:].max() < silhouette.sum() * .995:
+            raise ValueError(f'Detached pixels in {path} pose {index}')
+        result.append(Image.fromarray(isolated, 'RGBA'))
     return result
 
 
