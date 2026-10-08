@@ -3,20 +3,20 @@ import {interpolateFighter} from './locomotion-render.js';
 import {entityScale} from './story-world.js';
 import {loadStoryArt,drawStory} from './story-render.js';
 import {drawKaratePulse,drawKarateCharge} from './karate-fx.js';
-import {drawWildPower} from './wild-fx.js?v=27';
-import { loadPreparedSprites } from './sprite-loader.js?v=27';
-import { drawJudoSystem } from './judo-fx.js?v=27';
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=27';
+import {drawWildPower} from './wild-fx.js';
+import { loadPreparedSprites } from './sprite-loader.js';
+import { drawJudoSystem } from './judo-fx.js';
+import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js';
 
-import { SuperEffects } from './super-fx.js?v=27';
-import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=27';
-import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js?v=27';
-import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js?v=27';
-import { MUAY_THAI_LAYOUT } from './muay-thai-data.js?v=27';
-import { drawImpulse, drawKineticRise } from './physics-fx.js?v=27';
-import { GELTON_LAYOUT } from './gelton-layout.js?v=27';
-import { drawPaintStroke, drawArtRise } from './art-fx.js?v=27';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js?v=27';
+import { SuperEffects } from './super-fx.js';
+import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js';
+import { COSTUME_LAYOUT, costumeAsset, alignCostumeSheet } from './costume-data.js';
+import { drawSentinel, drawSentinelLaser } from './sentinel-fx.js';
+import { MUAY_THAI_LAYOUT } from './muay-thai-data.js';
+import { drawImpulse, drawKineticRise } from './physics-fx.js';
+import { GELTON_LAYOUT } from './gelton-layout.js';
+import { drawPaintStroke, drawArtRise } from './art-fx.js';
+import { cacheSpriteEffects, cachePortrait } from './render-cache.js';
 
 export const CAPOEIRA_CELL_MARGIN = 96;
 

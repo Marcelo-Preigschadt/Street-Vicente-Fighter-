@@ -1,6 +1,8 @@
 """Pack Luciana's approved 4x4 painted atlases into runtime sprites."""
 from pathlib import Path
 from PIL import Image
+from scipy import ndimage
+import numpy as np
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +25,14 @@ def frames(path):
         bounds = alpha.getbbox()
         if bounds is None:
             raise ValueError(f'Empty pose {index} in {path}')
+        if path.name == 'luciana-base-v1.webp' and index == 15:
+            # A sneaker from the pose above overlaps the KO cell at its top.
+            # Only the connected body on the floor belongs to this frame.
+            labels, count = ndimage.label(np.asarray(cell.getchannel('A')) > 110,
+                                          np.ones((3, 3), dtype=bool))
+            largest = max(range(1, count + 1), key=lambda component: (labels == component).sum())
+            ys, xs = np.nonzero(labels == largest)
+            bounds = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
         # Stay inside the cell: no fragment from the next pose can enter the frame.
         bounds = (max(0, bounds[0] - 1), max(0, bounds[1] - 1),
                   min(cell.width, bounds[2] + 1), min(cell.height, bounds[3] + 1))
