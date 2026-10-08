@@ -3,14 +3,14 @@ import {entityScale} from './story-world.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const smoothStep=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 export const rootCurve=t=>{t=clamp(t,0,1);return t*t*t*(t*(6*t-15)+10);};
-const scratch=new Float64Array(34),refs=new Map(),hipJoints=[0,3,7],shoulderJoints=[11,14],legJoints=[[3,4,5],[7,8,9]];
+const scratch=new Float64Array(34),refs=new Map(),shoulderJoints=[11,14],legJoints=[[3,4,5],[7,8,9]];
 const carryStrikes=new Set(['punch','kick','crouchPunch','sweep']);
 export const isCarryStrike=f=>!!f.carry&&carryStrikes.has(f.action)&&!f.airborne;
 function carryImpulse(f){if(!isCarryStrike(f))return 0;const m=f.moveData,t=f.actionTime;return t<m.startup?rootCurve(t/m.startup):t<m.startup+m.active?1:1-rootCurve((t-m.startup-m.active)/m.recovery);}
 function reference(id){if(!refs.has(id))refs.set(id,referenceJoints(id,new Float64Array(34)));return refs.get(id);}
 export function initLocomotion(f){
  f.worldScale=1;f.visualOffsetX=0;f.visualOffsetY=0;
- f.motion={state:'IDLE',stateTime:0,phase:0,travel:0,blend:0,bodyShift:0,prevBodyShift:0,lastWorldX:f.x,lastWorldLane:f.lane??625,moveSign:0,facing:f.direction,ready:false,speed:0,strideLength:0,cycleDuration:0,blocked:false,
+ f.motion={state:'IDLE',stateTime:0,phase:0,travel:0,startupTravel:0,blend:0,bodyShift:0,prevBodyShift:0,lastWorldX:f.x,lastWorldLane:f.lane??625,moveSign:0,facing:f.direction,ready:false,speed:0,phaseVelocity:0,strideLength:0,cycleDuration:0,blocked:false,
   feet:[0,1].map(()=>({x:f.x,lane:625,lift:0,angle:0,support:true,q:0,startX:0,startLane:625,targetX:0,targetLane:625,prevX:f.x,prevLane:625,prevLift:0,prevAngle:0})),prevPhase:0,prevBlend:0};
 }
 export function resetFeet(f){
@@ -20,7 +20,7 @@ export function resetFeet(f){
   foot.x=f.x+(r?r[a]:i?40:-40)*s*f.direction;foot.lane=lane;foot.lift=0;foot.angle=0;foot.support=true;foot.q=0;
   foot.prevX=foot.x;foot.prevLane=lane;foot.prevLift=0;foot.prevAngle=0;
  }
- m.ready=true;m.facing=f.direction;m.moveSign=0;m.blend=0;m.phase=0;m.speed=0;m.bodyShift=0;m.prevBodyShift=0;m.lastWorldX=f.x;m.lastWorldLane=lane;
+ m.ready=true;m.facing=f.direction;m.moveSign=0;m.blend=0;m.phase=0;m.startupTravel=0;m.speed=0;m.phaseVelocity=0;m.bodyShift=0;m.prevBodyShift=0;m.lastWorldX=f.x;m.lastWorldLane=lane;
 }
 export function saveMotion(f){const m=f.motion;if(!m)return;m.prevPhase=m.phase;m.prevBlend=m.blend;m.prevBodyShift=m.bodyShift;for(const foot of m.feet){foot.prevX=foot.x;foot.prevLane=foot.lane;foot.prevLift=foot.lift;foot.prevAngle=foot.angle;}}
 function transition(m,state,dt){if(m.state!==state){m.state=state;m.stateTime=0;}else m.stateTime+=dt;}
@@ -57,31 +57,40 @@ export function updateLocomotion(f,dt){
  const backwards=wanted*f.direction<0,stride=(backwards?g.backStride:g.stride)*s*(f.carry?.72:1),duty=Math.min(.86,g.duty+(backwards?.035:0));
  m.strideLength=stride;
  if(walking){
-  if(m.moveSign!==wanted||m.blend<=.001){m.phase=duty-.025;m.moveSign=wanted;for(let i=0;i<2;i++)m.feet[i].q=(m.phase+((backwards?i===0:i===1)?.5:0))%1;}
-  m.phase+=distance/stride;m.travel+=distance;m.speed=distance/dt;m.blend=clamp(m.blend+dt/0.065,0,1);
+  // Forward starts with the leading foot; backward starts with the trailing
+  // foot. The other foot remains planted while the first step is taken.
+  if(m.moveSign!==wanted||m.blend<=.001){m.phase=(duty+.475)%1;m.moveSign=wanted;m.startupTravel=0;for(let i=0;i<2;i++)m.feet[i].q=(m.phase+((backwards?i===0:i===1)?.5:0))%1;}
+  // The painted idle stance starts wide. Take a shorter first step so the
+  // trailing sole releases before it drags the pelvis behind the world root.
+  const startRate=clamp(1.7-1.3*m.startupTravel/stride,1,1.7);
+  m.phaseVelocity=distance/stride*startRate/dt;
+  m.phase+=m.phaseVelocity*dt;m.travel+=distance;m.startupTravel+=distance;m.speed=distance/dt;m.blend=clamp(m.blend+dt/0.065,0,1);
   f.walkTime+=dt;f.walkDistance+=f.lane!==undefined?distance:dx*f.direction;
   const nx=distance>0?dx/distance:0,nz=distance>0?dz/distance:0;
   for(let i=0;i<2;i++){
-   const foot=m.feet[i],q=(m.phase+((backwards?i===0:i===1)?.5:0))%1,a=(i===0?JOINT.rearAnkle:JOINT.frontAnkle)*2;
+   const foot=m.feet[i],q=(m.phase+((backwards?i===0:i===1)?.5:0))%1;
    if(q>=duty){
     if(foot.support){foot.support=false;foot.startX=foot.x;foot.startLane=foot.lane;
      // A painted fighting stance is wider than a moving stance. Replant around
      // the pelvis; retaining that full painted width would stretch the legs.
      const base=r?(r[10]+r[18])*.10+(i?1:-1)*Math.max(Math.abs(r[18]-r[10])*.5,stride/s*.54)/2:i?40:-40;
-     foot.targetX=f.x+base*s*f.direction+nx*stride*(1-duty*.5);
-     foot.targetLane=lane+nz*stride*(1-duty*.5);
+     // The body travels during swing. Project only that remaining distance;
+     // a longer lead target exceeds both legs' combined reach at contact.
+     foot.targetX=f.x+base*s*f.direction+nx*stride*(1-duty);
+     foot.targetLane=lane+nz*stride*(1-duty);
     }
     const t=clamp((q-duty)/(1-duty),0,1),v=rootCurve(t);
     foot.x=foot.startX+(foot.targetX-foot.startX)*v;foot.lane=foot.startLane+(foot.targetLane-foot.startLane)*v;
     foot.lift=Math.sin(Math.PI*t)*g.lift*s*(f.carry?.7:backwards?.72:1);foot.angle=Math.sin(Math.PI*2*t)*(backwards?-.11:.17);
    }else{
-    if(!foot.support){foot.x=foot.targetX;foot.lane=foot.targetLane;}
+    if(!foot.support){foot.targetX=foot.x;foot.targetLane=foot.lane;}
     foot.support=true;foot.lift=0;foot.angle=0;
    }
    foot.q=q;
   }
  }else{
-  m.speed=0;m.blend=clamp(m.blend-dt/g.recover,0,1);
+  m.speed=0;m.phaseVelocity=0;m.blend=clamp(m.blend-dt/g.recover,0,1);
+  if(m.blend<=.001)m.startupTravel=0;
   // Complete the airborne foot's last short placement. Supporting feet never slide.
   for(let i=0;i<2;i++){const foot=m.feet[i],a=(i===0?JOINT.rearAnkle:JOINT.frontAnkle)*2;
    if(!foot.support){const home=f.x+(r?r[a]:i?40:-40)*s*f.direction;
@@ -91,32 +100,61 @@ export function updateLocomotion(f,dt){
   }
  }
  const state=motionState(f,walking);
- m.cycleDuration=m.speed>0?stride/m.speed:0;
+ m.cycleDuration=m.phaseVelocity>0?1/m.phaseVelocity:0;
  transition(m,state==='IDLE'&&m.blend>.001?'MOVE_STOP':walking&&m.blend<.98&&!f.carry?'MOVE_START':state,dt);
  if(r)constrainPelvis(f,r,g,dt);
  m.lastWorldX=f.x;m.lastWorldLane=lane;
  f.walkBlend=m.blend;
 }
-const body={};
 function bodyParameters(f,g){
  const m=f.motion,time=f.animTime??0,phase=m.phase*Math.PI*2,moving=m.blend,back=m.moveSign*f.direction<0;
  const breathe=Math.sin(time*g.tempo),weight=Math.sin(time*g.tempo*.53);
- body.shift=weight*g.sway*(1-moving)+Math.sin(phase)*g.sway*.65*moving+(back?-1:1)*g.lean*moving;
- body.down=Math.abs(Math.sin(phase))*g.bob*moving+breathe*.65+(f.carry?4:0)+carryImpulse(f)*2;
- body.turn=Math.sin(phase)*.018*moving+weight*.012*(1-moving);
- body.breathe=breathe;body.weight=weight;body.phase=phase;return body;
+ // The support sole is in world coordinates. The animation root (pelvis) is
+ // expressed relative to the physical root f.x; neither changes the other.
+ let sum=0,supportX=0,supportSide=0;
+ for(let i=0;i<2;i++){
+  const foot=m.feet[i];if(!foot.support)continue;
+  const duty=clamp((g.duty+(back?.035:0)),.01,.95);
+  const q=clamp(foot.q/duty,0,1);
+  const load=smoothStep(Math.min(q,1-q)*4);
+  sum+=load;supportX+=load*(foot.x-f.x)*f.direction/(entityScale(f)||1);
+  supportSide+=load*(i?1:-1);
+ }
+ supportX=sum?supportX/sum:0;supportSide=sum?supportSide/sum:0;
+ const transfer=clamp(supportX*.32,-Math.max(15,g.sway*2.8),Math.max(15,g.sway*2.8));
+ const shift=weight*g.sway*1.25*(1-moving)+(transfer+Math.sin(phase)*g.sway*.28)*moving;
+ const down=(.5-.5*Math.cos(phase*2))*g.bob*moving+breathe*.65+(f.carry?4:0)+carryImpulse(f)*2;
+ const turn=Math.sin(phase)*.034*moving+weight*.018*(1-moving);
+ const lean=(back?-1:1)*g.lean/g.height*moving+weight*.022*(1-moving)-shift/g.height*.10;
+ return {shift,down,turn,lean,breathe,weight,phase,supportSide};
 }
 function constrainPelvis(f,r,g,dt){
  const p=bodyParameters(f,g),s=entityScale(f),m=f.motion;let lo=-Infinity,hi=Infinity;
  for(let i=0;i<2;i++){
-  const [h,k,a]=legJoints[i],foot=m.feet[i],hipY=r[h*2+1]+p.down+(i?1:-1)*Math.sin(p.phase)*2.2*m.blend;
+  const [h,k,a]=legJoints[i],foot=m.feet[i];if(!foot.support)continue;
+  const side=i?-1:1,hipDrive=-side*Math.sin(p.phase)*3.5*m.blend;
+  const hipY=r[h*2+1]+p.down- side*(Math.sin(p.phase)*2.2*m.blend+p.supportSide*1.2);
   const length=Math.hypot(r[k*2]-r[h*2],r[k*2+1]-r[h*2+1])+Math.hypot(r[a*2]-r[k*2],r[a*2+1]-r[k*2+1]);
   const dy=r[a*2+1]-foot.lift/s+(foot.lane-(f.lane??625))/s-hipY,reach=Math.sqrt(Math.max(0,length*length-dy*dy));
-  const footX=(foot.x-f.x)*f.direction/s-r[h*2];lo=Math.max(lo,footX-reach);hi=Math.min(hi,footX+reach);
+  const footX=(foot.x-f.x)*f.direction/s-r[h*2]-hipDrive;lo=Math.max(lo,footX-reach);hi=Math.min(hi,footX+reach);
  }
  const target=lo<=hi?clamp(p.shift,lo,hi):(lo+hi)/2;
  const next=p.shift+m.bodyShift+clamp(target-p.shift-m.bodyShift,-650*dt,650*dt);
  m.bodyShift=(lo<=hi?clamp(next,lo,hi):target)-p.shift;
+ // A swing foot has no contact constraint. Shorten its arc when needed so the
+ // support sole remains locked and neither thigh nor shin has to stretch.
+ const pelvisX=p.shift+m.bodyShift;
+ for(let i=0;i<2;i++){
+  const foot=m.feet[i];if(foot.support)continue;
+  const [h,k,a]=legJoints[i],side=i?1:-1;
+  const hipX=r[h*2]+pelvisX+side*Math.sin(p.phase)*3.5*m.blend;
+  const hipY=r[h*2+1]+p.down+side*(Math.sin(p.phase)*2.2*m.blend+p.supportSide*1.2);
+  const length=Math.hypot(r[k*2]-r[h*2],r[k*2+1]-r[h*2+1])+Math.hypot(r[a*2]-r[k*2],r[a*2+1]-r[k*2+1]);
+  const footY=r[a*2+1]-foot.lift/s+(foot.lane-(f.lane??625))/s;
+  const reach=Math.sqrt(Math.max(0,length*length-(footY-hipY)**2));
+  const x=clamp((foot.x-f.x)*f.direction/s,hipX-reach,hipX+reach);
+  foot.x=f.x+x*f.direction*s;
+ }
  f.visualOffsetX=p.shift+m.bodyShift;f.visualOffsetY=p.down;
 }
 function joint(out,r,i,x,y){out[i*2]=r[i*2]+x;out[i*2+1]=r[i*2+1]+y;}
@@ -135,11 +173,20 @@ export function evaluateRig(f,out=scratch){
  out.set(r);const s=entityScale(f),blend=m.blend,time=f.animTime??0,phase=m.phase*Math.PI*2,back=m.moveSign*f.direction<0;
  const p=bodyParameters(f,g),breathe=p.breathe,weight=p.weight,moving=blend;
  const carry=!!f.carry,shift=p.shift+(m.bodyShift??0),down=p.down,turn=p.turn;
- for(const i of hipJoints)joint(out,r,i,shift,down+(i===3?-1:i===7?1:0)*Math.sin(phase)*2.2*moving);
+ joint(out,r,0,shift,down);
+ for(const i of [3,7]){
+  const side=i===3?-1:1,hipDrive=side*Math.sin(phase)*3.5*moving;
+  joint(out,r,i,shift+hipDrive,down+side*(Math.sin(phase)*2.2*moving+p.supportSide*1.2));
+ }
  const pelvis=r[1],neckHeight=r[3]-pelvis;
- joint(out,r,1,shift+neckHeight*Math.sin(turn),down+Math.abs(neckHeight)*(1-Math.cos(turn)));
- joint(out,r,2,out[2]-r[2]+breathe*g.head,down+Math.abs(neckHeight)*(1-Math.cos(turn))+Math.sin(time*g.tempo*.73)*.6);
- for(const i of shoulderJoints)joint(out,r,i,out[2]-r[2]+(i===11?-1:1)*Math.sin(phase)*1.7*moving,down+(i===11?-1:1)*(breathe*.8+Math.cos(phase)*1.4*moving));
+ const neckShift=shift+neckHeight*Math.sin(turn+p.lean);
+ joint(out,r,1,neckShift,down+Math.abs(neckHeight)*(1-Math.cos(turn)));
+ joint(out,r,2,neckShift*.68+breathe*g.head,down+Math.abs(neckHeight)*(1-Math.cos(turn))+Math.sin(time*g.tempo*.73)*.6);
+ for(const i of shoulderJoints){
+  const side=i===11?-1:1;
+  joint(out,r,i,neckShift+side*Math.sin(phase+Math.PI*.35)*3.2*moving+side*weight*1.3*(1-moving),
+   down+side*(breathe*.8+Math.cos(phase)*2.1*moving)-p.supportSide*1.1*moving);
+ }
  for(let side=0;side<2;side++){
   const h=side===0?3:7,k=side===0?4:8,a=side===0?5:9,toe=side===0?6:10,foot=m.feet[side];
   const x=(foot.x-f.x)*f.direction/s,y=(foot.lane-(f.lane??625)-foot.lift)/s+r[a*2+1];
@@ -147,7 +194,7 @@ export function evaluateRig(f,out=scratch){
   const angle=foot.angle,tx=r[toe*2]-r[a*2],ty=r[toe*2+1]-r[a*2+1];
   out[toe*2]=x+tx*Math.cos(angle)-ty*Math.sin(angle);out[toe*2+1]=y+tx*Math.sin(angle)+ty*Math.cos(angle);
   const sh=side===0?11:14,el=side===0?12:15,hand=side===0?13:16,guard=g.guard?-.8:0;
-  let hx=r[hand*2]+out[sh*2]-r[sh*2]+Math.sin(phase+(side?Math.PI:0))*moving*(g.guard?2:5)+weight*(side?1:-1)*1.7;
+  let hx=r[hand*2]+out[sh*2]-r[sh*2]+Math.sin(phase+(side?0:Math.PI))*moving*(g.guard?4:7)+weight*(side?1:-1)*2.1;
   let hy=r[hand*2+1]+down+guard+Math.sin(time*g.tempo+(side?1.1:0))*1.2;
   if(back){hx-=moving*4;hy-=moving*(g.guard?3:1);}
   if(carry){const throwProgress=f.action==='throw'?rootCurve(f.actionTime/(f.moveData?.startup??.1)):0,strike=carryImpulse(f);hx=side===0?23:66;hy=side===0?-185:-198;hx+=shift+throwProgress*16+strike*25;hy+=down-throwProgress*8+strike*(side===0?12:5);}

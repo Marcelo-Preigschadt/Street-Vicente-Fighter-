@@ -115,3 +115,84 @@ test('golpe com cadeira preserva as mãos ocupadas e só causa dano durante os f
  const e=story('tais'),f=e.fighters[0];f.carry={kind:'chair',id:'fixture'};f.carryTime=0;e.queue(0,'kick');e.update(FIXED_STEP);assert.ok(usesRig(f));const held=heldObjectTransform(f),box=carryStrikeBox(f),n=e.spawnEnemy('lab',box.x+box.w*.5);n.lane=f.lane;n.hitstun=10;n.y=WORLD.floor-40;
  const before=n.hp;e.update(FIXED_STEP);assert.equal(n.hp,before);advance(e,.25);assert.ok(n.hp<before);assert.equal(f.carry.kind,'chair');const after=n.hp;advance(e,.5);assert.equal(n.hp,after);assert.ok(Number.isFinite(held.x));
 });
+test('boxe inicia avanço pelo pé dianteiro e recuo pelo traseiro, sem cruzar a base',()=>{
+ for(const back of [false,true]){
+  const e=versus('rafael'),f=e.fighters[0],start=f.motion.feet.map(p=>p.x);
+  e.setInput(0,{right:!back,left:back});let first=-1;
+  for(let i=0;i<65;i++){
+   e.update(FIXED_STEP);
+   if(first<0)first=f.motion.feet.findIndex(p=>!p.support);
+   const [rear,front]=f.motion.feet;
+   assert.ok(rear.x<front.x,`base cruzada no quadro ${i}`);
+  }
+  assert.equal(first,back?0:1);
+  assert.ok(f.motion.feet.some((p,i)=>Math.abs(p.x-start[i])>10));
+ }
+});
+test('silhueta em câmera lenta: quadril, ambas as coxas, tronco, ombros e braços variam com o worldX congelado',()=>{
+ const angle=(p,a,b)=>Math.atan2(p[b*2]-p[a*2],p[b*2+1]-p[a*2+1]);
+ const span=values=>Math.max(...values)-Math.min(...values);
+ for(const id of ids){
+  const e=versus(id),f=e.fighters[0],worldX=f.x,frames=[];
+  e.setInput(0,{right:true});
+  for(let tick=0;tick<125;tick++){
+   const before=f.motion.feet.map(p=>({...p}));e.update(FIXED_STEP);
+   if(tick%3)continue;
+   // Render the same articulated pose in place: removing world movement must
+   // leave a complete step rather than only a moving calf.
+   const view=interpolateFighter(f,1,{motion:{feet:[{},{}]}});
+   const delta=worldX-view.x;view.x=worldX;
+   for(const foot of view.motion.feet)foot.x+=delta;
+   assert.equal(view.x,worldX);
+   const p=Array.from(evaluateRig(view));
+   frames.push({p,root:f.x,feet:f.motion.feet.map(x=>({...x})),before,
+    thigh:[angle(p,3,4),angle(p,7,8)],torso:angle(p,0,1)});
+  }
+  assert.ok(span(frames.map(x=>x.p[0]))>10,id+' pelve');
+  assert.ok(span(frames.map(x=>x.thigh[0]))>.20,id+' coxa traseira');
+  assert.ok(span(frames.map(x=>x.thigh[1]))>.20,id+' coxa dianteira');
+  assert.ok(span(frames.map(x=>x.torso))>.025,id+' tronco');
+  assert.ok(span(frames.map(x=>x.p[22]-x.p[28]))>2,id+' ombros');
+  assert.ok(span(frames.map(x=>x.p[26]))>3,id+' braço');
+  assert.ok(frames.some(x=>x.feet.some(foot=>foot.lift>3)),id+' balanço');
+  assert.ok(frames.some(x=>x.feet.some((foot,i)=>foot.support&&foot.x===x.before[i].x)),id+' pé plantado');
+ }
+});
+test('História compartilha a pose articulada com 1×1 para herói e exoesqueleto bípede',()=>{
+ const e=story('tais'),hero=e.fighters[0],robot=e.spawnEnemy('exo',880,625);
+ e.enemies=e.enemies.filter(enemy=>enemy!==robot);
+ e.setInput(0,{right:true});const samples=[[],[]];
+ for(let tick=0;tick<85;tick++){
+  const old=robot.x;robot.prevX=old;robot.prevLane=robot.lane;robot.x+=1.25;robot.vx=150;robot.state='walk';
+  updateLocomotion(robot,FIXED_STEP);
+  e.update(FIXED_STEP);
+  for(const [index,f] of [hero,robot].entries())if(tick%3===0){
+   assert.ok(usesRig(f));
+   const p=Array.from(evaluateRig(f));
+   samples[index].push({pelvis:p[0],rear:Math.atan2(p[8]-p[6],p[9]-p[7]),
+    front:Math.atan2(p[16]-p[14],p[17]-p[15]),lift:f.motion.feet.map(foot=>foot.lift)});
+  }
+ }
+ for(const [index,poses]of samples.entries()){
+  const spread=key=>Math.max(...poses.map(p=>p[key]))-Math.min(...poses.map(p=>p[key]));
+  assert.ok(spread('pelvis')>3,index+' pelve');
+  assert.ok(spread('rear')>.09,index+' coxa traseira');
+  assert.ok(spread('front')>.09,index+' coxa dianteira');
+  assert.ok(poses.some(p=>p.lift.some(v=>v>2)),index+' balanço');
+ }
+});
+test('contato e soltura do pé não reiniciam o ciclo nem causam salto do centro de massa',()=>{
+ for(const id of ids){
+  const e=versus(id),f=e.fighters[0];e.fighters[1].x=1200;
+  e.setInput(0,{right:true});let phase=-1,worldPelvis=null,contacts=0;
+  for(let tick=0;tick<130;tick++){
+   const old=f.motion.feet.map(foot=>foot.support);e.update(FIXED_STEP);
+   const p=evaluateRig(f),current=f.x+p[0]*f.direction;
+   if(worldPelvis!==null)assert.ok(Math.abs(current-worldPelvis)<10,id+' salto no quadro '+tick);
+   if(phase>=0)assert.ok(f.motion.phase>phase,id+' reiniciou o ciclo');
+   for(let side=0;side<2;side++)if(!old[side]&&f.motion.feet[side].support)contacts++;
+   worldPelvis=current;phase=f.motion.phase;
+  }
+  assert.ok(contacts>=2,id+' contatos alternados');
+ }
+});
