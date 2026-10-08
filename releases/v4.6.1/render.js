@@ -17,7 +17,7 @@ import { MUAY_THAI_LAYOUT } from './muay-thai-data.js';
 import { drawImpulse, drawKineticRise } from './physics-fx.js';
 import { GELTON_LAYOUT } from './gelton-layout.js';
 import { drawPaintStroke, drawArtRise } from './art-fx.js';
-import { cacheSpriteEffects, cachePortrait } from './render-cache.js';
+import { cacheSpriteEffects, cachePortrait, cacheArena } from './render-cache.js';
 
 export const CAPOEIRA_CELL_MARGIN = 96;
 
@@ -41,7 +41,7 @@ export class Renderer {
   }
   loadStory() { return this.storyLoad??=loadStoryArt(this).catch(error=>{this.storyLoad=null;throw error;}); }
   loadBackground() {
-    return this.backgroundPromise??=loadImage('assets/arena.webp').then(image=>{this.background=image;});
+    return this.backgroundPromise??=loadImage('assets/arena.webp').then(async image=>{this.background=image;this.arenaCache=await cacheArena(image,WORLD.width,WORLD.height);});
   }
   async load(ids=Object.keys(CHARACTERS)) {
     this.characterLoads??=new Map();
@@ -283,10 +283,13 @@ export class Renderer {
     const c = this.c;
     if (this.background) {
       const camera = engine.phase === 'selection' ? 0 : ((engine.fighters[0].x + engine.fighters[1].x) / 2 - 640) * -.02;
+      if(this.arenaCache){c.drawImage(this.arenaCache.background,-20+camera,-8);c.drawImage(this.arenaCache.overlay,0,0);}
+      else{
       c.drawImage(this.background, -20 + camera, -8, WORLD.width + 40, WORLD.height + 16);
       c.fillStyle = '#06191b22'; c.fillRect(0, 0, WORLD.width, WORLD.height);
       const vignette = c.createRadialGradient(640, 350, 270, 640, 360, 780); vignette.addColorStop(0, '#08141000'); vignette.addColorStop(1, '#071112b0');
       c.fillStyle = vignette; c.fillRect(0, 0, WORLD.width, WORLD.height);
+      }
     } else { c.fillStyle = '#142324'; c.fillRect(0, 0, WORLD.width, WORLD.height); }
   }
   drawShadow(f) {

@@ -61,3 +61,7 @@ Medição por software no ambiente de desenvolvimento, 180 frames, incluindo upd
 A observação da versão publicada mostrou que uma parada curta podia terminar com os pés próximos demais. A recuperação levanta e recoloca somente um pé em até 140 ms, com o outro apoio fixo e sem mudar a posição global. MOVE_STOP cobre essa colocação mesmo depois que a velocidade chega a zero. A vista interpolada também preserva explicitamente os getters airborne, crouching e movePhase do Fighter, para que golpes aéreos conservem o pivô e o estado corretos.
 
 O [laboratório visual](../tests/locomotion-lab.html) utiliza o pacote publicado e o compositor Canvas real em fundo preto. Compare idle, avanço, recuo, parada, walk → attack e attack → walk dos quatro estilos; pause para inspecionar os pés. As métricas do navegador são observações do dispositivo em uso, não uma garantia universal de 60 FPS.
+
+## Custo de renderização
+
+A verificação no runner mostrou que o 1×1 precisava reduzir o custo por frame. A arena agora prepara uma imagem imutável na resolução de desenho e a vinheta uma única vez no carregamento; o pan e as cores originais permanecem. Regiões rígidas da malha que compartilham exatamente a mesma transformação, como rosto, tronco e solas, usam uma chamada de textura por grupo. Vértices, IK, pivôs e resolução da malha são mantidos. Não há simplificação do rosto, filtros ou mudança de colisão nessa otimização.

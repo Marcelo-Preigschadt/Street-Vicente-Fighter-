@@ -41,7 +41,15 @@ export function prepareLocomotionRig(id,sheet,selectedFrame=null){
  }
  // Keep the loaded immutable atlas as the texture. Repeated drawImage calls on
  // a mutable canvas otherwise force costly texture snapshots in Canvas engines.
- const rig={image:frame.image??frame.cutout,source:frame.rect??[0,0,w,h],width:w,height:h,reference,vertices,triangles,transforms:new Float64Array(BONES.length*6),positions:new Float64Array(vertices.length*2),joints:new Float64Array(34)};
+ // Identical rigid transforms can share one texture draw without changing the mesh.
+ const groups=[],byBone=new Array(BONES.length),flexTriangles=[];
+ for(const triangle of triangles){
+  const a=vertices[triangle[0]],b=vertices[triangle[1]],d=vertices[triangle[2]];
+  if(a.weight===1&&b.weight===1&&d.weight===1&&a.first===b.first&&a.first===d.first){
+   let group=byBone[a.first];if(!group){group=byBone[a.first]={bone:a.first,triangles:[]};groups.push(group);}group.triangles.push(triangle);
+  }else flexTriangles.push(triangle);
+ }
+ const rig={image:frame.image??frame.cutout,source:frame.rect??[0,0,w,h],width:w,height:h,axis:bind.axis,scale,reference,vertices,triangles,groups,flexTriangles,transforms:new Float64Array(BONES.length*6),positions:new Float64Array(vertices.length*2),joints:new Float64Array(34)};
  image.width=1;image.height=1;
  return rig;
 }
@@ -60,17 +68,24 @@ function deform(rig,f){
  }
  return true;
 }
+function trianglePath(c,p,triangle){
+ const [i,j,k]=triangle,x1=p[i*2],y1=p[i*2+1],x2=p[j*2],y2=p[j*2+1],x3=p[k*2],y3=p[k*2+1],cx=(x1+x2+x3)/3,cy=(y1+y2+y3)/3;
+ const n1=.40/(Math.hypot(x1-cx,y1-cy)||1),n2=.40/(Math.hypot(x2-cx,y2-cy)||1),n3=.40/(Math.hypot(x3-cx,y3-cy)||1);
+ c.moveTo(x1+(x1-cx)*n1,y1+(y1-cy)*n1);c.lineTo(x2+(x2-cx)*n2,y2+(y2-cy)*n2);c.lineTo(x3+(x3-cx)*n3,y3+(y3-cy)*n3);c.closePath();
+}
 export function drawLocomotionRig(c,f,rig){
  if(!rig||!usesRig(f)||!deform(rig,f))return false;
- const p=rig.positions,verts=rig.vertices;
- for(const triangle of rig.triangles){
+ const p=rig.positions,verts=rig.vertices,t=rig.transforms,s=rig.scale;
+ for(const group of rig.groups){
+  const n=group.bone*6;c.save();c.beginPath();for(const triangle of group.triangles)trianglePath(c,p,triangle);c.clip();
+  c.transform(t[n]*s,t[n+1]*s,t[n+2]*s,t[n+3]*s,t[n+4]-s*(t[n]*rig.axis+t[n+2]*rig.height),t[n+5]-s*(t[n+1]*rig.axis+t[n+3]*rig.height));
+  c.drawImage(rig.image,...rig.source,0,0,rig.width,rig.height);c.restore();
+ }
+ for(const triangle of rig.flexTriangles){
   const [i,j,k]=triangle,a=verts[i],b=verts[j],d=verts[k],x1=p[i*2],y1=p[i*2+1],x2=p[j*2],y2=p[j*2+1],x3=p[k*2],y3=p[k*2+1];
   const u1=b.sx-a.sx,v1=b.sy-a.sy,u2=d.sx-a.sx,v2=d.sy-a.sy,den=u1*v2-u2*v1;
   const aa=((x2-x1)*v2-(x3-x1)*v1)/den,bb=((y2-y1)*v2-(y3-y1)*v1)/den,cc=((x3-x1)*u1-(x2-x1)*u2)/den,dd=((y3-y1)*u1-(y2-y1)*u2)/den;
-  const cx=(x1+x2+x3)/3,cy=(y1+y2+y3)/3;
-  // Half-pixel overlap closes antialias seams without changing the silhouette.
-  const n1=.40/(Math.hypot(x1-cx,y1-cy)||1),n2=.40/(Math.hypot(x2-cx,y2-cy)||1),n3=.40/(Math.hypot(x3-cx,y3-cy)||1);
-  c.save();c.beginPath();c.moveTo(x1+(x1-cx)*n1,y1+(y1-cy)*n1);c.lineTo(x2+(x2-cx)*n2,y2+(y2-cy)*n2);c.lineTo(x3+(x3-cx)*n3,y3+(y3-cy)*n3);c.closePath();c.clip();
+  c.save();c.beginPath();trianglePath(c,p,triangle);c.clip();
   c.transform(aa,bb,cc,dd,x1-aa*a.sx-cc*a.sy,y1-bb*a.sx-dd*a.sy);c.drawImage(rig.image,...rig.source,0,0,rig.width,rig.height);c.restore();
  }
  return true;

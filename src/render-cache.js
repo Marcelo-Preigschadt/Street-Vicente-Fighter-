@@ -28,3 +28,18 @@ export async function cachePortrait(sheet, portrait) {
     headW=portrait?portrait.w*sheet.image.width:frame.w*.45,headH=portrait?portrait.h*sheet.image.height:frame.h*.30;
   c.drawImage(frame.cutout,headX-frame.x,headY-frame.y,headW,headH,0,0,80,81);return seal(image);
 }
+
+const sealTexture=async canvas=>{
+ if(typeof createImageBitmap==='function')return seal(canvas);
+ // Software Canvas backends also need an immutable image, not a mutable surface.
+ const source=canvas.toDataURL(),image=new Image();
+ await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Falha ao preparar o cenário.'));image.src=source;});
+ canvas.width=1;canvas.height=1;return image;
+};
+export async function cacheArena(image,width,height){
+ const arena=surface(width+40,height+16),a=arena.getContext('2d');
+ a.drawImage(image,0,0,arena.width,arena.height);a.fillStyle='#06191b22';a.fillRect(0,0,arena.width,arena.height);
+ const shade=surface(width,height),c=shade.getContext('2d'),vignette=c.createRadialGradient(width/2,350,270,width/2,360,780);
+ vignette.addColorStop(0,'#08141000');vignette.addColorStop(1,'#071112b0');c.fillStyle=vignette;c.fillRect(0,0,width,height);
+ const [background,overlay]=await Promise.all([sealTexture(arena),sealTexture(shade)]);return {background,overlay};
+}

@@ -45,7 +45,7 @@ try{
   await p.locator('#selection').waitFor({state:'hidden',timeout:60000});
   await p.waitForFunction(()=>document.getElementById('announcer').textContent.includes('Lutem'),{},{timeout:10000});
   await p.locator('#game').focus();await startTiming(p);
-  await p.keyboard.down('d');await p.waitForTimeout(650);await p.locator('#game').screenshot({path:directory+'/'+id+'-forward.png'});await p.keyboard.up('d');
+  await p.keyboard.down('d');await p.waitForTimeout(650);await p.locator('#game').screenshot({path:directory+'/'+id+'-forward.png'});await p.keyboard.up('d');if(id==='marcelo')await p.locator('#game').screenshot({type:'jpeg',quality:80,path:directory+'/marcelo-arena.jpg'});
   await p.waitForTimeout(220);await p.locator('#game').screenshot({path:directory+'/'+id+'-stop.png'});
   await p.keyboard.down('a');await p.waitForTimeout(650);await p.locator('#game').screenshot({path:directory+'/'+id+'-backward.png'});await p.keyboard.up('a');
   await p.waitForTimeout(300);await p.keyboard.down('d');await p.waitForTimeout(250);await p.keyboard.press('f');await p.waitForTimeout(90);await p.locator('#game').screenshot({path:directory+'/'+id+'-walk-attack.png'});
@@ -63,5 +63,6 @@ try{
  await p.keyboard.down('a');await p.waitForTimeout(300);await p.keyboard.up('a');await p.keyboard.press('f');await p.waitForTimeout(120);await p.keyboard.down('d');await p.waitForTimeout(700);await p.keyboard.up('d');await p.keyboard.press('g');await p.waitForTimeout(100);await p.locator('#game').screenshot({path:directory+'/story-enemies.png'});
  scenarios.push({id:'tais',mode:'story-solo',completed:true});renderTimings.push({id:'tais',mode:'story-solo',...await readTiming(p)});await p.close();
  await writeFile(directory+'/browser-render-timings.json',JSON.stringify(renderTimings,null,2)+'\n');console.log('BROWSER_RENDER_TIMINGS '+JSON.stringify(renderTimings));
+ if(process.env.SVF_EMIT_VISUAL==='1')console.log('SVF_VISUAL marcelo-arena.jpg '+await readFile(directory+'/marcelo-arena.jpg','base64'));
  assert.deepEqual(errors,[]);await writeFile(directory+'/scenarios.json',JSON.stringify({scenarios,errors},null,2)+'\n');console.log('BROWSER_SCENARIOS '+JSON.stringify({scenarios,errors}));
 }finally{if(browser)await browser.close();server.kill();}
