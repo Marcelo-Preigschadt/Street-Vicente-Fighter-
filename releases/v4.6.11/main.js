@@ -3,11 +3,11 @@ import {STORY_HEROES} from './story-data.js';
 import {syncStoryUI,readCheckpoint,saveCheckpoint,clearCheckpoint} from './story-ui.js';
 import {RoomDirectory,roomLabel} from './rooms.js';
 import { SELECTION_QUOTES } from './selection-data.js';
-import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js?v=27';
-import { Renderer } from './render.js?v=27';
-import { ArcadeAudio } from './audio.js?v=27';
-import { Inputs } from './input.js?v=27';
-import { OnlineMatch,normalizeCode } from './online.js?v=28';
+import { FightEngine, FIXED_STEP, CHARACTERS } from './engine.js';
+import { Renderer } from './render.js';
+import { ArcadeAudio } from './audio.js';
+import { Inputs } from './input.js';
+import { OnlineMatch,normalizeCode } from './online.js';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();

@@ -5,15 +5,15 @@ import {RollbackGame} from '../src/netplay.js';
 import {snapshot} from '../src/net-state.js';
 
 function simulation(pair,delay){
-  let time=0;const wire=[],lag=[],events=[[],[]],nets=[];
+  let time=0;const wire=[],sent=[],lag=[],events=[[],[]],nets=[];
   for(let slot=0;slot<2;slot++){
     const e=new FightEngine({random:()=>.5,onEvent:event=>nets[slot]?.event(event)});e.start(pair[0],'online',pair[1]);
     e.phase='fight';e.fighters[0].x=450;e.fighters[1].x=590;e.fighters.forEach(f=>f.meter=100);
     nets.push(new RollbackGame({engine:e,slot,now:()=>time,startAt:0,onEvent:e=>events[slot].push(e),onLag:m=>lag.push(m),
-      send:packets=>wire.push({target:1-slot,due:time+delay(slot,packets[0].frame),packets:structuredClone(packets)})}));
+      send:packets=>{sent.push(structuredClone(packets));wire.push({target:1-slot,due:time+delay(slot,packets[0].frame),packets:structuredClone(packets)});}}));
   }
   function deliver(){for(let i=wire.length-1;i>=0;i--)if(wire[i].due<=time){const p=wire.splice(i,1)[0];nets[p.target].receive(p.packets);}}
-  return {nets,events,lag,step(frame){time=frame*FIXED_STEP*1000+.001;deliver();for(const n of nets)n.advance();deliver();},
+  return {nets,events,lag,sent,step(frame){time=frame*FIXED_STEP*1000+.001;deliver();for(const n of nets)n.advance();deliver();},
     drain(){for(const n of nets)if(n.pending.length)n.send(n.pending.splice(0));time+=2000;deliver();},
     state(slot){const state=snapshot(nets[slot].engine,1,[]);return JSON.parse(JSON.stringify(state));}};
 }
@@ -57,4 +57,13 @@ test('histórico é limitado e pausa corta comandos pendentes antes da retomada'
   assert.ok(s.nets.every(n=>n.history.size<=181));
   for(const n of s.nets){n.attack('super');n.pauseAt(348);assert.equal(n.attacks.length,0);assert.equal(n.frame,348);assert.ok(n.engine.paused);}
   s.drain();assert.deepEqual(s.state(0),s.state(1));
+});
+
+test('broadcast agrupa frames sem exceder limite do receptor ou saturar a sala',()=>{
+  const s=simulation(['marcelo','rafael'],()=>180);
+  for(let f=1;f<=240;f++)s.step(f);
+  s.drain();
+  assert.ok(s.sent.length<=110,`Broadcasts excessivos: ${s.sent.length}`);
+  assert.ok(s.sent.every(batch=>batch.length>=1&&batch.length<=24));
+  assert.deepEqual(s.state(0),s.state(1));assert.equal(s.lag.length,0);
 });

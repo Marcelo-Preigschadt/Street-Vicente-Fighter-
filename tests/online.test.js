@@ -43,7 +43,7 @@ function clients(PeerClass){
       clock+=FIXED_STEP*1000;
       for(const c of out){c.net.advance();c.net.tick();}await flush();
     }
-  };return out;
+  };out.jump=seconds=>{clock+=seconds*1000;};return out;
 }
 test('salas normalizam códigos e snapshots mantêm os protótipos de Fighter',()=>{
   assert.equal(normalizeCode(' ab23-cd45 '),'AB23CD45');assert.match(roomCode(new Uint8Array(8)),/^[A-HJ-NP-Z2-9]{8}$/);
@@ -188,4 +188,15 @@ test('a sala pública acompanha criação, adversário, personagem e encerrament
   await guest.net.begin('join','gustavo',host.net.code);await flush();
   assert.deepEqual(calls.at(-1),['update','playing','rafael']);assert.equal(host.net.running,false);assert.equal(guest.net.running,false);
   host.net.close();assert.deepEqual(calls.at(-1),['remove']);
+});
+
+test('pausa de vinte segundos mantém a sala e a retomada não expulsa jogadores',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  await host.net.begin('create','marcelo');await guest.net.begin('join','rafael',host.net.code);await flush();await flush();await confirmBoth(cs);
+  const code=host.net.code;
+  host.net.pause();await flush();assert.ok(cs.every(c=>c.engine.paused));
+  cs.jump(20);cs.forEach(c=>c.net.tick());await flush();
+  assert.ok(cs.every(c=>c.net.active&&c.net.conn.open&&c.net.code===code));
+  host.net.pause();await flush();assert.ok(cs.every(c=>!c.engine.paused));
+  await cs.step(.35);assert.ok(cs.every(c=>c.net.active&&c.net.running));
 });
