@@ -36,7 +36,7 @@ function clients(PeerClass){
   let clock=0;
   const out=Array.from({length:2},()=>{
     const events=[],statuses=[],lobbies=[],preparations=[],engine=new FightEngine({onEvent:e=>{events.push(e);net.event(e);}});
-    const net=new OnlineMatch({engine,PeerClass,now:()=>clock,prepare:async pair=>{preparations.push([...pair]);},onLobby:state=>lobbies.push(state),onStart:()=>{},onStatus:s=>statuses.push(s),onEnd:()=>{}});
+    const net=new OnlineMatch({engine,PeerClass,now:()=>clock,prepare:async pair=>{preparations.push([...pair]);},onLobby:state=>{lobbies.push(state);if(engine.phase==='result')engine.phase='selection';},onStart:()=>{},onStatus:s=>statuses.push(s),onEnd:()=>{}});
     return {engine,net,events,statuses,lobbies,preparations};
   });out.step=async(seconds)=>{
     for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++){
@@ -80,16 +80,32 @@ test('busca pública reúne dois jogadores e libera a fila para a próxima dupla
   await confirmBoth(b);
   assert.ok(b.every(c=>c.net.running));assert.notEqual(a[0].net.matchId,b[0].net.matchId);
 });
-test('pausa é compartilhada, revanche exige os dois e desconexão encerra a sessão',async t=>{
+test('pausa é compartilhada; resultado devolve os dois à seleção na mesma sala; saída encerra a sessão',async t=>{
   const cs=clients(fakePeers()),[a,b]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
   await a.net.begin('create','marcos');await b.net.begin('join','rafael',a.net.code);await flush();await flush();
   await confirmBoth(cs);
   b.net.pause();await flush();await cs.step(.1);assert.ok(a.engine.paused&&b.engine.paused);
   a.net.pause();await cs.step(.1);assert.equal(b.engine.paused,false);
-  for(const c of cs)c.engine.phase='result';await cs.step(.1);assert.equal(b.engine.phase,'result');
-  b.net.rematch();await flush();assert.equal(a.engine.phase,'result');a.net.rematch();await flush();await flush();
-  assert.equal(a.engine.phase,'intro');assert.equal(b.engine.phase,'intro');assert.equal(a.engine.fighters[0].hp,1000);
+  const code=a.net.code,matchId=a.net.matchId;
+  for(const c of cs)c.engine.phase='result';await cs.step(.1);await flush();
+  assert.ok(cs.every(c=>c.net.active&&c.net.lobby&&!c.net.running&&c.net.conn.open));
+  assert.ok(cs.every(c=>c.engine.phase==='selection'&&c.net.code===code&&c.net.matchId!==matchId));
+  assert.equal(a.net.matchId,b.net.matchId);assert.deepEqual(a.net.confirmed,[false,false]);
+  assert.equal(a.net.selectCharacter('gelton'),true);assert.equal(b.net.selectCharacter('joao'),true);await flush();await flush();
+  await confirmBoth(cs);
+  assert.equal(a.engine.phase,'intro');assert.equal(b.engine.phase,'intro');assert.equal(a.engine.fighters[0].character.id,'gelton');assert.equal(b.engine.fighters[1].character.id,'joao');
   b.net.close();await flush();assert.equal(a.net.active,false);assert.ok(a.statuses.some(s=>s.includes('saiu')));
+});
+test('sala pública continua ocupada após o resultado e só é removida quando alguém sai',async t=>{
+  const cs=clients(fakePeers()),[host,guest]=cs;t.after(()=>cs.forEach(c=>c.net.close()));
+  const calls=[];host.net.directory={setMode(){},register(){calls.push('register');return Promise.resolve();},update(status){calls.push(status);return Promise.resolve();},remove(){calls.push('remove');return Promise.resolve();}};
+  await host.net.begin('create','marcelo');await guest.net.begin('join','rafael',host.net.code);await flush();await flush();await confirmBoth(cs);
+  const removed=calls.filter(c=>c==='remove').length,code=host.net.code;
+  for(const c of cs)c.engine.phase='result';await cs.step(.1);await flush();
+  assert.equal(host.net.code,code);assert.equal(host.net.active,true);assert.equal(calls.filter(c=>c==='remove').length,removed);
+  assert.ok(host.net.lobby&&guest.net.lobby);
+  guest.net.close();await flush();assert.equal(host.net.active,false);
+  assert.equal(calls.filter(c=>c==='remove').length,removed+1);
 });
 test('pacotes duplicados e golpes inválidos não alteram os comandos já confirmados',async t=>{
   const cs=clients(fakePeers()),[a,b]=cs;t.after(()=>cs.forEach(c=>c.net.close()));

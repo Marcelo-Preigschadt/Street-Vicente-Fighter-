@@ -4,6 +4,7 @@ import {FightEngine,FIXED_STEP,WORLD,CHARACTERS} from '../src/engine.js';
 import {validCharacter} from '../src/net-state.js';
 import {WILD_LAYOUT,WILD_HURT} from '../src/wild-data.js';
 import {Renderer} from '../src/render.js';
+import {scaledBox} from '../src/story-world.js';
 const advance=(g,t)=>{for(let i=0;i<Math.ceil(t/FIXED_STEP);i++)g.update(FIXED_STEP);};
 function scene(slot=0,distance=210){
   const events=[],g=new FightEngine({random:()=>.47,onEvent:e=>events.push(e)});
@@ -18,6 +19,13 @@ test('aluno 301 tem 32 poses calibradas e pode ser selecionado online sem remove
     assert.equal(WILD_LAYOUT[atlas].length,16);assert.equal(WILD_HURT[atlas].length,16);
     for(const bands of WILD_HURT[atlas])assert.ok(bands.every(b=>b.every(Number.isFinite)&&b[2]>0&&b[3]>0));
   }
+});
+test('João preserva a altura e reduz a largura visual e a área de contato na mesma proporção',()=>{
+  const s=scene(),f=s.f,ctx={save(){},restore(){},translate(){},drawImage(){},scale(x,y){this.scales.push([x,y]);},scales:[]};
+  const frame={image:{},rect:[0,0,328,297],x:0,y:0,w:328,h:297,anchor:164,bottom:297,scale:1};
+  Renderer.prototype.drawFighter.call({c:ctx,clock:0,reduced:true},f,{sheet:{frames:[frame]},index:0});
+  assert.deepEqual(ctx.scales[0],[f.direction*.82,1]);
+  const box=scaledBox(f,-164,200,328,90);assert.equal(box.w,328*.82);assert.equal(box.h,90);
 });
 test('Super Soco acerta nos dois lados, é defendível e erra fora do alcance sem projéteis',()=>{
   for(const slot of [0,1])for(const guard of [false,true]){
