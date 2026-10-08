@@ -15,7 +15,7 @@ function scene() {
 const step = g => g.update(FIXED_STEP);
 const advance = (g, n) => { for (let i = 0; i < n; i++) step(g); };
 
-test('a passada avança pela distância real, inverte ao recuar e para ao soltar', () => {
+test('a passada usa distância real na aceleração, no recuo e na curta frenagem', () => {
   for (const slot of [0, 1]) {
     const { g } = scene(), f = g.fighters[slot], toward = f.direction;
     const input = sign => ({ right: sign > 0, left: sign < 0 });
@@ -23,7 +23,7 @@ test('a passada avança pela distância real, inverte ao recuar e para ao soltar
     assert.ok(Math.abs(f.walkDistance - (f.x - start) * toward) < 1e-8);
     const phase = f.walkDistance; g.setInput(slot, input(-toward)); const turn = f.x; advance(g, 10);
     assert.ok(f.walkDistance < phase); assert.ok(Math.abs(f.walkDistance - phase - (f.x - turn) * toward) < 1e-8);
-    g.setInput(slot, {}); const distance = f.walkDistance; advance(g, 15);
+    g.setInput(slot, {}); advance(g, 6);const distance = f.walkDistance; advance(g, 15);
     assert.equal(f.walkDistance, distance); assert.equal(f.walkBlend, 0);
   }
 });

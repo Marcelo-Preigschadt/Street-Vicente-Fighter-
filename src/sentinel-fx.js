@@ -6,7 +6,7 @@ export function drawSentinel(c, drone, reduced = false) {
   const progress = Math.min(1, drone.age / delay), ready = progress >= .77;
   const fade = drone.fired ? Math.max(0, 1 - (drone.age - (drone.fireDelay??SENTINEL.delay)) / SENTINEL.retireTime) : 1;
   const bob = reduced ? 0 : Math.sin(drone.age * 7) * 2;
-  c.save(); c.translate(drone.x, drone.y + bob);
+  c.save(); c.translate(drone.x, drone.y + bob*(drone.worldScale??1));c.scale(drone.worldScale??1,drone.worldScale??1);
   c.globalAlpha = fade; const scale = Math.min(1, .4 + drone.age * 6); c.scale(scale, scale);
   // A compact metal housing, twin rotors and a directional lens.
   c.strokeStyle = '#122528'; c.lineWidth = 3; c.lineCap = 'round';
@@ -50,11 +50,12 @@ export function drawSentinel(c, drone, reduced = false) {
 export function drawSentinelLaser(c, laser, reduced = false) {
   const alpha = Math.max(0, laser.life / SENTINEL.beamDuration);
   c.save(); c.globalAlpha = alpha; c.lineCap = 'butt';
-  c.strokeStyle = '#84e98955'; c.lineWidth = reduced ? 6 : 15;
+  const s=laser.worldScale??1;
+  c.strokeStyle = '#84e98955'; c.lineWidth = (reduced ? 6 : 15)*s;
   c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.endY??laser.y); c.stroke();
-  c.strokeStyle = '#b8ed68'; c.lineWidth = 5; c.shadowColor = '#b8ed68'; c.shadowBlur = reduced ? 0 : 11;
+  c.strokeStyle = '#b8ed68'; c.lineWidth = 5*s; c.shadowColor = '#b8ed68'; c.shadowBlur = reduced ? 0 : 11*s;
   c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.endY??laser.y); c.stroke();
-  c.strokeStyle = '#f6ffe5'; c.lineWidth = 1.5;
+  c.strokeStyle = '#f6ffe5'; c.lineWidth = 1.5*s;
   c.beginPath(); c.moveTo(laser.x, laser.y); c.lineTo(laser.endX, laser.endY??laser.y); c.stroke();
   c.fillStyle = '#eaffc7'; c.beginPath(); c.arc(laser.x, laser.y, 5 + 4 * alpha, 0, TAU); c.fill();
   c.restore();

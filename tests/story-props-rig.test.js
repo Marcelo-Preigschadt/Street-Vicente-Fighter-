@@ -22,7 +22,7 @@ test('serras giram independentemente e braços avançam no contato',()=>{
 });
 test('móveis têm dimensões de colisão iguais às dimensões desenhadas',()=>{
  for(const kind of ['table','chair','soda']){const p={kind,x:500},b=storyPropBounds(p),s=STORY_PROP_DIMENSIONS[kind];assert.equal(b.w,s.width);assert.equal(b.h,s.height);assert.equal(b.x+b.w/2,p.x);}
- assert.ok(STORY_PROP_DIMENSIONS.table.height>=145);assert.ok(STORY_PROP_DIMENSIONS.chair.height>STORY_PROP_DIMENSIONS.table.height);
+ assert.ok(STORY_PROP_DIMENSIONS.table.height>80&&STORY_PROP_DIMENSIONS.table.height<93);assert.ok(STORY_PROP_DIMENSIONS.chair.height>STORY_PROP_DIMENSIONS.table.height);
 });
 test('móveis do pátio ficam na área da cantina do panorama',()=>{
  const e=new StoryEngine();e.start('marcelo','story-solo');

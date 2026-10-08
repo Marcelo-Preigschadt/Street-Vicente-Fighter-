@@ -1,4 +1,7 @@
 import {drawAthleticPulse,drawOlympicJump} from './savate-fx.js';
+import {prepareLocomotionRig,drawLocomotionRig,interpolateFighter} from './locomotion-render.js';
+import {entityScale} from './story-world.js';
+import {FOOT_CONTACTS} from './foot-contacts.js';
 import {loadStoryArt,drawStory} from './story-render.js';
 import {drawKaratePulse,drawKarateCharge} from './karate-fx.js';
 import {drawWildPower} from './wild-fx.js?v=27';
@@ -33,6 +36,7 @@ export class Renderer {
     this.superFX = new SuperEffects();
     this.fightFX = new FightEffects();
     this.portraits = {};
+    this.locomotionRigs={};this.fighterViews=[{motion:{feet:[{},{}]}},{motion:{feet:[{},{}]}}];
 
   }
   loadStory() { return this.storyLoad??=loadStoryArt(this).catch(error=>{this.storyLoad=null;throw error;}); }
@@ -45,7 +49,7 @@ export class Renderer {
     await Promise.all([this.loadBackground(),...pair].map(item=>typeof item==='string'?this.loadCharacter(item):item));
     // Keep recent match art, but release old canvases as the roster grows.
     for(const id of [...this.characterLoads.keys()])if(this.characterLoads.size>4&&!pair.has(id)){
-      this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];
+      this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];delete this.locomotionRigs[id];
     }
   }
   loadCharacter(id) {
@@ -55,6 +59,7 @@ export class Renderer {
       const {base,portrait}=await loadPreparedSprites(id,loadImage);
       if(id==='tais'){const [walkImage,walkFrames]=await Promise.all([loadImage('assets/story/tais-walk-v4.webp'),fetch('assets/story/tais-walk-v4.json').then(r=>r.json())]);base.motion={scale:1,frames:walkFrames.map(f=>({...f,image:walkImage}))};}
       this.sheets[id]=base;this.portraits[id]=portrait;
+      this.locomotionRigs[id]=prepareLocomotionRig(id,base);
       if(['gelton','marcelino','marcos','joao','ruan','tais'].includes(id)) {
         await cacheSpriteEffects(base,base.frames[13],CHARACTERS[id].color,['power']);
         for(const frame of base.combat.frames)await cacheSpriteEffects(base.combat,frame,CHARACTERS[id].color,['power']);
@@ -250,9 +255,8 @@ export class Renderer {
     this.drawBackground(engine);
     if (engine.phase !== 'selection') {
       if (engine.freeze > 0) alpha = 1;
-      const fighters = engine.fighters.map(f => ({ ...f, x: f.prevX + (f.x - f.prevX) * alpha, y: f.prevY + (f.y - f.prevY) * alpha,
-        walkDistance: f.prevWalkDistance + (f.walkDistance - f.prevWalkDistance) * alpha,
-        walkBlend: f.prevWalkBlend + (f.walkBlend - f.prevWalkBlend) * alpha, actionTime: f.actionTime }));
+      const fighters=this.fighterViews;
+      for(let i=0;i<engine.fighters.length;i++)interpolateFighter(engine.fighters[i],alpha,fighters[i]);
       for (const f of fighters) this.drawShadow(f);
       for (const f of fighters.sort((a, b) => a.y - b.y)) this.drawFighter(f);
       for (const drone of engine.drones) {
@@ -292,19 +296,34 @@ export class Renderer {
   drawFighter(f,override=null) {
     const c = this.c, current = override??this.poseFor(f); if (!current.sheet) return;
     // Arcade poses stay opaque. Position interpolation supplies smooth movement.
-    const breathing = f.state === 'idle' && !this.reduced ? Math.sin(f.animTime * 5) * .003 : 0;
-    c.save(); c.translate(f.x, f.y); c.scale(f.direction, 1 + breathing);
+    const size=entityScale(f);
+    c.save(); c.translate(f.x, f.y); c.scale(f.direction*size,size);
     c.shadowBlur = 0; c.filter = 'none';
     if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
     const drawPose = (selected, opacity) => {
       const { sheet, index } = selected, frame = sheet.frames[index], scale = frame.scale ?? sheet.scale; c.globalAlpha = opacity;
       const variant=f.blockFlash>0?'guard':f.flash>0?'flash':['special','super','uppercut','drone'].includes(f.state)?'power':null;
       const bitmap=frame.effects?.[variant];
-      if(bitmap)c.drawImage(bitmap.image,(frame.x-frame.anchor)*scale-bitmap.padding,(frame.y-frame.bottom)*scale-bitmap.padding);
+      const pose=fighterPose(f),contact=FOOT_CONTACTS[f.character.id]?.[pose.atlas]?.[pose.index];
+      const grounded=f.attackPlant&&!f.airborne&&f.action&&Number.isFinite(contact);
+      if(grounded){
+        const plant=(f.attackPlant.x-f.x)*f.direction/size-contact;
+        const padding=bitmap?.padding??0;
+        const x=(frame.x-frame.anchor)*scale-padding,y=(frame.y-frame.bottom)*scale-padding,width=bitmap?bitmap.image.width:frame.w*scale,height=bitmap?bitmap.image.height:frame.h*scale;
+        const image=bitmap?.image??frame.image??frame.cutout,source=bitmap?[0,0,width,height]:frame.rect??[0,0,frame.w,frame.h];
+        // The upper body follows committed root motion. Calves and the support
+        // shoe absorb it continuously instead of translating the planted sole.
+        for(let i=0;i<14;i++){
+          const y1=y+height*i/14,y2=y+height*(i+1)/14,dx1=plant*Math.max(0,Math.min(1,1+y1/140)),dx2=plant*Math.max(0,Math.min(1,1+y2/140));
+          c.save();c.transform(1,0,(dx2-dx1)/(y2-y1),1,x+dx1-(dx2-dx1)*y1/(y2-y1),0);
+          c.drawImage(image,source[0],source[1]+source[3]*i/14,source[2],source[3]/14,0,y1,width,y2-y1+.3);c.restore();
+        }
+      }else if(bitmap)c.drawImage(bitmap.image,(frame.x-frame.anchor)*scale-bitmap.padding,(frame.y-frame.bottom)*scale-bitmap.padding);
       else c.drawImage(frame.image??frame.cutout,...(frame.rect??[0,0,frame.w,frame.h]),(frame.x-frame.anchor)*scale,(frame.y-frame.bottom)*scale,frame.w*scale,frame.h*scale);
     };
-    drawPose(current, 1);
+    if(!drawLocomotionRig(c,f,this.locomotionRigs[f.character.id]))drawPose(current, 1);
     c.globalAlpha = 1; c.restore();
+    c.save();c.translate(f.x,f.y);c.scale(size,size);c.translate(-f.x,-f.y);
     if (!['marcos','joao','ruan','tais'].includes(f.character.id) && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       const x = f.x + f.direction * (55 + strength * (release.offset - 55));
@@ -318,6 +337,7 @@ export class Renderer {
     if (f.state === 'uppercut' && !['marcos','joao','ruan','tais'].includes(f.character.id)) f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
+    c.restore();
   }
   drawDizzy(f) {
     const c = this.c, angle = this.reduced ? 0 : f.animTime*5;

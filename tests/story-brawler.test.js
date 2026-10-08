@@ -24,7 +24,7 @@ test('ameaças desativam um jogador parado e defender não é invulnerabilidade 
  for(const block of [false,true]){const e=game();e.beginBoss();e.queue(0,'storyNext');e.fighters[0].x=700;e.enemies[0].x=860;e.setInput(0,{block});tick(e,14);assert.ok(e.fighters[0].hp<700,`block=${block}`);}
 });
 test('câmera avança sem salto e correr avança mais que andar',()=>{
- const walk=game(),run=game();run.beginFootwork(run.fighters[0],'advance');for(const e of [walk,run]){e.setInput(0,{right:true});tick(e,.5);}assert.ok(run.fighters[0].x>walk.fighters[0].x+50);
+ const walk=game(),run=game();run.beginFootwork(run.fighters[0],'advance');for(const e of [walk,run]){e.setInput(0,{right:true});tick(e,.5);}assert.ok(run.fighters[0].x>walk.fighters[0].x+30);
  const e=game();e.story.wave=3;e.story.dropWave=3;e.fighters[0].x=1400;e.camera=800;e.setInput(0,{right:true});let old=e.camera;for(let i=0;i<60;i++){e.update(FIXED_STEP);assert.ok(e.camera>=old);assert.ok(e.camera-old<200);old=e.camera;}assert.ok(e.camera>800);
 });
 test('snapshot rejeita profundidade inválida e preserva professor e aluno no cooperativo',()=>{

@@ -16,20 +16,22 @@ function until(game, condition, seconds = 3) {
 }
 const hits = events => events.filter(e => e.type === 'hit');
 
-test('andar, soltar e inverter o direcional respondem no próximo tick para ambos os professores', () => {
+test('andar responde no próximo tick e aceleração, parada e inversão terminam em até 60 ms nos dois slots', () => {
   for (const slot of [0, 1]) {
     const { game } = scene(); game.fighters[0].x = 200; game.fighters[1].x = 1080;
     const fighter = game.fighters[slot], sign = slot === 0 ? 1 : -1;
     const start = fighter.x;
     game.setInput(slot, { right: sign > 0, left: sign < 0 }); step(game);
-    assert.ok(Math.abs((fighter.x - start) * sign - fighter.character.speed * FIXED_STEP) < 1e-8);
+    assert.ok((fighter.x-start)*sign>0);assert.ok(Math.abs(fighter.vx)<fighter.character.speed);
+    advance(game,.05);const speed=Math.abs(fighter.vx);assert.ok(speed>150);
     const moving = fighter.x;
-    game.setInput(slot, {}); step(game); assert.equal(fighter.x, moving); assert.equal(fighter.vx, 0);
+    game.setInput(slot, {});advance(game,.05);assert.equal(fighter.vx,0);assert.ok(Math.abs(fighter.x-moving)<speed*.04);
+    const stopped=fighter.x;
     // A second tap within 230 ms now intentionally performs a burst step.
-    advance(game,.24); assert.equal(fighter.x,moving);
+    advance(game,.24); assert.equal(fighter.x,stopped);
     game.setInput(slot, { right: sign > 0, left: sign < 0 }); step(game);
     const reversing = fighter.x;
-    game.setInput(slot, { left: sign > 0, right: sign < 0 }); step(game);
+    game.setInput(slot, { left: sign > 0, right: sign < 0 });advance(game,.05);
     assert.ok((fighter.x - reversing) * sign < 0);
   }
 });
@@ -77,12 +79,13 @@ test('segurar para cima repete o salto depois de pousar; cima e baixo juntos nã
 });
 
 test('rasteira acerta no alcance do pé e falha fora dele, espelhada e nas três forças', () => {
-  for (const slot of [0, 1]) for (const strength of [0, 1, 2]) for (const distance of [270, 340]) {
+  // Anatomical legs replace the oversized rectangular idle hurtbox.
+  for (const slot of [0, 1]) for (const strength of [0, 1, 2]) for (const distance of [240, 340]) {
     const { game, events } = scene(); game.start('marcelo','local','gustavo'); game.phase='fight';
     game.fighters[0].x = 450; game.fighters[1].x = 450 + distance;
     game.setInput(slot, { down: true }); game.queue(slot, 'kick', strength); advance(game, .35);
-    assert.equal(hits(events).length, distance === 270 ? 1 : 0, `lado ${slot}, força ${strength}, distância ${distance}`);
-    assert.equal(game.fighters[1 - slot].knocked, distance === 270);
+    assert.equal(hits(events).length, distance === 240 ? 1 : 0, `lado ${slot}, força ${strength}, distância ${distance}`);
+    assert.equal(game.fighters[1 - slot].knocked, distance === 240);
   }
 });
 

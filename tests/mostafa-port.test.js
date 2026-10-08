@@ -13,7 +13,7 @@ test('Mostafa aproxima em X/Z sem ganhar velocidade diagonal e percorre quadros 
 });
 test('Mostafa alterna atacante e cerco, e coop permite um atacante por jogador',()=>{
  const e=game(),[a,b]=e.fighters;a.x=400;b.x=950;a.lane=b.lane=625;
- const one=e.spawnEnemy('cleaner',560),two=e.spawnEnemy('cleaner',570),three=e.spawnEnemy('cleaner',790);
+ const one=e.spawnEnemy('cleaner',510),two=e.spawnEnemy('cleaner',520),three=e.spawnEnemy('cleaner',840);
  for(const n of e.enemies)n.cooldown=0;
  assert.equal(mostafaEnemyIntent(e,one,a,1/120),true);
  assert.equal(mostafaEnemyIntent(e,two,a,1/120),false);assert.equal(two.brawlerState,'orbit');

@@ -1,3 +1,13 @@
+## Atualização 4.6.0 — movimentação e proporções
+
+História e 1×1 compartilham a locomoção articulada sobre as artes existentes. Apoios ficam fixos no mundo, pernas usam quadril/joelho/tornozelo, e a fase avança pela distância resolvida depois das colisões. Marcelo, Rafael, Gustavo e Tais têm base, apoio, elevação, transferência de peso e guarda diferentes; os demais personagens também têm parâmetros próprios. Há respiração no idle, aceleração/frenagem curtas, transições de movimento e recuo próprio. O ciclo para quando a pushbox impede avançar.
+
+A campanha usa uma escala única para personagens, inimigos, colisões, golpes, salto, projéteis e móveis. Mesas e cadeiras têm dimensões proporcionais; carregar ocupa as duas mãos, reduz a passada e permite golpe com o objeto. O arremesso prepara, solta nos frames ativos e recupera; impactos derrubam o objeto. A profundidade depende dos pés, sem alterar apenas o desenho. Robôs bípedes usam passadas; catracas e robôs de limpeza preservam suas rodas e articulam braços, serras e recuperação.
+
+Artes, rostos, vozes, poderes, capítulos, diálogos e dados do Supabase foram preservados. O identificador `svf-online-4-6-0` evita conectar motores de versões diferentes; salas e matchmaking mantêm a implementação existente.
+
+Validação e arquitetura: [docs/locomotion.md](docs/locomotion.md). `npm test` inclui testes de apoio, anatomia, interpolação, estilos, carry, pushboxes e regressões de combate/rollback; `npm run build` verifica o pacote publicado. O teste visual usa o Canvas do jogo e também mede os vértices das solas.
+
 ## Atualização 4.3.1 — port da base Mostafa
 
 A campanha utiliza o port em JavaScript da aproximação, cerco, preparação do soco, animação por quadros e câmera do [Mostafa](https://github.com/shahfarhadreza/mostafa-the-game). Os inimigos terrestres usam as sequências completas de Ferris/Gneiss; os chefes usam a sequência de Butcher. Os oito personagens Vicente, cenários, poderes e cooperativo online continuam no adaptador da campanha. A origem, as adaptações e a licença estão em [vendor/mostafa/README.md](vendor/mostafa/README.md).
@@ -99,7 +109,7 @@ Validação: `npm test`, inspeção das 32 poses de Gelton e renderização real
 
 Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. Gustavo**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
 
-[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=2.8.0)
+[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=4.6.0)
 
 ## Deploy Drone — Sentinela Automática
 
@@ -141,7 +151,7 @@ Referências primárias: [manual licenciado Evercade Alpha, Alpha/Alpha 2, pp. 1
 
 ## Movimento, poderes e preservação
 
-A simulação roda a 120 Hz e interpola posições. Caminhadas usam oito desenhos inteiros por professor, guiados pela distância realmente percorrida. Nenhum membro é recortado, torcido ou esticado. O salto tem direção fixada ao sair do chão e permite passar por cima e trocar de lado ao pousar. Guarda baixa protege de rasteiras; guarda alta protege de voadeiras. No boxe, golpe no corpo é defendido em ambas as alturas.
+A simulação roda a 120 Hz e interpola posições. Na versão 4.6.0, idle e deslocamento usam uma malha contínua da postura aprovada, articulada pela passada e por apoios no mundo. A região do rosto mantém uma transformação rígida; ataques, reações e poderes conservam seus atlas autorais. O salto tem direção fixada ao sair do chão e permite passar por cima e trocar de lado ao pousar. Guarda baixa protege de rasteiras; guarda alta protege de voadeiras. No boxe, golpe no corpo é defendido em ambas as alturas.
 
 Poderes têm núcleo de energia, trilhas curvas, anéis de lançamento e explosão de contato. Marcelo lança circuitos e pacotes binários; Rafael lança páginas, pergaminhos e escudos com arcos históricos; Gustavo lança cargas orbitais e moléculas ligadas. Antiaéreos têm colunas curvas de energia. O super conserva a pausa de 14 quadros, escurecimento, destaque do professor, raios, nome e três ondas. Efeitos respeitam pausa e preferência por movimento reduzido.
 

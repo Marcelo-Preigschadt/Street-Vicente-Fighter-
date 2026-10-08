@@ -15,9 +15,9 @@ test('render interpolation retains school profile and does not mutate simulation
  const e=new StoryEnemy('cleaner',10,400);e.prevX=200;e.prevY=e.y;e.prevLane=520;e.lane=620;const view=interpolateEntity(e,.5);
  assert.equal(view.x,300);assert.equal(view.lane,570);assert.equal(view.profile,e.profile);assert.equal(e.x,400);assert.equal(e.lane,620);
 });
-test('depth scales stage actors and objects monotonically within a restrained range',()=>{
- assert.equal(storyDepthScale(520),.9);assert.equal(storyDepthScale(660),1.1);
- assert.ok(storyDepthScale(590)>storyDepthScale(550));assert.equal(storyDepthScale(undefined),1);
+test('depth orders feet without changing actor or collision size',()=>{
+ assert.equal(storyDepthScale(520),1);assert.equal(storyDepthScale(660),1);
+ assert.equal(storyDepthScale(590),storyDepthScale(550));assert.equal(storyDepthScale(undefined),1);
 });
 test('current renderer never loads reference-game characters',async()=>{
  const src=await readFile('src/story-render.js','utf8');assert.doesNotMatch(src,/mostafa\/|mostafaAtlas|art\.brawler/);

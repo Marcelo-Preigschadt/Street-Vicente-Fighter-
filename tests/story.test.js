@@ -36,8 +36,8 @@ test('poderes e socos no ar funcionam para cada professor em campanha',()=>{
   }
 });
 test('mesa e cadeira arremessadas atingem inimigos sem ferir o parceiro',()=>{
-  const e=start('story-local'),f=e.fighters[0],table=e.props.find(p=>p.kind==='table');e.camera=Math.max(0,table.x-200);f.x=table.x;f.lane=table.lane;const robot=e.spawnEnemy('cleaner',table.x+230,table.lane),before=robot.hp;
-  e.queue(0,'throw');assert.equal(e.thrown[0].kind,'table');advance(e,.5);assert.ok(robot.hp<before);assert.equal(e.fighters[1].hp,1000);
+  const e=start('story-local'),f=e.fighters[0],table=e.props.find(p=>p.kind==='table');e.camera=Math.max(0,table.x-200);e.story.wave=3;e.story.dropWave=3;f.x=table.x;f.lane=table.lane;const robot=e.spawnEnemy('cleaner',table.x+230,table.lane),before=robot.hp;
+  e.queue(0,'throw');assert.equal(f.carry.kind,'table');advance(e,.2);e.queue(0,'throw');advance(e,.14);assert.equal(e.thrown[0].kind,'table');advance(e,.5);assert.ok(robot.hp<before);assert.equal(e.fighters[1].hp,1000);
 });
 test('máquina lança lata explosiva quando atingida e só aceita o próximo golpe depois do intervalo',()=>{
   const e=start(),f=e.fighters[0],soda=e.props.find(p=>p.kind==='soda');e.damageProp(soda,45,f);assert.equal(e.thrown.length,1);e.damageProp(soda,45,f);assert.equal(e.thrown.length,1);assert.equal(e.thrown[0].kind,'can');
@@ -54,7 +54,7 @@ test('chefes usam duelo individual, permitem troca segura e a reserva assume ap�
 });
 test('cada padrão de chefe é anunciado antes do ataque e bloqueio frontal protege o jogador',()=>{
   for(const kind of ['inspector','fairRobot','substitute','aula','exo']){
-    const e=start();e.beginBoss();e.enemies=[];const boss=e.spawnEnemy(kind,700);const f=e.fighters[0];f.x=500;e.queue(0,'storyNext');boss.aiTime=0;boss.cooldown=0;e.update(FIXED_STEP);assert.ok(boss.telegraph>0,kind);assert.equal(f.hp,1000);e.setInput(0,{block:true,down:kind==='exo'});advance(e,1);assert.ok(f.hp>850,kind);if(kind==='inspector')assert.ok(f.hp<1000,`bloqueio tem desgaste: ${kind}`);
+    const e=start();e.beginBoss();e.enemies=[];const boss=e.spawnEnemy(kind,630);const f=e.fighters[0];f.x=500;e.queue(0,'storyNext');boss.aiTime=0;boss.cooldown=0;e.update(FIXED_STEP);assert.ok(boss.telegraph>0,kind);assert.equal(f.hp,1000);e.setInput(0,{block:true,down:kind==='exo'});advance(e,1);assert.ok(f.hp>850,kind);if(kind==='inspector')assert.ok(f.hp<1000,`bloqueio tem desgaste: ${kind}`);
   }
 });
 test('A.U.L.A. passa ao exoesqueleto e a campanha só termina após derrotar as duas fases',()=>{

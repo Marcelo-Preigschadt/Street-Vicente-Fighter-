@@ -1,4 +1,7 @@
 import {savatePose,savateHurt,SAVATE_STRIKES} from './savate.js';
+import {initLocomotion,saveMotion,updateLocomotion,locomotionVelocity,usesRig,rigHurtboxes,rootCurve} from './locomotion.js';
+import {entityScale,scaledBox} from './story-world.js';
+import {FOOT_CONTACTS} from './foot-contacts.js';
 import {karatePose,karateHurt,KARATE_STRIKES} from './karate.js';
 import {wildPose,wildHurt,WILD_STRIKES} from './wild.js?v=27';
 import { judoPose, judoHurt, JUDO_STRIKES } from './judo.js?v=27';
@@ -218,8 +221,13 @@ export class Fighter {
       stunGauge:0, stunQuiet:0, dizzyPending:false, dizzyTime:0, dizzyProtection:0, escapeTime:-10 });
     Object.assign(this, { customTime:0, customMoves:0, hitDuration:0, hitRegion:'body', hitStrength:0, quickRise:false, quickRiseBuffer:0, quickRiseAllowed:true, knockdownLandedAt:-10 });
     Object.assign(this, { pendingDizzyDuration:0, pendingDizzyCause:null, dizzyCause:null });
+    initLocomotion(this);
+    this.attackPlant=null;
   }
   get airborne() { return this.y < WORLD.floor - .01; }
+  get worldX(){return this.x;}set worldX(value){this.x=value;}
+  get worldY(){return this.lane??this.y;}set worldY(value){if(this.lane!==undefined)this.lane=value;else this.y=value;}
+  get feetX(){return this.x;}get feetY(){return this.lane??WORLD.floor;}
   get canAct() { return this.hp > 0 && this.state !== 'dizzy' && this.hitstun <= 0 && this.blockstun <= 0 && !this.action && !this.footwork && !this.dizzyPending && this.dizzyTime <= 0 && !this.knocked && this.wakeTime <= 0 && this.landing <= 0 && this.preJump <= 0; }
   get crouching() { return !this.airborne && (['crouch', 'crouchPunch', 'lowBlock', 'preJump', 'landing'].includes(this.state)
     || this.state === 'sweep' && ['rafael','gelton'].includes(this.character.id) || (this.state === 'hit' && this.hitCrouched)); }
@@ -232,7 +240,8 @@ export class Fighter {
     const width = this.airborne ? 96 : BODY_WIDTH;
     const bottom = this.y - (this.airborne ? 70 : 0);
     const height = this.airborne ? 178 : this.state === 'sweep' && this.character.id === 'rafael' ? 146 : this.crouching ? 180 : 250;
-    return { x: this.x - width / 2, y: bottom - height, w: width, h: height };
+    const s=entityScale(this);
+    return { x: this.x - width*s / 2, y: this.y-(this.y-bottom+height)*s, w: width*s, h: height*s };
   }
   get guard() {
     const back = this.direction > 0 ? this.input.left && !this.input.right : this.input.right && !this.input.left;
@@ -241,27 +250,26 @@ export class Fighter {
   }
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
+    if(usesRig(this))return rigHurtboxes(this);
     const pose = fighterPose(this);
     const profile = this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
-    const body = profile.map(([offset, height, w, h]) => ({
-      x: this.x + (this.direction > 0 ? offset : -offset - w), y: this.y - height, w, h,
-    }));
+    const plant=this.groundPoseShift;
+    const body = profile.map(([offset, height, w, h]) => scaledBox(this,offset+plant*clamp(1-(height-h/2)/140,0,1),height,w,h));
     // Extended arms and legs can be struck, including the first recovery frames.
     const strike = styleStrike(this);
     if (strike && this.actionTime >= this.moveData.startup && this.actionTime < this.moveData.startup + this.moveData.active + frames(2)) {
       const near = Math.max(40, strike.near), reach = strike.reach;
-      if (reach > near) body.push({ x: this.x + (this.direction > 0 ? near : -reach), y: this.y - strike.height - strike.h / 2,
-        w: reach - near, h: strike.h });
+      if (reach > near) body.push(scaledBox(this,near,strike.height+strike.h/2,reach-near,strike.h));
     }
     return body;
   }
   get attackbox() {
     const strike = styleStrike(this);
     if (!strike || this.movePhase !== 'active') return null;
-    return { x: this.x + (this.direction > 0 ? strike.near : -strike.reach), y: this.y - strike.height - strike.h / 2,
-      w: strike.reach - strike.near, h: strike.h };
+    return scaledBox(this,strike.near+this.groundPoseShift*clamp(1-strike.height/140,0,1),strike.height+strike.h/2,strike.reach-strike.near,strike.h);
   }
+  get groundPoseShift(){if(!this.attackPlant||this.airborne||!this.action)return 0;const pose=fighterPose(this),contact=FOOT_CONTACTS[this.character.id]?.[pose.atlas]?.[pose.index];return Number.isFinite(contact)?(this.attackPlant.x-this.x)*this.direction/entityScale(this)-contact:0;}
 }
 
 export class FightEngine {
@@ -362,6 +370,10 @@ export class FightEngine {
     else if (!f.airborne && (Number(f.input.right)-Number(f.input.left))*f.direction > 0)
       m.advance = FOOTWORK[f.character.id].attackAdvance[move]?.[m.strength] ?? m.advance ?? 0;
     f.footwork = null;
+    if(!f.airborne&&(m.advance>0||f.motion.blend>0)){
+      const foot=f.motion.feet.find(foot=>foot.support)??f.motion.feet[0];
+      f.attackPlant={x:foot.x,lane:foot.lane};
+    }else f.attackPlant=null;
     f.action = move; f.moveData = m; f.actionTime = 0; f.prevActionTime = 0; f.actionHit = false; f.contactTime = -10; f.shotsSent = 0; f.state = move; f.animTime = 0;
     if (f.airborne) f.airAttackUsed = true;
     else f.vx = 0;
@@ -400,7 +412,7 @@ export class FightEngine {
   beginFootwork(f, kind) {
     if (!f.canAct || f.customTime > 0 || f.airborne || f.input.down || f.input.block || f.footworkCooldown > 0) return false;
     const profile = FOOTWORK[f.character.id][kind];
-    f.footwork = { ...profile, kind, time:0, sign:f.direction * (kind === 'advance' ? 1 : -1) };
+    f.footwork = { ...profile, distance:profile.distance*entityScale(f),kind, time:0, sign:f.direction * (kind === 'advance' ? 1 : -1) };
     f.footworkCooldown = profile.duration + .10; f.buffer = null; f.jumpBuffer = 0; f.vx = 0;
     f.state = kind === 'advance' ? 'stepIn' : 'stepBack'; f.walkBlend = 0;
     this.event('footwork',{fighter:f.slot,character:f.character.id,kind}); return true;
@@ -492,6 +504,7 @@ export class FightEngine {
     for (const f of this.fighters) {
       f.prevPushbox = f.pushbox; f.prevX = f.x; f.prevY = f.y; f.prevActionTime = f.actionTime;
       f.prevWalkDistance = f.walkDistance; f.prevWalkBlend = f.walkBlend;
+      saveMotion(f);
     }
     for (const p of this.projectiles) p.prevX = p.x;
     if (this.freeze > 0) { this.freeze = Math.max(0, this.freeze - dt); return; }
@@ -524,10 +537,7 @@ export class FightEngine {
     this.resolvePushboxes();
     this.updateFacing();
     for (const f of this.fighters) {
-      const walked = f.state === 'walk' && Math.abs(f.x - f.prevX) > 1e-7;
-      if (walked) { f.walkDistance += (f.x - f.prevX) * f.direction; f.walkTime += dt; }
-      f.walkBlend = clamp(f.walkBlend + (walked ? 1 : -1) * dt * 18, 0, 1);
-      if (!['walk', 'idle'].includes(f.state)) f.walkBlend = 0;
+      updateLocomotion(f,dt);
     }
     const contacts = [];
     for (const f of this.fighters) {
@@ -536,7 +546,7 @@ export class FightEngine {
       const target = this.fighters[1 - f.slot];
       if (m.level === 'throw') {
         if ((!target.airborne || f.airborne && POWERS.has(f.action)) && Math.abs(f.y-target.y)<=100 && !target.knocked && target.wakeTime <= 0 && target.invincible <= 0 && target.throwInvincible <= 0 && target.hitstun <= 0 && target.blockstun <= 0
-          && target.hp > 0 && Math.abs(f.x - target.x) <= (m.range??143)) {
+          && target.hp > 0 && Math.abs(f.x - target.x) <= (m.range??143)*entityScale(f)) {
           f.actionHit = true; contacts.push({ attacker: f, target, move: f.action, data: m, x: target.x, y: target.y - 145 });
         }
         continue;
@@ -610,7 +620,7 @@ export class FightEngine {
     if (f.action) {
       f.actionTime += dt; const m = f.moveData;
       if (f.action === 'uppercut' && f.actionTime >= m.startup && f.shotsSent === 0) {
-        f.shotsSent = 1; if(!m.grounded){f.vy = m.jumpVelocity??-1080; f.y -= .02; f.vx = f.direction * (m.travelSpeed??135);}
+        f.shotsSent = 1; if(!m.grounded){f.vy = (m.jumpVelocity??-1080)*entityScale(f); f.y -= .02; f.vx = f.direction * (m.travelSpeed??135)*entityScale(f);}
         this.announcePower(f);
       }
       if(['marcos','joao'].includes(f.character.id)&&['special','super'].includes(f.action)&&f.shotsSent===0&&f.actionTime>=m.startup){f.shotsSent=1;this.announcePower(f);}
@@ -626,13 +636,13 @@ export class FightEngine {
     }
     const movement = Number(f.input.right) - Number(f.input.left);
     if ((f.jumpBuffer > 0 || f.input.jump) && f.customTime <= 0 && !f.input.down && f.canAct && !f.airborne && !f.input.block) {
-      f.preJump = COMBAT.preJump; f.jumpVelocityX = movement * f.character.jumpSpeed;
+      f.preJump = COMBAT.preJump; f.jumpVelocityX = movement * f.character.jumpSpeed*entityScale(f);
       f.jumpBuffer = 0; f.vx = 0; f.state = 'preJump';
     }
     if (f.preJump > 0) {
       f.preJump = Math.max(0, f.preJump - dt);
       if (f.preJump > 1e-9) { this.integrate(f, dt); return; }
-      f.preJump = 0; f.vy = COMBAT.jumpVelocity; f.y -= .02; f.vx = f.jumpVelocityX;
+      f.preJump = 0; f.vy = COMBAT.jumpVelocity*entityScale(f); f.y -= .02; f.vx = f.jumpVelocityX;
       f.airAttackUsed = false; this.event('jump', { fighter: f.slot });
     }
     f.jumpBuffer = Math.max(0, f.jumpBuffer - dt);
@@ -649,39 +659,45 @@ export class FightEngine {
     else if (f.blockstun > 0) { f.state = f.blockLow ? 'lowBlock' : 'block'; f.vx = 0; }
     else if (f.action) {
       f.state = f.action;
-      if (!f.airborne) f.vx = f.customTime > 0 && !f.moveData.projectile ? f.direction*135
-        : f.actionTime < f.moveData.startup && f.moveData.advance ? f.direction * f.moveData.advance / f.moveData.startup : 0;
+      if (!f.airborne) {
+        const duration=f.moveData.startup,advance=f.moveData.advance??0;
+        const delta=rootCurve(f.actionTime/duration)-rootCurve(Math.max(0,f.actionTime-dt)/duration);
+        f.vx=f.customTime>0&&!f.moveData.projectile?f.direction*135*entityScale(f):f.direction*advance*entityScale(f)*delta/dt;
+      }
     }
     else if (f.landing > 0) { f.state = 'landing'; f.vx = 0; }
     else if (f.airborne) f.state = 'jump'; // Horizontal jump velocity is locked at takeoff.
     else {
-      const backwards = movement * f.direction < 0, speed = backwards ? f.character.backSpeed : f.character.speed;
+      const backwards = movement * f.direction < 0, speed = (backwards ? f.character.backSpeed : f.character.speed)*.72*entityScale(f);
       const opponent = this.opponentFor(f), enemyStrike = styleStrike(opponent);
       const nearbyStrike = enemyStrike && opponent.movePhase !== 'recovery' && opponent.direction === -f.direction && Math.abs(opponent.x - f.x) <= enemyStrike.reach + 60;
       const nearbyProjectile = this.projectiles.some(p => p.owner !== f.slot && p.direction === -f.direction && (p.x - f.x) * f.direction >= 0 && Math.abs(p.x - f.x) < 150);
       const guardReady = f.guard.active && (nearbyStrike || nearbyProjectile);
-      const target = f.customTime > 0 ? f.direction * (f.customMoves < ALPHA.customLimit ? 135 : 0) : f.input.down || f.input.block || guardReady ? 0 : movement * speed;
-      // Arcade walking starts, stops and reverses on the next simulation tick.
-      f.vx = target;
+      const target = f.customTime > 0 ? f.direction * (f.customMoves < ALPHA.customLimit ? 135 : 0) : f.input.down || f.input.block || guardReady ? 0 : movement * speed*this.walkingMultiplier(f);
+      // 25–45 ms ramps: movement starts on this tick, without inertial skating.
+      f.vx = f.customTime<=0&&(f.input.down||f.input.block||guardReady)?0:locomotionVelocity(f,target,dt);
       f.state = f.customTime > 0 ? Math.abs(f.vx) > 8 ? 'walk' : 'idle' : f.input.down ? (f.input.block || guardReady ? 'lowBlock' : 'crouch') : f.input.block || guardReady ? 'block' : Math.abs(f.vx) > 8 ? 'walk' : 'idle';
     }
     this.integrate(f, dt);
   }
-  clearAction(f) { f.action = null; f.moveData = null; f.actionTime = 0; f.prevActionTime = 0; }
+  clearAction(f) { f.action = null; f.moveData = null; f.actionTime = 0; f.prevActionTime = 0;f.attackPlant=null; }
+  walkingMultiplier(){return 1;}
   deploySwarm(f,data) {
     this.announcePower(f);
+    const s=entityScale(f);
     for(let i=0;i<6;i++) {
       const drone={id:this.nextDroneId++,owner:f.slot,character:f.character.id,direction:f.direction,swarm:true,index:i,
-        x:clamp(f.x+f.direction*(80+(i%3)*68),40,WORLD.width-40),y:f.y-310-Math.floor(i/3)*80,
+        x:clamp(f.x+f.direction*(80+(i%3)*68)*s,40,WORLD.width-40),y:f.y-(310+Math.floor(i/3)*80)*s,worldScale:s,
         data:{...data},createdAt:this.time,age:0,fireDelay:.50+i*.17,fired:false,dead:false,aim:null};
       this.drones.push(drone);this.event('droneDeploy',{...drone,color:f.character.color});
     }
   }
   deployDrone(f, data) {
     this.announcePower(f);
+    const s=entityScale(f);
     const drone = { id:this.nextDroneId++, owner:f.slot, character:f.character.id, direction:f.direction,
-      x:clamp(f.x + f.direction * SENTINEL.offset, 32, WORLD.width - 32),
-      y:f.airborne ? clamp(f.y - SENTINEL.airHeight, 100, WORLD.floor - SENTINEL.groundHeight) : WORLD.floor - SENTINEL.groundHeight,
+      x:clamp(f.x + f.direction * SENTINEL.offset*s, 32, WORLD.width - 32),worldScale:s,
+      y:f.airborne ? clamp(f.y - SENTINEL.airHeight*s, 100, WORLD.floor - SENTINEL.groundHeight*s) : WORLD.floor - SENTINEL.groundHeight*s,
       airborne:f.airborne, data:{...data}, createdAt:this.time, age:0, fired:false, dead:false };
     this.drones.push(drone);
     this.event('droneDeploy', { ...drone, color:f.character.color });
@@ -737,9 +753,9 @@ export class FightEngine {
   }
   spawnProjectile(f, data, wave) {
     if (wave === 0) this.announcePower(f);
-    const { offset, height } = f.character.projectile, x = f.x + f.direction * offset;
+    const { offset, height } = f.character.projectile,s=entityScale(f), x = f.x + f.direction * offset*s;
     this.projectiles.push({ owner: f.slot, character: f.character.id, direction: f.direction, move: f.action, data: { ...data, ...(data.finalKnockdown?{knockdown:wave===(data.waves??3)-1}:{}) }, wave,
-      x, prevX: x, y: f.y - height, radius: data.radius ?? (f.action === 'super' ? 32 : 27), speed: data.speed, life: 3.1, effect:data.effect ?? 'energy' });
+      x, prevX: x, y: f.y - height*s, radius: (data.radius ?? (f.action === 'super' ? 32 : 27))*s, speed: data.speed*s, life: 3.1, effect:data.effect ?? 'energy' });
     this.event('projectile', { fighter:f.slot, move:f.action, character:f.character.id, color:f.character.color, x, y:f.y-height, direction:f.direction, wave,effect:data.effect });
   }
   announcePower(f) {
@@ -794,7 +810,7 @@ export class FightEngine {
     f.recoilTime = Math.max(0, f.recoilTime - recoilStep);
     f.knockback -= recoilSign * f.recoilDeceleration * recoilStep;
     if (f.recoilTime <= 1e-9) { f.recoilTime = 0; f.knockback = 0; f.recoilSource = null; }
-    if (f.airborne || f.vy < 0) { f.y += f.vy * dt + .5 * WORLD.gravity * dt * dt; f.vy += WORLD.gravity * dt; }
+    if (f.airborne || f.vy < 0) { const gravity=WORLD.gravity*entityScale(f);f.y += f.vy * dt + .5 * gravity * dt * dt; f.vy += gravity * dt; }
     if (f.y >= WORLD.floor) {
       f.y = WORLD.floor; f.vy = 0;
       if (wasAirborne) {
@@ -820,6 +836,7 @@ export class FightEngine {
     }
   }
   recoil(f, direction, distance, duration, source) {
+    distance*=entityScale(f);
     f.knockback = direction * 2 * distance / duration; f.recoilDeceleration = 2 * distance / (duration * duration);
     f.recoilTime = duration; f.recoilSource = source;
   }
@@ -850,6 +867,8 @@ export class FightEngine {
     const extraLeft = Math.min(remaining, left.x - LEFT_WALL - shiftLeft); shiftLeft += extraLeft; remaining -= extraLeft;
     shiftRight += Math.min(remaining, RIGHT_WALL - right.x - shiftRight);
     left.x -= shiftLeft; right.x += shiftRight;
+    if(left.vx>0&&Math.abs(left.x-left.prevX)<1e-6)left.vx=0;
+    if(right.vx<0&&Math.abs(right.x-right.prevX)<1e-6)right.vx=0;
   }
   hit({ attacker, target, move, data = MOVES[move], x, y, direction = attacker.direction }, guard = target.guard) {
     if (target.hp <= 0) return;
@@ -890,8 +909,8 @@ export class FightEngine {
     if (data.knockdown || target.airborne) {
       target.knocked = true; target.knockdownTime = .48; target.wakeTime = 0; target.state = 'knockdown'; target.quickRise = false; target.quickRiseBuffer = 0;
       target.quickRiseAllowed = data.level !== 'throw'; target.knockdownLandedAt = 1e9; // Finite future sentinel survives JSON rollback snapshots.
-      if (data.launch) { target.vy = -data.launch; target.y -= .02; }
-      else { target.vy = target.airborne ? -460 : -300; target.y -= .02; }
+      if (data.launch) { target.vy = -data.launch*entityScale(target); target.y -= .02; }
+      else { target.vy = (target.airborne ? -460 : -300)*entityScale(target); target.y -= .02; }
     }
     this.addMeter(attacker, data.meter); this.addMeter(target, 7);
     attacker.combo = combo; attacker.comboTime = 1.2;
