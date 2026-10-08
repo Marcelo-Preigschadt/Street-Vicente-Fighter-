@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {FightEngine,FIXED_STEP,CHARACTERS,WORLD,fighterPose} from '../src/engine.js';
+import {StoryEngine} from '../src/story.js';
 import {Renderer} from '../src/render.js';
 import {validCharacter} from '../src/net-state.js';
 import {STORY_HEROES} from '../src/story-data.js';
@@ -16,7 +17,7 @@ function scene(move,slot=0,block=false,distance=160){
   g.start(slot?'rafael':'luciana','local',slot?'luciana':'rafael');g.phase='fight';
   g.fighters[0].x=450;g.fighters[1].x=450+distance;
   const f=g.fighters[slot],target=g.fighters[1-slot];f.meter=100;
-  g.setInput(1-slot,{block});assert.ok(g.beginMove(f,move,1));advance(g,1);
+  g.setInput(1-slot,{block});g.queue(slot,move,1);advance(g,2);
   return {g,events,f,target};
 }
 
@@ -58,21 +59,43 @@ test('a seleção e os três poderes têm falas locais da mesma voz',async()=>{
   }
 });
 
-test('golpes de português e espanhol usam contato de MMA nos dois sentidos',()=>{
-  for(const move of ['special','uppercut','super'])for(const slot of [0,1])for(const blocked of [false,true]){
-    const {g,events,f,target}=scene(move,slot,blocked);
-    assert.equal(events.filter(e=>e.type==='special'&&e.move===move&&e.fighter===slot).length,1);
-    assert.equal(events.filter(e=>e.type===(blocked?'block':'hit')&&e.move===move).length,1);
-    assert.ok(blocked?target.hp>=970:target.hp<900);
-    assert.equal(g.projectiles.length,0);assert.equal(g.drones.length,0);
-    if(move==='super')assert.ok(f.meter<100);
-  }
+test('os três comandos acionam voz, efeito e dano nos dois sentidos',()=>{
+  for(const move of ['special','uppercut','super'])for(const distance of [160,600])
+    for(const slot of [0,1])for(const blocked of [false,true]){
+      const {g,events,f,target}=scene(move,slot,blocked,distance);
+      assert.equal(events.filter(e=>e.type==='special'&&e.move===move&&e.fighter===slot).length,1);
+      const waves=move==='super'?3:move==='special'?1:0;
+      const launched=events.filter(e=>e.type==='projectile'&&e.move===move&&e.fighter===slot);
+      assert.equal(launched.length,waves);
+      for(const e of launched)assert.equal(e.effect,move==='special'?'languageDirect':'languageFinale');
+      const contacts=events.filter(e=>e.type===(blocked?'block':'hit')&&e.move===move);
+      assert.equal(contacts.length,move==='uppercut'&&distance===600?0:waves||1);
+      assert.ok(blocked||distance===600&&move==='uppercut'?target.hp>=970:target.hp<900);
+      assert.equal(g.drones.length,0);
+      if(move==='super')assert.ok(f.meter<100);
+    }
 });
 
-test('golpes de contato erram fora do alcance',()=>{
-  for(const move of ['special','uppercut','super']){
-    const {g,events,target}=scene(move,0,false,600);
-    assert.equal(target.hp,1000);assert.equal(events.filter(e=>e.type==='hit'&&e.move===move).length,0);
-    assert.equal(g.projectiles.length,0);
+test('o acento ascendente sobe com a luva e mantém o golpe de curta distância',()=>{
+  const events=[],g=new FightEngine({random:()=>.47,onEvent:e=>events.push(e)});
+  g.start('luciana','local','rafael');g.phase='fight';g.fighters[0].x=450;g.fighters[1].x=610;
+  g.queue(0,'uppercut',1);advance(g,.24);
+  assert.ok(g.fighters[0].y<WORLD.floor-2);
+  assert.equal(fighterPose(g.fighters[0]).atlas,'combat');
+  assert.ok(events.some(e=>e.type==='special'&&e.move==='uppercut'));
+  assert.ok(events.some(e=>e.type==='hit'&&e.effect==='languageAccent'));
+  const far=scene('uppercut',0,false,600);
+  assert.equal(far.target.hp,1000);
+});
+
+test('o botão especial da campanha lança palavra ou frase conforme a barra',()=>{
+  for(const [meter,move,waves] of [[25,'special',1],[100,'super',3]]){
+    const events=[],g=new StoryEngine({onEvent:e=>events.push(e)});
+    g.start('luciana','story-solo','rafael');g.queue(0,'storyNext');
+    const f=g.fighters[0];f.x=350;f.meter=meter;
+    const robot=g.spawnEnemy('lab',650);robot.aiTime=100;robot.cooldown=100;
+    g.queue(0,'storySpecial');advance(g,1.5);
+    assert.equal(events.filter(e=>e.type==='projectile'&&e.move===move).length,waves);
+    assert.ok(robot.hp<robot.maxHp);
   }
 });
