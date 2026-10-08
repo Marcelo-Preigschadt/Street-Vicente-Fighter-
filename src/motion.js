@@ -17,6 +17,7 @@ export const FOOTWORK = Object.freeze({
   joao:{stride:144,advance:{distance:122,duration:15/60,cancelAt:6/60},retreat:{distance:102,duration:17/60},counter:.25,range:[135,205],attackAdvance:{punch:[6,10,15],kick:[8,12,18],crouchPunch:[3,5,8],sweep:[4,7,11]}},
   tais:{stride:170,advance:{distance:122,duration:15/60,cancelAt:6/60},retreat:{distance:108,duration:16/60},counter:.26,range:[155,230],attackAdvance:{punch:[6,11,17],kick:[10,17,24],crouchPunch:[3,5,8],sweep:[5,8,12]}},
   luciana:{stride:145,advance:{distance:104,duration:14/60,cancelAt:5/60},retreat:{distance:98,duration:15/60},counter:.28,range:[120,185],attackAdvance:{punch:[8,14,19],kick:[6,10,15],crouchPunch:[4,7,10],sweep:[4,7,10]}},
+  khauany:{stride:160,advance:{distance:116,duration:15/60,cancelAt:6/60},retreat:{distance:112,duration:16/60},counter:.31,range:[135,205],attackAdvance:{punch:[8,13,19],kick:[7,12,18],crouchPunch:[4,7,10],sweep:[6,9,13]}},
   ruan:{stride:156,advance:{distance:110,duration:14/60,cancelAt:5/60},retreat:{distance:96,duration:15/60},counter:.26,range:[125,205],attackAdvance:{punch:[7,12,18],kick:[10,16,22],crouchPunch:[3,5,8],sweep:[5,8,12]}},
 });
 

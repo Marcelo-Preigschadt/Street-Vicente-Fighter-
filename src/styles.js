@@ -1,5 +1,6 @@
 import {SAVATE_STRIKES} from './savate.js';
 import {MMA_STRIKES} from './mma.js';
+import {KHAUANY_STRIKES} from './khauany.js';
 import {KARATE_STRIKES} from './karate.js';
 import {WILD_STRIKES} from './wild.js?v=27';
 import { JUDO_STRIKES } from './judo.js?v=27';
@@ -93,6 +94,15 @@ export const FIGHTING_STYLES = Object.freeze({
       route('Concordância de Punhos','punch:0','punch:1','punch:2'),
       route('Frase Completa','punch:0','punch:1','kick:1'),
       route('¡Sin Pausa!','crouchPunch:0','punch:1','kick:1')]},
+  khauany:{name:'MMA · Contra-ataque',summary:'Passos angulados, cotovelo de encontro, joelhada, chute baixo deslizante e garfos arremessados.',step:30,
+    names:{punch:['Jab de interceptação','Cotovelo de encontro','Cruzado angulado'],kick:['Chute baixo rápido','Joelhada curta','Chute lateral alto'],
+      crouchPunch:['Toque baixo','Direto baixo','Cruzado baixo'],sweep:['Varrida curta','Deslizamento baixo','Deslizamento forte'],
+      airPunch:['Jab aéreo','Cotovelo aéreo','Cruzado aéreo'],airKick:['Joelhada aérea','Chute voador','Chute voador forte']},
+    normals:{punch:[[4,3,9,42,20,95],[6,4,13,70,24,150],[9,4,20,98,28,220]],
+      kick:[[6,4,14,51,22,150],[8,5,19,83,27,220],[11,5,24,112,30,275]],
+      sweep:[[6,5,15,54,23,195],[9,5,20,84,27,270],[12,6,25,111,30,330]]},
+    combos:[route('Corte de Ângulo','punch:0','punch:1','kick:1'),route('Resposta Rápida','crouchPunch:0','punch:1','kick:2'),
+      route('Passo e Varrida','punch:0','kick:1','sweep:1')]},
   ruan:{name:'Karatê',summary:'Guarda firme, hikite, gyaku-zuki, mae-geri, yoko-geri e varreduras.',step:25,
     names:{punch:['Kizami-zuki','Gyaku-zuki','Oi-zuki'],kick:['Mae-geri curto','Mae-geri','Mae-geri forte'],
       crouchPunch:['Zuki baixo rápido','Gyaku-zuki baixo','Zuki baixo forte'],sweep:['Ashi-barai curto','Ashi-barai','Ashi-barai forte'],
@@ -119,6 +129,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='khauany')return KHAUANY_STRIKES[f.action];
   if(f.character.id==='luciana')return MMA_STRIKES[f.action];
   if(f.character.id==='tais')return SAVATE_STRIKES[f.action];
   if(f.character.id==='ruan')return KARATE_STRIKES[f.action];
