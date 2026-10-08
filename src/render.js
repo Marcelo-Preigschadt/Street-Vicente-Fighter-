@@ -58,7 +58,7 @@ export class Renderer {
       const {base,portrait}=await loadPreparedSprites(id,loadImage);
       if(id==='tais'){const [walkImage,walkFrames]=await Promise.all([loadImage('assets/story/tais-walk-v4.webp'),fetch('assets/story/tais-walk-v4.json').then(r=>r.json())]);base.motion={scale:1,frames:walkFrames.map(f=>({...f,image:walkImage}))};}
       this.sheets[id]=base;this.portraits[id]=portrait;
-      if(['gelton','marcelino','marcos','joao','ruan','tais'].includes(id)) {
+      if(['gelton','marcelino','marcos','joao','ruan','tais','luciana'].includes(id)) {
         await cacheSpriteEffects(base,base.frames[13],CHARACTERS[id].color,['power']);
         for(const frame of base.combat.frames)await cacheSpriteEffects(base.combat,frame,CHARACTERS[id].color,['power']);
       } else await this.prepareVisualCache(id);
@@ -308,7 +308,7 @@ export class Renderer {
     drawPose(current, 1);
     c.globalAlpha = 1; c.restore();
     c.save();c.translate(f.x,f.y);c.scale(size,size);c.translate(-f.x,-f.y);
-    if (!['marcos','joao','ruan','tais'].includes(f.character.id) && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
+    if (!['marcos','joao','ruan','tais','luciana'].includes(f.character.id) && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       const x = f.x + f.direction * (55 + strength * (release.offset - 55));
       if(f.moveData.effect === 'chemicalSmoke')drawChemicalSmoke(c,{x,y:f.y-release.height,radius:8+strength*17,direction:f.direction},this.clock,this.reduced,.65);
@@ -318,7 +318,17 @@ export class Renderer {
     if(f.character.id==='ruan')drawKarateCharge(c,f,this.clock,this.reduced);
     if(f.character.id==='joao')drawWildPower(c,f,this.clock,this.reduced);
     if(f.character.id==='marcos')drawJudoSystem(c,f,this.clock,this.reduced);
-    if (f.state === 'uppercut' && !['marcos','joao','ruan','tais'].includes(f.character.id)) f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
+    if(f.character.id==='luciana'&&['special','uppercut','super'].includes(f.state)&&f.actionTime>=f.moveData.startup){
+      const t=f.actionTime-f.moveData.startup;
+      if(t<f.moveData.active){
+        const label=f.state==='special'?'Á':f.state==='uppercut'?'Ñ':'Á · Ñ';
+        c.save();c.font=`900 ${f.state==='super'?26:22}px Georgia,serif`;c.textAlign='center';c.textBaseline='middle';
+        c.shadowColor=f.character.color;c.shadowBlur=15;c.fillStyle='#fff5df';
+        c.fillText(label,f.x+f.direction*(f.state==='super'?150:110),f.y-216-Math.sin(t*18)*12);
+        c.restore();
+      }
+    }
+    if (f.state === 'uppercut' && !['marcos','joao','ruan','tais','luciana'].includes(f.character.id)) f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
     c.restore();

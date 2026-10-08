@@ -149,7 +149,7 @@ function updateSelection() {
   $('right-stance').src=`assets/runtime/${opponent}-preview-v${opponent==='tais'?2:1}.webp${opponent==='ruan'?'?v=362':opponent==='joao'?'?v=362':''}`;
   $('right-stance').alt=network&&!lobby?'':`${CHARACTERS[opponent].name} em pose de luta`;
   $('rival-slot').textContent=network?(lobby?`${story?'PARCEIRO':'ADVERSÁRIO'} · P${2-online.slot}`:'PLAYER 2'):local?(story?'PARCEIRO · P2':'JOGADOR 2'):story?'EQUIPE DO RESGATE':'COMPUTADOR';
-  if(story){document.querySelector('.roster-caption').innerHTML='EQUIPE DO RESGATE <span>NOVE LUTADORES · UMA MISSÃO</span>'; $('rival-note').textContent=getMode()==='cpu'?'Campanha solo · apenas você em campo. WASD: andar · Espaço: pular.':'Juntos contra a IA. Sem dano entre parceiros.';}else document.querySelector('.roster-caption').innerHTML='TODOS OS LUTADORES <span>PROFESSORES E ALUNOS</span>';
+  if(story){document.querySelector('.roster-caption').innerHTML='EQUIPE DO RESGATE <span>DEZ LUTADORES · UMA MISSÃO</span>'; $('rival-note').textContent=getMode()==='cpu'?'Campanha solo · apenas você em campo. WASD: andar · Espaço: pular.':'Juntos contra a IA. Sem dano entre parceiros.';}else document.querySelector('.roster-caption').innerHTML='TODOS OS LUTADORES <span>PROFESSORES E ALUNOS</span>';
   $('own-slot').textContent=network&&lobby?`VOCÊ · P${online.slot+1}`:network?'VOCÊ':'P1';
   $('left-ready').hidden=$('right-ready').hidden=!lobby;
   $('left-ready').textContent=lobby?(online.confirmed[online.slot]?'CONFIRMADO':'ESCOLHENDO…'):'';
@@ -158,12 +158,12 @@ function updateSelection() {
   $('right-ready').classList.toggle('ready',!!(lobby&&online.confirmed[1-online.slot]));
   $('rival-note').textContent=story?(getMode()==='cpu'?'Campanha solo · apenas você em campo. WASD: andar · Espaço: pular.':'Juntos contra a IA. Sem dano entre parceiros.'):network&&!lobby?'Encontre um jogador ou convide alguém para sua sala.':SELECTION_QUOTES[opponent];
   $('preview-right').style.setProperty('--fighter-color',CHARACTERS[opponent].color);
-  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida',joao:'chute',ruan:'chute',tais:'chute' };
+  const second = { marcelo:'chute', rafael:'gancho', gustavo:'chute',gelton:'chute',marcelino:'chute',marcos:'varrida',joao:'chute',ruan:'chute',tais:'chute',luciana:'joelhada' };
   $('p1-second-label').textContent = second[selected]; $('p2-second-label').textContent = second[opponent];
   $('p1-drone-command').hidden = selected !== 'marcelo'; $('p2-drone-command').hidden = opponent !== 'marcelo';
   document.querySelector('[data-action="drone"]').hidden = selected !== 'marcelo';
   const touchSecond = document.querySelector('.touch-attacks [data-action="kick"]');
-  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA',joao:'CHUTE',ruan:'CHUTE' }[selected];
+  touchSecond.textContent = { marcelo:'CHUTE', rafael:'GANCHO', gustavo:'CHUTE',gelton:'CHUTE',marcelino:'CHUTE',marcos:'VARRIDA',joao:'CHUTE',ruan:'CHUTE',tais:'CHUTE',luciana:'JOELHADA' }[selected];
   touchSecond.setAttribute('aria-label',second[selected]);
   document.querySelectorAll('[data-fighter]').forEach(card => {
     const chosen = card.dataset.fighter === selected;
@@ -175,7 +175,7 @@ function updateSelection() {
 }
 document.querySelectorAll('[data-fighter]').forEach(button => button.addEventListener('click', () => {
   if(online.active&&!online.selectCharacter(button.dataset.fighter))return;
-  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23,joao:440,ruan:523.25,tais:554.37}[selected], .09, 'triangle', .15);
+  selected = button.dataset.fighter; audio.unlock(); audio.tone({marcelo:392,rafael:493.88,gustavo:587.33,gelton:659.25,marcelino:698.46,marcos:349.23,joao:440,ruan:523.25,tais:554.37,luciana:622.25}[selected], .09, 'triangle', .15);
   updateSelection();
   audio.confirmSelection(selected).catch(()=>{$('load-status').textContent='Fala indisponível. Você pode continuar a jogar.';});
 }));

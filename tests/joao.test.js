@@ -14,7 +14,7 @@ function scene(slot=0,distance=210){
 }
 test('aluno 301 tem 32 poses calibradas e pode ser selecionado online sem remover professores',()=>{
   assert.equal(CHARACTERS.joao.category,'students');assert.equal(CHARACTERS.joao.classroom,'301');assert.ok(validCharacter('joao'));
-  assert.equal(Object.values(CHARACTERS).filter(f=>f.category==='teachers').length,7);
+  assert.equal(Object.values(CHARACTERS).filter(f=>f.category==='teachers').length,8);
   for(const atlas of ['base','combat']){
     assert.equal(WILD_LAYOUT[atlas].length,16);assert.equal(WILD_HURT[atlas].length,16);
     for(const bands of WILD_HURT[atlas])assert.ok(bands.every(b=>b.every(Number.isFinite)&&b[2]>0&&b[3]>0));
@@ -58,6 +58,6 @@ test('trocas repetidas de elenco liberam arte antiga e preservam os quatro perso
   const r=new Renderer({getContext:()=>({})});r.loadBackground=async()=>{};
   r.loadCharacter=function(id){this.characterLoads??=new Map();this.characterLoads.delete(id);this.characterLoads.set(id,Promise.resolve());this.sheets[id]={};this.portraits[id]={};return Promise.resolve();};
   for(const id of Object.keys(CHARACTERS).filter(id=>id!=='marcelo'))await r.load(['marcelo',id]);
-  assert.equal(r.characterLoads.size,4);assert.equal(Object.keys(r.sheets).length,4);assert.ok(r.sheets.marcelo&&r.sheets.joao);
+  assert.equal(r.characterLoads.size,4);assert.equal(Object.keys(r.sheets).length,4);assert.ok(r.sheets.marcelo&&r.sheets.luciana);
   assert.equal(r.sheets.rafael,undefined);
 });

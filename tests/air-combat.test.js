@@ -15,7 +15,7 @@ for(const id of Object.keys(CHARACTERS))for(const move of ['punch','kick','speci
   if(move==='super'){assert.equal(f.meter,0);assert.ok(events.some(e=>e.type==='superStart'));}
   advance(g,.50);
   if(['special','uppercut','super'].includes(move))assert.ok(events.some(e=>e.type==='special'&&e.move===move));
-  if(move==='special'&&f.character.projectile&&!['marcos','joao'].includes(id)){
+  if(move==='special'&&f.character.projectile&&!['marcos','joao','luciana'].includes(id)){
    const shot=events.find(e=>e.type==='projectile');assert.ok(shot);assert.ok(shot.y<WORLD.floor-f.character.projectile.height);
   }
  });

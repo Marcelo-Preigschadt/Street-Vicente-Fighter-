@@ -1,4 +1,5 @@
 import {savatePose,savateHurt,SAVATE_STRIKES} from './savate.js';
+import {mmaPose,mmaHurt,MMA_STRIKES} from './mma.js';
 import {initLocomotion,saveMotion,updateLocomotion,locomotionVelocity,usesRig,rigHurtboxes,rootCurve} from './locomotion.js';
 import {entityScale,scaledBox} from './story-world.js';
 import {karatePose,karateHurt,KARATE_STRIKES} from './karate.js';
@@ -74,6 +75,11 @@ export const CHARACTERS = Object.freeze({
     powerQuotes:{special:'Segura esse super soco!',uppercut:'Sai da frente!',super:'A trezentos e um chegou! Agora segura essa descarga!'},
     voiceDuration:{"special": 2.783, "uppercut": 2.16, "super": 4.719},strikes:WILD_STRIKES,projectile:{offset:210,height:190}},
   tais:{id:'tais',category:'teachers',name:'Prof. Tais',quote:'Hoje a aula é de movimento!',color:'#56e1d7',accent:'#ffd975',speed:378,backSpeed:315,jumpSpeed:650,power:1,sprite:'assets/tais-base-v1.webp',combatSprite:'assets/tais-combat-v1.webp',powers:{special:'Pulso Atlético',uppercut:'Salto Olímpico',super:'Circuito Campeão'},powerQuotes:{special:'Pulso atlético!',uppercut:'Salto olímpico!',super:'Até o último segundo! Circuito campeão!'},voiceDuration:{special:1.681,uppercut:1.723,super:3.355},strikes:SAVATE_STRIKES,projectile:{offset:215,height:185}},
+  luciana:{id:'luciana',category:'teachers',name:'Prof. Luciana',quote:'As palavras também têm impacto!',color:'#ff727a',accent:'#72b8ff',
+    speed:362,backSpeed:306,jumpSpeed:620,power:1.02,sprite:'assets/luciana-base-v1.webp',combatSprite:'assets/luciana-combat-v1.webp',
+    powers:{special:'Direto da Palavra',uppercut:'Acento Ascendente',super:'Sem Direito a Réplica'},
+    powerQuotes:{special:'Direto ao ponto!',uppercut:'Acento ascendente!',super:'¡Se acabó! Sem direito a réplica!'},
+    voiceDuration:{special:1.4,uppercut:1.7,super:2.9},strikes:MMA_STRIKES,projectile:{offset:170,height:210}},
   ruan:{id:'ruan',category:'students',name:'Aluno Ruan',quote:'Meu Karatê vai te dar um choque!',color:'#72e6ff',accent:'#b5a2ff',
     speed:360,backSpeed:300,jumpSpeed:625,power:1.03,sprite:'assets/ruan-base-v1.webp',combatSprite:'assets/ruan-combat-v1.webp',
     powers:{special:'Pulso de Choque',uppercut:'Punho de Trovão',super:'Kata da Tempestade'},
@@ -107,6 +113,9 @@ function moveData(name, strength = 1, characterId = null) {
   if(characterId==='tais'&&name==='special')return {name,strength,startup:frames(14),active:frames(1),recovery:frames(25),damage:90+strength*10,stun:frames(25),blockstun:frames(17),push:280,meter:8,level:'mid',projectile:true,chip:.08,speed:680+strength*100,effect:'athleticPulse',radius:24};
   if(characterId==='tais'&&name==='uppercut')return {name,strength,startup:frames(7),active:frames(14),recovery:frames(29),damage:112+strength*13,stun:frames(29),blockstun:frames(18),push:300,meter:9,level:'mid',knockdown:true,launch:760,invincibility:frames(7),jumpVelocity:-1020,travelSpeed:190,effect:'olympicJump'};
   if(characterId==='tais'&&name==='super')return {name,strength,startup:frames(11),active:frames(36),recovery:frames(30),damage:74,stun:frames(26),blockstun:frames(17),push:140,meter:0,level:'mid',projectile:true,waves:4,finalKnockdown:true,launch:470,chip:.08,speed:970,cost:100,invincibility:frames(9),effect:'athleticPulse',radius:27};
+  if(characterId==='luciana'&&name==='special')return {name,strength,startup:frames(10),active:frames(8),recovery:frames(22),damage:108+strength*13,stun:frames(27),blockstun:frames(16),push:270,meter:9,level:'mid',advance:64,chip:.05,effect:'mmaCross'};
+  if(characterId==='luciana'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(12),recovery:frames(30),damage:126+strength*12,stun:frames(30),blockstun:frames(19),push:260,meter:10,level:'mid',knockdown:true,launch:680,invincibility:frames(7),grounded:true,effect:'mmaUppercut'};
+  if(characterId==='luciana'&&name==='super')return {name,strength,startup:frames(11),active:frames(18),recovery:frames(34),damage:330,stun:frames(36),blockstun:frames(23),push:360,meter:0,level:'mid',knockdown:true,launch:450,cost:100,invincibility:frames(10),advance:85,chip:.07,effect:'mmaRush'};
   if(characterId==='ruan'&&name==='special')return {name,strength,startup:frames(13),active:frames(1),recovery:frames(24),damage:88+strength*10,
     stun:frames(26),blockstun:frames(17),push:230,meter:7,level:'mid',projectile:true,chip:.08,speed:720+strength*80,effect:'karateLightning',radius:20};
   if(characterId==='ruan'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(15),recovery:frames(28),damage:115+strength*12,
@@ -169,6 +178,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='luciana')return mmaPose(f);
   if(f.character.id==='tais')return savatePose(f);
   if(f.character.id==='ruan')return karatePose(f);
   if(f.character.id==='joao')return wildPose(f);
@@ -251,7 +261,7 @@ export class Fighter {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     if(usesRig(this))return rigHurtboxes(this);
     const pose = fighterPose(this);
-    const profile = this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => scaledBox(this,offset,height,w,h));
     // Extended arms and legs can be struck, including the first recovery frames.
@@ -620,7 +630,7 @@ export class FightEngine {
         f.shotsSent = 1; if(!m.grounded){f.vy = (m.jumpVelocity??-1080)*entityScale(f); f.y -= .02; f.vx = f.direction * (m.travelSpeed??135)*entityScale(f);}
         this.announcePower(f);
       }
-      if(['marcos','joao'].includes(f.character.id)&&['special','super'].includes(f.action)&&f.shotsSent===0&&f.actionTime>=m.startup){f.shotsSent=1;this.announcePower(f);}
+      if(['marcos','joao','luciana'].includes(f.character.id)&&['special','super'].includes(f.action)&&f.shotsSent===0&&f.actionTime>=m.startup){f.shotsSent=1;this.announcePower(f);}
       if (m.projectile) {
         const count = m.waves ?? (f.action === 'super' ? 3 : 1);
         while (f.shotsSent < count && f.actionTime >= m.startup + f.shotsSent * .11) { this.spawnProjectile(f, m, f.shotsSent++); }

@@ -1,4 +1,5 @@
 import {SAVATE_STRIKES} from './savate.js';
+import {MMA_STRIKES} from './mma.js';
 import {KARATE_STRIKES} from './karate.js';
 import {WILD_STRIKES} from './wild.js?v=27';
 import { JUDO_STRIKES } from './judo.js?v=27';
@@ -82,6 +83,16 @@ export const FIGHTING_STYLES = Object.freeze({
     names:{punch:['Jab','Direto','Direto forte'],kick:['Chassé curto','Chassé frontal','Chassé forte'],crouchPunch:['Jab no corpo','Direto no corpo','Direto baixo forte'],sweep:['Coup de pied bas curto','Coup de pied bas','Coup de pied bas forte'],airPunch:['Jab aéreo','Direto aéreo','Direto aéreo forte'],airKick:['Chassé aéreo curto','Chassé aéreo','Chassé aéreo forte']},
     normals:{punch:[[4,3,9,41,19,95],[6,4,12,66,23,145],[10,5,19,94,27,210]],kick:[[6,4,13,52,21,160],[9,5,18,84,25,230],[12,6,25,116,29,300]]},
     combos:[route('Ritmo de Aula','punch:0','punch:1','kick:1'),route('Circuito de Savate','punch:0','punch:1','punch:2','kick:1')]},
+  luciana:{name:'MMA · Trocação',summary:'Jab, direto, cruzado, uppercut, joelhada e low kick; pressão de curta distância.',step:27,
+    names:{punch:['Jab','Direto','Cruzado'],kick:['Low kick','Joelhada curta','Joelhada forte'],
+      crouchPunch:['Jab no corpo','Direto no corpo','Cruzado no corpo'],sweep:['Low kick rápido','Low kick','Low kick forte'],
+      airPunch:['Jab aéreo','Cruzado aéreo','Cruzado aéreo forte'],airKick:['Joelhada aérea','Joelhada voadora','Joelhada voadora forte']},
+    normals:{punch:[[3,3,8,41,19,95],[5,4,11,68,23,145],[8,4,18,98,27,215]],
+      kick:[[6,4,13,51,21,140],[8,5,18,82,26,195],[11,5,23,111,29,270]]},
+    combos:[route('Frase de Impacto','punch:0','punch:1','punch:2','kick:1'),
+      route('Concordância de Punhos','punch:0','punch:1','punch:2'),
+      route('Frase Completa','punch:0','punch:1','kick:1'),
+      route('¡Sin Pausa!','crouchPunch:0','punch:1','kick:1')]},
   ruan:{name:'Karatê',summary:'Guarda firme, hikite, gyaku-zuki, mae-geri, yoko-geri e varreduras.',step:25,
     names:{punch:['Kizami-zuki','Gyaku-zuki','Oi-zuki'],kick:['Mae-geri curto','Mae-geri','Mae-geri forte'],
       crouchPunch:['Zuki baixo rápido','Gyaku-zuki baixo','Zuki baixo forte'],sweep:['Ashi-barai curto','Ashi-barai','Ashi-barai forte'],
@@ -108,6 +119,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='luciana')return MMA_STRIKES[f.action];
   if(f.character.id==='tais')return SAVATE_STRIKES[f.action];
   if(f.character.id==='ruan')return KARATE_STRIKES[f.action];
   if(f.character.id==='joao')return WILD_STRIKES[f.action];

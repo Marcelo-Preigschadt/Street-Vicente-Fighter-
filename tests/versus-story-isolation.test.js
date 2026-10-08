@@ -7,7 +7,7 @@ function duel(Engine,id,move,priorStory){
   const e=new Engine({random:()=>.6});
   if(priorStory){e.start(id,'story-solo');e.queue(0,'storyNext');e.spawnWave();e.camera=1100;}
   e.start(id,'local',id==='rafael'?'gustavo':'rafael');e.phase='fight';e.phaseTime=0;
-  e.fighters[0].x=350;e.fighters[1].x=['joao','marcos'].includes(id)?470:850;
+  e.fighters[0].x=350;e.fighters[1].x=['joao','marcos','luciana'].includes(id)?470:850;
   for(const f of e.fighters){f.prevX=f.x;f.direction=f.slot?-1:1;}
   e.fighters[0].meter=100;e.queue(0,move);
   return e;
