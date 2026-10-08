@@ -38,3 +38,19 @@ test('sprite isolado de aú conserva cabeça, mãos e pés no mesmo recorte',t=>
   assert.equal(sheet.frames.length,1);
   assert.deepEqual([sheet.frames[0].x,sheet.frames[0].y,sheet.frames[0].w,sheet.frames[0].h],[20,10,60,120]);
 });
+test('caminhada e golpe desenham um quadro inteiro sem recortar ou deformar a silhueta',()=>{
+  const calls=[],c={save(){},restore(){},translate(){},scale(){},drawImage(...args){calls.push(args);}};
+  const frame={image:{},rect:[10,20,100,200],x:0,y:0,w:100,h:200,anchor:50,bottom:200,scale:1};
+  const renderer={c,clock:0,reduced:true};
+  const fighter={character:{id:'rafael'},x:400,y:625,direction:1,state:'walk',invincible:0,
+    blockFlash:0,flash:0,customTime:0,dizzyTime:0,attackPlant:null,airborne:false};
+  const pose={sheet:{frames:[frame]},index:0};
+  Renderer.prototype.drawFighter.call(renderer,fighter,pose);
+  assert.equal(calls.length,1);
+  assert.deepEqual(calls[0].slice(1),[10,20,100,200,-50,-200,100,200]);
+  calls.length=0;
+  fighter.state='punch';fighter.action='punch';fighter.attackPlant={x:330};
+  Renderer.prototype.drawFighter.call(renderer,fighter,pose);
+  assert.equal(calls.length,1);
+  assert.deepEqual(calls[0].slice(1),[10,20,100,200,-50,-200,100,200]);
+});
