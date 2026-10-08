@@ -7,15 +7,15 @@
   <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v4.6.8/style.css">
-  <script type="module" src="releases/v4.6.8/main.js"></script>
+  <link rel="stylesheet" href="releases/v4.6.9/style.css">
+  <script type="module" src="releases/v4.6.9/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="4.6.8">
+  <main class="cabinet" data-game-version="4.6.9">
     <div id="game-shell" class="game-shell">
     <header class="topbar">
-      <a class="wordmark" href="./" aria-label="Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
-      <nav class="experience-nav" aria-label="Experiência de jogo"><button type="button" data-experience="versus" aria-pressed="true">1 × 1</button><button type="button" data-experience="story" aria-pressed="false">História</button></nav>
+      <a class="wordmark" id="home-link" href="./" aria-label="Voltar ao menu de Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
+      <button id="menu-home" class="menu-home utility-button" type="button" hidden>Menu principal</button>
       <div class="utility">
         <button id="sound" class="utility-button" type="button" aria-pressed="true" title="Ativar ou desativar áudio">Áudio <span id="sound-state">ON</span></button>
         <button id="fullscreen" class="utility-button" type="button">Tela cheia</button>
@@ -25,7 +25,43 @@
 
     <section id="arena" class="arena" aria-label="Arena de luta">
       <canvas tabindex="-1" id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>
-      <div id="selection" class="screen selection">
+      <section id="menu-screen" class="screen main-menu" aria-label="Menu principal">
+        <div class="menu-title"><span class="menu-kicker">ESCOLA ESTADUAL VICENTE DUTRA · ARCADE</span><h1><span>STREET</span><span>VICENTE</span><strong>FIGHTER</strong></h1><p>Escolha seu próximo desafio</p></div>
+        <nav class="menu-options" aria-label="Modos de jogo">
+          <button type="button" data-menu="versus"><span>01</span> VERSUS BATTLE <small>Contra a máquina ou no mesmo PC</small></button>
+          <button type="button" data-menu="story"><span>02</span> MODO HISTÓRIA <small>Operação Resgate do NIT</small></button>
+          <button type="button" data-menu="online-versus"><span>03</span> ONLINE 1 V.S. 1 <small>Crie ou encontre uma sala</small></button>
+          <button type="button" data-menu="online-story"><span>04</span> ONLINE HISTÓRIA <small>Jogue a campanha em dupla</small></button>
+        </nav>
+        <p class="menu-footer">PROFESSORES · ALUNOS · VICENTE DUTRA</p>
+      </section>
+      <section id="mode-screen" class="screen mode-screen" hidden aria-label="Escolher tipo de partida">
+        <button id="mode-back" class="screen-back" type="button">← Menu principal</button>
+        <div class="route-heading"><span class="eyebrow">ESCOLHA A PARTIDA</span><h2 id="mode-title">VERSUS BATTLE</h2><p id="mode-description"></p></div>
+        <div class="mode-choices"><button type="button" data-mode-choice="cpu"><span>01</span><strong id="mode-cpu-title">CONTRA A MÁQUINA</strong><small id="mode-cpu-description">Enfrente um lutador controlado pelo jogo.</small></button><button type="button" data-mode-choice="local"><span>02</span><strong id="mode-local-title">1 V.S. 1 NO MESMO PC</strong><small id="mode-local-description">Dois jogadores, dois controles ou teclados.</small></button></div>
+      </section>
+      <section id="room-screen" class="screen room-screen" hidden aria-label="Criar ou encontrar sala online">
+        <button id="room-back" class="screen-back" type="button">← Menu principal</button>
+        <div class="route-heading"><span class="eyebrow">MULTIPLAYER ONLINE</span><h2 id="room-title">ONLINE 1 V.S. 1</h2><p id="room-description">Crie uma sala para convidar alguém ou encontre uma partida. A seleção de personagens aparece quando os dois jogadores estiverem conectados.</p></div>
+        <div class="room-flow">
+          <div id="online-panel" class="online-panel">
+            <button id="create-room" class="secondary-button" type="button">Criar sala</button>
+            <label for="room-code">Código da sala<input id="room-code" maxlength="10" placeholder="Ex.: AB23CD45" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+            <button id="join-room" class="secondary-button" type="button">Entrar na sala</button>
+            <button id="find-room" class="text-button" type="button">Encontrar partida automaticamente</button>
+            <button id="cancel-online" class="text-button" type="button" hidden>Cancelar busca</button>
+            <span id="room-share" hidden>Sala <strong id="room-code-display"></strong> <button id="copy-room" class="text-button" type="button">Copiar convite</button></span>
+          </div>
+          <p id="room-status" class="room-status" role="status">Escolha uma sala aberta ou crie a sua.</p>
+          <section id="room-directory" class="room-directory" aria-label="Salas online">
+            <div class="rooms-heading"><strong>Salas online</strong><button id="refresh-rooms" class="text-button" type="button">Atualizar</button></div>
+            <p id="rooms-message" role="status">Carregando salas…</p>
+            <ul id="rooms-list"></ul>
+          </section>
+        </div>
+      </section>
+      <div id="selection" class="screen selection" hidden>
+        <button id="selection-back" class="screen-back" type="button">← Voltar</button>
         <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1 id="selection-title">PLAYER SELECT</h1></div>
         <div class="select-stage">
           <aside class="fighter-showcase" id="preview-left"><img class="large-portrait" id="left-portrait" alt=""><span class="showcase-slot" id="own-slot">VOCÊ</span><img class="stance-preview" id="left-stance" alt=""><h2 id="left-name"></h2><p id="left-style"></p><p id="selection-quote" aria-live="polite"></p><span class="lobby-ready" id="left-ready" role="status" hidden></span></aside>
@@ -71,21 +107,9 @@
         </div>
         <div class="start-panel">
           <p id="story-summary" class="story-summary" hidden><strong>O sinal bateu. A luta começou.</strong> Quatro atos, equipamentos corrompidos e duelos de chefe. Escolha qualquer um dos dez lutadores. Ande em quatro direções, salte, encadeie golpes e abra caminho até o NIT.</p>
-          <fieldset class="modes"><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online" checked><span id="mode-online-label">Multiplayer online</span></label><label><input type="radio" name="mode" value="local"><span id="mode-local-label">2 jogadores no mesmo PC</span></label><label><input type="radio" name="mode" value="cpu"><span id="mode-solo-label">Contra o computador</span></label></fieldset>
+          <fieldset class="modes" hidden><legend class="sr-only">Modo de jogo</legend><label><input type="radio" name="mode" value="online"><span id="mode-online-label">Multiplayer online</span></label><label><input type="radio" name="mode" value="local"><span id="mode-local-label">2 jogadores no mesmo PC</span></label><label><input type="radio" name="mode" value="cpu" checked><span id="mode-solo-label">Contra o computador</span></label></fieldset>
           <label class="opponent-picker" for="opponent"><span id="opponent-label">Adversário</span><select id="opponent"><optgroup label="Professores"><option value="marcelo">Prof. Marcelo</option><option value="rafael" selected>Prof Rafael</option><option value="gustavo">Prof. Gustavo</option><option value="gelton">Prof. Gelton</option><option value="marcelino">Prof. Marcelino</option><option value="marcos">Prof. Marcos</option><option value="tais">Prof. Tais</option><option value="luciana">Prof. Luciana</option></optgroup><optgroup label="Alunos"><option value="joao">João Machado · 301</option><option value="ruan">Aluno Ruan</option></optgroup></select></label>
           <div class="start-actions"><button id="start" class="primary-button" type="button">Encontrar jogador</button><button id="continue-story" class="text-button" type="button" hidden>Continuar campanha</button></div>
-          <div id="online-panel" class="online-panel">
-            <button id="create-room" class="secondary-button" type="button">Criar sala</button>
-            <label for="room-code">Código da sala<input id="room-code" maxlength="10" placeholder="Ex.: AB23CD45" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
-            <button id="join-room" class="secondary-button" type="button">Entrar na sala</button>
-            <button id="cancel-online" class="text-button" type="button" hidden>Cancelar busca</button>
-            <span id="room-share" hidden>Sala <strong id="room-code-display"></strong> <button id="copy-room" class="text-button" type="button">Copiar convite</button></span>
-          </div>
-          <section id="room-directory" class="room-directory" aria-label="Salas online">
-            <div class="rooms-heading"><strong>Salas online</strong><button id="refresh-rooms" class="text-button" type="button">Atualizar</button></div>
-            <p id="rooms-message" role="status">Carregando salas…</p>
-            <ul id="rooms-list"></ul>
-          </section>
           <p id="load-status" class="load-status" role="status">Selecione o personagem e pressione Enter ou Começar a luta</p>
         </div>
       </div>
