@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {GamepadMappings,connectedPads,directions,readController,PAD_DEFAULT} from '../src/gamepad.js';
+import {GamepadMappings,GamepadPresence,connectedPads,directions,readController,PAD_DEFAULT} from '../src/gamepad.js';
 const pad=(id='USB Gamepad',axes=[0,0],n=16)=>({id,mapping:'',connected:true,axes,buttons:Array.from({length:n},()=>({pressed:false,value:0}))});
 test('API tolera ausência, índices vazios e dispositivos desconectados',()=>{
  const p=pad();assert.deepEqual(connectedPads({getGamepads:()=>[null,p,undefined,{...p,connected:false}]}),[p]);
@@ -24,4 +24,21 @@ test('mapeamento persiste por dispositivo sem alterar outro controle',()=>{
 test('botão remapeado funciona em um dispositivo USB de dez botões',()=>{
  const p=pad('USB',[0,0],10);p.buttons[5].pressed=true;const m={...PAD_DEFAULT,jump:5};
  assert.equal(readController(p,m).buttons.jump,true);assert.equal(readController(p,m).confirm,true);
+});
+
+test('leitura vazia momentânea mantém conexão visual sem manter comandos pressionados',()=>{
+  let tick=0;const monitor=new GamepadPresence({now:()=>tick,lossGraceMs:1500});
+  const p=pad('USB instável');p.index=0;
+  let current=monitor.update([p]);assert.equal(current.length,1);assert.equal(current[0].live,true);
+  tick=50;current=monitor.update([]);assert.equal(current.length,1);assert.equal(current[0].live,false);
+  tick=600;current=monitor.update([p]);assert.equal(current.length,1);assert.equal(current[0].live,true);
+  tick=700;monitor.update([]);tick=2300;assert.equal(monitor.update([]).length,0);
+});
+test('queda temporária de P1 não desloca P2 para a primeira posição',()=>{
+  let tick=0;const monitor=new GamepadPresence({now:()=>tick,lossGraceMs:1500});
+  const a=pad('A'),b=pad('B');a.index=0;b.index=1;
+  monitor.update([a,b]);tick=10;
+  const slots=monitor.update([b]);assert.equal(slots.length,2);
+  assert.equal(slots[0].live,false);assert.equal(slots[1].live,true);
+  assert.equal(slots[1].pad.id,'B');
 });
