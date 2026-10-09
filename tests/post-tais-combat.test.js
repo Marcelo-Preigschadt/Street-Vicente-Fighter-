@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {FightEngine,FIXED_STEP,WORLD,fighterPose} from '../src/engine.js';
 import {StoryEngine} from '../src/story.js';
+import {FIGHTING_STYLES} from '../src/styles.js';
 import {RIG_BIND,GAITS,referenceJoints} from '../src/locomotion-data.js';
 import {resetFeet,evaluateRig,usesRig} from '../src/locomotion.js';
 
@@ -93,6 +94,20 @@ test('Luciana usa a pose de levantar, não a de cair para trás',()=>{
   const game=new FightEngine();game.start('luciana','local','rafael');
   const f=game.fighters[0];f.state='wake';
   assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
+});
+
+test('Khauãny recebe o final alto do combo do Gustavo nos dois lados',()=>{
+  const route=FIGHTING_STYLES.gustavo.combos.find(combo=>combo.name==='Final Circular');
+  for(const slot of [0,1]){
+    const events=[],game=new FightEngine({random:()=>.6,onEvent:event=>events.push(event)});
+    game.start(slot?'khauany':'gustavo','local',slot?'gustavo':'khauany');game.phase='fight';
+    game.fighters[0].x=450;game.fighters[1].x=570;
+    for(const [index,step] of route.steps.entries()){
+      const [move,strength]=step.split(':');game.queue(slot,move,Number(strength));
+      for(let i=0;i<180&&events.filter(event=>event.type==='hit'&&event.fighter===slot).length<index+1;i++)game.update(FIXED_STEP);
+      assert.equal(events.filter(event=>event.type==='hit'&&event.fighter===slot).length,index+1,`P${slot+1} ${step}`);
+    }
+  }
 });
 
 test('na história, poderes das personagens novas atingem adversários e não perdem a ginga',()=>{
