@@ -10,6 +10,25 @@ import {resetFeet,evaluateRig,usesRig} from '../src/locomotion.js';
 const ids=['luciana','khauany','dienes'];
 const advance=(game,seconds)=>{for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++)game.update(FIXED_STEP);};
 
+test('o ciclo visual usa oito quadros completos, com escala uniforme, em vez da deformação',async()=>{
+  const render=await readFile(new URL('../src/render.js',import.meta.url),'utf8');
+  assert.doesNotMatch(render,/drawLocomotionRig\(/);
+  for(const id of ids){
+    const frames=JSON.parse(await readFile(new URL(`../assets/story/${id}-walk-v2.json`,import.meta.url)));
+    assert.equal(frames.length,8,id);
+    for(const frame of frames){
+      assert.ok(frame.h>470&&frame.w>190,id);
+      assert.ok(Math.abs(frame.h*frame.scale-GAITS[id].height)<.01,id);
+    }
+    const game=new FightEngine();game.start(id,'local','rafael');game.phase='fight';
+    const f=game.fighters[0];f.state='walk';f.walkBlend=1;
+    const stride=GAITS[id].stride;
+    const seen=new Set();
+    for(let i=0;i<8;i++){f.walkDistance=i*stride/8;const pose=fighterPose(f);assert.equal(pose.atlas,'motion');seen.add(pose.index);}
+    assert.equal(seen.size,8,id);
+  }
+});
+
 test('a malha da ginga usa as dimensões e o eixo dos sprites que são desenhados',async()=>{
   for(const id of ids){
     const manifest=JSON.parse(await readFile(new URL(`../assets/runtime/${id}-v1.json`,import.meta.url)));
