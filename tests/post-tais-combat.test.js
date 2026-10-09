@@ -74,6 +74,27 @@ test('Dienes se levanta, pousa e prepara o salto de pé; a pose caída fica só 
   f.state='ko';assert.deepEqual(fighterPose(f),{atlas:'base',index:15});
 });
 
+test('Khauãny mantém duas pernas apoiadas na rasteira e usa o chute horizontal no ar',()=>{
+  const game=new FightEngine();game.start('khauany','local','rafael');game.phase='fight';
+  const f=game.fighters[0];game.setInput(0,{down:true});
+  assert.ok(game.beginMove(f,'sweep'));
+  advance(game,f.moveData.startup+FIXED_STEP);
+  assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
+  assert.equal(f.y,WORLD.floor);
+  assert.equal(f.attackbox.w,148);
+  const air=new FightEngine();air.start('khauany','local','rafael');air.phase='fight';
+  const airborne=air.fighters[0];airborne.y=WORLD.floor-90;
+  assert.ok(air.beginMove(airborne,'airKick'));
+  advance(air,airborne.moveData.startup+FIXED_STEP);
+  assert.deepEqual(fighterPose(airborne),{atlas:'combat',index:3});
+});
+
+test('Luciana usa a pose de levantar, não a de cair para trás',()=>{
+  const game=new FightEngine();game.start('luciana','local','rafael');
+  const f=game.fighters[0];f.state='wake';
+  assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
+});
+
 test('na história, poderes das personagens novas atingem adversários e não perdem a ginga',()=>{
   for(const id of ids)for(const meter of [25,100]){
     const events=[],game=new StoryEngine({onEvent:event=>events.push(event)});
