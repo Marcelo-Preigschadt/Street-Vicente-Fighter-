@@ -31,7 +31,7 @@ test('o ciclo visual usa oito quadros completos, com escala uniforme, em vez da 
 
 test('a malha da ginga usa as dimensões e o eixo dos sprites que são desenhados',async()=>{
   for(const id of ids){
-    const manifest=JSON.parse(await readFile(new URL(`../assets/runtime/${id}-v1.json`,import.meta.url)));
+    const manifest=JSON.parse(await readFile(new URL(`../assets/runtime/${id}-v${id==='dienes'?2:1}.json`,import.meta.url)));
     const frame=manifest.atlases.base.frames[0],bind=RIG_BIND[id];
     assert.deepEqual([bind.w,bind.h,bind.axis],[frame.w,frame.h,frame.anchor],id);
     assert.ok(Math.abs(frame.h*manifest.atlases.base.scale-GAITS[id].height)<1,id);
@@ -113,6 +113,32 @@ test('Luciana usa a pose de levantar, não a de cair para trás',()=>{
   const game=new FightEngine();game.start('luciana','local','rafael');
   const f=game.fighters[0];f.state='wake';
   assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
+});
+
+test('os chutes de Luciana e Khauãny preservam a guarda e os dois pés na preparação',()=>{
+  for(const [id,active] of [['luciana',9],['khauany',9]]){
+    const game=new FightEngine();game.start(id,'local','rafael');game.phase='fight';
+    const f=game.fighters[0];assert.ok(game.beginMove(f,'kick'));
+    assert.deepEqual(fighterPose(f),{atlas:'base',index:0},id+' preparação');
+    advance(game,f.moveData.startup+FIXED_STEP);
+    assert.deepEqual(fighterPose(f),{atlas:'base',index:active},id+' contato');
+    advance(game,f.moveData.active+FIXED_STEP);
+    assert.deepEqual(fighterPose(f),{atlas:'base',index:0},id+' recuperação');
+  }
+});
+
+test('Dienes usa desenhos compatíveis com seus golpes e não mostra reação ao agarrar',()=>{
+  const game=new FightEngine();game.start('dienes','local','rafael');game.phase='fight';
+  const f=game.fighters[0];
+  for(const move of ['crouchPunch','sweep']){
+    assert.ok(game.beginMove(f,move));
+    assert.deepEqual(fighterPose(f),{atlas:'combat',index:12},move+' preparação');
+    f.actionTime=f.moveData.startup+FIXED_STEP;
+    assert.deepEqual(fighterPose(f),{atlas:'combat',index:move==='sweep'?4:0},move+' contato');
+    f.action=null;f.moveData=null;f.state='idle';
+  }
+  f.state='throw';assert.deepEqual(fighterPose(f),{atlas:'combat',index:11});
+  f.state='landing';assert.deepEqual(fighterPose(f),{atlas:'base',index:0});
 });
 
 test('Khauãny recebe o final alto do combo do Gustavo nos dois lados',()=>{

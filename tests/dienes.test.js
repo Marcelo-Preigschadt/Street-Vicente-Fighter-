@@ -8,7 +8,7 @@ import {SOUNDS} from '../src/audio.js';
 import {DIENES_HURT} from '../src/dienes-data.js';
 
 test('Dienes tem poses isoladas na altura do elenco e quatro falas PCM',async()=>{
-  const id='dienes',metadata=JSON.parse(await readFile(new URL('../assets/runtime/dienes-v1.json',import.meta.url)));
+  const id='dienes',metadata=JSON.parse(await readFile(new URL('../assets/runtime/dienes-v2.json',import.meta.url)));
   assert.ok(STORY_HEROES.includes(id));
   assert.equal(SELECTION_QUOTES[id],'Boa sorte, vai precisar');
   assert.equal(CHARACTERS[id].category,'students');

@@ -4,8 +4,8 @@ import json
 import numpy as np
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
-image=np.asarray(Image.open(ROOT/'assets/runtime/dienes-v1.webp').convert('RGBA'))
-meta=json.loads((ROOT/'assets/runtime/dienes-v1.json').read_text())
+image=np.asarray(Image.open(ROOT/'assets/runtime/dienes-v2.webp').convert('RGBA'))
+meta=json.loads((ROOT/'assets/runtime/dienes-v2.json').read_text())
 profiles={}
 for atlas,sheet in meta['atlases'].items():
     scale=sheet['scale'];profiles[atlas]=[]

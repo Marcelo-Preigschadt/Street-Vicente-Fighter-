@@ -29,9 +29,20 @@ def cut(raw,labels,group,top=None,bottom=None):
     ident,_,x1,y1,x2,y2=group
     if top is not None:y1=max(y1,top)
     if bottom is not None:y2=min(y2,bottom)
-    selected=labels[y1:y2+1,x1:x2+1]==ident
-    selected=ndimage.binary_dilation(selected,iterations=1)
+    valid=labels[y1:y2+1,x1:x2+1]==ident
+    selected=ndimage.binary_dilation(valid,iterations=1)
+    # The red-edge rejection also removed dark skin and uniform pixels inside
+    # the fighter. Close only small enclosed holes, preserving gaps between limbs.
+    holes=ndimage.binary_fill_holes(selected)&~selected
+    hole_labels,hole_count=ndimage.label(holes)
+    for hole_id in range(1,hole_count+1):
+        area=hole_labels==hole_id
+        if area.sum()<=1500:selected|=area
     part=raw[y1:y2+1,x1:x2+1].copy()
+    damaged=selected&~valid
+    nearest=ndimage.distance_transform_edt(~valid,return_distances=False,return_indices=True)
+    part[damaged,:3]=part[nearest[0][damaged],nearest[1][damaged],:3]
+    part[damaged,3]=255
     part[~selected]=0
     yy,xx=np.nonzero(part[:,:,3]>110)
     if len(xx)<3000:raise ValueError('Incomplete pose '+str(ident))
@@ -88,6 +99,6 @@ for (atlas,frame),rect in zip(items,positions):
     if atlas=='portrait':meta['portrait']=rect;continue
     w,h=frame.size
     meta['atlases'][atlas]['frames'].append({'x':0,'y':0,'w':w,'h':h,'anchor':round(w*.5,2),'bottom':h,'rect':rect})
-packed.save(RUNTIME/'dienes-v1.webp',quality=88,method=6)
-(RUNTIME/'dienes-v1.json').write_text(json.dumps(meta,separators=(',',':'))+'\n')
+packed.save(RUNTIME/'dienes-v2.webp',quality=92,method=6)
+(RUNTIME/'dienes-v2.json').write_text(json.dumps(meta,separators=(',',':'))+'\n')
 print('Dienes:',packed.size,'32 complete alpha poses; base scale',meta['atlases']['base']['scale'])
