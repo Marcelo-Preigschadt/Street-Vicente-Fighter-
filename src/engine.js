@@ -1,6 +1,7 @@
 import {savatePose,savateHurt,SAVATE_STRIKES} from './savate.js';
 import {mmaPose,mmaHurt,MMA_STRIKES} from './mma.js';
 import {khauanyPose,khauanyHurt,KHAUANY_STRIKES} from './khauany.js';
+import {dienesPose,dienesHurt,DIENES_STRIKES} from './dienes.js';
 import {initLocomotion,saveMotion,updateLocomotion,locomotionVelocity,usesRig,rigHurtboxes,rootCurve} from './locomotion.js';
 import {entityScale,scaledBox} from './story-world.js';
 import {karatePose,karateHurt,KARATE_STRIKES} from './karate.js';
@@ -86,6 +87,11 @@ export const CHARACTERS = Object.freeze({
     powers:{special:'Chuva de Garfos',uppercut:'Contra-ataque Ascendente',super:'Banquete de Garfos'},
     powerQuotes:{special:'Chuva de garfos!',uppercut:'Contra-ataque!',super:'Agora aguenta a chuva de garfos!'},
     voiceDuration:{special:1.17,uppercut:1.21,super:1.95},strikes:KHAUANY_STRIKES,projectile:{offset:112,height:205}},
+  dienes:{id:'dienes',category:'students',name:'Dienes',quote:'Boa sorte, vai precisar',color:'#ff81bc',accent:'#ffe1ee',
+    speed:355,backSpeed:319,jumpSpeed:638,power:1.03,sprite:'assets/dienes-base-v1.webp',combatSprite:'assets/dienes-combat-v1.webp',
+    powers:{special:'Giz Veloz',uppercut:'Cotovelo da Aula',super:'Biblioteca em Combate'},
+    powerQuotes:{special:'Segura o giz!',uppercut:'Aula prática!',super:'Livros e giz... minhas armas!'},
+    voiceDuration:{special:1.35,uppercut:1.17,super:2.47},strikes:DIENES_STRIKES,projectile:{offset:105,height:205}},
   ruan:{id:'ruan',category:'students',name:'Aluno Ruan',quote:'Meu Karatê vai te dar um choque!',color:'#72e6ff',accent:'#b5a2ff',
     speed:360,backSpeed:300,jumpSpeed:625,power:1.03,sprite:'assets/ruan-base-v1.webp',combatSprite:'assets/ruan-combat-v1.webp',
     powers:{special:'Pulso de Choque',uppercut:'Punho de Trovão',super:'Kata da Tempestade'},
@@ -125,6 +131,9 @@ function moveData(name, strength = 1, characterId = null) {
   if(characterId==='khauany'&&name==='special')return {name,strength,startup:frames(12),active:frames(1),recovery:frames(25),damage:85+strength*10,stun:frames(25),blockstun:frames(16),push:240,meter:8,level:'mid',projectile:true,speed:740+strength*85,radius:25,chip:.06,effect:'forkVolley'};
   if(characterId==='khauany'&&name==='uppercut')return {name,strength,startup:frames(7),active:frames(12),recovery:frames(29),damage:120+strength*12,stun:frames(28),blockstun:frames(17),push:270,meter:10,level:'mid',knockdown:true,launch:700,invincibility:frames(6),jumpVelocity:-940,travelSpeed:180,effect:'forkCounter'};
   if(characterId==='khauany'&&name==='super')return {name,strength,startup:frames(11),active:frames(39),recovery:frames(31),damage:68,stun:frames(24),blockstun:frames(17),push:115,meter:0,level:'mid',projectile:true,waves:5,finalKnockdown:true,speed:960,radius:29,cost:100,invincibility:frames(8),chip:.06,effect:'forkStorm'};
+  if(characterId==='dienes'&&name==='special')return {name,strength,startup:frames(10),active:frames(1),recovery:frames(22),damage:88+strength*11,stun:frames(24),blockstun:frames(16),push:235,meter:8,level:'mid',projectile:true,speed:820+strength*70,radius:20,chip:.06,effect:'chalkShot'};
+  if(characterId==='dienes'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(13),recovery:frames(29),damage:123+strength*12,stun:frames(29),blockstun:frames(18),push:270,meter:10,level:'mid',knockdown:true,launch:720,invincibility:frames(7),jumpVelocity:-980,travelSpeed:125,effect:'elbowLesson'};
+  if(characterId==='dienes'&&name==='super')return {name,strength,startup:frames(10),active:frames(37),recovery:frames(31),damage:76,stun:frames(25),blockstun:frames(17),push:130,meter:0,level:'mid',projectile:true,waves:4,finalKnockdown:true,speed:880,radius:33,cost:100,invincibility:frames(9),chip:.07,effect:'bookStorm'};
   if(characterId==='ruan'&&name==='special')return {name,strength,startup:frames(13),active:frames(1),recovery:frames(24),damage:88+strength*10,
     stun:frames(26),blockstun:frames(17),push:230,meter:7,level:'mid',projectile:true,chip:.08,speed:720+strength*80,effect:'karateLightning',radius:20};
   if(characterId==='ruan'&&name==='uppercut')return {name,strength,startup:frames(6),active:frames(15),recovery:frames(28),damage:115+strength*12,
@@ -187,6 +196,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='dienes')return dienesPose(f);
   if(f.character.id==='khauany')return khauanyPose(f);
   if(f.character.id==='luciana')return mmaPose(f);
   if(f.character.id==='tais')return savatePose(f);
@@ -271,7 +281,7 @@ export class Fighter {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     if(usesRig(this))return rigHurtboxes(this);
     const pose = fighterPose(this);
-    const profile = this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='dienes'?dienesHurt(this):this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => scaledBox(this,offset,height,w,h));
     // Extended arms and legs can be struck, including the first recovery frames.

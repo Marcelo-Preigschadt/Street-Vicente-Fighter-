@@ -1,5 +1,6 @@
 import {drawAthleticPulse,drawOlympicJump} from './savate-fx.js';
 import {drawForkProjectile,drawForkPower} from './fork-fx.js';
+import {drawDienesProjectile,drawDienesPower} from './dienes-fx.js';
 import {interpolateFighter} from './locomotion-render.js';
 import {entityScale} from './story-world.js';
 import {loadStoryArt,drawStory} from './story-render.js';
@@ -60,7 +61,7 @@ export class Renderer {
       const {base,portrait}=await loadPreparedSprites(id,loadImage);
       if(id==='tais'){const [walkImage,walkFrames]=await Promise.all([loadImage('assets/story/tais-walk-v4.webp'),fetch('assets/story/tais-walk-v4.json').then(r=>r.json())]);base.motion={scale:1,frames:walkFrames.map(f=>({...f,image:walkImage}))};}
       this.sheets[id]=base;this.portraits[id]=portrait;
-      if(['gelton','marcelino','marcos','joao','ruan','tais','luciana','khauany'].includes(id)) {
+      if(['gelton','marcelino','marcos','joao','ruan','tais','luciana','khauany','dienes'].includes(id)) {
         await cacheSpriteEffects(base,base.frames[13],CHARACTERS[id].color,['power']);
         for(const frame of base.combat.frames)await cacheSpriteEffects(base.combat,frame,CHARACTERS[id].color,['power']);
       } else await this.prepareVisualCache(id);
@@ -298,7 +299,7 @@ export class Renderer {
     // Arcade poses stay opaque. Position interpolation supplies smooth movement.
     const size=entityScale(f);
     let drawX=f.x;
-    if(['luciana','khauany'].includes(f.character.id)&&['ko','knockdown'].includes(f.state)){
+    if(['luciana','khauany','dienes'].includes(f.character.id)&&['ko','knockdown'].includes(f.state)){
       const frame=current.sheet.frames[current.index],scale=(frame.scale??current.sheet.scale)*size*(f.character.visualWidth??1);
       const left=(frame.x-frame.anchor)*scale,right=left+frame.w*scale;
       const min=f.direction>0?left:-right,max=f.direction>0?right:-left;
@@ -317,7 +318,7 @@ export class Renderer {
     drawPose(current, 1);
     c.globalAlpha = 1; c.restore();
     c.save();c.translate(f.x,f.y);c.scale(size,size);c.translate(-f.x,-f.y);
-    if (!['marcos','joao','ruan','tais','luciana','khauany'].includes(f.character.id) && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
+    if (!['marcos','joao','ruan','tais','luciana','khauany','dienes'].includes(f.character.id) && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {
       const strength = f.actionTime / f.moveData.startup, release = f.character.projectile;
       const x = f.x + f.direction * (55 + strength * (release.offset - 55));
       if(f.moveData.effect === 'chemicalSmoke')drawChemicalSmoke(c,{x,y:f.y-release.height,radius:8+strength*17,direction:f.direction},this.clock,this.reduced,.65);
@@ -329,7 +330,8 @@ export class Renderer {
     if(f.character.id==='marcos')drawJudoSystem(c,f,this.clock,this.reduced);
     if(f.character.id==='luciana')drawLanguagePower(c,f,this.clock,this.reduced);
     if(f.character.id==='khauany')drawForkPower(c,f,this.clock,this.reduced);
-    if (f.state === 'uppercut' && !['marcos','joao','ruan','tais','luciana','khauany'].includes(f.character.id)) f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
+    if(f.character.id==='dienes')drawDienesPower(c,f,this.clock,this.reduced);
+    if (f.state === 'uppercut' && !['marcos','joao','ruan','tais','luciana','khauany','dienes'].includes(f.character.id)) f.character.id==='gelton'?drawArtRise(c,f,this.clock,this.reduced):f.character.id==='marcelino'?drawKineticRise(c,f,this.clock,this.reduced):drawEnergyRise(c,f,this.clock,this.reduced);
     if (f.customTime > 0) this.drawCustomAura(f);
     if (f.state === 'dizzy') this.drawDizzy(f);
     c.restore();
@@ -470,7 +472,7 @@ export class Renderer {
     }
     c.restore();
   }
-  drawProjectile(p) { p.character==='khauany'?drawForkProjectile(this.c,p,this.clock,this.reduced):p.character==='luciana'?drawLanguageProjectile(this.c,p,this.clock,this.reduced):p.character==='tais'?drawAthleticPulse(this.c,p,this.clock,this.reduced):p.character==='ruan'?drawKaratePulse(this.c,p,this.clock,this.reduced):p.character==='marcelino'?drawImpulse(this.c,p,this.clock,this.reduced):p.character==='gelton'?drawPaintStroke(this.c,p,this.clock,this.reduced):drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
+  drawProjectile(p) { p.character==='dienes'?drawDienesProjectile(this.c,p,this.clock,this.reduced):p.character==='khauany'?drawForkProjectile(this.c,p,this.clock,this.reduced):p.character==='luciana'?drawLanguageProjectile(this.c,p,this.clock,this.reduced):p.character==='tais'?drawAthleticPulse(this.c,p,this.clock,this.reduced):p.character==='ruan'?drawKaratePulse(this.c,p,this.clock,this.reduced):p.character==='marcelino'?drawImpulse(this.c,p,this.clock,this.reduced):p.character==='gelton'?drawPaintStroke(this.c,p,this.clock,this.reduced):drawEnergyProjectile(this.c,p,CHARACTERS[p.character],this.clock,this.reduced); }
   drawCustomAura(f) {
     const c=this.c;c.save();c.strokeStyle=`${f.character.color}88`;c.lineWidth=2;
     c.beginPath();c.ellipse(f.x,WORLD.floor+1,68,13,0,0,Math.PI*2);c.stroke();

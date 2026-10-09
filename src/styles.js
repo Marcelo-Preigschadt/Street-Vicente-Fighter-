@@ -1,6 +1,7 @@
 import {SAVATE_STRIKES} from './savate.js';
 import {MMA_STRIKES} from './mma.js';
 import {KHAUANY_STRIKES} from './khauany.js';
+import {DIENES_STRIKES} from './dienes.js';
 import {KARATE_STRIKES} from './karate.js';
 import {WILD_STRIKES} from './wild.js?v=27';
 import { JUDO_STRIKES } from './judo.js?v=27';
@@ -103,6 +104,15 @@ export const FIGHTING_STYLES = Object.freeze({
       sweep:[[6,5,15,54,23,195],[9,5,20,84,27,270],[12,6,25,111,30,330]]},
     combos:[route('Corte de Ângulo','punch:0','punch:1','kick:1'),route('Resposta Rápida','crouchPunch:0','punch:1','kick:2'),
       route('Passo e Varrida','punch:0','kick:1','sweep:1')]},
+  dienes:{name:'Muay Thai · Guarda Curta',summary:'Guarda compacta, checagem de perna, cotovelo curto e joelhada de clinch. Atira giz e livros.',step:25,
+    names:{punch:['Jab curto','Cotovelo fechado','Cotovelo cruzado'],kick:['Chute baixo','Joelho de clinch','Chute circular'],
+      crouchPunch:['Jab no corpo','Cotovelo baixo','Cotovelo forte'],sweep:['Corte na base','Chute baixo de encontro','Varrida curta'],
+      airPunch:['Toque aéreo','Cotovelo aéreo','Cotovelo forte'],airKick:['Joelho aéreo','Joelho voador','Chute aéreo']},
+    normals:{punch:[[4,3,9,42,20,98],[5,4,12,70,24,155],[8,4,18,101,28,215]],
+      kick:[[5,4,13,54,22,150],[8,5,18,87,26,225],[11,5,24,113,29,295]],
+      sweep:[[5,5,14,53,23,190],[8,5,20,83,26,265],[12,6,25,109,29,315]]},
+    combos:[route('Guarda e Cotovelo','punch:0','punch:1','kick:1'),route('Chamada ao Quadro','crouchPunch:0','punch:1','kick:2'),
+      route('Clinch da Aula','punch:0','kick:1','sweep:1')]},
   ruan:{name:'Karatê',summary:'Guarda firme, hikite, gyaku-zuki, mae-geri, yoko-geri e varreduras.',step:25,
     names:{punch:['Kizami-zuki','Gyaku-zuki','Oi-zuki'],kick:['Mae-geri curto','Mae-geri','Mae-geri forte'],
       crouchPunch:['Zuki baixo rápido','Gyaku-zuki baixo','Zuki baixo forte'],sweep:['Ashi-barai curto','Ashi-barai','Ashi-barai forte'],
@@ -129,6 +139,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='dienes')return DIENES_STRIKES[f.action];
   if(f.character.id==='khauany')return KHAUANY_STRIKES[f.action];
   if(f.character.id==='luciana')return MMA_STRIKES[f.action];
   if(f.character.id==='tais')return SAVATE_STRIKES[f.action];
