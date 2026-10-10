@@ -25,7 +25,7 @@ test('cabelo acima da célula de vitória é preservado sem incorporar a pose vi
   // Vitória: a cabeça passa 55 px acima da linha da célula; a pose anterior fica separada.
   atlas.rect(80,545,40,150);
   const frame=Renderer.prototype.analyzeSheet(atlas,false,4,CAPOEIRA_CELL_MARGIN).frames[12];
-  assert.equal(frame.y,-55);assert.equal(frame.bottom,164);assert.equal(frame.h,220);
+  assert.equal(frame.y,-55);assert.equal(frame.bottom,165);assert.equal(frame.h,220);assert.equal(frame.bottom,frame.y+frame.h);
   const data=frame.cutout.getContext('2d').getImageData().data;
   assert.equal(data[(5*frame.w+10)*4+3],255);
   assert.equal(data[(5*frame.w)*4+3],0);
