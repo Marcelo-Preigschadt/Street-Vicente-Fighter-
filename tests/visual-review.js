@@ -82,15 +82,15 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;if(!runnin
 requestAnimationFrame(loop);
 
 const yieldFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
-$('suite').onclick=async()=>{
- running=true;$('suite').disabled=true;report={startedAt:new Date().toISOString(),renderer:'src/render.js',characters:[],enemies:[],failures:[],limitations:['No photographic references in the repository','USB hardware and two-person online session are not exercised here']};
+async function runAudit(testIds=ids,testKinds=kinds){
+ running=true;$('suite').disabled=true;$('fighter-suite').disabled=true;report={startedAt:new Date().toISOString(),renderer:'src/render.js',scope:testIds.length===ids.length?'complete':'selected fighter',characters:[],enemies:[],failures:[],limitations:['No photographic references in the repository','USB hardware and two-person online session are not exercised here']};
  try{
-  for(const id of ids){
+  for(const id of testIds){
    const entry={id,cases:0,renderedSamples:0,hits:0,facings:[1,-1],modes:['versus','story']};
    for(const mode of ['versus','story'])for(const which of [0,1])for(const action of moves){
     scene(id,which,mode);startAction(action);let active=false,recovery=false;const hp=target.hp,indices=new Set();
     for(let tick=0;tick<150;tick++){
-     engine.update(FIXED_STEP);active||=f.movePhase==='active';recovery||=f.movePhase==='recovery'||action.startsWith('air')&&f.landing>0;indices.add(JSON.stringify(fighterPose(f)));
+     engine.update(FIXED_STEP);active||=f.movePhase==='active';recovery||=f.movePhase==='recovery'||(action.startsWith('air')||action==='uppercut')&&f.landing>0;indices.add(JSON.stringify(fighterPose(f)));
      if([4,15,35,80,149].includes(tick)){paint();entry.renderedSamples++;}
     }
     if(target.hp<hp)entry.hits++;
@@ -100,7 +100,7 @@ $('suite').onclick=async()=>{
    }
    report.characters.push(entry);$('results').textContent=JSON.stringify(report,null,2);$('status').textContent=`Auditado ${id}: ${entry.cases} casos, ${entry.renderedSamples} desenhos renderizados`;
   }
-  for(const kind of kinds){
+  for(const kind of testKinds){
    const seen=new Set();let samples=0;
    for(const phase of ['walk','attack','damage','defeat']){
     scene('marcelo',0,'enemy',kind);target.aiTime=0;target.cooldown=0;
@@ -111,7 +111,9 @@ $('suite').onclick=async()=>{
    }
    report.enemies.push({kind,renderedSamples:samples,observedFrames:[...seen]});
   }
-  report.finishedAt=new Date().toISOString();report.status=report.failures.length?'FAIL':'PASS';$('status').textContent=`${report.status}: 12 lutadores, 16 inimigos, ${report.characters.reduce((n,c)=>n+c.cases,0)} casos. Confira também as pranchas e os rostos.`;$('results').textContent=JSON.stringify(report,null,2);
+  report.finishedAt=new Date().toISOString();report.status=report.failures.length?'FAIL':'PASS';$('status').textContent=`${report.status}: ${testIds.length} lutadores, ${testKinds.length} inimigos, ${report.characters.reduce((n,c)=>n+c.cases,0)} casos. Confira também as pranchas e os rostos.`;$('results').textContent=JSON.stringify(report,null,2);
  }catch(error){report.status='ERROR';report.failures.push({error:String(error),stack:error.stack});$('status').textContent=String(error);$('results').textContent=JSON.stringify(report,null,2);}
- finally{running=false;paused=true;$('pause').textContent='Continuar';$('suite').disabled=false;}
-};
+ finally{running=false;paused=true;$('pause').textContent='Continuar';$('suite').disabled=false;$('fighter-suite').disabled=false;}
+}
+$('suite').onclick=()=>runAudit();
+$('fighter-suite').onclick=()=>runAudit([$('fighter').value],[]);
