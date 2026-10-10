@@ -143,4 +143,3 @@ node scripts/check-story-render.mjs
 ```
 
 Os scripts Python usam Pillow, NumPy e SciPy; os validadores gráficos usam `@napi-rs/canvas`, disponível no runtime desta execução. `CODEX_PRIMARY_RUNTIME_NODE_MODULES` permite localizar esse módulo no ambiente de trabalho. Em outro ambiente, ele deve estar instalado. A página `tests/visual-review.html` pode ser aberta por um servidor HTTP comum do projeto para concluir a inspeção no navegador.
-
