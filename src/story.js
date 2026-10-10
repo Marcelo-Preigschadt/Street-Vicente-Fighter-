@@ -4,8 +4,6 @@ import {STORY_HEROES,STORY_ACTS,STORY_RULES,ENEMY_TYPES} from './story-data.js';
 import {storyPropBounds,heldObjectTransform,thrownObjectBounds,carryStrikeBox} from './story-props.js';
 import {STORY_WORLD,entityScale,scaledBox} from './story-world.js';
 import {saveMotion,updateLocomotion,resetFeet,usesRig,rigHurtboxes,isCarryStrike} from './locomotion.js';
-import {paintedHurtboxes} from './painted-motion.js';
-import {schoolEnemyFrame} from './story-presentation.js';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const idle=()=>({left:false,right:false,jump:false,down:false,block:false});
@@ -14,7 +12,7 @@ const strikeData=(damage,level='mid')=>({damage,strength:1,stun:.24,blockstun:.1
 export class StoryEnemy extends Fighter {
   constructor(kind,slot,x){super('marcelo',slot);this.kind=kind;this.storyEnemy=true;this.worldScale=STORY_WORLD.actorScale;this.x=x;this.prevX=x;this.y=WORLD.floor;this.maxHp=ENEMY_TYPES[kind].hp;this.hp=this.maxHp;this.aiTime=.65;this.attackSerial=0;this.attackMode='';this.hitIds=[];this.deadTime=0;this.intentX=x;this.cooldown=.5;this.telegraph=0;this.attackLife=0;this.lane=625;this.prevLane=625;this.intentLane=625;this.recovery=0;this.attackDirection=1;this.pendingThrow=null;initMostafaEnemy(this);}
   get profile(){return ENEMY_TYPES[this.kind];}
-  get hurtboxes(){if(this.hp<=0||this.invincible>0)return [];if(usesRig(this)){const painted=paintedHurtboxes(this,{atlas:'enemy',index:schoolEnemyFrame(this)});if(painted)return painted;}const p=this.profile;return [scaledBox(this,-p.w*.4,p.h,p.w*.8,p.h*.23),scaledBox(this,-p.w*.38,p.h*.77,p.w*.76,p.h*.43),scaledBox(this,-p.w*.38,p.h*.34,p.w*.76,p.h*.34)];}
+  get hurtboxes(){if(this.hp<=0||this.invincible>0)return [];if(usesRig(this))return rigHurtboxes(this);const p=this.profile;return [scaledBox(this,-p.w*.4,p.h,p.w*.8,p.h*.23),scaledBox(this,-p.w*.38,p.h*.77,p.w*.76,p.h*.43),scaledBox(this,-p.w*.38,p.h*.34,p.w*.76,p.h*.34)];}
   get pushbox(){return this.hp>0?scaledBox(this,-45,120,90,120):null;}
   get guard(){return {active:false,low:false,direction:this.direction};}
   get attackbox(){if(this.attackLife<=0)return null;if(!this.profile.fly&&['melee','grab','staff'].includes(this.attackMode)&&this.brawlerFrame!==(this.profile.boss?11:14))return null;const p=this.profile;let reach=p.range,height=160,h=140,near=20;
@@ -144,7 +142,7 @@ export class StoryEngine extends FightEngine {
 
     }
     for(const e of this.enemies)this.updateEnemy(e,dt,contacts);
-    this.resolveStoryBodies();this.resolvePropBodies();this.resolveCameraBounds();
+    this.resolveStoryBodies();this.resolvePropBodies();
     for(const f of this.party){updateLocomotion(f,dt);this.releaseCarry(f);}
     for(const f of this.enemies)updateLocomotion(f,dt);
     this.resolveMelee(contacts);this.updateProjectiles(dt,contacts);this.updateDrones(dt,contacts);this.updateProps(dt,contacts);this.updateHazards(dt,contacts);
@@ -315,18 +313,13 @@ export class StoryEngine extends FightEngine {
     if(!this.enemies.some(e=>e.hp>0)&&this.story.wave<3&&max>=STORY_RULES.gates[this.story.wave]-250)this.spawnWave();
     const locked=this.enemies.some(e=>e.hp>0);
     if(!locked&&this.story.wave===2&&this.story.dropWave!==this.story.wave){this.story.dropWave=this.story.wave;this.props.push({id:`kit${this.story.wave}`,kind:'medkit',lane:625,x:clamp(this.enemies.at(-1)?.x??max,this.camera+100,this.camera+1100),hp:1,used:false});}
-    if(!locked&&this.story.wave===3&&max>=STORY_RULES.bossGate-200)this.beginBoss();
-    // A downed partner returns after an encounter; a party wipe still fails the act.
-    if(!locked&&!this.cpu)for(const f of this.party)if(f.hp<=0){const alive=this.heroes[0];f.reset(25);f.worldScale=STORY_WORLD.actorScale;f.hp=350;f.x=alive.x-110;f.prevX=f.x;f.lane=alive.lane;f.prevLane=f.lane;f.storyVelocityY=0;f.invincible=1;resetFeet(f);this.notice(`P${f.slot+1} voltou com 35% de vida`);}
-  }
-  resolveCameraBounds(){
-    if(this.story.boss||!this.heroes.length)return;
     const limit=this.movementLimit;
     const desired=mostafaCamera(this.camera,this.heroes,Math.max(0,Math.min(STORY_RULES.worldWidth-1280,limit-1280)));
     this.camera=Math.max(this.camera,desired);
-    // Resolve the scrolling boundary before measuring this tick's travel.
-    // A blocked step keeps its planted contacts instead of resetting the feet.
-    for(const f of this.heroes){const x=f.x;f.x=clamp(f.x,this.camera+70,Math.min(this.camera+1210,limit));if(f.x!==x)f.vx=0;}
+    for(const f of this.heroes){const x=f.x;f.x=clamp(f.x,this.camera+70,Math.min(this.camera+1210,limit));if(f.x!==x){f.vx=0;resetFeet(f);}}
+    if(!locked&&this.story.wave===3&&max>=STORY_RULES.bossGate-200)this.beginBoss();
+    // A downed partner returns after an encounter; a party wipe still fails the act.
+    if(!locked&&!this.cpu)for(const f of this.party)if(f.hp<=0){const alive=this.heroes[0];f.reset(25);f.worldScale=STORY_WORLD.actorScale;f.hp=350;f.x=alive.x-110;f.prevX=f.x;f.lane=alive.lane;f.prevLane=f.lane;f.storyVelocityY=0;f.invincible=1;resetFeet(f);this.notice(`P${f.slot+1} voltou com 35% de vida`);}
   }
   togglePause(){if(!this.storyActive)return super.togglePause();if(!['fight','storyDialog'].includes(this.phase))return;this.paused=!this.paused;this.event('pause',{paused:this.paused});}
   exportStoryState(){if(!this.storyActive)return null;return copy({story:this.story,camera:this.camera,enemies:this.enemies.map(e=>Object.fromEntries(Object.entries(e).filter(([k])=>k!=='character'))),props:this.props,hazards:this.hazards,thrown:this.thrown});}

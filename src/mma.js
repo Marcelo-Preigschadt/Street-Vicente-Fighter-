@@ -4,9 +4,6 @@ import {GAITS} from './locomotion-data.js';
 // Luciana's whole-body paintings are used for both versus and story movement.
 export function mmaPose(f){
   const m=f.moveData,extended=!!m&&f.actionTime>=m.startup&&f.actionTime<m.startup+m.active;
-  // Low guarded chamber and authored kick; the old base[8] has an extended
-  // punching arm and is never part of the kick's preparation or recovery.
-  if(f.state==='kick')return extended?{atlas:'base',index:9}:{atlas:'combat',index:2};
   const combat={crouchPunch:extended?1:0,sweep:extended?3:2,airPunch:extended?5:4,
     airKick:extended?7:6,uppercut:extended?11:10,lowBlock:9,wake:14,
     throw:14,landing:15,preJump:15};

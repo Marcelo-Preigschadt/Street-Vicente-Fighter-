@@ -6,8 +6,6 @@ import {STORY_ACTS,STORY_RULES,ENEMY_TYPES} from './story-data.js';
 import {drawSentinel,drawSentinelLaser} from './sentinel-fx.js';
 import {STORY_PROP_DIMENSIONS,heldObjectTransform} from './story-props.js';
 import {drawMachineRig} from './machine-rig.js';
-import {paintedGeometry} from './painted-motion.js';
-import {prepareLocomotionRig,drawLocomotionRig} from './locomotion-render.js';
 const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(new Error(`Não foi possível carregar ${src}`));i.src=src;});
 const text=(c,s,x,y,size=20,color='#edf6e7',align='left')=>{c.font=`800 ${size}px Arial`;c.textAlign=align;c.textBaseline='middle';c.fillStyle=color;c.fillText(s,x,y);};
 const rect=(c,x,y,w,h,color,r=6)=>{c.fillStyle=color;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();};
@@ -16,16 +14,13 @@ export async function loadStoryArt(renderer){
   const backgrounds=await Promise.all(STORY_ACTS.map(a=>load(`assets/story/${a.id}-panorama-v2.webp`)));
   const enemies=await Promise.all(Array.from({length:16},(_,i)=>load(`assets/story/enemy-${i}.webp`)));
   const inspector=await Promise.all(Array.from({length:4},(_,i)=>load(`assets/story/inspector-pose-${i}-v2.webp`)));const inspectorFrames=await fetch('assets/story/inspector-poses-v2.json').then(r=>r.json());const propFrames=await fetch('assets/story/props-v3.json').then(r=>r.json()),props=Object.fromEntries(await Promise.all(Object.entries(propFrames).map(async([kind,frame])=>[kind,await load(frame.file)])));
-  const animationMeta=await fetch('assets/story/enemy-animation-v7.json').then(r=>r.json()),animations=Object.fromEntries(await Promise.all(Object.entries(animationMeta).map(async([id,v])=>{
-    const image=await load(v.file);
-    return [id,{...v,image,frames:v.frames.map(f=>({...f,image,x:0,y:0,anchor:f.anchorX,w:f.rect[2],h:f.rect[3],scale:f.scale??v.scale}))}];
-  })));
+  const animationMeta=await fetch('assets/story/enemy-animation-v4.json').then(r=>r.json()),animations=Object.fromEntries(await Promise.all(Object.entries(animationMeta).map(async([id,v])=>[id,{...v,image:await load(v.file)}])));
   for(const [kind,size] of Object.entries(STORY_PROP_DIMENSIONS))Object.assign(propFrames[kind],size);
   const rigsMeta=await fetch('assets/story/machine-rigs-v6.json').then(r=>r.json()),rigs=Object.fromEntries(await Promise.all(Object.entries(rigsMeta).map(async([id,v])=>[id,{...v,image:await load(v.file)}])));
   renderer.storyArt={backgrounds,enemies,inspector,inspectorFrames,props,propFrames,animations,rigs};
   renderer.storyViews=new Map();renderer.storyLayers=[];renderer.storyHeroes=[];renderer.carryTransform={};
 }
-export function drawStoryEnemy(c,e,art,time,reduced){
+function enemy(c,e,art,time,reduced){
   const p=e.profile??ENEMY_TYPES[e.kind],native=art.animations?.[e.kind];
   const pose=e.attackLife>0?2:e.state==='walk'?Math.floor(e.animTime*7)%2:0,frame=e.kind==='inspector'?art.inspectorFrames?.[pose]:null;
   const im=native?native.image:frame?art.inspector[pose]:art.enemies[p.cell];if(!im||e.deadTime>1.1)return;
@@ -35,12 +30,7 @@ export function drawStoryEnemy(c,e,art,time,reduced){
   if(e.hp<=0)c.globalAlpha=Math.max(0,1-e.deadTime);
   if(e.flash>0)c.globalAlpha=.65;
   if(art.rigs?.[e.kind]){c.restore();drawMachineRig(c,e,art.rigs[e.kind],time,reduced);c.save();}
-  else if(native){
-    c.imageSmoothingEnabled=true;const index=schoolEnemyFrame(e),geometry=paintedGeometry(e,{atlas:'enemy',index});
-    native.paintedRigs??=new WeakMap();let rig=geometry?native.paintedRigs.get(nf):null;
-    if(geometry&&!rig){rig=prepareLocomotionRig(e.kind,native,nf,geometry);native.paintedRigs.set(nf,rig);}
-    if(!rig||!drawLocomotionRig(c,e,rig))c.drawImage(im,...nf.rect,-nf.anchorX*scale,-nf.bottom*scale,nf.rect[2]*scale,nf.rect[3]*scale);
-  }
+  else if(native){c.imageSmoothingEnabled=true;c.drawImage(im,...nf.rect,-nf.anchorX*scale,-nf.bottom*scale,nf.rect[2]*scale,nf.rect[3]*scale);}
   else{if(e.hp<=0)c.rotate(-Math.min(Math.PI/2,e.deadTime*4));c.drawImage(im,frame?-frame.anchorX*scale:-w/2,frame?-frame.bottom*scale:-h,w,h);}
   c.restore();
   const s=entityScale(e),top=e.y-h*s;
@@ -121,7 +111,7 @@ c.fillStyle='#09212922';c.fillRect(0,0,1280,720);
     if(item.kind==='prop')prop(c,v,r.clock,art);
     else if(item.kind==='thrown'){const frame=art.propFrames[v.kind];c.save();c.translate(v.x,v.y);c.rotate(v.angle);if(frame)drawStoryObject(c,v.kind,art,0,frame.height*.5,{facing:v.facing??1});c.restore();}
     else if(item.kind==='hazard'){c.translate(0,625-item.lane);hazard(c,v,r.clock,art);}
-    else{c.fillStyle='#07101566';c.beginPath();c.ellipse(v.x,WORLD.floor+4,(item.kind==='hero'?45:v.profile.w*.3)*entityScale(v),5,0,0,Math.PI*2);c.fill();if(item.kind==='hero'){r.drawFighter(v);if(v.carry){const held=heldObjectTransform(v,v.carry.kind,r.carryTransform);if(held)drawStoryObject(c,v.carry.kind,art,held.x,held.y,held);}}else drawStoryEnemy(c,v,art,r.clock,r.reduced);}
+    else{c.fillStyle='#07101566';c.beginPath();c.ellipse(v.x,WORLD.floor+4,(item.kind==='hero'?45:v.profile.w*.3)*entityScale(v),5,0,0,Math.PI*2);c.fill();if(item.kind==='hero'){r.drawFighter(v);if(v.carry){const held=heldObjectTransform(v,v.carry.kind,r.carryTransform);if(held)drawStoryObject(c,v.carry.kind,art,held.x,held.y,held);}}else enemy(c,v,art,r.clock,r.reduced);}
     c.restore();
   }
   for(const d of e.drones){c.save();c.translate(0,(d.lane??625)-625);drawSentinel(c,d,r.reduced);c.restore();}

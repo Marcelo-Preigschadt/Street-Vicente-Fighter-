@@ -3,7 +3,6 @@ import {mmaPose,mmaHurt,MMA_STRIKES} from './mma.js';
 import {khauanyPose,khauanyHurt,KHAUANY_STRIKES} from './khauany.js';
 import {dienesPose,dienesHurt,DIENES_STRIKES} from './dienes.js';
 import {initLocomotion,saveMotion,updateLocomotion,locomotionVelocity,usesRig,rigHurtboxes,rootCurve} from './locomotion.js';
-import {nativeMotionPose,preparedHurt,paintedHurtboxes} from './painted-motion.js';
 import {entityScale,scaledBox} from './story-world.js';
 import {karatePose,karateHurt,KARATE_STRIKES} from './karate.js';
 import {wildPose,wildHurt,WILD_STRIKES} from './wild.js?v=27';
@@ -197,7 +196,6 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
-  const native=nativeMotionPose(f);if(native)return native;
   if(f.character.id==='dienes')return dienesPose(f);
   if(f.character.id==='khauany')return khauanyPose(f);
   if(f.character.id==='luciana')return mmaPose(f);
@@ -281,10 +279,10 @@ export class Fighter {
   }
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
+    if(usesRig(this))return rigHurtboxes(this);
     const pose = fighterPose(this);
-    if(usesRig(this)){if(this.carry)return rigHurtboxes(this);const painted=paintedHurtboxes(this,pose);if(painted)return painted;return rigHurtboxes(this);}
-    const profile = preparedHurt(this.character.id,pose)??(this.character.id==='dienes'?dienesHurt(this):this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
-      : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index]);
+    const profile = this.character.id==='dienes'?dienesHurt(this):this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+      : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => scaledBox(this,offset,height,w,h));
     // Extended arms and legs can be struck, including the first recovery frames.
     const strike = styleStrike(this);

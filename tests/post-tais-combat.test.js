@@ -6,17 +6,20 @@ import {StoryEngine} from '../src/story.js';
 import {FIGHTING_STYLES} from '../src/styles.js';
 import {RIG_BIND,GAITS,referenceJoints} from '../src/locomotion-data.js';
 import {resetFeet,evaluateRig,usesRig} from '../src/locomotion.js';
-import {paintedGeometry,evaluatePaintedPose} from '../src/painted-motion.js';
 
 const ids=['luciana','khauany','dienes'];
 const advance=(game,seconds)=>{for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++)game.update(FIXED_STEP);};
 
-test('o ciclo visual usa oito pinturas completas e escala constante em todo o clipe',async()=>{
+test('o ciclo visual usa oito quadros completos, com escala uniforme, em vez da deformação',async()=>{
+  const render=await readFile(new URL('../src/render.js',import.meta.url),'utf8');
+  assert.doesNotMatch(render,/drawLocomotionRig\(/);
   for(const id of ids){
-    const frames=JSON.parse(await readFile(new URL(`../assets/story/${id}-walk-v5.json`,import.meta.url))).atlases.walk.frames;
+    const frames=JSON.parse(await readFile(new URL(`../assets/story/${id}-walk-v2.json`,import.meta.url)));
     assert.equal(frames.length,8,id);
-    assert.equal(new Set(frames.map(f=>f.scale)).size,1,id);
-    for(const frame of frames){assert.ok(frame.h>470&&frame.w>190,id);assert.equal(frame.landmarks.length,17);assert.equal(frame.footContacts.length,2);}
+    for(const frame of frames){
+      assert.ok(frame.h>470&&frame.w>190,id);
+      assert.ok(Math.abs(frame.h*frame.scale-GAITS[id].height)<.01,id);
+    }
     const game=new FightEngine();game.start(id,'local','rafael');game.phase='fight';
     const f=game.fighters[0];f.state='walk';f.walkBlend=1;
     const stride=GAITS[id].stride;
@@ -112,16 +115,15 @@ test('Luciana usa a pose de levantar, não a de cair para trás',()=>{
   assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
 });
 
-test('os chutes de Luciana e Khauãny preservam a guarda na preparação e recuperação',()=>{
+test('os chutes de Luciana e Khauãny preservam a guarda e os dois pés na preparação',()=>{
   for(const [id,active] of [['luciana',9],['khauany',9]]){
     const game=new FightEngine();game.start(id,'local','rafael');game.phase='fight';
     const f=game.fighters[0];assert.ok(game.beginMove(f,'kick'));
-    const chamber=id==='luciana'?{atlas:'combat',index:2}:{atlas:'base',index:0};
-    assert.deepEqual(fighterPose(f),chamber,id+' preparação');
+    assert.deepEqual(fighterPose(f),{atlas:'base',index:0},id+' preparação');
     advance(game,f.moveData.startup+FIXED_STEP);
     assert.deepEqual(fighterPose(f),{atlas:'base',index:active},id+' contato');
     advance(game,f.moveData.active+FIXED_STEP);
-    assert.deepEqual(fighterPose(f),chamber,id+' recuperação');
+    assert.deepEqual(fighterPose(f),{atlas:'base',index:0},id+' recuperação');
   }
 });
 

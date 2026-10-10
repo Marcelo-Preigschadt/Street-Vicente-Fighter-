@@ -1,14 +1,12 @@
 {
   "name": "street-vicente-fighter",
-  "version": "4.7.0",
+  "version": "4.6.20",
   "private": true,
   "type": "module",
   "description": "Jogo de luta arcade do Vicente: professores e alunos, com Jo\u00e3o Machado da turma 301",
   "scripts": {
     "test": "node --test tests/*.test.js",
     "start": "python3 -m http.server 8000",
-    "build": "node scripts/build-release.mjs",
-    "audit:sprites": "node scripts/audit-sprites.mjs",
-    "test:graphics": "node scripts/check-painted-render.mjs"
+    "build": "node scripts/build-release.mjs"
   }
 }

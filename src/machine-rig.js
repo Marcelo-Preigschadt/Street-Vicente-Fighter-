@@ -11,7 +11,7 @@ export function machineRigPose(e,time,reduced=false){
   const upper=preparing||contact?-1.15+1.1*eased:-.45+walk*.16+recovery*.4;
   return {upper,forearm:preparing||contact?-.9+.95*eased:-.5-walk*.12+recovery*.55,
     rear:2.7-walk*.12+(preparing?.35:0),rearForearm:contact?-.35:.5,
-    saw:reduced?0:time*32,wheel:reduced?0:(Number.isFinite(e.x)?e.x*(e.direction??1):(e.motion?.travel??e.brawlerWalkDistance??0))/(21*entityScale(e)),
+    saw:reduced?0:time*32,wheel:reduced?0:(e.motion?.travel??e.brawlerWalkDistance??0)/(21*entityScale(e)),
     brush:reduced?0:time*12,bob:reduced?0:walk*1.5,lean:Math.max(-.045,Math.min(.045,(e.vx??0)/4000))};
 }
 function part(c,rig,index,x,y,w,h,angle=0,ax=.5,ay=.5){

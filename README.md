@@ -1,11 +1,3 @@
-## Atualização 4.7.0 — auditoria das pinturas e contatos
-
-Os 12 personagens usam oito quadros completos de caminhada em ambos os modos e orientações. Os rostos aprovados foram preservados; Khauãny recebeu rasteira/voadora completas, Luciana ganhou preparação de chute sem soco simultâneo e Dienes recebeu reações limpas. A extração das caminhadas e a escala de Tais foram corrigidas. A campanha tem animações específicas para os 16 tipos de inimigos.
-
-[Pranchas de antes/depois e relatório](docs/sprite-audit/index.html?v=4.7.0-gallery-2) · [Revisão animada dos 28 modelos](tests/visual-review.html)
-
-Validação: 448 testes de código, build dos 77 módulos, 3.840 amostras do renderizador e auditoria real de navegador com 1.056 casos únicos de lutadores, reteste de 88 casos do João e 16 inimigos. Os resultados brutos e a resolução dos quatro alertas da regra de aterrissagem estão em [browser-validation.json](docs/sprite-audit/browser-validation.json). O protocolo `svf-online-4-7-0` separa versões incompatíveis; o serviço de salas, rollback e Supabase conservam sua implementação. Os limites da revisão estão no [relatório](docs/sprite-audit/report.md).
-
 ## Atualização 4.6.0 — movimentação e proporções
 
 História e 1×1 compartilham a locomoção articulada sobre as artes existentes. Apoios ficam fixos no mundo, pernas usam quadril/joelho/tornozelo, e a fase avança pela distância resolvida depois das colisões. Marcelo, Rafael, Gustavo e Tais têm base, apoio, elevação, transferência de peso e guarda diferentes; os demais personagens também têm parâmetros próprios. Há respiração no idle, aceleração/frenagem curtas, transições de movimento e recuo próprio. O ciclo para quando a pushbox impede avançar.
@@ -117,7 +109,7 @@ Validação: `npm test`, inspeção das 32 poses de Gelton e renderização real
 
 Jogo de luta 2D para navegador com **Prof. Marcelo**, **Prof Rafael** e **Prof. Gustavo**, criados a partir das fotos fornecidas. HTML, CSS, JavaScript e Canvas, sem dependências externas para jogar.
 
-[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=4.7.0)
+[Jogar no GitHub Pages](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=4.6.0)
 
 ## Deploy Drone — Sentinela Automática
 

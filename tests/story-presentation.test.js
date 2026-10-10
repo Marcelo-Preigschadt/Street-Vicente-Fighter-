@@ -21,5 +21,5 @@ test('depth orders feet without changing actor or collision size',()=>{
 });
 test('current renderer never loads reference-game characters',async()=>{
  const src=await readFile('src/story-render.js','utf8');assert.doesNotMatch(src,/mostafa\/|mostafaAtlas|art\.brawler/);
- const html=await readFile('index.html','utf8');assert.match(html,/id="game-shell"/);assert.match(html,/data-menu="story"/);assert.match(html,/data-menu="versus"/);
+ const html=await readFile('index.html','utf8');assert.match(html,/id="game-shell"/);assert.match(html,/data-experience="story"/);
 });

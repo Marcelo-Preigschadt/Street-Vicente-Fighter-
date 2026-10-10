@@ -29,12 +29,12 @@ function bigCombo(s) {
 test('dois toques separados pelo neutro produzem passos diferentes de cada modalidade, nos dois lados',()=>{
  for(const id of Object.keys(FOOTWORK))for(const slot of [0,1])for(const kind of ['advance','retreat']) {
   const {g,f,target}=scene(id,slot);f.x=slot?950:300;target.x=slot?250:1000;
-  tapStep(g,f,kind);assert.equal(f.footwork.kind,kind);assert.equal(fighterPose(f).atlas,'motion');
+  tapStep(g,f,kind);assert.equal(f.footwork.kind,kind);assert.equal(fighterPose(f).atlas,['gelton','marcelino','marcos','joao','ruan','luciana'].includes(id)?'base':'motion');
   const x=f.x,sign=f.footwork.sign;g.setInput(slot,{});advance(g,FOOTWORK[id][kind].duration+.01);
   assert.ok(Math.abs(f.x-x-sign*FOOTWORK[id][kind].distance)<1e-7);assert.equal(f.footwork,null);
  }
  assert.ok(FOOTWORK.rafael.retreat.duration<FOOTWORK.gustavo.retreat.duration);
- assert.equal(new Set(Object.values(FOOTWORK).map(v=>JSON.stringify([v.stride,v.advance,v.retreat]))).size,Object.keys(FOOTWORK).length);
+ assert.equal(new Set(Object.values(FOOTWORK).map(v=>v.stride)).size,Object.keys(FOOTWORK).length);
 });
 
 test('segurar uma direção, toques atrasados e comandos diagonais de poder não viram passos',()=>{
@@ -90,7 +90,7 @@ test('a silhueta física segue as novas poses de passo, recuo e tontura nos dois
 });
 
 test('as três sequências de quatro acertos deixam o adversário tonto depois da reação final, nos dois lados',()=>{
- for(const id of Object.keys(FOOTWORK).filter(id=>FIGHTING_STYLES[id].combos.some(c=>c.steps.length===4)))for(const slot of [0,1]) {
+ for(const id of Object.keys(FOOTWORK))for(const slot of [0,1]) {
   const s=scene(id,slot);bigCombo(s);assert.equal(s.f.combo,4);assert.equal(s.target.dizzyPending,true);
   assert.equal(s.target.dizzyTime,0);until(s.g,()=>s.target.state==='dizzy');
   assert.ok(s.target.dizzyTime>2);assert.equal(s.target.y,WORLD.floor);assert.equal(s.target.knocked,false);

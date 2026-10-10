@@ -6,12 +6,9 @@ export function smoothCamera(current,target,dt){
 export function schoolEnemyFrame(e){
   if(e.hp<=0||e.knocked){const age=e.hp<=0?e.deadTime:e.brawlerFrameTime;return e.hp<=0?Math.min(15,13+Math.floor(age*6)):Math.min(15,13+Math.max(0,e.brawlerFrame-15));}
   if(e.hitstun>0)return 12;
-  if(e.dizzyTime>0)return 12;
   if(e.telegraph>0)return 9;
-  if(e.attackLife>0){if(e.attackMode==='charge')return 1+Math.floor(((e.motion?.phase??e.brawlerWalkDistance/180)%1+1)%1*8);const contact=e.profile.boss?11:14;return e.brawlerFrame===contact?10:e.brawlerReverse?11:9;}
-  if(e.recovery>0)return 11;
-  const flying=!!e.profile.fly;
-  if(e.state==='walk'||flying){const phase=flying?(e.animTime??0)*2:(e.motion?.ready?e.motion.phase:(e.brawlerWalkDistance??0)/180);return 1+Math.floor((phase%1+1)%1*8);}
+  if(e.attackLife>0){if(e.attackMode==='charge')return 10;const contact=e.profile.boss?11:14;return e.brawlerFrame===contact?10:e.brawlerReverse?11:9;}
+  if(e.state==='walk')return 1+Math.floor((e.brawlerWalkDistance%180)/180*8);
   return 0;
 }
 export function interpolateEntity(e,alpha){return {...e,profile:e.profile,x:e.prevX+(e.x-e.prevX)*alpha,y:e.prevY+(e.y-e.prevY)*alpha,lane:(e.prevLane??e.lane)+(e.lane-(e.prevLane??e.lane))*alpha,attackbox:e.attackbox};}

@@ -1,6 +1,5 @@
 import {KHAUANY_HURT} from './khauany-data.js';
 import {GAITS} from './locomotion-data.js';
-import {preparedHurt} from './painted-motion.js';
 
 // Compact counter-fighting stance, with the launcher and sliding kick painted
 // as complete poses instead of reusing Luciana's punch/knee frames.
@@ -8,13 +7,7 @@ export function khauanyPose(f){
   const m=f.moveData,extended=!!m&&f.actionTime>=m.startup&&f.actionTime<m.startup+m.active;
   // The horizontal flying kick belongs to the airborne move. Using it for a
   // grounded sweep made the rear leg tuck behind the body and look absent.
-  if(f.state==='sweep'||f.state==='airKick'){
-    const atlas=f.state==='sweep'?'sweep':'airkick';
-    if(extended)return {atlas:'combat',index:f.state==='sweep'?14:3};
-    if(!m)return {atlas,index:0};
-    if(f.actionTime<m.startup)return {atlas,index:f.actionTime<m.startup*.52?0:1};
-    return {atlas,index:3};
-  }
+  if(f.state==='sweep')return {atlas:'combat',index:extended?14:15};
   const combat={crouchPunch:extended?1:6,airPunch:extended?1:2,
     airKick:extended?3:2,uppercut:extended?10:9,lowBlock:6,wake:13,
     throw:11,landing:15,preJump:15};
@@ -28,7 +21,7 @@ export function khauanyPose(f){
   return {atlas:'base',index:Math.floor(f.animTime*4)%2};
 }
 export function khauanyHurt(f){
-  const pose=khauanyPose(f),{atlas,index}=pose,bands=preparedHurt('khauany',pose)??KHAUANY_HURT[atlas][index];
+  const {atlas,index}=khauanyPose(f),bands=KHAUANY_HURT[atlas][index];
   // The leaning hit reaction lowers the crown a few pixels below other
   // fighters. Keep a small head contact margin so high combo finishers connect.
   return f.state==='hit'?bands.map((band,i)=>i===bands.length-1

@@ -1,8 +1,5 @@
 import {GAITS,RIG_BIND,rigId,referenceJoints,JOINT} from './locomotion-data.js';
 import {entityScale} from './story-world.js';
-import {PAINTED_MOTION} from './painted-motion-data.js';
-import {ENEMY_MOTION} from './enemy-motion-data.js';
-import {updatePaintedContacts} from './painted-motion.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const smoothStep=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 export const rootCurve=t=>{t=clamp(t,0,1);return t*t*t*(t*(6*t-15)+10);};
@@ -11,27 +8,19 @@ const carryStrikes=new Set(['punch','kick','crouchPunch','sweep']);
 export const isCarryStrike=f=>!!f.carry&&carryStrikes.has(f.action)&&!f.airborne;
 function carryImpulse(f){if(!isCarryStrike(f))return 0;const m=f.moveData,t=f.actionTime;return t<m.startup?rootCurve(t/m.startup):t<m.startup+m.active?1:1-rootCurve((t-m.startup-m.active)/m.recovery);}
 function reference(id){if(!refs.has(id))refs.set(id,referenceJoints(id,new Float64Array(34)));return refs.get(id);}
-function soleReference(f){const id=rigId(f);return f.storyEnemy?ENEMY_MOTION[`${id}:enemy`]?.[0]?.points:PAINTED_MOTION[`${id}:style`]?.[0]?.points??PAINTED_MOTION[`${id}:base`]?.[0]?.points;}
-const stanceSpreads=new Map();
-function minimumPaintedSpread(f){
- const id=rigId(f),key=f.storyEnemy?`${id}:enemy`:`${id}:motion`;
- if(!stanceSpreads.has(key)){const poses=(f.storyEnemy?ENEMY_MOTION:PAINTED_MOTION)[key];stanceSpreads.set(key,poses?Math.min(...poses.map(p=>Math.abs(p.points[10][0]-p.points[6][0])))*.75:0);}
- return stanceSpreads.get(key)*entityScale(f)*(f.character.visualWidth??1);
-}
 export function initLocomotion(f){
  f.worldScale=1;f.visualOffsetX=0;f.visualOffsetY=0;
- f.motion={paint:null,state:'IDLE',stateTime:0,phase:0,travel:0,startupTravel:0,blend:0,bodyShift:0,prevBodyShift:0,lastWorldX:f.x,lastWorldLane:f.lane??625,moveSign:0,facing:f.direction,ready:false,speed:0,phaseVelocity:0,strideLength:0,cycleDuration:0,blocked:false,
+ f.motion={state:'IDLE',stateTime:0,phase:0,travel:0,startupTravel:0,blend:0,bodyShift:0,prevBodyShift:0,lastWorldX:f.x,lastWorldLane:f.lane??625,moveSign:0,facing:f.direction,ready:false,speed:0,phaseVelocity:0,strideLength:0,cycleDuration:0,blocked:false,
   feet:[0,1].map(()=>({x:f.x,lane:625,lift:0,angle:0,support:true,q:0,startX:0,startLane:625,targetX:0,targetLane:625,prevX:f.x,prevLane:625,prevLift:0,prevAngle:0})),prevPhase:0,prevBlend:0};
 }
 export function resetFeet(f){
- const id=rigId(f),r=reference(id),soles=soleReference(f),m=f.motion,s=entityScale(f),lane=f.lane??625;
+ const id=rigId(f),r=reference(id),m=f.motion,s=entityScale(f),lane=f.lane??625;
  if(!m)return;
  for(let i=0;i<2;i++){const a=(i===0?JOINT.rearAnkle:JOINT.frontAnkle)*2,foot=m.feet[i];
-  const x=soles?soles[i?10:6][0]*(f.character.visualWidth??1):r?r[a]:i?40:-40;
-  foot.x=f.x+x*s*f.direction;foot.lane=lane;foot.lift=0;foot.angle=0;foot.support=true;foot.q=0;
+  foot.x=f.x+(r?r[a]:i?40:-40)*s*f.direction;foot.lane=lane;foot.lift=0;foot.angle=0;foot.support=true;foot.q=0;
   foot.prevX=foot.x;foot.prevLane=lane;foot.prevLift=0;foot.prevAngle=0;
  }
- m.paint=null;m.ready=true;m.facing=f.direction;m.moveSign=0;m.blend=0;m.phase=0;m.startupTravel=0;m.speed=0;m.phaseVelocity=0;m.bodyShift=0;m.prevBodyShift=0;m.lastWorldX=f.x;m.lastWorldLane=lane;
+ m.ready=true;m.facing=f.direction;m.moveSign=0;m.blend=0;m.phase=0;m.startupTravel=0;m.speed=0;m.phaseVelocity=0;m.bodyShift=0;m.prevBodyShift=0;m.lastWorldX=f.x;m.lastWorldLane=lane;
 }
 export function saveMotion(f){const m=f.motion;if(!m)return;m.prevPhase=m.phase;m.prevBlend=m.blend;m.prevBodyShift=m.bodyShift;for(const foot of m.feet){foot.prevX=foot.x;foot.prevLane=foot.lane;foot.prevLift=foot.lift;foot.prevAngle=foot.angle;}}
 function transition(m,state,dt){if(m.state!==state){m.state=state;m.stateTime=0;}else m.stateTime+=dt;}
@@ -58,7 +47,7 @@ export function updateLocomotion(f,dt){
  if(m.ready&&m.facing!==f.direction){const rear=m.feet[0];m.feet[0]=m.feet[1];m.feet[1]=rear;m.facing=f.direction;m.moveSign=0;m.bodyShift=0;for(const foot of m.feet){if(!foot.support){foot.targetX=foot.x;foot.targetLane=foot.lane;}foot.angle=-foot.angle;foot.prevAngle=-foot.prevAngle;}}
  const relocated=Math.abs(f.prevX-m.lastWorldX)>1e-5||Math.abs((f.prevLane??lane)-m.lastWorldLane)>1e-5;
  const recovered=['HIT','BLOCK','STUN','KNOCKDOWN','GET_UP'].includes(m.state)&&!f.action&&!f.airborne&&f.hitstun<=0&&f.blockstun<=0&&!f.knocked&&f.wakeTime<=0;
- if(!m.ready||relocated||recovered||!f.airborne&&['JUMP','FALL'].includes(m.state)||Math.hypot(f.x-f.prevX,lane-(f.prevLane??lane))>120*s||!m.paint&&m.feet.some(foot=>Math.abs(foot.x-f.x)>g.height*.72*s))resetFeet(f);
+ if(!m.ready||relocated||recovered||!f.airborne&&['JUMP','FALL'].includes(m.state)||Math.hypot(f.x-f.prevX,lane-(f.prevLane??lane))>120*s||m.feet.some(foot=>Math.abs(foot.x-f.x)>g.height*.72*s))resetFeet(f);
  const dx=f.x-f.prevX,dz=lane-(f.prevLane??lane),distance=Math.hypot(dx,dz),requested=Math.abs(f.vx)+Math.abs(f.storyVelocityY??0)>2;
  const eligible=!f.action&&!f.airborne&&!f.knocked&&f.hp>0&&f.hitstun<=0&&f.blockstun<=0&&f.landing<=0&&f.preJump<=0&&f.dizzyTime<=0;
  const charging=f.storyEnemy&&f.attackMode==='charge'&&f.attackLife>0;
@@ -84,9 +73,7 @@ export function updateLocomotion(f,dt){
     if(foot.support){foot.support=false;foot.startX=foot.x;foot.startLane=foot.lane;
      // A painted fighting stance is wider than a moving stance. Replant around
      // the pelvis; retaining that full painted width would stretch the legs.
-     const soles=soleReference(f),width=f.character.visualWidth??1;
-     const rear=soles?soles[6][0]*width:r?.[10],front=soles?soles[10][0]*width:r?.[18];
-     const base=r?(rear+front)*.10+(i?1:-1)*Math.max(Math.abs(front-rear)*.5,stride/s*.54)/2:i?40:-40;
+     const base=r?(r[10]+r[18])*.10+(i?1:-1)*Math.max(Math.abs(r[18]-r[10])*.5,stride/s*.54)/2:i?40:-40;
      // The body travels during swing. Project only that remaining distance;
      // a longer lead target exceeds both legs' combined reach at contact.
      foot.targetX=f.x+base*s*f.direction+nx*stride*(1-duty);
@@ -106,7 +93,7 @@ export function updateLocomotion(f,dt){
   if(m.blend<=.001)m.startupTravel=0;
   // Complete the airborne foot's last short placement. Supporting feet never slide.
   for(let i=0;i<2;i++){const foot=m.feet[i],a=(i===0?JOINT.rearAnkle:JOINT.frontAnkle)*2;
-   if(!foot.support){const soles=soleReference(f),x=soles?soles[i?10:6][0]*(f.character.visualWidth??1):r?r[a]:i?40:-40,home=f.x+x*s*f.direction;
+   if(!foot.support){const home=f.x+(r?r[a]:i?40:-40)*s*f.direction;
     foot.x+=(home-foot.x)*Math.min(1,dt*30);foot.lane+=(lane-foot.lane)*Math.min(1,dt*30);foot.lift=Math.max(0,foot.lift-dt*g.lift*s*14);
     if(foot.lift<=.01){foot.support=true;foot.lane=lane;foot.angle=0;}
    }
@@ -115,18 +102,9 @@ export function updateLocomotion(f,dt){
  const state=motionState(f,walking);
  m.cycleDuration=m.phaseVelocity>0?1/m.phaseVelocity:0;
  transition(m,state==='IDLE'&&m.blend>.001?'MOVE_STOP':walking&&m.blend<.98&&!f.carry?'MOVE_START':state,dt);
- if(walking){
-  // These authored fighting walks retain a lateral base. In depth movement,
-  // projecting a generic stride onto X could put both boots in one column.
-  // Bound only the free foot; planted world contacts remain unchanged.
-  const spread=minimumPaintedSpread(f);
-  for(let i=0;i<2;i++)if(!m.feet[i].support){const foot=m.feet[i],other=m.feet[1-i],x=foot.x*f.direction,limit=other.x*f.direction+(i?spread:-spread);foot.x=(i?Math.max(x,limit):Math.min(x,limit))*f.direction;}
- }
- // Keep the final free-foot placement inside the same reach constraint used
- // by the next contact. Clamping it after IK made touchdown jump the pelvis.
  if(r)constrainPelvis(f,r,g,dt);
  m.lastWorldX=f.x;m.lastWorldLane=lane;
- f.walkBlend=m.blend;updatePaintedContacts(f);
+ f.walkBlend=m.blend;
 }
 function bodyParameters(f,g){
  const m=f.motion,time=f.animTime??0,phase=m.phase*Math.PI*2,moving=m.blend,back=m.moveSign*f.direction<0;

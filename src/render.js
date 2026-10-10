@@ -1,10 +1,7 @@
 import {drawAthleticPulse,drawOlympicJump} from './savate-fx.js';
 import {drawForkProjectile,drawForkPower} from './fork-fx.js';
 import {drawDienesProjectile,drawDienesPower} from './dienes-fx.js';
-import {interpolateFighter,prepareLocomotionRig,drawLocomotionRig} from './locomotion-render.js';
-import {paintedGeometry} from './painted-motion.js';
-import {usesRig} from './locomotion.js';
-import {ownedSilhouette} from './sprite-ownership.js';
+import {interpolateFighter} from './locomotion-render.js';
 import {entityScale} from './story-world.js';
 import {loadStoryArt,drawStory} from './story-render.js';
 import {drawKaratePulse,drawKarateCharge} from './karate-fx.js';
@@ -62,6 +59,13 @@ export class Renderer {
     if(this.characterLoads.has(id)){const task=this.characterLoads.get(id);this.characterLoads.delete(id);this.characterLoads.set(id,task);return task;}
     const task=(async()=>{
       const {base,portrait}=await loadPreparedSprites(id,loadImage);
+      if(id==='tais'){const [walkImage,walkFrames]=await Promise.all([loadImage('assets/story/tais-walk-v4.webp'),fetch('assets/story/tais-walk-v4.json').then(r=>r.json())]);base.motion={scale:1,frames:walkFrames.map(f=>({...f,image:walkImage}))};}
+      if(['luciana','khauany','dienes'].includes(id)){
+        const stem=`assets/story/${id}-walk-v2`;
+        const [walkImage,response]=await Promise.all([loadImage(`${stem}.webp`),fetch(`${stem}.json`)]);
+        if(!response.ok)throw new Error(`Não foi possível carregar a caminhada de ${id}`);
+        base.motion={scale:1,frames:(await response.json()).map(frame=>({...frame,image:walkImage}))};
+      }
       this.sheets[id]=base;this.portraits[id]=portrait;
       if(['gelton','marcelino','marcos','joao','ruan','tais','luciana','khauany','dienes'].includes(id)) {
         await cacheSpriteEffects(base,base.frames[13],CHARACTERS[id].color,['power']);
@@ -111,7 +115,7 @@ export class Renderer {
       }
     }
   }
-  analyzeSheet(image, combat = false, rows = 4, cellPadding = null, columns = 4, ownership = []) {
+  analyzeSheet(image, combat = false, rows = 4, cellPadding = null, columns = 4) {
     const frames = [];
     const offscreen = document.createElement('canvas'); offscreen.width = image.width; offscreen.height = image.height;
     const c = offscreen.getContext('2d', { willReadFrequently: true }); c.drawImage(image, 0, 0);
@@ -121,11 +125,28 @@ export class Renderer {
       const sx = Math.round(column * image.width / columns), sy = Math.round(row * image.height / rows);
       const ex = Math.round((column + 1) * image.width / columns), ey = Math.round((row + 1) * image.height / rows);
       // Generated atlases can have a few pixels crossing nominal cell borders.
-      // Select spatially owned components, including detached valid limbs.
+      // Find the largest connected silhouette in a padded cell, excluding neighboring-pose fragments.
       const padding = cellPadding ?? (combat ? 64 : 12);
       const rx = Math.max(0, sx - padding), ry = Math.max(0, sy - padding);
       const rw = Math.min(image.width, ex + padding) - rx, rh = Math.min(image.height, ey + padding) - ry;
-      const best=ownedSilhouette(pixels,image.width,{x:rx,y:ry,w:rw,h:rh},{x:sx,y:sy,w:ex-sx,h:ey-sy},{seeds:ownership[i]?.seeds??[]});
+      const mask = new Uint8Array(rw * rh), stack = new Int32Array(rw * rh);
+      for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) mask[y * rw + x] = pixels[((ry + y) * image.width + rx + x) * 4 + 3] >= 95 ? 1 : 0;
+      let best = null;
+      for (let start = 0; start < mask.length; start++) {
+        if (mask[start] !== 1) continue;
+        const members = [];
+        let top = 0, count = 0, bx1 = rw, by1 = rh, bx2 = 0, by2 = 0; stack[top++] = start; mask[start] = 2;
+        while (top) {
+          const index = stack[--top], x = index % rw, y = Math.floor(index / rw); count++; members.push(index);
+          bx1 = Math.min(bx1, x); by1 = Math.min(by1, y); bx2 = Math.max(bx2, x); by2 = Math.max(by2, y);
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            if ((!dx && !dy) || x + dx < 0 || x + dx >= rw || y + dy < 0 || y + dy >= rh) continue;
+            const next = index + dy * rw + dx; if (mask[next] === 1) { mask[next] = 2; stack[top++] = next; }
+          }
+        }
+        if (!best || count > best.count) best = { count, bx1, by1, bx2, by2, members };
+      }
+      if (!best || best.count < 100) throw new Error('Sprite vazio. Verifique o atlas de personagens.');
       const x1 = rx + best.bx1 - sx, y1 = ry + best.by1 - sy, x2 = rx + best.bx2 - sx, y2 = ry + best.by2 - sy;
       // Ground-foot midpoint anchors attacks without moving the fighter's physical position.
       let footLeft = image.width, footRight = 0;
@@ -157,16 +178,15 @@ export class Renderer {
           const x = mx + dx - best.bx1, y = my + dy - best.by1;
           if (x < 0 || x >= w || y < 0 || y >= h) continue;
           const src = ((ry + my + dy) * image.width + rx + mx + dx) * 4, dst = (y * w + x) * 4;
-          if(pixels[src+3]>=95&&!best.mask[(my+dy)*rw+mx+dx])continue;
           for (let channel = 0; channel < 4; channel++) data.data[dst + channel] = pixels[src + channel];
         }
       }
       clean.putImageData(data, 0, 0);
-      frames.push({ sx, sy, x: x1, y: y1, w, h, anchor, bottom: y2+1, cutout,ownership:{components:best.components,rejected:best.rejected} });
+      frames.push({ sx, sy, x: x1, y: y1, w, h, anchor, bottom: y2, cutout });
     }
     // Whole walk poses have separate uniform calibration, so atlas row size
     // cannot make the professor shrink during a stride. No limb is stretched.
-    if (rows === 2) {const heights=frames.map(frame=>frame.h).sort((a,b)=>a-b),uniform=294/((heights[3]+heights[4])/2);for(const frame of frames)frame.scale=uniform;}
+    if (rows === 2) for (const frame of frames) frame.scale = 294 / frame.h;
     return { image, frames, scale: 294 / frames[combat ? 8 : 0].h };
   }
   frameFor(f) {
@@ -213,7 +233,7 @@ export class Renderer {
   }
   poseFor(f) {
     const original = this.sheets[f.character.id], { atlas, index } = fighterPose(f);
-    return { sheet: atlas === 'base' ? original : original[atlas], atlas, index, id: `${atlas}:${index}` };
+    return { sheet: atlas === 'base' ? original : original[atlas], index, id: `${atlas}:${index}` };
   }
   preview(canvas, id) {
     const c = canvas.getContext('2d'), sheet = this.sheets[id]?.style; if (!sheet) return;
@@ -296,17 +316,6 @@ export class Renderer {
     if (f.invincible > 0 && f.state === 'idle' && Math.floor(this.clock * 24) % 2) c.globalAlpha = .75;
     const drawPose = (selected, opacity) => {
       const { sheet, index } = selected, frame = sheet.frames[index], scale = frame.scale ?? sheet.scale; c.globalAlpha = opacity;
-      if(!override&&f.carry&&usesRig(f)){
-        this.carryRigs??=new Map();let rig=this.carryRigs.get(f.character.id);
-        if(!rig){rig=prepareLocomotionRig(f.character.id,this.sheets[f.character.id]);this.carryRigs.set(f.character.id,rig);}
-        if(drawLocomotionRig(c,f,rig))return;
-      }
-      const geometry=paintedGeometry(f,{atlas:selected.atlas??fighterPose(f).atlas,index});
-      if(!override&&geometry&&usesRig(f)){
-        this.paintedRigs??=new WeakMap();let rig=this.paintedRigs.get(frame);
-        if(!rig){rig=prepareLocomotionRig(f.character.id,this.sheets[f.character.id],frame,geometry);this.paintedRigs.set(frame,rig);}
-        if(drawLocomotionRig(c,f,rig))return;
-      }
       const variant=f.blockFlash>0?'guard':f.flash>0?'flash':['special','super','uppercut','drone'].includes(f.state)?'power':null;
       const bitmap=frame.effects?.[variant];
       if(bitmap)c.drawImage(bitmap.image,(frame.x-frame.anchor)*scale-bitmap.padding,(frame.y-frame.bottom)*scale-bitmap.padding);
