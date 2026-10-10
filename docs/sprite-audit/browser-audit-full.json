@@ -1,0 +1,493 @@
+{
+  "startedAt": "2026-10-10T15:56:09.864Z",
+  "renderer": "src/render.js",
+  "characters": [
+    {
+      "id": "marcelo",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 26,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "rafael",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 25,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "gustavo",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 24,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "gelton",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "marcelino",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "marcos",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "joao",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "tais",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "luciana",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "khauany",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "dienes",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    },
+    {
+      "id": "ruan",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "kind": "snack",
+      "renderedSamples": 32,
+      "observedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "turnstile",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        2,
+        9,
+        10,
+        11,
+        3,
+        4,
+        5,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "cleaner",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        12,
+        5,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "lab",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        3,
+        4,
+        5,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "vial",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        5,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "scanner",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        5,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "book",
+      "renderedSamples": 32,
+      "observedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "archaeologist",
+      "renderedSamples": 32,
+      "observedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "elite",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        12,
+        5,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "kungfu",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "inspector",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        3,
+        4,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "fairRobot",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "substitute",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "aula",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "exo",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        3,
+        4,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "kind": "projector",
+      "renderedSamples": 32,
+      "observedFrames": [
+        0,
+        9,
+        10,
+        11,
+        2,
+        3,
+        4,
+        5,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "id": "joao",
+      "which": 0,
+      "mode": "versus",
+      "action": "uppercut",
+      "error": "attack phases missing"
+    },
+    {
+      "id": "joao",
+      "which": 1,
+      "mode": "versus",
+      "action": "uppercut",
+      "error": "attack phases missing"
+    },
+    {
+      "id": "joao",
+      "which": 0,
+      "mode": "story",
+      "action": "uppercut",
+      "error": "attack phases missing"
+    },
+    {
+      "id": "joao",
+      "which": 1,
+      "mode": "story",
+      "action": "uppercut",
+      "error": "attack phases missing"
+    }
+  ],
+  "limitations": [
+    "No photographic references in the repository",
+    "USB hardware and two-person online session are not exercised here"
+  ],
+  "finishedAt": "2026-10-10T16:13:59.160Z",
+  "status": "FAIL"
+}

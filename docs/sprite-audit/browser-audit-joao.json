@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-10-10T16:12:13.795Z",
+  "renderer": "src/render.js",
+  "scope": "selected fighter",
+  "characters": [
+    {
+      "id": "joao",
+      "cases": 88,
+      "renderedSamples": 440,
+      "hits": 27,
+      "facings": [
+        1,
+        -1
+      ],
+      "modes": [
+        "versus",
+        "story"
+      ]
+    }
+  ],
+  "enemies": [],
+  "failures": [],
+  "limitations": [
+    "No photographic references in the repository",
+    "USB hardware and two-person online session are not exercised here"
+  ],
+  "finishedAt": "2026-10-10T16:13:38.749Z",
+  "status": "PASS"
+}

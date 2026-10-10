@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "verificationMethod": "Complete browser run plus focused retest after correcting the landing-recovery assertion",
+  "release": "4.7.0",
+  "coreCommit": "ad91590e0cb0f933d36deec46948dc8c70373326",
+  "assertionFixCommit": "1f57bb696c56a66b291070a297f7f01ad97b64fd",
+  "verifiedAt": "2026-10-10T16:16:58.793914+00:00",
+  "coverage": {
+    "characters": 12,
+    "enemies": 16,
+    "uniqueCharacterCases": 1056,
+    "executedCharacterCases": 1144,
+    "enemyScenarios": 64,
+    "renderedSamples": 6232
+  },
+  "runs": [
+    {
+      "file": "browser-audit-full.json",
+      "status": "FAIL",
+      "startedAt": "2026-10-10T15:56:09.864Z",
+      "finishedAt": "2026-10-10T16:13:59.160Z"
+    },
+    {
+      "file": "browser-audit-joao.json",
+      "status": "PASS",
+      "startedAt": "2026-10-10T16:12:13.795Z",
+      "finishedAt": "2026-10-10T16:13:38.749Z"
+    }
+  ],
+  "resolvedAlerts": [
+    {
+      "id": "joao",
+      "action": "uppercut",
+      "count": 4,
+      "cause": "The original assertion recognized aerial recovery but not recovery on landing. The unchanged Wild Roll move lands before its recovery interval ends.",
+      "resolution": "Recognize active attack followed by landing recovery, then rerun all 88 João cases in the real browser."
+    }
+  ],
+  "unresolvedFailures": [],
+  "browserSmoke": "browser-smoke.json",
+  "sourceHashes": {
+    "browser-audit-full.json": "bd977cee07c28b21a62df5db03ca6057c9ea24bf51d4d91c5230a3635ee0ecf0",
+    "browser-audit-joao.json": "a56e5ee0689510279f641270d3796dba35b5f46dd182bc32cfff5e0b59702fbd"
+  },
+  "limitations": [
+    "No photographic references in the repository",
+    "USB hardware and two-person online session are not exercised here"
+  ]
+}

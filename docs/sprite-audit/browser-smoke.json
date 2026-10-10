@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-10-10T16:13:18.974766+00:00",
+  "release": "4.7.0",
+  "url": "https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=4.7.0",
+  "checked": [
+    {
+      "area": "versus",
+      "result": "Menu, elenco de 12, partida Khauãny contra Dienes e pausa abriram."
+    },
+    {
+      "area": "story-local",
+      "result": "Seleção dos dois parceiros, diálogo inicial e ato 1 renderizado com Khauãny e Dienes."
+    },
+    {
+      "area": "online-menu",
+      "result": "Menu e lista pública carregaram; nenhuma sala foi criada."
+    }
+  ],
+  "screenshots": [
+    "browser-coop.jpg"
+  ],
+  "blocked": [
+    {
+      "action": "create online test room",
+      "reason": "A revisão automática bloqueou gravação no serviço externo e exposição de código público sem autorização específica."
+    }
+  ],
+  "notTested": [
+    "Physical USB controller",
+    "Two-person online session"
+  ]
+}

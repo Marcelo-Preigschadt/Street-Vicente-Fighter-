@@ -43,7 +43,9 @@ Menus, comandos, poderes, vozes, diálogos, campanha, cooperação local, rollba
 - Regressões novas verificam os oito desenhos, integridade rígida de todos os 17 marcos, limite de deslocamento do corpo, apoio fixo, snapshot e limite da câmera.
 - `audit-sprites.mjs`: atlas, identidade, juntas e 27 estados nas duas orientações, para os 12 personagens; pranchas dos 16 inimigos. `inventory.json` lista medidas e hashes.
 - `check-story-render.mjs`: oito cenas/chefes, quadro de contato e 36 vistas com cadeira, nas duas orientações e durante movimento.
-- Inspeção visual humana das 12 caminhadas, identidades, atlas de inimigos e estados prioritários confirmou membros completos, ausência dos fragmentos corrigidos e volume preservado na caminhada.
+- Navegador real no GitHub Pages: **1.056 casos únicos** dos 12 lutadores, com **5.280 desenhos amostrados**, mais **512 desenhos** dos 16 inimigos. O primeiro resultado bruto preserva quatro alertas no Rolamento Selvagem do João: a regra esperava recuperação aérea e não reconhecia a recuperação na aterrissagem. O golpe existente estava correto e foi preservado. A regra foi corrigida e os **88 casos do João foram repetidos e passaram**, com mais **440 desenhos**. Resultado consolidado: **PASS**, sem falhas pendentes; **1.144 casos executados** e **6.232 desenhos**. Evidências: `browser-audit-full.json`, `browser-audit-joao.json`, `browser-validation.json` e `browser-joao.jpg`.
+- Menus, seleção dos 12, partida versus Khauãny/Dienes, pausa, diálogo inicial e início da campanha cooperativa local foram conferidos na interface publicada. O menu online e a lista pública de salas carregaram. Veja `browser-smoke.json` e `browser-coop.jpg`.
+- Inspeção visual das 12 caminhadas, identidades, atlas de inimigos e estados prioritários confirmou membros completos, ausência dos fragmentos corrigidos e volume preservado na caminhada.
 - `git diff --check`: aprovado.
 
 As pranchas de antes mostram o baseline 4.6.20 e as de depois a implementação 4.7.0. A galeria usa WebP de alta qualidade para os quadros grandes; comparações de identidade usam WebP sem perda. Os atlas de jogo e fontes preservam seus pixels originais.
@@ -54,6 +56,10 @@ Não há fotos originais completas no repositório: a referência de identidade 
 
 A caminhada mantém oito desenhos discretos. Não foram inventados quadros intermediários por deformação de pernas; a fluidez deve ser avaliada também em movimento. A composição 2× removeu o pontilhado forte da malha de idle; ampliando Dienes a 4× ainda se vê uma costura muito tênue em coxas/antebraço. A caminhada rígida está livre dessa malha.
 
-O preview gerenciado local não iniciou por limitação da infraestrutura (`bwrap: Can't mount proc`). O ambiente privado recuperado exigiu login. Esses bloqueios não foram atribuídos a permissões do GitHub, cuja conexão aceitou a gravação. A auditoria de navegador em `tests/visual-review.html` está incluída para validação no endereço publicado; seu resultado só será considerado executado após confirmação real.
+O preview gerenciado local não iniciou por limitação da infraestrutura (`bwrap: Can't mount proc`). O ambiente privado recuperado exigiu login. A conexão do GitHub aceitou a gravação e o GitHub Pages publicou a versão com sucesso. A auditoria em `tests/visual-review.html` foi executada no endereço público, com resultados brutos e reteste preservados.
 
-Uma partida online com duas pessoas e controles USB físicos não foram testados nesta auditoria. Nenhuma afirmação de validação desses cenários é feita.
+Uma partida online com duas pessoas e controles USB físicos não foram testados nesta auditoria. A revisão automática desta sessão bloqueou a criação de uma sala real de teste porque ela grava estado no serviço externo e expõe um código público sem autorização específica. Nenhuma sala foi criada, e nenhuma afirmação de validação desse cenário é feita. As regressões de protocolo, sala e rollback fazem parte dos testes de código aprovados.
+
+## Publicação
+
+Jogo: `https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/?v=4.7.0`. As alterações foram publicadas em `main` e preservadas na branch `fix/roster-animation-audit-20261010-complete`. A branch anterior foi mantida. O commit de implementação é `ad91590e0cb0f933d36deec46948dc8c70373326`; o ajuste da ferramenta de auditoria é `1f57bb696c56a66b291070a297f7f01ad97b64fd`. O pacote imutável de jogo não mudou durante o reteste.
