@@ -1,0 +1,48 @@
+{
+  "renderer": "src/render.js",
+  "version": "4.7.0",
+  "startedAt": "2026-10-10T02:12:45.169Z",
+  "selection": [
+    "luciana"
+  ],
+  "characters": [
+    {
+      "id": "luciana",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.5762111608424685,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 45.14960873215796,
+      "facePixelsCompared": 2103046,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.0360683458031417,
+      "maxTriangleAreaRatio": 1.9482600434668398,
+      "poses": [
+        "motion[3]",
+        "motion[7]",
+        "motion[4]",
+        "motion[2]",
+        "motion[6]",
+        "motion[0]",
+        "base[0]",
+        "base[1]",
+        "motion[1]"
+      ],
+      "portraitPreserved": true,
+      "neighborShoePixels": 0,
+      "retainedHeelPixels": 1571
+    }
+  ],
+  "failures": [],
+  "limits": {
+    "contactPixels": 6,
+    "legLengthRatio": 1.001,
+    "plantedWorldDrift": 0.01
+  },
+  "limitations": [
+    "The source landmarks are estimates, except for measured sole centers.",
+    "Portrait equality is a pixel check; facial likeness of new paintings also requires visual review."
+  ],
+  "status": "PASS",
+  "finishedAt": "2026-10-10T02:12:48.322Z"
+}

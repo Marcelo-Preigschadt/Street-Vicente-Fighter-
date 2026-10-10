@@ -1,0 +1,258 @@
+{
+  "engine": "src/story.js",
+  "status": "PASS",
+  "scenarios": [
+    {
+      "kind": "snack",
+      "displacement": -203.6707482993097,
+      "frames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "turnstile",
+      "displacement": -194.62846938776727,
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "cleaner",
+      "displacement": -273.0241496598694,
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "lab",
+      "displacement": -263.33808390022955,
+      "frames": [
+        5,
+        1,
+        4,
+        2
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "vial",
+      "displacement": -224.27192743766045,
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "scanner",
+      "displacement": -244.8438435374154,
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        9
+      ],
+      "states": [
+        "walk",
+        "idle",
+        "windup"
+      ]
+    },
+    {
+      "kind": "book",
+      "displacement": -210.6938775510298,
+      "frames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "archaeologist",
+      "displacement": -217.7170068027226,
+      "frames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "elite",
+      "displacement": -320.9570068027381,
+      "frames": [
+        4,
+        2,
+        6,
+        7,
+        1
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "kungfu",
+      "displacement": -358.70632653063933,
+      "frames": [
+        4,
+        6,
+        7,
+        3
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "inspector",
+      "displacement": -293.5755816326764,
+      "frames": [
+        2,
+        6,
+        1,
+        8,
+        3,
+        4
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "fairRobot",
+      "displacement": -157.9911451247292,
+      "frames": [
+        4,
+        6,
+        7,
+        5
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "substitute",
+      "displacement": -337.37357142859196,
+      "frames": [
+        3,
+        2,
+        4
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "aula",
+      "displacement": -336.5834693877815,
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        9
+      ],
+      "states": [
+        "walk",
+        "idle",
+        "windup"
+      ]
+    },
+    {
+      "kind": "exo",
+      "displacement": -234.08967687074414,
+      "frames": [
+        3,
+        2,
+        7,
+        1
+      ],
+      "states": [
+        "walk"
+      ]
+    },
+    {
+      "kind": "projector",
+      "displacement": -224.27192743766045,
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "states": [
+        "walk"
+      ]
+    }
+  ]
+}
