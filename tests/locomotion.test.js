@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {FightEngine,Fighter,FIXED_STEP,WORLD} from '../src/engine.js';
+import {FightEngine,Fighter,FIXED_STEP,WORLD,fighterPose} from '../src/engine.js';
 import {StoryEngine} from '../src/story.js';
 import {STORY_WORLD,entityScale} from '../src/story-world.js';
 import {GAITS,referenceJoints,MOTION_STATES} from '../src/locomotion-data.js';
@@ -8,6 +8,7 @@ import {resetFeet,evaluateRig,motionState,handSockets,updateLocomotion,usesRig} 
 import {interpolateFighter} from '../src/locomotion-render.js';
 import {heldObjectTransform,STORY_PROP_DIMENSIONS,thrownObjectBounds,carryStrikeBox} from '../src/story-props.js';
 import {ENEMY_TYPES} from '../src/story-data.js';
+import {paintedGeometry,evaluatePaintedPose} from '../src/painted-motion.js';
 const ids=['marcelo','rafael','gustavo','tais'];
 const advance=(e,t)=>{for(let i=0;i<Math.round(t/FIXED_STEP);i++)e.update(FIXED_STEP);};
 function versus(id,slot=0){const e=new FightEngine();const other=id==='marcelo'?'rafael':'marcelo';e.start(slot===0?id:other,'local',slot===1?id:other);e.phase='fight';e.fighters[0].x=450;e.fighters[1].x=830;for(const f of e.fighters){f.prevX=f.x;resetFeet(f);}return e;}
@@ -16,14 +17,14 @@ const length=(p,a,b)=>Math.hypot(p[a*2]-p[b*2],p[a*2+1]-p[b*2+1]);
 
 for(const id of ids)for(const slot of [0,1])test(`${id}, P${slot+1}: apoios fixos e pernas sem alongamento artificial ao avançar/recuar`,()=>{
  for(const backwards of [false,true]){
-  const e=versus(id,slot),f=e.fighters[slot],dir=f.direction*(backwards?-1:1),r=referenceJoints(id,new Float64Array(34));
+  const e=versus(id,slot),f=e.fighters[slot],dir=f.direction*(backwards?-1:1);
   e.setInput(slot,{right:dir>0,left:dir<0});let supports=0,lifts=0;
   for(let tick=0;tick<95;tick++){
-   const before=f.motion.feet.map(p=>({...p}));e.update(FIXED_STEP);const p=evaluateRig(f);
+   const before=f.motion.feet.map(p=>({...p}));e.update(FIXED_STEP);const geometry=paintedGeometry(f,fighterPose(f)),p=evaluatePaintedPose(f,geometry).joints,r=geometry.points.flat(),feet=[...f.motion.feet].sort((a,b)=>(a.x-b.x)*f.direction);
    for(const [side,h,k,a] of [[0,3,4,5],[1,7,8,9]]){
     const foot=f.motion.feet[side];if(before[side].support&&foot.support){assert.equal(foot.x,before[side].x);assert.equal(foot.lane,before[side].lane);supports++;}
     if(foot.lift>0)lifts++;
-    assert.ok(Math.abs(f.x+p[a*2]*f.direction-foot.x)<1e-7);
+    const toe=side?10:6;assert.ok(Math.abs(f.x+p[toe*2]*f.direction*(f.character.visualWidth??1)-feet[side].x)<1e-7);
     assert.ok((length(p,h,k)+length(p,k,a))/(length(r,h,k)+length(r,k,a))<1.08);
    }
   }
@@ -181,13 +182,13 @@ test('História compartilha a pose articulada com 1×1 para herói e exoesquelet
   assert.ok(poses.some(p=>p.lift.some(v=>v>2)),index+' balanço');
  }
 });
-test('contato e soltura do pé não reiniciam o ciclo nem causam salto do centro de massa',()=>{
+test('contato e soltura do pé não reiniciam o ciclo nem causam salto do eixo corporal renderizado',()=>{
  for(const id of ids){
   const e=versus(id),f=e.fighters[0];e.fighters[1].x=1200;
   e.setInput(0,{right:true});let phase=-1,worldPelvis=null,contacts=0;
   for(let tick=0;tick<130;tick++){
    const old=f.motion.feet.map(foot=>foot.support);e.update(FIXED_STEP);
-   const p=evaluateRig(f),current=f.x+p[0]*f.direction;
+   const p=evaluatePaintedPose(f,paintedGeometry(f,fighterPose(f))).joints,current=f.x+p[0]*f.direction*(f.character.visualWidth??1);
    if(worldPelvis!==null)assert.ok(Math.abs(current-worldPelvis)<10,id+' salto no quadro '+tick);
    if(phase>=0)assert.ok(f.motion.phase>phase,id+' reiniciou o ciclo');
    for(let side=0;side<2;side++)if(!old[side]&&f.motion.feet[side].support)contacts++;

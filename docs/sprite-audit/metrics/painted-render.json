@@ -1,0 +1,333 @@
+{
+  "renderer": "src/render.js",
+  "version": "4.7.0",
+  "startedAt": "2026-10-10T01:46:04.052Z",
+  "selection": [
+    "marcelo",
+    "rafael",
+    "gustavo",
+    "gelton",
+    "marcelino",
+    "marcos",
+    "joao",
+    "tais",
+    "luciana",
+    "khauany",
+    "dienes",
+    "ruan"
+  ],
+  "characters": [
+    {
+      "id": "marcelo",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.9465759450097504,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 45.01594897521832,
+      "facePixelsCompared": 3537865,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.06907909181567594,
+      "maxTriangleAreaRatio": 2.180532609782064,
+      "poses": [
+        "motion[0]",
+        "motion[4]",
+        "motion[5]",
+        "motion[1]",
+        "reaction[1]",
+        "reaction[0]",
+        "motion[2]",
+        "motion[7]",
+        "motion[3]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "rafael",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 0.6884812946031987,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 31.35738921323093,
+      "facePixelsCompared": 2547609,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.4230091735920031,
+      "maxTriangleAreaRatio": 1.1649665632180928,
+      "poses": [
+        "motion[2]",
+        "motion[4]",
+        "motion[0]",
+        "motion[6]",
+        "motion[3]",
+        "motion[7]",
+        "motion[1]",
+        "reaction[1]",
+        "reaction[0]",
+        "motion[5]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "gustavo",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 0.8601353395263743,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 53.86559030011976,
+      "facePixelsCompared": 2787199,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.1728920948710487,
+      "maxTriangleAreaRatio": 2.449643883176217,
+      "poses": [
+        "motion[0]",
+        "motion[7]",
+        "motion[6]",
+        "motion[1]",
+        "motion[5]",
+        "motion[2]",
+        "motion[3]",
+        "reaction[1]",
+        "reaction[0]",
+        "motion[4]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "gelton",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.5744875738660289,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 87.00384004973105,
+      "facePixelsCompared": 2358966,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.19139710360220816,
+      "maxTriangleAreaRatio": 1.551137580985853,
+      "poses": [
+        "motion[4]",
+        "motion[5]",
+        "motion[1]",
+        "motion[2]",
+        "motion[3]",
+        "base[0]",
+        "base[1]",
+        "base[2]",
+        "motion[0]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "marcelino",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.968652882448969,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 47.641359516771615,
+      "facePixelsCompared": 2031138,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.3138642626557812,
+      "maxTriangleAreaRatio": 1.3918483764330118,
+      "poses": [
+        "motion[2]",
+        "motion[0]",
+        "motion[6]",
+        "motion[1]",
+        "base[2]",
+        "base[3]",
+        "motion[4]",
+        "motion[3]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "marcos",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.3576191026902014,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 54.309164600268474,
+      "facePixelsCompared": 2219206,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.2570748502985974,
+      "maxTriangleAreaRatio": 1.2560903709392273,
+      "poses": [
+        "motion[4]",
+        "motion[1]",
+        "motion[2]",
+        "motion[0]",
+        "motion[3]",
+        "motion[5]",
+        "motion[6]",
+        "base[2]",
+        "base[3]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "joao",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 0.7043255130420633,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 103.09811989910051,
+      "facePixelsCompared": 2285652,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.1352723248765186,
+      "maxTriangleAreaRatio": 1.90028188701456,
+      "poses": [
+        "motion[4]",
+        "motion[0]",
+        "motion[1]",
+        "motion[2]",
+        "motion[6]",
+        "base[2]",
+        "base[3]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "tais",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.5610843773708423,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 33.07549247391691,
+      "facePixelsCompared": 3222186,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.3867534483712098,
+      "maxTriangleAreaRatio": 1.1358347421391823,
+      "poses": [
+        "motion[2]",
+        "motion[4]",
+        "motion[5]",
+        "motion[1]",
+        "motion[0]",
+        "motion[7]",
+        "base[0]",
+        "base[1]",
+        "motion[3]",
+        "motion[6]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "luciana",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 1.5762111608424685,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 45.14960873215796,
+      "facePixelsCompared": 2103046,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.0360683458031417,
+      "maxTriangleAreaRatio": 1.9482600434668398,
+      "poses": [
+        "motion[3]",
+        "motion[7]",
+        "motion[4]",
+        "motion[2]",
+        "motion[6]",
+        "motion[0]",
+        "base[0]",
+        "base[1]",
+        "motion[1]"
+      ],
+      "portraitPreserved": true,
+      "neighborShoePixels": 0,
+      "retainedHeelPixels": 1571
+    },
+    {
+      "id": "khauany",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 0.8991475939043034,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 53.01004492310679,
+      "facePixelsCompared": 2671832,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.061755639813441676,
+      "maxTriangleAreaRatio": 2.7729864525709744,
+      "poses": [
+        "motion[0]",
+        "motion[7]",
+        "motion[1]",
+        "motion[2]",
+        "motion[3]",
+        "motion[4]",
+        "motion[5]",
+        "base[0]",
+        "base[1]",
+        "motion[6]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "dienes",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 0.7111461458140026,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 38.41283418033615,
+      "facePixelsCompared": 2734298,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.09918054466363843,
+      "maxTriangleAreaRatio": 2.0043895280074504,
+      "poses": [
+        "motion[0]",
+        "motion[3]",
+        "motion[5]",
+        "motion[2]",
+        "motion[4]",
+        "motion[6]",
+        "motion[7]",
+        "base[0]",
+        "base[1]",
+        "motion[1]"
+      ],
+      "portraitPreserved": true
+    },
+    {
+      "id": "ruan",
+      "samples": 320,
+      "maxSupportDrift": 0,
+      "maxPixelContactDistance": 0.7071067811865476,
+      "maxLegLengthRatio": 1,
+      "maxPelvisCorrection": 44.228821313564026,
+      "facePixelsCompared": 2190806,
+      "facePixelDifferences": 0,
+      "minTriangleAreaRatio": 0.19675542754392286,
+      "maxTriangleAreaRatio": 1.4243330502633123,
+      "poses": [
+        "motion[0]",
+        "motion[5]",
+        "motion[2]",
+        "motion[4]",
+        "base[0]",
+        "base[1]",
+        "motion[1]"
+      ],
+      "portraitPreserved": true
+    }
+  ],
+  "failures": [],
+  "limits": {
+    "contactPixels": 6,
+    "legLengthRatio": 1.001,
+    "plantedWorldDrift": 0.01
+  },
+  "limitations": [
+    "The source landmarks are estimates, except for measured sole centers.",
+    "Portrait equality is a pixel check; facial likeness of new paintings also requires visual review."
+  ],
+  "status": "PASS",
+  "finishedAt": "2026-10-10T01:46:36.546Z",
+  "rechecks": [
+    {
+      "selection": [
+        "luciana"
+      ],
+      "startedAt": "2026-10-10T02:12:45.169Z",
+      "finishedAt": "2026-10-10T02:12:48.322Z",
+      "reason": "Explicit source ownership removes connected neighboring shoe while retaining the heel."
+    }
+  ]
+}

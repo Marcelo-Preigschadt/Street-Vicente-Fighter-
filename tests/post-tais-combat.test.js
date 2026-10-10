@@ -6,20 +6,17 @@ import {StoryEngine} from '../src/story.js';
 import {FIGHTING_STYLES} from '../src/styles.js';
 import {RIG_BIND,GAITS,referenceJoints} from '../src/locomotion-data.js';
 import {resetFeet,evaluateRig,usesRig} from '../src/locomotion.js';
+import {paintedGeometry,evaluatePaintedPose} from '../src/painted-motion.js';
 
 const ids=['luciana','khauany','dienes'];
 const advance=(game,seconds)=>{for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++)game.update(FIXED_STEP);};
 
-test('o ciclo visual usa oito quadros completos, com escala uniforme, em vez da deformação',async()=>{
-  const render=await readFile(new URL('../src/render.js',import.meta.url),'utf8');
-  assert.doesNotMatch(render,/drawLocomotionRig\(/);
+test('o ciclo visual usa oito pinturas completas e escala constante em todo o clipe',async()=>{
   for(const id of ids){
-    const frames=JSON.parse(await readFile(new URL(`../assets/story/${id}-walk-v2.json`,import.meta.url)));
+    const frames=JSON.parse(await readFile(new URL(`../assets/story/${id}-walk-v5.json`,import.meta.url))).atlases.walk.frames;
     assert.equal(frames.length,8,id);
-    for(const frame of frames){
-      assert.ok(frame.h>470&&frame.w>190,id);
-      assert.ok(Math.abs(frame.h*frame.scale-GAITS[id].height)<.01,id);
-    }
+    assert.equal(new Set(frames.map(f=>f.scale)).size,1,id);
+    for(const frame of frames){assert.ok(frame.h>470&&frame.w>190,id);assert.equal(frame.landmarks.length,17);assert.equal(frame.footContacts.length,2);}
     const game=new FightEngine();game.start(id,'local','rafael');game.phase='fight';
     const f=game.fighters[0];f.state='walk';f.walkBlend=1;
     const stride=GAITS[id].stride;
@@ -43,18 +40,18 @@ test('as personagens novas têm apoios alternados e não esticam as pernas nos d
     const game=new FightEngine();game.start(slot?'rafael':id,'local',slot?id:'rafael');game.phase='fight';
     const f=game.fighters[slot],other=game.fighters[1-slot];f.x=slot?1050:200;other.x=slot?100:1200;
     f.prevX=f.x;resetFeet(f);
-    const direction=f.direction*(backwards?-1:1),reference=referenceJoints(id,new Float64Array(34));
+    const direction=f.direction*(backwards?-1:1);
     game.setInput(slot,{left:direction<0,right:direction>0});let planted=0,swing=0;
     for(let tick=0;tick<95;tick++){
       const feet=f.motion.feet.map(foot=>({...foot}));game.update(FIXED_STEP);
       assert.ok(usesRig(f),`${id} P${slot+1} tick ${tick}`);
-      const joints=evaluateRig(f);assert.ok(joints);
+      const geometry=paintedGeometry(f,fighterPose(f)),joints=evaluatePaintedPose(f,geometry).joints,reference=geometry.points.flat(),paintedFeet=[...f.motion.feet].sort((a,b)=>(a.x-b.x)*f.direction);assert.ok(joints);
       for(const [index,h,k,a] of [[0,3,4,5],[1,7,8,9]]){
         const foot=f.motion.feet[index];if(feet[index].support&&foot.support){
           assert.equal(foot.x,feet[index].x);planted++;
         }
         if(foot.lift>1)swing++;
-        assert.ok(Math.abs(f.x+joints[a*2]*f.direction-foot.x)<1e-6);
+        const toe=index?10:6;assert.ok(Math.abs(f.x+joints[toe*2]*f.direction*(f.character.visualWidth??1)-paintedFeet[index].x)<1e-6);
         const length=(p,i,j)=>Math.hypot(p[2*i]-p[2*j],p[2*i+1]-p[2*j+1]);
         const ratio=(length(joints,h,k)+length(joints,k,a))/(length(reference,h,k)+length(reference,k,a));
         assert.ok(ratio<1.08,`${id} ${ratio}`);
@@ -115,15 +112,16 @@ test('Luciana usa a pose de levantar, não a de cair para trás',()=>{
   assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
 });
 
-test('os chutes de Luciana e Khauãny preservam a guarda e os dois pés na preparação',()=>{
+test('os chutes de Luciana e Khauãny preservam a guarda na preparação e recuperação',()=>{
   for(const [id,active] of [['luciana',9],['khauany',9]]){
     const game=new FightEngine();game.start(id,'local','rafael');game.phase='fight';
     const f=game.fighters[0];assert.ok(game.beginMove(f,'kick'));
-    assert.deepEqual(fighterPose(f),{atlas:'base',index:0},id+' preparação');
+    const chamber=id==='luciana'?{atlas:'combat',index:2}:{atlas:'base',index:0};
+    assert.deepEqual(fighterPose(f),chamber,id+' preparação');
     advance(game,f.moveData.startup+FIXED_STEP);
     assert.deepEqual(fighterPose(f),{atlas:'base',index:active},id+' contato');
     advance(game,f.moveData.active+FIXED_STEP);
-    assert.deepEqual(fighterPose(f),{atlas:'base',index:0},id+' recuperação');
+    assert.deepEqual(fighterPose(f),chamber,id+' recuperação');
   }
 });
 

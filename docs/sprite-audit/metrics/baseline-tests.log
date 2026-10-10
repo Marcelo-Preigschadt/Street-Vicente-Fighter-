@@ -1,0 +1,624 @@
+✔ marcelo executa punch no ar mesmo segurando pulo (15.308988ms)
+✔ marcelo executa kick no ar mesmo segurando pulo (3.535883ms)
+✔ marcelo executa special no ar mesmo segurando pulo (10.578554ms)
+✔ marcelo executa uppercut no ar mesmo segurando pulo (3.432317ms)
+✔ marcelo executa super no ar mesmo segurando pulo (3.659148ms)
+✔ rafael executa punch no ar mesmo segurando pulo (6.574095ms)
+✔ rafael executa kick no ar mesmo segurando pulo (1.93611ms)
+✔ rafael executa special no ar mesmo segurando pulo (3.557986ms)
+✔ rafael executa uppercut no ar mesmo segurando pulo (2.520862ms)
+✔ rafael executa super no ar mesmo segurando pulo (1.313802ms)
+✔ gustavo executa punch no ar mesmo segurando pulo (2.375191ms)
+✔ gustavo executa kick no ar mesmo segurando pulo (2.284656ms)
+✔ gustavo executa special no ar mesmo segurando pulo (5.852767ms)
+✔ gustavo executa uppercut no ar mesmo segurando pulo (1.062763ms)
+✔ gustavo executa super no ar mesmo segurando pulo (0.885045ms)
+✔ gelton executa punch no ar mesmo segurando pulo (1.652953ms)
+✔ gelton executa kick no ar mesmo segurando pulo (2.550146ms)
+✔ gelton executa special no ar mesmo segurando pulo (2.090062ms)
+✔ gelton executa uppercut no ar mesmo segurando pulo (2.362653ms)
+✔ gelton executa super no ar mesmo segurando pulo (1.496557ms)
+✔ marcelino executa punch no ar mesmo segurando pulo (2.829547ms)
+✔ marcelino executa kick no ar mesmo segurando pulo (3.100105ms)
+✔ marcelino executa special no ar mesmo segurando pulo (1.920096ms)
+✔ marcelino executa uppercut no ar mesmo segurando pulo (2.793814ms)
+✔ marcelino executa super no ar mesmo segurando pulo (1.268383ms)
+✔ marcos executa punch no ar mesmo segurando pulo (5.086432ms)
+✔ marcos executa kick no ar mesmo segurando pulo (2.120398ms)
+✔ marcos executa special no ar mesmo segurando pulo (1.726784ms)
+✔ marcos executa uppercut no ar mesmo segurando pulo (1.771631ms)
+✔ marcos executa super no ar mesmo segurando pulo (2.228801ms)
+✔ joao executa punch no ar mesmo segurando pulo (3.127607ms)
+✔ joao executa kick no ar mesmo segurando pulo (1.978373ms)
+✔ joao executa special no ar mesmo segurando pulo (2.103963ms)
+✔ joao executa uppercut no ar mesmo segurando pulo (2.167299ms)
+✔ joao executa super no ar mesmo segurando pulo (4.541119ms)
+✔ tais executa punch no ar mesmo segurando pulo (1.690339ms)
+✔ tais executa kick no ar mesmo segurando pulo (3.352016ms)
+✔ tais executa special no ar mesmo segurando pulo (1.559201ms)
+✔ tais executa uppercut no ar mesmo segurando pulo (2.154339ms)
+✔ tais executa super no ar mesmo segurando pulo (2.421978ms)
+✔ luciana executa punch no ar mesmo segurando pulo (1.213179ms)
+✔ luciana executa kick no ar mesmo segurando pulo (1.099638ms)
+✔ luciana executa special no ar mesmo segurando pulo (1.057906ms)
+✔ luciana executa uppercut no ar mesmo segurando pulo (1.475415ms)
+✔ luciana executa super no ar mesmo segurando pulo (0.663951ms)
+✔ khauany executa punch no ar mesmo segurando pulo (7.197841ms)
+✔ khauany executa kick no ar mesmo segurando pulo (1.405159ms)
+✔ khauany executa special no ar mesmo segurando pulo (1.271968ms)
+✔ khauany executa uppercut no ar mesmo segurando pulo (10.042326ms)
+✔ khauany executa super no ar mesmo segurando pulo (5.466074ms)
+✔ dienes executa punch no ar mesmo segurando pulo (1.260672ms)
+✔ dienes executa kick no ar mesmo segurando pulo (1.319541ms)
+✔ dienes executa special no ar mesmo segurando pulo (1.343066ms)
+✔ dienes executa uppercut no ar mesmo segurando pulo (1.218208ms)
+✔ dienes executa super no ar mesmo segurando pulo (0.823222ms)
+✔ ruan executa punch no ar mesmo segurando pulo (2.35435ms)
+✔ ruan executa kick no ar mesmo segurando pulo (1.424788ms)
+✔ ruan executa special no ar mesmo segurando pulo (1.242835ms)
+✔ ruan executa uppercut no ar mesmo segurando pulo (1.255423ms)
+✔ ruan executa super no ar mesmo segurando pulo (0.848039ms)
+✔ soco aéreo recuperado permite poder no mesmo salto sem sobrepor golpes (1.873866ms)
+✔ meia-lua com soco dispara poder durante o salto (0.979417ms)
+✔ Marcos usa os poderes de agarrão contra rival aéreo próximo, sem pegar rival distante verticalmente (4.780099ms)
+✔ sequências reais de três golpes fortes já deixam os três rivais tontos, nos dois lados (90.688443ms)
+✔ normais mostram preparação, rotação, contato e recolhimento; colisões seguem cada desenho (5.248456ms)
+✔ impacto na cabeça, no corpo ou agachado escolhe sua própria reação e recupera em quatro poses (0.684372ms)
+✔ Combo Livre cobra meia barra, cancela no vazio e não permite fugir, pular nem defender (2.94373ms)
+✔ Combo Livre para ao receber golpe, na pausa e na troca de round; sua sequência tem limite (4.045161ms)
+✔ contra de defesa exige impacto bloqueado e barra, derruba perto e falha à distância (6.221463ms)
+✔ levantamento rápido exige um toque novo ao cair; agarrão e tontura impedem (5.218129ms)
+✔ impactos e efeitos têm limite, respeitam pausa e limpam no round (0.444691ms)
+✔ todos os clipes locais são WAV PCM válidos, curtos e com amostras audíveis (193.087798ms)
+Sons de combate prontos.
+✔ pré-carregamento prepara todos os clipes do elenco e reutiliza as mesmas promessas (64.013924ms)
+Sons de combate prontos.
+✔ cada poder usa seu clipe e esforços não interrompem sua fala (56.795607ms)
+Sons de combate prontos.
+✔ repetir o mesmo poder não reinicia a fala; outro poder substitui a fala anterior (20.712869ms)
+Sons de combate prontos.
+✔ desligar som ou pausar encerra clipes em reprodução (47.91896ms)
+✔ falha de download é informada e não cria uma voz de substituição (2.322903ms)
+✔ super de Marcelo conserva as mesmas amostras PCM do Bora NIT original (21.705105ms)
+✔ andar responde no próximo tick e aceleração, parada e inversão terminam em até 60 ms nos dois slots (19.000496ms)
+✔ segurar para trás perto de um golpe prepara a guarda antes do contato (4.241107ms)
+✔ um golpe que passou por cima não impede recuar durante o recolhimento (2.544428ms)
+✔ pulo e chute pressionados juntos produzem um único ataque aéreo após a preparação (2.654964ms)
+✔ salto neutro completa o arco em quarenta quadros sem prolongar a descida (9.032753ms)
+✔ segurar para cima repete o salto depois de pousar; cima e baixo juntos não pulam (11.137843ms)
+✔ rasteira acerta no alcance do pé e falha fora dele, espelhada e nas três forças (36.286536ms)
+✔ saltar antes da rasteira retira as pernas da faixa de contato (5.119361ms)
+✔ a rasteira não causa dano durante preparação ou recolhimento da perna (6.076554ms)
+✔ a perna estendida é vulnerável: rasteiras simultâneas podem se encontrar fora dos corpos (11.817993ms)
+✔ rasteira bloqueada deixa tempo para o oponente punir a recuperação (4.523613ms)
+✔ um golpe recebido agachado conserva a postura e a altura das áreas vulneráveis (1.358669ms)
+✔ soco comum que acerta alguém no ar interrompe o salto e provoca a queda (3.092014ms)
+✔ depois da reação ao golpe o recuo termina e ninguém continua deslizando (3.748994ms)
+✔ no canto o recuo que não cabe na vítima afasta quem bateu, nos dois lados (4.597233ms)
+✔ corpos não atravessam um ao outro nem as paredes quando os dois avançam (16.746521ms)
+✔ passar por cima e pousar troca o lado sem deslocar o corpo de uma vez (1.345199ms)
+✔ o antiaéreo conserva a recuperação depois de tocar o chão (3.241358ms)
+✔ ao terminar de levantar é possível receber um golpe, com proteção apenas contra agarrão (6.472541ms)
+✔ Dienes tem poses isoladas na altura do elenco e quatro falas PCM (6.282084ms)
+✔ giz e livros saem como projéteis distintos em luta (17.309606ms)
+✖ dois toques separados pelo neutro produzem passos diferentes de cada modalidade, nos dois lados (70.400646ms)
+✔ segurar uma direção, toques atrasados e comandos diagonais de poder não viram passos (2.266888ms)
+✔ passos respeitam paredes, corpos e vulnerabilidade; não atravessam o adversário (6.202355ms)
+✔ entrada pode terminar em ataque após sua preparação; recuo precisa terminar antes de atacar (9.982305ms)
+✔ passos têm o mesmo deslocamento a 30, 60 e 120 Hz e param durante a pausa (78.957536ms)
+✔ a silhueta física segue as novas poses de passo, recuo e tontura nos dois sentidos (2.455053ms)
+✖ as três sequências de quatro acertos deixam o adversário tonto depois da reação final, nos dois lados (59.027783ms)
+✔ bloqueios, golpes no vazio e uma sequência curta não provocam tontura (3.093456ms)
+✔ tontura termina sozinha ou mais cedo com comandos alternados; segurar e repetição no mesmo tick não aceleram (21.783699ms)
+✔ acertar um oponente tonto abre nova sequência e impede tontura repetida imediatamente (3.6135ms)
+✔ carga de tontura decai com intervalo sem acertos; nocaute e novo round limpam tontura e preservam super (1.480593ms)
+✔ punir preparação ou recuperação dá contra-ataque; acertar guarda ou alvo parado não (0.336767ms)
+✔ CPU busca pressão curta, recuo de boxe e distância de chutes em decisões diferentes (1.368294ms)
+✔ nomes e bordões preservam exatamente os dados fornecidos (1.585581ms)
+✔ três forças de soco têm preparação, dano e recuperação diferentes (32.057088ms)
+✔ baixo + chute executa rasteira, acerta pernas, derruba e permite levantar (12.327783ms)
+✔ rasteira atravessa a guarda alta mas é bloqueada pela guarda baixa (6.233311ms)
+✔ segurar para trás bloqueia sem botão de defesa e baixo + trás bloqueia rasteira (2.866714ms)
+✔ voadeira mantém trajetória, mostra ação aérea e acerta na descida (7.08169ms)
+✔ voadeira exige guarda alta; guarda baixa recebe dano (4.658025ms)
+✔ salto mantém direção e não sobrepõe ataques durante a recuperação (3.374139ms)
+✔ baixo + soco usa o soco agachado; jab do boxe passa sobre agachamento (6.578492ms)
+✔ meia-lua para frente + soco lança poder espelhado para os dois lados (8.686892ms)
+✔ frente, baixo, diagonal + soco faz o golpe ascendente e concede invulnerabilidade inicial (1.457558ms)
+✔ comando direcional vencido não dispara um poder acidentalmente (6.960308ms)
+✔ super exige barra cheia, aceita duas meias-luas e lança o enxame (15.45561ms)
+✔ poder normal não exige barra, limita um projétil e fala apenas no lançamento (4.116568ms)
+✔ cada poder emite sua fala em português e conserva o bordão no super (7.630699ms)
+✔ soco confirmado cancela em poder; soco no vazio precisa recuperar (5.355958ms)
+✔ não permite cancelar normal em outro normal durante impacto (2.756077ms)
+✔ agarrão de perto ignora defesa e derruba; agarrão distante falha (2.478268ms)
+✔ projéteis opostos colidem e se anulam (2.671479ms)
+✔ varredura registra projétil rápido sem atravessar o alvo (0.519283ms)
+✔ super acerta em combo e a contagem reinicia depois da recuperação (20.549983ms)
+✔ corpos respeitam paredes, saltos cruzam por cima e a direção vira ao pousar (15.182158ms)
+✔ controle no fim da recuperação é aproveitado; não repete ao segurar ataque (4.203029ms)
+✔ ataques simultâneos trocam dano; pausa congela a simulação (0.763611ms)
+✔ melhor de três mantém placar e encerra após duas vitórias (5.17145ms)
+✔ tempo esgotado decide por vida e empate não soma vitória (0.307153ms)
+✔ carga parcial e completa atravessam os rounds 2 e 3, após KO, tempo e empate (134.301518ms)
+✔ o super guardado pode ser usado no próximo round e não recupera carga gasta (14.234689ms)
+✔ nova luta ou revanche começa com barras vazias em CPU e em dois jogadores (0.792846ms)
+✔ sequência de salto e poder produz o mesmo resultado em 30, 60 e 120 Hz (42.944577ms)
+✔ API tolera ausência, índices vazios e dispositivos desconectados (1.929199ms)
+✔ XInput usa botões padrão e D-pad digital (0.421456ms)
+✔ controle USB genérico usa eixos 6/7 do direcional (0.217909ms)
+✔ mapeamento persiste por dispositivo sem alterar outro controle (0.584622ms)
+✔ botão remapeado funciona em um dispositivo USB de dez botões (0.204789ms)
+✔ leitura vazia momentânea mantém conexão visual sem manter comandos pressionados (0.701278ms)
+✔ queda temporária de P1 não desloca P2 para a primeira posição (0.271239ms)
+✔ Gelton tem estilo próprio, ginga de quatro poses e seleção nos dois slots (13.428632ms)
+✔ rasteira em capoeira exige defesa baixa; armada e aú são poses completas distintas (10.748ms)
+✔ colisões de Gelton são espelhadas e abaixam junto com a esquiva desenhada (0.747427ms)
+✔ pincelada e aú funcionam sem barra; Roda das Artes custa 100 e emite cinco ondas cromáticas (33.821017ms)
+✔ Gelton joga contra todos os personagens sem perfis ausentes ou números inválidos (478.732882ms)
+✔ os seis confrontos do elenco funcionam em CPU e em dois jogadores (391.107192ms)
+✔ Gustavo usa os nomes e as falas dos poderes de Química nos dois lados (23.365949ms)
+✔ a rasteira de Gustavo derruba ou é defendida embaixo, espelhada e nas três forças (32.153253ms)
+✔ as poses específicas e a caminhada de Gustavo têm áreas válidas, medidas na arte (1.050865ms)
+✔ teclado captura baixo antes do chute e não perde a rasteira (10.844425ms)
+✔ comando direcional do teclado dispara poder sem depender de um frame entre teclas (8.198034ms)
+✔ os seis botões escolhem força e segurar a tecla não repete ataques (16.473085ms)
+✔ toque permite agachar e chutar simultaneamente com dedos distintos (1.317547ms)
+✔ gamepad aplica direcional antes da borda do botão de ataque (2.923739ms)
+✔ enxame de Marcelo entra por Z, I, toque e L3, com barra completa sem substituir os botões de defesa (2.73177ms)
+✔ meia-lua para trás espelhada aciona o enxame com barra completa nos dois lados (1.733414ms)
+✔ rasteira continua sendo rasteira quando baixo é solto antes do próximo frame (1.341744ms)
+✔ botões de toque leve e forte fornecem as forças necessárias aos combos (12.28582ms)
+✔ Combo Livre entra por teclado, toque e gamepad sem repetir o custo ao segurar (1.235874ms)
+✔ atalhos dos dois jogadores cancelam somente o impacto bloqueado, por teclado e toque (1.283606ms)
+✔ modo local recebe dois joysticks independentes e atalhos de poder com LT (4.898188ms)
+✔ História usa quatro direções e salto separado nos dois teclados (21.037908ms)
+✔ História usa A / × para saltar, sem soltar chute junto, e direcional para profundidade (5.748831ms)
+✔ aluno 301 tem 32 poses calibradas e pode ser selecionado online sem remover professores (1.223245ms)
+✔ João preserva a altura e reduz a largura visual e a área de contato na mesma proporção (6.653114ms)
+✔ Super Soco acerta nos dois lados, é defendível e erra fora do alcance sem projéteis (37.653978ms)
+✔ Rolamento Selvagem é uma investida aérea nos dois lados e intercepta alvo que salta (19.750717ms)
+✔ Curto-Circuito 301 exige barra cheia, derruba uma vez e permite defesa ou afastamento (42.709673ms)
+✖ trocas repetidas de elenco liberam arte antiga e preservam os quatro personagens recentes (22.130557ms)
+✔ Khauãny integra os dois modos com atlas proporcionais e quatro falas PCM (17.351048ms)
+✔ poder lança garfo e super emite cinco garfos, mantendo pose própria (27.206653ms)
+✔ atlas preparados preservam todos os quadros, escalas e retângulos sem sobreposição (45.075691ms)
+✔ carregamento não lê pixels nem cria centenas de recortes para mostrar o personagem (19.68626ms)
+✔ áudio de uma luta não baixa falas dos quatro professores ausentes e reutiliza clipes (37.105561ms)
+✔ marcelo, P1: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (26.666728ms)
+✔ marcelo, P2: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (6.37908ms)
+✔ rafael, P1: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (13.267018ms)
+✔ rafael, P2: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (5.183578ms)
+✔ gustavo, P1: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (6.250897ms)
+✔ gustavo, P2: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (5.275526ms)
+✔ tais, P1: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (5.225891ms)
+✔ tais, P2: apoios fixos e pernas sem alongamento artificial ao avançar/recuar (5.773467ms)
+✔ idle respira, transfere peso e move guarda sem alterar a posição global ou os apoios (10.61559ms)
+✔ passadas forward/backward têm fases crescentes, apoio e recuperação próprios (1.234471ms)
+✔ MOVE_START e MOVE_STOP fazem parte da transição responsiva de ambos os slots (1.607985ms)
+✔ interpolação mantém o apoio em coordenadas do mundo e não modifica a simulação (3.717517ms)
+✔ máquina de movimento dá prioridade a hit, block, stun, knockdown, get-up e fases aéreas (0.203677ms)
+✔ ataque após passada tem startup, active, recovery e conserva o pé de apoio durante o avanço (35.979042ms)
+✔ pushboxes param a passada no canto e entre dois lutadores simultaneamente (2.278556ms)
+✔ dt extremo é limitado e não teletransporta nem acelera a animação após perda de foco (0.859636ms)
+✔ escala de História rege adulto, mobiliário, alcance, pushboxes, projéteis e salto juntos (16.610672ms)
+✔ profundidade usa a posição dos pés, com apoios estáveis em deslocamento diagonal (2.110443ms)
+✔ cadeira fica nas duas mãos ao virar e é solta somente após o startup do arremesso (1.952135ms)
+✔ parceiro revivido retém escala, profundidade e apoios da campanha (4.323831ms)
+✔ reposicionar no mundo renova apoios sem arrastar a pose para o ponto antigo (0.681097ms)
+✔ virar troca pé dianteiro/traseiro e mantém os contatos existentes no mundo (0.200863ms)
+✔ todos os equipamentos têm aproximação, preparação, contato, recuperação e derrota finitos (319.306115ms)
+✔ carga dos chefes bípedes usa passada articulada durante o avanço comprometido (0.807318ms)
+✔ golpe com cadeira preserva as mãos ocupadas e só causa dano durante os frames ativos (13.157883ms)
+✔ boxe inicia avanço pelo pé dianteiro e recuo pelo traseiro, sem cruzar a base (7.55242ms)
+✔ silhueta em câmera lenta: quadril, ambas as coxas, tronco, ombros e braços variam com o worldX congelado (24.422613ms)
+✔ História compartilha a pose articulada com 1×1 para herói e exoesqueleto bípede (7.243754ms)
+✔ contato e soltura do pé não reiniciam o ciclo nem causam salto do centro de massa (15.016578ms)
+✔ Luciana integra a seleção, a história e as 32 poses calibradas (8.067447ms)
+✔ pose de nocaute exclui o tênis solto e permanece inteira nas bordas (4.438655ms)
+✔ a seleção e os três poderes têm falas locais da mesma voz (5.14205ms)
+✔ os três comandos acionam voz, efeito e dano nos dois sentidos (165.761014ms)
+✔ o acento ascendente sobe com a luva e mantém o golpe de curta distância (4.139593ms)
+✔ o botão especial da campanha lança palavra ou frase conforme a barra (47.765578ms)
+✔ Marcelino possui 32 poses e perfis completos de Muay Thai sem alterar o elenco anterior (1.20655ms)
+✔ cotovelo, circular, low kick e joelhada escolhem poses distintas no contato (3.733921ms)
+✔ recuo não produz índice negativo; passos e guarda preservam um corpo completo (3.215449ms)
+✔ áreas vulneráveis acompanham pose, esquiva e espelhamento nos dois lados (2.529294ms)
+✔ low kick exige defesa baixa e somente o forte provoca derrubada (38.504762ms)
+✔ impulso atinge à distância, joelhada lança o rival e super exige barra e lança cinco ondas (38.734368ms)
+✔ Marcelino funciona como P1/P2 e CPU contra os outros quatro professores (726.038062ms)
+✔ Marcos tem 32 poses próprias e silhuetas de Judô finitas e completas (6.160661ms)
+✔ Sequestro de Sessão vence guarda alta e baixa nos dois lados e não cria projéteis (23.292358ms)
+✔ agarrão especial erra contra adversário distante e contra alvo aéreo (3.497124ms)
+✔ agarrões de Marcos preservam o avanço quando o jogador segura para frente (13.051263ms)
+✔ Pilha Reversa projeta alvo aéreo mantendo o judoca no chão (1.661185ms)
+✔ Kernel Panic exige barra cheia e aplica uma projeção única, com recuperação punível (7.458959ms)
+✔ Judô joga contra todos os professores em P1 e P2, inclusive CPU (327.813105ms)
+✔ Mostafa aproxima em X/Z sem ganhar velocidade diagonal e percorre quadros de corrida (2.337625ms)
+✔ Mostafa alterna atacante e cerco, e coop permite um atacante por jogador (0.466644ms)
+✔ soco inimigo só causa contato no quadro final e queda termina sem repetir (1.508996ms)
+✔ restaurar o cerco via JSON preserva a próxima simulação e animação dos dois pares (44.341654ms)
+✔ zona morta da câmera respeita parceiro atrasado e só avança quando cruza limite (0.28503ms)
+✔ atlas respeita células originais, sem incluir poses da linha seguinte ou padding BMP (31.314627ms)
+✔ comando local inicia no próximo frame mesmo com 300 ms de rede (66.679724ms)
+✔ rollback converge com jitter, pacotes fora de ordem, defesas e ataques dos seis professores (2468.274325ms)
+✔ supers simultâneos e enxame conservam barras, projéteis e vida sob atraso (111.170623ms)
+✔ histórico é limitado e pausa corta comandos pendentes antes da retomada (69.336911ms)
+✔ broadcast agrupa frames sem exceder limite do receptor ou saturar a sala (54.508897ms)
+✔ salas normalizam códigos e snapshots mantêm os protótipos de Fighter (17.959592ms)
+✔ dois clientes independentes entram por código e compartilham golpes, vida e eventos (292.332254ms)
+✔ busca pública reúne dois jogadores e libera a fila para a próxima dupla (4.817665ms)
+✔ pausa é compartilhada; resultado devolve os dois à seleção na mesma sala; saída encerra a sessão (11.571142ms)
+✔ sala pública continua ocupada após o resultado e só é removida quando alguém sai (2.96393ms)
+✔ pacotes duplicados e golpes inválidos não alteram os comandos já confirmados (125.458902ms)
+✔ entrar na sala permanece na seleção sem carregar ou iniciar a luta; escolhas sincronizam antes de duas confirmações (2.06202ms)
+✔ desconfirmar libera a troca e mensagens atrasadas não restauram personagens antigos (3.113807ms)
+✔ a sala permanece aberta durante a seleção e a desconexão limpa as confirmações (43.788289ms)
+✔ carregamento de um cliente lento aguarda ambos sem iniciar com personagens de reserva (2.364246ms)
+✔ escolha feita pelo visitante durante a conexão prevalece sobre os metadados antigos (1.686603ms)
+✔ duas escolhas rápidas com confirmação preservam a última e ignoram start duplicado (2.113728ms)
+✔ a sala pública acompanha criação, adversário, personagem e encerramento sem iniciar luta na seleção (1.168142ms)
+✔ pausa de vinte segundos mantém a sala e a retomada não expulsa jogadores (2.568763ms)
+✔ o ciclo visual usa oito quadros completos, com escala uniforme, em vez da deformação (31.549261ms)
+✔ a malha da ginga usa as dimensões e o eixo dos sprites que são desenhados (4.532395ms)
+✔ as personagens novas têm apoios alternados e não esticam as pernas nos dois sentidos (110.318228ms)
+✔ golpes e poderes acertam, geram efeitos e recuperam a posição nos dois lados (289.306421ms)
+✔ Dienes se levanta, pousa e prepara o salto de pé; a pose caída fica só no nocaute (0.415877ms)
+✔ Khauãny mantém duas pernas apoiadas na rasteira e usa o chute horizontal no ar (0.892807ms)
+✔ Luciana usa a pose de levantar, não a de cair para trás (0.162756ms)
+✔ os chutes de Luciana e Khauãny preservam a guarda e os dois pés na preparação (6.090675ms)
+✔ Dienes usa desenhos compatíveis com seus golpes e não mostra reação ao agarrar (0.315546ms)
+✔ Khauãny recebe o final alto do combo do Gustavo nos dois lados (3.22946ms)
+✔ na história, poderes das personagens novas atingem adversários e não perdem a ginga (50.434874ms)
+✔ relay sincroniza personagens, confirmação, início e saída sem WebRTC (17.068893ms)
+✔ relay mantém a primeira dupla quando uma terceira pessoa tenta entrar (2.550587ms)
+✔ HTML, catálogo e módulos publicados pertencem à mesma versão sem importar código antigo (40.187629ms)
+✔ cabelo acima da célula de vitória é preservado sem incorporar a pose vizinha (152.285492ms)
+✔ sprite isolado de aú conserva cabeça, mãos e pés no mesmo recorte (31.515139ms)
+✔ caminhada e golpe desenham um quadro inteiro sem recortar ou deformar a silhueta (0.474505ms)
+✔ registro lento seguido de saída remove a sala depois da criação, sem publicar o segredo (22.322246ms)
+✔ erros não interrompem a fila de encerramento nem são apresentados como lista vazia (7.341782ms)
+✔ fetch padrão conserva o contexto Window exigido pelo navegador (1.320281ms)
+✖ todos os personagens têm quadros e colisões válidos em cada fase dos golpes, nos dois lados (58.962726ms)
+✔ recortes reais do João excluem poses vizinhas e conservam o punho da vitória (640.173044ms)
+✔ Ruan mantém a anatomia ao agachar e atacar no ar; a rasteira não amplia o corpo (1.182714ms)
+✔ publicação conserva a versão dos sprites e remove somente versões de imports (0.916633ms)
+✔ estrelas de atordoamento acompanham o topo real de cada personagem (1.976922ms)
+✔ recorte conserva braço fora da célula e exclui mão da pose vizinha (555.695163ms)
+✔ Ruan tem Karatê próprio e é aceito no elenco online (13.149592ms)
+✔ Pulso de Choque é direcional nos dois lados e não exige barra (56.663988ms)
+✔ Kata lança três ondas e só a última derruba (11.784713ms)
+✔ a cabeça da Tais também aparece nas poses com brilho dos poderes (1.590279ms)
+✔ enxame exige 100% de barra; atalho drone também consome a barra completa (74.548191ms)
+✔ seis drones voam acima da arena e disparam seis lasers diagonais, nos dois lados e contra todos os rivais (116.786359ms)
+✔ todos os disparos podem ser defendidos alto ou baixo e não reabastecem o super (45.033087ms)
+✔ enxame mira na altura do corpo em pé, agachado e no ar (24.20215ms)
+✔ invulnerabilidade e queda não são atravessadas pelos lasers; drones expiram se não há alvo (32.523371ms)
+✔ mira travada permite evitar um pulso com deslocamento posterior (13.054178ms)
+✔ pausa e hitstop congelam o enxame; troca de round limpa drones e lasers (1.025576ms)
+✔ o enxame continua autônomo quando Marcelo recebe um golpe e não pode ser empilhado (11.686886ms)
+✔ ataque normal e firewall do Marcelo permanecem; Gelton, Rafael e Gustavo não invocam drones (10.605685ms)
+✔ teclas Z/I, L3 e botão de toque continuam ligadas ao atalho do super de Marcelo (27.99459ms)
+✔ a névoa real atinge uma vez, anuncia sua fala e deixa tonto em um único acerto nos dois lados (144.193337ms)
+✔ guarda alta ou baixa bloqueia a fumaça sem tontura nem acúmulo de stun (16.181934ms)
+✔ a fumaça respeita invulnerabilidade e pode ser evitada saltando por cima dela (15.85357ms)
+✔ outro golpe interrompe a tontura química e a proteção impede renovar a trava com outra fumaça (6.240472ms)
+✔ a proteção natural após a névoa expirar permite receber dano sem novo atordoamento imediato (10.629511ms)
+✔ pausa mantém o tempo da névoa e troca de round limpa o status preservando as barras (1.499181ms)
+✔ um nocaute por fumaça termina o round sem iniciar tontura (1.670039ms)
+✔ vapor de impacto é limitado e desaparece, inclusive ao trocar de round (0.462828ms)
+✔ os oito lutadores entram e reiniciam solo com apenas um jogador ativo (25.844843ms)
+✔ andar na profundidade não salta nem agacha e o salto preserva a faixa do chão (26.807911ms)
+✔ soco e projétil só atingem inimigos alinhados na profundidade (29.113027ms)
+✔ inspetor mantém a direção anunciada, permite esquiva e recupera depois da carga e dos golpes (25.987984ms)
+✔ ameaças desativam um jogador parado e defender não é invulnerabilidade permanente (93.29901ms)
+✔ câmera avança sem salto e correr avança mais que andar (4.922059ms)
+✔ snapshot rejeita profundidade inválida e preserva professor e aluno no cooperativo (3.43433ms)
+✔ rollback transmite quatro direções, salto e posição dos projéteis na profundidade (349.801678ms)
+✔ soco pega, transporta e arremessa cadeira sem atingir o parceiro (15.222718ms)
+✔ alvo em alcance recebe soco e não perde prioridade para objeto (3.431175ms)
+✔ objeto transportado é sincronizado e cai ao sofrer dano (1.963371ms)
+✔ botão especial usa poder e passa a super com barra cheia para todo elenco (5.118269ms)
+✔ arranque e parada não saltam posição; profundidade anima uma passada real (2.501182ms)
+✔ relay cooperativo confirma professores e compartilha diálogos, ondas, golpes, pausa e nova tentativa (510.432855ms)
+✔ sala história não aceita jogadores do versus e aceita alunos na equipe (1.894748ms)
+✔ diretório registra modo e protocolo sem segredo e uma resposta antiga não repõe salas do outro modo (3.698923ms)
+✔ camera smoothing is frame-rate independent and frozen while paused (1.150755ms)
+✔ own enemy animation has anticipation, contact, recoil and final death without rescaling (0.651853ms)
+✔ render interpolation retains school profile and does not mutate simulation (0.708308ms)
+✔ depth orders feet without changing actor or collision size (0.179942ms)
+✖ current renderer never loads reference-game characters (8.898741ms)
+✔ marcelo: chute contextual quebra mesa e cadeira (25.650364ms)
+✔ rafael: chute contextual quebra mesa e cadeira (15.926881ms)
+✔ gustavo: chute contextual quebra mesa e cadeira (6.905504ms)
+✔ gelton: chute contextual quebra mesa e cadeira (3.272355ms)
+✔ marcelino: chute contextual quebra mesa e cadeira (5.720067ms)
+✔ marcos: chute contextual quebra mesa e cadeira (6.02772ms)
+✔ joao: chute contextual quebra mesa e cadeira (9.579808ms)
+✔ tais: chute contextual quebra mesa e cadeira (3.218023ms)
+✔ luciana: chute contextual quebra mesa e cadeira (3.656104ms)
+✔ khauany: chute contextual quebra mesa e cadeira (3.296132ms)
+✔ dienes: chute contextual quebra mesa e cadeira (9.084741ms)
+✔ ruan: chute contextual quebra mesa e cadeira (4.356651ms)
+✔ serras giram independentemente e braços avançam no contato (0.913658ms)
+✔ móveis têm dimensões de colisão iguais às dimensões desenhadas (0.13917ms)
+✔ móveis do pátio ficam na área da cantina do panorama (0.761929ms)
+✔ história tem quatro atos, oito lutadores e versus mantém todos os personagens (8.0697ms)
+✔ narrativa e pausa não consomem o turno e a tentativa reinicia o checkpoint do ato (9.374719ms)
+✔ onda bloqueia avanço, desaparece depois da vitória e camera permite atravessar o bloco (82.284343ms)
+✔ cooperação não causa dano ao parceiro; soco e poder acertam os robôs (24.130943ms)
+✔ poderes e socos no ar funcionam para cada professor em campanha (1.649408ms)
+✔ mesa e cadeira arremessadas atingem inimigos sem ferir o parceiro (4.404583ms)
+✔ máquina lança lata explosiva quando atingida e só aceita o próximo golpe depois do intervalo (0.389468ms)
+✔ ácido atinge quem fica no chão e um salto atravessa a área sem dano (1.606182ms)
+✔ estante anuncia a queda e pode ferir jogador e inimigo na área (16.505743ms)
+✔ chefes usam duelo individual, permitem troca segura e a reserva assume após KO (0.927249ms)
+✔ cada padrão de chefe é anunciado antes do ataque e bloqueio frontal protege o jogador (21.063477ms)
+✔ A.U.L.A. passa ao exoesqueleto e a campanha só termina após derrotar as duas fases (2.063943ms)
+✔ todos os atos exigem três ondas e um chefe antes de liberar o próximo bloco (5.063557ms)
+✔ snapshot online preserva protótipos, inimigos, objetos e semente e rejeita campanha inválida (7.137844ms)
+✔ rollback do cooperativo restaura a onda e os projéteis sem duplicar inimigos ou pontuação (282.234415ms)
+✔ Névoa Atômica atordoa robôs por 1,9 s e não faz um drone flutuante cair por gravidade (1.840496ms)
+✔ uma atualização longa para imediatamente no fim do turno e emite derrota só uma vez (0.275295ms)
+✔ cada modalidade tem alcance e tempo próprios; boxe usa apenas punhos em todos os contextos (7.357396ms)
+✔ as doze sequências completas acertam, escalam o dano e mostram o nome, nos dois lados e contra todos os rivais (517.383077ms)
+✔ uma sequência bloqueada pode encadear, mas não vira contador de acertos nem atravessa a defesa (7.294271ms)
+✔ golpe no vazio, comando fora da sequência e janela vencida não cancelam a recuperação (1.330236ms)
+✔ sequências têm final e não aceitam loops de jab ou cancelamento aéreo (0.986819ms)
+✔ gancho no corpo do boxe não derruba e pode ser bloqueado alto ou baixo (2.191916ms)
+✔ o uppercut normal do boxe finaliza a sequência sem consumir super nem emitir poder (3.77931ms)
+✔ guarda e golpes de estilo usam as mesmas silhuetas vulneráveis nos dois sentidos (1.319931ms)
+✔ CPU usa os mesmos combos e reset de round limpa só a sequência e mantém a carga (0.966778ms)
+✔ 1×1: marcelo special, entrada direta, usa combate de versus (58.290241ms)
+✔ 1×1: marcelo special, após campanha, usa combate de versus (24.358357ms)
+✔ 1×1: marcelo super, entrada direta, usa combate de versus (39.429786ms)
+✔ 1×1: marcelo super, após campanha, usa combate de versus (25.863686ms)
+✔ 1×1: rafael special, entrada direta, usa combate de versus (16.950674ms)
+✔ 1×1: rafael special, após campanha, usa combate de versus (14.822585ms)
+✔ 1×1: rafael super, entrada direta, usa combate de versus (16.607687ms)
+✔ 1×1: rafael super, após campanha, usa combate de versus (16.578213ms)
+✔ 1×1: gustavo special, entrada direta, usa combate de versus (22.616018ms)
+✔ 1×1: gustavo special, após campanha, usa combate de versus (13.660372ms)
+✔ 1×1: gustavo super, entrada direta, usa combate de versus (10.532485ms)
+✔ 1×1: gustavo super, após campanha, usa combate de versus (7.609566ms)
+✔ 1×1: gelton special, entrada direta, usa combate de versus (15.679897ms)
+✔ 1×1: gelton special, após campanha, usa combate de versus (10.694479ms)
+✔ 1×1: gelton super, entrada direta, usa combate de versus (13.812181ms)
+✔ 1×1: gelton super, após campanha, usa combate de versus (17.696839ms)
+✔ 1×1: marcelino special, entrada direta, usa combate de versus (15.74745ms)
+✔ 1×1: marcelino special, após campanha, usa combate de versus (13.885541ms)
+✔ 1×1: marcelino super, entrada direta, usa combate de versus (9.539447ms)
+✔ 1×1: marcelino super, após campanha, usa combate de versus (10.08525ms)
+✔ 1×1: marcos special, entrada direta, usa combate de versus (17.875469ms)
+✔ 1×1: marcos special, após campanha, usa combate de versus (11.652294ms)
+✔ 1×1: marcos super, entrada direta, usa combate de versus (10.309478ms)
+✔ 1×1: marcos super, após campanha, usa combate de versus (9.217051ms)
+✔ 1×1: joao special, entrada direta, usa combate de versus (15.685801ms)
+✔ 1×1: joao special, após campanha, usa combate de versus (10.020973ms)
+✔ 1×1: joao super, entrada direta, usa combate de versus (8.060606ms)
+✔ 1×1: joao super, após campanha, usa combate de versus (10.057639ms)
+✔ 1×1: tais special, entrada direta, usa combate de versus (10.415037ms)
+✔ 1×1: tais special, após campanha, usa combate de versus (8.728414ms)
+✔ 1×1: tais super, entrada direta, usa combate de versus (7.275733ms)
+✔ 1×1: tais super, após campanha, usa combate de versus (7.093127ms)
+✔ 1×1: luciana special, entrada direta, usa combate de versus (9.259836ms)
+✔ 1×1: luciana special, após campanha, usa combate de versus (8.060326ms)
+✔ 1×1: luciana super, entrada direta, usa combate de versus (6.463568ms)
+✔ 1×1: luciana super, após campanha, usa combate de versus (6.235294ms)
+✔ 1×1: khauany special, entrada direta, usa combate de versus (8.379178ms)
+✔ 1×1: khauany special, após campanha, usa combate de versus (7.7116ms)
+✔ 1×1: khauany super, entrada direta, usa combate de versus (6.243216ms)
+✔ 1×1: khauany super, após campanha, usa combate de versus (7.574624ms)
+✔ 1×1: dienes special, entrada direta, usa combate de versus (8.666741ms)
+✔ 1×1: dienes special, após campanha, usa combate de versus (7.818111ms)
+✔ 1×1: dienes super, entrada direta, usa combate de versus (6.713375ms)
+✔ 1×1: dienes super, após campanha, usa combate de versus (6.446281ms)
+✔ 1×1: ruan special, entrada direta, usa combate de versus (8.245746ms)
+✔ 1×1: ruan special, após campanha, usa combate de versus (8.133217ms)
+✔ 1×1: ruan super, entrada direta, usa combate de versus (6.556689ms)
+✔ 1×1: ruan super, após campanha, usa combate de versus (6.68364ms)
+✔ a passada usa distância real na aceleração, no recuo e na curta frenagem (13.468773ms)
+✔ o ciclo não corre contra paredes nem contra um adversário encostado no canto (9.166575ms)
+✔ poses completas avançam e invertem pela distância, sem variar quando o corpo para (0.191499ms)
+✔ cada pose completa usa as mesmas áreas vulneráveis no desenho e no combate (2.220629ms)
+✔ carga cheia avisa uma vez por carga, em acertos e bloqueios dos dois slots (0.892887ms)
+✔ super sem barra não gasta energia nem inicia efeito ou congelamento (3.497705ms)
+✔ o super congela ambos os lutadores, projéteis e cronômetro antes do lançamento (10.714829ms)
+✔ dois supers no mesmo tick gastam as barras uma vez e compartilham a pausa (0.295175ms)
+✔ efeitos avançam durante a pausa do super, param no pause e limpam ao mudar de round (0.926918ms)
+✔ só o impacto de super recebe o efeito especial de tela e ele se encerra (0.247123ms)
+ℹ tests 425
+ℹ suites 0
+ℹ pass 420
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3807.727507
+
+✖ failing tests:
+
+test at tests/dynamics.test.js:29:1
+✖ dois toques separados pelo neutro produzem passos diferentes de cada modalidade, nos dois lados (70.400646ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'motion' !== 'base'
+
+      at TestContext.<anonymous> (file:///workspace/scratch/130f15ce0fe4/game/tests/dynamics.test.js:32:63)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'motion',
+    expected: 'base',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/dynamics.test.js:92:1
+✖ as três sequências de quatro acertos deixam o adversário tonto depois da reação final, nos dois lados (59.027783ms)
+  TypeError: Cannot read properties of undefined (reading 'steps')
+      at bigCombo (file:///workspace/scratch/130f15ce0fe4/game/tests/dynamics.test.js:22:30)
+      at TestContext.<anonymous> (file:///workspace/scratch/130f15ce0fe4/game/tests/dynamics.test.js:94:26)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests/joao.test.js:56:1
+✖ trocas repetidas de elenco liberam arte antiga e preservam os quatro personagens recentes (22.130557ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(r.sheets.marcelo&&r.sheets.luciana)
+
+      at TestContext.<anonymous> (file:///workspace/scratch/130f15ce0fe4/game/tests/joao.test.js:61:93)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/roster-art.test.js:8:1
+✖ todos os personagens têm quadros e colisões válidos em cada fase dos golpes, nos dois lados (58.962726ms)
+  AssertionError [ERR_ASSERTION]: luciana walk 0: {"atlas":"motion","index":4}
+      at TestContext.<anonymous> (file:///workspace/scratch/130f15ce0fe4/game/tests/roster-art.test.js:16:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/story-presentation.test.js:22:1
+✖ current renderer never loads reference-game characters (8.898741ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /data-experience="story"/. Input:
+
+  '<!doctype html>\n' +
+    '<html lang="pt-BR">\n' +
+    '<head>\n' +
+    '  <meta charset="utf-8">\n' +
+    '  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+    '  <meta name="theme-color" content="#111719">\n' +
+    '  <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">\n' +
+    '  <title>Street Vicente Fighter</title>\n' +
+    '  <link rel="icon" href="favicon.svg" type="image/svg+xml">\n' +
+    '  <link rel="stylesheet" href="releases/v4.6.20/style.css">\n' +
+    '  <script type="module" src="releases/v4.6.20/main.js"></script>\n' +
+    '</head>\n' +
+    '<body>\n' +
+    '  <main class="cabinet" data-game-version="4.6.20">\n' +
+    '    <div id="game-shell" class="game-shell">\n' +
+    '    <header class="topbar">\n' +
+    '      <a class="wordmark" id="home-link" href="./" aria-label="Voltar ao menu de Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>\n' +
+    '      <button id="menu-home" class="menu-home utility-button" type="button" hidden>Menu principal</button>\n' +
+    '      <div class="utility">\n' +
+    '        <button id="sound" class="utility-button" type="button" aria-pressed="true" title="Ativar ou desativar áudio">Áudio <span id="sound-state">ON</span></button>\n' +
+    '        <button id="gamepad-config" class="utility-button" type="button" aria-controls="gamepad-panel" aria-expanded="false">🎮 Controle USB</button>\n' +
+    '        <button id="fullscreen" class="utility-button" type="button">Tela cheia</button>\n' +
+    '        <button id="pause" class="utility-button" type="button" disabled>Pausar</button>\n' +
+    '      </div>\n' +
+    '    </header>\n' +
+    '\n' +
+    '    <section id="gamepad-panel" class="gamepad-panel" hidden aria-label="Configuração de controle USB">\n' +
+    '      <h2>Controle USB</h2>\n' +
+    '      <p id="gamepad-info" role="status">Conecte o controle e pressione um botão para ativá-lo no navegador.</p>\n' +
+    '      <p id="gamepad-live" class="gamepad-live">Nenhuma entrada detectada</p>\n' +
+    '      <p id="gamepad-diagnostic" class="gamepad-help" role="status"></p>\n' +
+    '      <p class="gamepad-help">Se um comando estiver incorreto, selecione a ação e aperte o botão correspondente no controle. Os ajustes ficam salvos neste navegador.</p>\n' +
+    '      <div class="gamepad-binds">\n' +
+    '        <button type="button" data-pad-bind="jump">Pular <strong data-pad-number="jump">0</strong></button>\n' +
+    '        <button type="button" data-pad-bind="kick">Chute <strong data-pad-number="kick">1</strong></button>\n' +
+    '        <button type="button" data-pad-bind="punch">Soco <strong data-pad-number="punch">2</strong></button>\n' +
+    '        <button type="button" data-pad-bind="special">Poder <strong data-pad-number="special">3</strong></button>\n' +
+    '        <button type="button" data-pad-bind="block">Defender <strong data-pad-number="block">4</strong></button>\n' +
+    '        <button type="button" data-pad-bind="pause">Start / Pausar <strong data-pad-number="pause">9</strong></button>\n' +
+    '      </div>\n' +
+    '      <p id="gamepad-feedback" role="status">A: confirmar · B: voltar · direcional: navegar</p>\n' +
+    '      <div class="gamepad-footer">\n' +
+    '        <button id="gamepad-reset" class="secondary-button" type="button">Restaurar botões</button>\n' +
+    '        <button id="gamepad-close" class="primary-button" type="button">Fechar</button>\n' +
+    '      </div>\n' +
+    '    </section>\n' +
+    '    <section id="arena" class="arena" aria-label="Arena de luta">\n' +
+    '      <canvas tabindex="-1" id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>\n' +
+    '      <section id="menu-screen" class="screen main-menu" aria-label="Menu principal">\n' +
+    '        <div class="menu-title"><span class="menu-kicker">ESCOLA ESTADUAL VICENTE DUTRA · ARCADE</span><h1><span>STREET</span><span>VICENTE</span><strong>FIGHTER</strong></h1><p>Escolha seu próximo desafio</p></div>\n' +
+    '        <nav class="menu-options" aria-label="Modos de jogo">\n' +
+    '          <button type="button" data-menu="versus"><span>01</span> VERSUS BATTLE <small>Contra a máquina ou no mesmo PC</small></button>\n' +
+    '          <button type="button" data-menu="story"><span>02</span> MODO HISTÓRIA <small>Operação Resgate do NIT</small></button>\n' +
+    '          <button type="button" data-menu="online-versus"><span>03</span> ONLINE 1 V.S. 1 <small>Crie ou encontre uma sala</small></button>\n' +
+    '          <button type="button" data-menu="online-story"><span>04</span> ONLINE HISTÓRIA <small>Jogue a campanha em dupla</small></button>\n' +
+    '        </nav>\n' +
+    '        <p class="menu-footer">PROFESSORES · ALUNOS · VICENTE DUTRA</p>\n' +
+    '      </section>\n' +
+    '      <section id="mode-screen" class="screen mode-screen" hidden aria-label="Escolher tipo de partida">\n' +
+    '        <button id="mode-back" class="screen-back" type="button">← Menu principal</button>\n' +
+    '        <div class="route-heading"><span class="eyebrow">ESCOLHA A PARTIDA</span><h2 id="mode-title">VERSUS BATTLE</h2><p id="mode-description"></p></div>\n' +
+    '        <div class="mode-choices"><button type="button" data-mode-choice="cpu"><span>01</span><strong id="mode-cpu-title">CONTRA A MÁQUINA</strong><small id="mode-cpu-description">Enfrente um lutador controlado pelo jogo.</small></button><button type="button" data-mode-choice="local"><span>02</span><strong id="mode-local-title">1 V.S. 1 NO MESMO PC</strong><small id="mode-local-description">Dois jogadores, dois controles ou teclados.</small></button></div>\n' +
+    '      </section>\n' +
+    '      <section id="room-screen" class="screen room-screen" hidden aria-label="Criar ou encontrar sala online">\n' +
+    '        <button id="room-back" class="screen-back" type="button">← Menu principal</button>\n' +
+    '        <div class="route-heading"><span class="eyebrow">MULTIPLAYER ONLINE</span><h2 id="room-title">ONLINE 1 V.S. 1</h2><p id="room-description">Crie uma sala para convidar alguém ou encontre uma partida. A seleção de personagens aparece quando os dois jogadores estiverem conectados.</p></div>\n' +
+    '        <div class="room-flow">\n' +
+    '          <div id="online-panel" class="online-panel">\n' +
+    '            <button id="create-room" class="secondary-button" type="button">Criar sala</button>\n' +
+    '            <label for="room-code">Código da sala<input id="room-code" maxlength="10" placeholder="Ex.: AB23CD45" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>\n' +
+    '            <button id="join-room" class="secondary-button" type="button">Entrar na sala</button>\n' +
+    '            <button id="find-room" class="text-button" type="button">Encontrar partida automaticamente</button>\n' +
+    '            <button id="cancel-online" class="text-button" type="button" hidden>Cancelar busca</button>\n' +
+    '            <span id="room-share" hidden>Sala <strong id="room-code-display"></strong> <button id="copy-room" class="text-button" type="button">Copiar convite</button></span>\n' +
+    '          </div>\n' +
+    '          <p id="room-status" class="room-status" role="status">Escolha uma sala aberta ou crie a sua.</p>\n' +
+    '          <section id="room-directory" class="room-directory" aria-label="Salas online">\n' +
+    '            <div class="rooms-heading"><strong>Salas online</strong><button id="refresh-rooms" class="text-button" type="button">Atualizar</button></div>\n' +
+    '            <p id="rooms-message" role="status">Carregando salas…</p>\n' +
+    '            <ul id="rooms-list"></ul>\n' +
+    '          </section>\n' +
+    '        </div>\n' +
+    '      </section>\n' +
+    '      <div id="selection" class="screen selection" hidden>\n' +
+    '        <button id="selection-back" class="screen-back" type="button">← Voltar</button>\n' +
+    '        <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1 id="selection-title">PLAYER SELECT</h1></div>\n' +
+    '        <div class="select-stage">\n' +
+    '          <aside class="fighter-showcase" id="preview-left"><img class="large-portrait" id="left-portrait" alt=""><span class="showcase-slot" id="own-slot">VOCÊ</span><img class="stance-preview" id="left-stance" alt=""><h2 id="left-name"></h2><p id="left-style"></p><p id="selection-quote" aria-live="polite"></p><span class="lobby-ready" id="left-ready" role="status" hidden></span></aside>\n' +
+    '          <div class="roster">\n' +
+    '          <p class="roster-caption">TODOS OS LUTADORES <span>PROFESSORES E ALUNOS</span></p>\n' +
+    '          <div class="fighters" role="group" aria-label="Seleção de todos os personagens">\n' +
+    '          <button class="fighter-card selected marcelo" data-fighter="marcelo" aria-label="Escolher Prof. Marcelo" aria-pressed="true" type="button">\n' +
+    '            <span class="player-chip">JOGADOR 1</span><img class="fighter-preview" src="assets/runtime/marcelo-head-menu-v3.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">\n' +
+    '            <span class="fighter-name">Prof. Marcelo</span><span class="quote">Bora NIT</span><span class="fighter-style">KUNG FU · INFORMÁTICA</span>\n' +
+    '          </button>\n' +
+    '          <button class="fighter-card rafael" data-fighter="rafael" aria-label="Escolher Prof. Rafael" aria-pressed="false" type="button">\n' +
+    '            <span class="player-chip">ADVERSÁRIO</span><img class="fighter-preview" src="assets/runtime/rafael-head-menu-v3.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">\n' +
+    '            <span class="fighter-name">Prof Rafael</span><span class="quote">No meu tempo não era assim</span><span class="fighter-style">BOXE · HISTÓRIA</span>\n' +
+    '          </button>\n' +
+    '          <button class="fighter-card gustavo" data-fighter="gustavo" aria-label="Escolher Prof. Gustavo" aria-pressed="false" type="button">\n' +
+    '            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gustavo-head-menu-v3.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">\n' +
+    '            <span class="fighter-name">Prof. Gustavo</span><span class="quote">Reagiu, perdeu!</span><span class="fighter-style">KICKBOXING · QUÍMICA</span>\n' +
+    '          </button>\n' +
+    '          <button class="fighter-card gelton" data-fighter="gelton" aria-label="Escolher Prof. Gelton" aria-pressed="false" type="button">\n' +
+    '            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gelton-head-menu-v4.webp" width="160" height="160" alt="" decoding="async" fetchpriorit'... 22674 more characters
+
+      at TestContext.<anonymous> (file:///workspace/scratch/130f15ce0fe4/game/tests/story-presentation.test.js:24:93)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<!doctype html>\n<html lang="pt-BR">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n  <meta name="theme-color" content="#111719">\n  <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">\n  <title>Street Vicente Fighter</title>\n  <link rel="icon" href="favicon.svg" type="image/svg+xml">\n  <link rel="stylesheet" href="releases/v4.6.20/style.css">\n  <script type="module" src="releases/v4.6.20/main.js"></script>\n</head>\n<body>\n  <main class="cabinet" data-game-version="4.6.20">\n    <div id="game-shell" class="game-shell">\n    <header class="topbar">\n      <a class="wordmark" id="home-link" href="./" aria-label="Voltar ao menu de Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>\n      <button id="menu-home" class="menu-home utility-button" type="button" hidden>Menu principal</button>\n      <div class="utility">\n        <button id="sound" class="utility-button" type="button" aria-pressed="true" title="Ativar ou desativar áudio">Áudio <span id="sound-state">ON</span></button>\n        <button id="gamepad-config" class="utility-button" type="button" aria-controls="gamepad-panel" aria-expanded="false">🎮 Controle USB</button>\n        <button id="fullscreen" class="utility-button" type="button">Tela cheia</button>\n        <button id="pause" class="utility-button" type="button" disabled>Pausar</button>\n      </div>\n    </header>\n\n    <section id="gamepad-panel" class="gamepad-panel" hidden aria-label="Configuração de controle USB">\n      <h2>Controle USB</h2>\n      <p id="gamepad-info" role="status">Conecte o controle e pressione um botão para ativá-lo no navegador.</p>\n      <p id="gamepad-live" class="gamepad-live">Nenhuma entrada detectada</p>\n      <p id="gamepad-diagnostic" class="gamepad-help" role="status"></p>\n      <p class="gamepad-help">Se um comando estiver incorreto, selecione a ação e aperte o botão correspondente no controle. Os ajustes ficam salvos neste navegador.</p>\n      <div class="gamepad-binds">\n        <button type="button" data-pad-bind="jump">Pular <strong data-pad-number="jump">0</strong></button>\n        <button type="button" data-pad-bind="kick">Chute <strong data-pad-number="kick">1</strong></button>\n        <button type="button" data-pad-bind="punch">Soco <strong data-pad-number="punch">2</strong></button>\n        <button type="button" data-pad-bind="special">Poder <strong data-pad-number="special">3</strong></button>\n        <button type="button" data-pad-bind="block">Defender <strong data-pad-number="block">4</strong></button>\n        <button type="button" data-pad-bind="pause">Start / Pausar <strong data-pad-number="pause">9</strong></button>\n      </div>\n      <p id="gamepad-feedback" role="status">A: confirmar · B: voltar · direcional: navegar</p>\n      <div class="gamepad-footer">\n        <button id="gamepad-reset" class="secondary-button" type="button">Restaurar botões</button>\n        <button id="gamepad-close" class="primary-button" type="button">Fechar</button>\n      </div>\n    </section>\n    <section id="arena" class="arena" aria-label="Arena de luta">\n      <canvas tabindex="-1" id="game" width="1280" height="720" aria-label="Jogo de luta: Prof. Marcelo contra Prof Rafael. Os comandos estão no botão de informações dos personagens."></canvas>\n      <section id="menu-screen" class="screen main-menu" aria-label="Menu principal">\n        <div class="menu-title"><span class="menu-kicker">ESCOLA ESTADUAL VICENTE DUTRA · ARCADE</span><h1><span>STREET</span><span>VICENTE</span><strong>FIGHTER</strong></h1><p>Escolha seu próximo desafio</p></div>\n        <nav class="menu-options" aria-label="Modos de jogo">\n          <button type="button" data-menu="versus"><span>01</span> VERSUS BATTLE <small>Contra a máquina ou no mesmo PC</small></button>\n          <button type="button" data-menu="story"><span>02</span> MODO HISTÓRIA <small>Operação Resgate do NIT</small></button>\n          <button type="button" data-menu="online-versus"><span>03</span> ONLINE 1 V.S. 1 <small>Crie ou encontre uma sala</small></button>\n          <button type="button" data-menu="online-story"><span>04</span> ONLINE HISTÓRIA <small>Jogue a campanha em dupla</small></button>\n        </nav>\n        <p class="menu-footer">PROFESSORES · ALUNOS · VICENTE DUTRA</p>\n      </section>\n      <section id="mode-screen" class="screen mode-screen" hidden aria-label="Escolher tipo de partida">\n        <button id="mode-back" class="screen-back" type="button">← Menu principal</button>\n        <div class="route-heading"><span class="eyebrow">ESCOLHA A PARTIDA</span><h2 id="mode-title">VERSUS BATTLE</h2><p id="mode-description"></p></div>\n        <div class="mode-choices"><button type="button" data-mode-choice="cpu"><span>01</span><strong id="mode-cpu-title">CONTRA A MÁQUINA</strong><small id="mode-cpu-description">Enfrente um lutador controlado pelo jogo.</small></button><button type="button" data-mode-choice="local"><span>02</span><strong id="mode-local-title">1 V.S. 1 NO MESMO PC</strong><small id="mode-local-description">Dois jogadores, dois controles ou teclados.</small></button></div>\n      </section>\n      <section id="room-screen" class="screen room-screen" hidden aria-label="Criar ou encontrar sala online">\n        <button id="room-back" class="screen-back" type="button">← Menu principal</button>\n        <div class="route-heading"><span class="eyebrow">MULTIPLAYER ONLINE</span><h2 id="room-title">ONLINE 1 V.S. 1</h2><p id="room-description">Crie uma sala para convidar alguém ou encontre uma partida. A seleção de personagens aparece quando os dois jogadores estiverem conectados.</p></div>\n        <div class="room-flow">\n          <div id="online-panel" class="online-panel">\n            <button id="create-room" class="secondary-button" type="button">Criar sala</button>\n            <label for="room-code">Código da sala<input id="room-code" maxlength="10" placeholder="Ex.: AB23CD45" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>\n            <button id="join-room" class="secondary-button" type="button">Entrar na sala</button>\n            <button id="find-room" class="text-button" type="button">Encontrar partida automaticamente</button>\n            <button id="cancel-online" class="text-button" type="button" hidden>Cancelar busca</button>\n            <span id="room-share" hidden>Sala <strong id="room-code-display"></strong> <button id="copy-room" class="text-button" type="button">Copiar convite</button></span>\n          </div>\n          <p id="room-status" class="room-status" role="status">Escolha uma sala aberta ou crie a sua.</p>\n          <section id="room-directory" class="room-directory" aria-label="Salas online">\n            <div class="rooms-heading"><strong>Salas online</strong><button id="refresh-rooms" class="text-button" type="button">Atualizar</button></div>\n            <p id="rooms-message" role="status">Carregando salas…</p>\n            <ul id="rooms-list"></ul>\n          </section>\n        </div>\n      </section>\n      <div id="selection" class="screen selection" hidden>\n        <button id="selection-back" class="screen-back" type="button">← Voltar</button>\n        <div class="selection-heading"><span class="eyebrow">STREET VICENTE FIGHTER</span><h1 id="selection-title">PLAYER SELECT</h1></div>\n        <div class="select-stage">\n          <aside class="fighter-showcase" id="preview-left"><img class="large-portrait" id="left-portrait" alt=""><span class="showcase-slot" id="own-slot">VOCÊ</span><img class="stance-preview" id="left-stance" alt=""><h2 id="left-name"></h2><p id="left-style"></p><p id="selection-quote" aria-live="polite"></p><span class="lobby-ready" id="left-ready" role="status" hidden></span></aside>\n          <div class="roster">\n          <p class="roster-caption">TODOS OS LUTADORES <span>PROFESSORES E ALUNOS</span></p>\n          <div class="fighters" role="group" aria-label="Seleção de todos os personagens">\n          <button class="fighter-card selected marcelo" data-fighter="marcelo" aria-label="Escolher Prof. Marcelo" aria-pressed="true" type="button">\n            <span class="player-chip">JOGADOR 1</span><img class="fighter-preview" src="assets/runtime/marcelo-head-menu-v3.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">\n            <span class="fighter-name">Prof. Marcelo</span><span class="quote">Bora NIT</span><span class="fighter-style">KUNG FU · INFORMÁTICA</span>\n          </button>\n          <button class="fighter-card rafael" data-fighter="rafael" aria-label="Escolher Prof. Rafael" aria-pressed="false" type="button">\n            <span class="player-chip">ADVERSÁRIO</span><img class="fighter-preview" src="assets/runtime/rafael-head-menu-v3.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">\n            <span class="fighter-name">Prof Rafael</span><span class="quote">No meu tempo não era assim</span><span class="fighter-style">BOXE · HISTÓRIA</span>\n          </button>\n          <button class="fighter-card gustavo" data-fighter="gustavo" aria-label="Escolher Prof. Gustavo" aria-pressed="false" type="button">\n            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gustavo-head-menu-v3.webp" width="160" height="160" alt="" decoding="async" fetchpriority="high">\n            <span class="fighter-name">Prof. Gustavo</span><span class="quote">Reagiu, perdeu!</span><span class="fighter-style">KICKBOXING · QUÍMICA</span>\n          </button>\n          <button class="fighter-card gelton" data-fighter="gelton" aria-label="Escolher Prof. Gelton" aria-pressed="false" type="button">\n            <span class="player-chip">ESCOLHER</span><img class="fighter-preview" src="assets/runtime/gelton-head-menu-v4.webp" width="160" height="160" alt="" decoding="async" fetchpriorit'... 22674 more characters,
+    expected: /data-experience="story"/,
+    operator: 'match',
+    diff: 'simple'
+  }

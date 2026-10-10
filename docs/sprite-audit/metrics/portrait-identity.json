@@ -1,0 +1,258 @@
+{
+  "reference": "Approved portraits; original photographs absent",
+  "comparison": "RGBA; RGB under fully transparent pixels is normalized because WebP may optimize it without changing appearance",
+  "portraits": [
+    {
+      "id": "marcelo",
+      "before": {
+        "file": "assets/runtime/marcelo-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "a994d6d7531dfacd2f71319fbea518ad043b5bf2cbc499daa5a2883902de6162"
+      },
+      "after": {
+        "file": "assets/runtime/marcelo-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "a994d6d7531dfacd2f71319fbea518ad043b5bf2cbc499daa5a2883902de6162"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "rafael",
+      "before": {
+        "file": "assets/runtime/rafael-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "00eb190b42af82e3cd9b72a92081d180c008af91b607a6c67f5e912c5d5d402b"
+      },
+      "after": {
+        "file": "assets/runtime/rafael-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "00eb190b42af82e3cd9b72a92081d180c008af91b607a6c67f5e912c5d5d402b"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "gustavo",
+      "before": {
+        "file": "assets/runtime/gustavo-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "fbc4cb7ac6c8e9fd8b162293acc6a0e53d4fce7cdfb7b04e0ed50a23d3e586b1"
+      },
+      "after": {
+        "file": "assets/runtime/gustavo-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "fbc4cb7ac6c8e9fd8b162293acc6a0e53d4fce7cdfb7b04e0ed50a23d3e586b1"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "gelton",
+      "before": {
+        "file": "assets/runtime/gelton-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "c5de327dc5b18837a0882d046d5a8a23b459db8e7d4b55ce3ff5591c8b8de006"
+      },
+      "after": {
+        "file": "assets/runtime/gelton-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "c5de327dc5b18837a0882d046d5a8a23b459db8e7d4b55ce3ff5591c8b8de006"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "marcelino",
+      "before": {
+        "file": "assets/runtime/marcelino-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "54220e8958dec09d477714e879cfe07317cf55a019d58c329341aa14b5f2276f"
+      },
+      "after": {
+        "file": "assets/runtime/marcelino-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "54220e8958dec09d477714e879cfe07317cf55a019d58c329341aa14b5f2276f"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "marcos",
+      "before": {
+        "file": "assets/runtime/marcos-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "0f4860ef87625f1bea9c133ffd74ee7c6a57aefff25f63ce44d7fd3a552e9482"
+      },
+      "after": {
+        "file": "assets/runtime/marcos-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "0f4860ef87625f1bea9c133ffd74ee7c6a57aefff25f63ce44d7fd3a552e9482"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "joao",
+      "before": {
+        "file": "assets/runtime/joao-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "84019961c30a43fb1fa4b4b2e606e0ba1581bb135752c522d974fae8966e9423"
+      },
+      "after": {
+        "file": "assets/runtime/joao-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "84019961c30a43fb1fa4b4b2e606e0ba1581bb135752c522d974fae8966e9423"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "ruan",
+      "before": {
+        "file": "assets/runtime/ruan-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "232bca25e18cc11ef1b8921e8de9fb2d85d33d00decf336f9f11dd0e250b4564"
+      },
+      "after": {
+        "file": "assets/runtime/ruan-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "232bca25e18cc11ef1b8921e8de9fb2d85d33d00decf336f9f11dd0e250b4564"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "tais",
+      "before": {
+        "file": "assets/runtime/tais-v2.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "58548cd707003d19e4aabde480339cf5cfdced59a0e8ba2b24ce949e71040f75"
+      },
+      "after": {
+        "file": "assets/runtime/tais-v2.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "58548cd707003d19e4aabde480339cf5cfdced59a0e8ba2b24ce949e71040f75"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "luciana",
+      "before": {
+        "file": "assets/runtime/luciana-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "712f13b209c4b3e9ebadcddf89afd8fb0b6d3707f5e87b632c884d987b074c89"
+      },
+      "after": {
+        "file": "assets/runtime/luciana-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "712f13b209c4b3e9ebadcddf89afd8fb0b6d3707f5e87b632c884d987b074c89"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 0
+    },
+    {
+      "id": "khauany",
+      "before": {
+        "file": "assets/runtime/khauany-v1.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "d9aedfabaa023a0b40a2c15694128843ece1646648628e3326316b11fa7d11c4"
+      },
+      "after": {
+        "file": "assets/runtime/khauany-v2.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "d9aedfabaa023a0b40a2c15694128843ece1646648628e3326316b11fa7d11c4"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 975
+    },
+    {
+      "id": "dienes",
+      "before": {
+        "file": "assets/runtime/dienes-v2.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "605ca83631be951ff24f0b112266d80e5ecd97e1b580e995bec2ac82e60fe2fb"
+      },
+      "after": {
+        "file": "assets/runtime/dienes-v3.webp",
+        "dimensions": [
+          80,
+          81
+        ],
+        "visibleRgbaSha256": "605ca83631be951ff24f0b112266d80e5ecd97e1b580e995bec2ac82e60fe2fb"
+      },
+      "identicalVisibleRgba": true,
+      "transparentRgbDifferences": 1106
+    }
+  ]
+}
