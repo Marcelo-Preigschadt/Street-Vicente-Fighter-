@@ -127,7 +127,7 @@ Não foram realizados testes com joystick USB físico nem uma partida online ent
 
 A prévia local gerenciada falhou por restrição de isolamento (`bwrap`); a tentativa de iniciar um servidor fora do isolamento foi rejeitada automaticamente pela política `sandbox_approval: false`. Foi preparada uma cópia privada de revisão, preservando seu acesso restrito. O acesso no Chrome continua na página “Entre para acessar”. A solicitação segura de autenticação expirou sem confirmar login. Não foi contornado o controle de acesso.
 
-Links da entrega: o commit e a proposta de integração estão disponíveis na branch indicada acima. O [GitHub Pages atual](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/) continua na versão anterior; esse link não é apresentado como uma publicação verificada da correção.
+Links da entrega: [commit de implementação](https://github.com/Marcelo-Preigschadt/Street-Vicente-Fighter-/commit/c8fec1500c70b2ce4f75790fa0d62e848c44e84e) e [proposta em rascunho #2](https://github.com/Marcelo-Preigschadt/Street-Vicente-Fighter-/pull/2). Os 479 arquivos da alteração foram enviados pela conexão GitHub; cada blob e a árvore final foram comparados aos hashes do checkout testado. A cópia privada para a inspeção está em https://vicente-animation-review-20261010.breezyskink5.chatgpt.site. O [GitHub Pages atual](https://marcelo-preigschadt.github.io/Street-Vicente-Fighter-/) continua na versão anterior; esse link não é apresentado como uma publicação verificada da correção.
 
 ## Reprodução
 
@@ -143,3 +143,4 @@ node scripts/check-story-render.mjs
 ```
 
 Os scripts Python usam Pillow, NumPy e SciPy; os validadores gráficos usam `@napi-rs/canvas`, disponível no runtime desta execução. `CODEX_PRIMARY_RUNTIME_NODE_MODULES` permite localizar esse módulo no ambiente de trabalho. Em outro ambiente, ele deve estar instalado. A página `tests/visual-review.html` pode ser aberta por um servidor HTTP comum do projeto para concluir a inspeção no navegador.
+
