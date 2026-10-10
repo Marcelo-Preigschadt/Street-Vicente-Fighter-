@@ -2,7 +2,7 @@
 
 Os 12 personagens usam oito quadros completos de caminhada em ambos os modos e orientações. Os rostos aprovados foram preservados; Khauãny recebeu rasteira/voadora completas, Luciana ganhou preparação de chute sem soco simultâneo e Dienes recebeu reações limpas. A extração das caminhadas e a escala de Tais foram corrigidas. A campanha tem animações específicas para os 16 tipos de inimigos.
 
-[Pranchas de antes/depois e relatório](docs/sprite-audit/index.html) · [Revisão animada dos 28 modelos](tests/visual-review.html)
+[Pranchas de antes/depois e relatório](docs/sprite-audit/index.html?v=4.7.0-gallery-2) · [Revisão animada dos 28 modelos](tests/visual-review.html)
 
 Validação: 448 testes de código, build dos 77 módulos, 3.840 amostras do renderizador e auditoria real de navegador com 1.056 casos únicos de lutadores, reteste de 88 casos do João e 16 inimigos. Os resultados brutos e a resolução dos quatro alertas da regra de aterrissagem estão em [browser-validation.json](docs/sprite-audit/browser-validation.json). O protocolo `svf-online-4-7-0` separa versões incompatíveis; o serviço de salas, rollback e Supabase conservam sua implementação. Os limites da revisão estão no [relatório](docs/sprite-audit/report.md).
 

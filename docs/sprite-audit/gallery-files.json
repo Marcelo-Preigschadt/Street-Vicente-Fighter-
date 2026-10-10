@@ -1,0 +1,1359 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-10T16:24:34.017766+00:00",
+  "decodedBoards": 193,
+  "galleryReferences": 117,
+  "files": [
+    {
+      "path": "after/dienes-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 126426,
+      "sha256": "cf249ff1fe9f415f6ab980ffbb0c113d9b11fa733d1751a4838ef90529366119"
+    },
+    {
+      "path": "after/dienes-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 21540,
+      "sha256": "38129e56b39d27a316eed7a284618f7e8489bbfa96cd69e962775a170703af80"
+    },
+    {
+      "path": "after/dienes-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 128072,
+      "sha256": "605535b8738e31e0dc34c9136f576c237ffc654f30d6a6e6813ee1969e595c4f"
+    },
+    {
+      "path": "after/dienes-damage.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 37606,
+      "sha256": "1f3e656980c32d7228b83484f9007e361798f42414424e0ea91f454608e6b762"
+    },
+    {
+      "path": "after/dienes-getup.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 20242,
+      "sha256": "305c19edcc8602a29fdfc8a1371c20393ce57740961fc3d2b30e819cd783ca01"
+    },
+    {
+      "path": "after/dienes-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 169862,
+      "sha256": "b3aa6168ff81e3576939152fc38e1030aa654a452e41d5c4e3742d7b9f4de372"
+    },
+    {
+      "path": "after/dienes-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 139812,
+      "sha256": "af53130ab847528f02372ec2cf4c19bed23d3fa793f59621eb622f2a2567e1f4"
+    },
+    {
+      "path": "after/dienes-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 200774,
+      "sha256": "deffcb8525e1e9cec548e72b64b10a8f0da9e51110266a6c642b3851f46c1601"
+    },
+    {
+      "path": "after/dienes-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 63340,
+      "sha256": "d82d2f3512d15ea57033275b44651eeed7c4da459f1825a607a9dad709e13610"
+    },
+    {
+      "path": "after/dienes-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1362248,
+      "sha256": "1e10e881091b1d83067c370c40b2e206b77d118cdd9fdd879747f06b1f98aad3"
+    },
+    {
+      "path": "after/dienes-win.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 21330,
+      "sha256": "7e4fd1b30f39c53da0cf6e4599002c0dafacbe5c4ff356e76b92d7a3cae8e499"
+    },
+    {
+      "path": "after/enemy-archaeologist-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 163896,
+      "sha256": "3836b139eba917b4cdf9a61467b5feb8aa3a44b18704cf3a0064ccdcd346d867"
+    },
+    {
+      "path": "after/enemy-archaeologist.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 91780,
+      "sha256": "5061fd70886912871904108c3e03129ad9f30b45f0dd0e64da995e1b1bedb202"
+    },
+    {
+      "path": "after/enemy-aula-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 244020,
+      "sha256": "1786debdec692ecb318ca44b548ef0b24ce6f4d4bbb36958b4ead3e7e88ff03b"
+    },
+    {
+      "path": "after/enemy-aula.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 137140,
+      "sha256": "0ca420f52baf2f803eefd1b87cc463554862d486d748cc2a07a25f628f28cc2e"
+    },
+    {
+      "path": "after/enemy-book-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 168326,
+      "sha256": "fd45f9ee519b89e8d3d3d21a018d3d08c31a4551dfe5f3eb3bdc3eb01d24a039"
+    },
+    {
+      "path": "after/enemy-book.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 88790,
+      "sha256": "843419f8179e203142a1d9c83a1d5c7584b25d5c615e4ac4ce4bc3c52fcefac9"
+    },
+    {
+      "path": "after/enemy-cleaner-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 264640,
+      "sha256": "ab5124add60083352e8232289b18a7bf1d0520c7111d26680ef5ae43a6bbf501"
+    },
+    {
+      "path": "after/enemy-cleaner.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 185780,
+      "sha256": "81ab82f4a54a4e9c8ec43293af6b29ba96f53f7ff15ae67713c99683974d562e"
+    },
+    {
+      "path": "after/enemy-elite-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 225848,
+      "sha256": "9c9ac7bd0cc0bb30b905870aba4b88532b481408558e2241905f9fbe31980eea"
+    },
+    {
+      "path": "after/enemy-elite.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 131498,
+      "sha256": "2bef267c534c3e417a78df5f4842548bc1a2d08de47b57a131558c76036ec288"
+    },
+    {
+      "path": "after/enemy-exo-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 573278,
+      "sha256": "3f8bdebeab61e45c82d9eabecaea3ac45fb01e538b9c6eb298d41acb1f55eff9"
+    },
+    {
+      "path": "after/enemy-exo.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 279852,
+      "sha256": "2214efdc604c91fa6077080c33f25b4fa8ee2f3bd7f7236902fafd3a49809629"
+    },
+    {
+      "path": "after/enemy-fairRobot-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 452258,
+      "sha256": "2f32f9b51479d6f85c64344094f3b510e26a8a66e78d46c73f2607217127ef34"
+    },
+    {
+      "path": "after/enemy-fairRobot.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 269146,
+      "sha256": "ff1bb03d5a6f7c2fd2903b429a4018dfd0da7909565eaac88a66e2a5b3f9fed9"
+    },
+    {
+      "path": "after/enemy-inspector-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 256580,
+      "sha256": "55c95aa1aea39b4f87f6c1a2b4e2da4535aeee501cb65666336159ed7b9eaaa3"
+    },
+    {
+      "path": "after/enemy-inspector.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 149308,
+      "sha256": "31716c3ee4777723b2c0735237dcf7f814663162039909f10eb648ea0ec900a5"
+    },
+    {
+      "path": "after/enemy-kungfu-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 245880,
+      "sha256": "a736f6380a0c275c572415f14a025695d867b36c2ee09615af2799321b0a0120"
+    },
+    {
+      "path": "after/enemy-kungfu.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 139228,
+      "sha256": "3b5d6b5006297490e97001454b689b7f301db1a056a66127c2cb3d5d03b66d62"
+    },
+    {
+      "path": "after/enemy-lab-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 289616,
+      "sha256": "a05b9b2f0a5dff7bb4b5106403175a920a97516ac57efe88e1d7668add2ef240"
+    },
+    {
+      "path": "after/enemy-lab.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 162252,
+      "sha256": "7df7f92aaf4c482f4f79fe0210eea71cb36fb480328824e619f38230d5c0284e"
+    },
+    {
+      "path": "after/enemy-projector-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 203928,
+      "sha256": "ebcdb4dbcbf459d586874e33a5769be55aabe51b5981e63ce727f836692deaff"
+    },
+    {
+      "path": "after/enemy-projector.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 120952,
+      "sha256": "9c69adfed531074a7ff78cd9aea3fc7ade50ce34d4abc2f400d178dccd3a57b6"
+    },
+    {
+      "path": "after/enemy-scanner-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 194014,
+      "sha256": "15e6e560d68b619b0fca88e4d6e1dba22495cd44d8b4c86348027cdb82807bf0"
+    },
+    {
+      "path": "after/enemy-scanner.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 112054,
+      "sha256": "0109705c5e37e7dd1f96da2877d277512907d7cbc62a84e741045e8fd8483dc7"
+    },
+    {
+      "path": "after/enemy-snack-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 154830,
+      "sha256": "4c33c18477c88c6168ec999b8ac594edc982a2de0042c210431cdf45ef82a196"
+    },
+    {
+      "path": "after/enemy-snack.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 108620,
+      "sha256": "15c68989f04f83fdc81d9105a451075b197ad1daa24241b6e06ea901710eec8c"
+    },
+    {
+      "path": "after/enemy-substitute-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 264210,
+      "sha256": "10ededd5ee22dedaab4cf45ba0ce73fa57c8160c21ea9ed96e5b441eb89488c3"
+    },
+    {
+      "path": "after/enemy-substitute.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 150214,
+      "sha256": "75fd611eed7a69dda8dd25726d99665463602642da971902bdde592d32667349"
+    },
+    {
+      "path": "after/enemy-turnstile-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 229422,
+      "sha256": "f12f539ddf7c2ef7b870c8b8c46ff9ca46f570042b37e82fe59fa2c991a896ac"
+    },
+    {
+      "path": "after/enemy-turnstile.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 165546,
+      "sha256": "f1a2df794c4b63883ab9fd6e7184700009b177a595b449768a971b6d5a66ca02"
+    },
+    {
+      "path": "after/enemy-vial-states.webp",
+      "width": 1800,
+      "height": 1280,
+      "bytes": 224220,
+      "sha256": "1aa1a91613d9954c5844386411ecae4d591ffabd8e4d5b297ecce54677a6d2aa"
+    },
+    {
+      "path": "after/enemy-vial.webp",
+      "width": 1600,
+      "height": 590,
+      "bytes": 130538,
+      "sha256": "3a4ac663934d39213e764257ddb038d9b37653813fdc562d8361ade0f53c85b3"
+    },
+    {
+      "path": "after/gelton-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 117686,
+      "sha256": "6958ca124404b0095c6325c6e87ed92293f48821575e9d0868793b2947ed3e7e"
+    },
+    {
+      "path": "after/gelton-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 18940,
+      "sha256": "e47b61106b9698aa0d8de3709ade0588166b0ee318ce669466b110f4bc3dbe9d"
+    },
+    {
+      "path": "after/gelton-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 126636,
+      "sha256": "989328e9225f5844d24aaad6c343655254d67a28e32dbd22cc5d4ed9385ab69d"
+    },
+    {
+      "path": "after/gelton-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 149742,
+      "sha256": "d7a08638e719a32c58d27f510f7ee736cb5cf03590f6a9431c2ed526446161c4"
+    },
+    {
+      "path": "after/gelton-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 134454,
+      "sha256": "d97070890b8940e8503d2f8990300f4d4e8a493fafff471bba87705fe2fe8854"
+    },
+    {
+      "path": "after/gelton-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 182378,
+      "sha256": "cdc93baf19d7441ff6c66c8902f0741b3367088d33e862a5bf52f5e60c6e2359"
+    },
+    {
+      "path": "after/gelton-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 62398,
+      "sha256": "9222d6d3cfdb42ec0668d9671d336fcb85fc94a6217df6309d3c41e7c62f9729"
+    },
+    {
+      "path": "after/gelton-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1347522,
+      "sha256": "f2adb08ae0930a80ac953b6122af531fcbf16c34995d33269ed8fbaa3650c8d6"
+    },
+    {
+      "path": "after/gustavo-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 112894,
+      "sha256": "2839519a6b7c0d3bd69a6abbe3c91b29d2ae2459dbd5bd7a939b96db2703c220"
+    },
+    {
+      "path": "after/gustavo-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 17212,
+      "sha256": "839bec1b59de9d9aefc1f2f3d3c025775f48084014ce15ee799c741edaf6319a"
+    },
+    {
+      "path": "after/gustavo-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99286,
+      "sha256": "9ebd7a835b38c7c84c2c5078037fade6d600d0ba673e5ffc318350fc73f741fb"
+    },
+    {
+      "path": "after/gustavo-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 149780,
+      "sha256": "341694e475dcd2f66fe7885bed8e92566cdd7695ba1ec2557bf0381f44500a3d"
+    },
+    {
+      "path": "after/gustavo-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 133162,
+      "sha256": "67d36f9cd14a59b5ab058e0a65394edf25279a6f97214ab632b09c963cbbb4df"
+    },
+    {
+      "path": "after/gustavo-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 178506,
+      "sha256": "816eeccb3bd4333941840be654c695fabae6400a23a7c68e7423b0ca222b4dd0"
+    },
+    {
+      "path": "after/gustavo-low.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 52044,
+      "sha256": "f2fea7580543d992557f45f99e8008c0f57601c2361f36bfe36c691a2ec0ab4e"
+    },
+    {
+      "path": "after/gustavo-motion.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 127102,
+      "sha256": "7feb5445a57c8f6a594220366da25476d782092ac9614a59629acb85e15bb330"
+    },
+    {
+      "path": "after/gustavo-reaction.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 121784,
+      "sha256": "d99f0b9efde3e208b96d7bea23c31abfd3345c765243d07ecafe86961c3cb591"
+    },
+    {
+      "path": "after/gustavo-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1215232,
+      "sha256": "8a04b0cc867040ea7179f93c0b4cf6f2a1be1aa76128f7d0b1fb36cc63b1558f"
+    },
+    {
+      "path": "after/gustavo-strike.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 119356,
+      "sha256": "22e8c50cf832f6a7ba8fe089b1a58ef1691faed373a1dc65bf6b970ef7a1017c"
+    },
+    {
+      "path": "after/gustavo-style.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 111142,
+      "sha256": "775785afbbabb11e469c75de89742f62178f71c7c411ad17b4025ab31df0c458"
+    },
+    {
+      "path": "after/joao-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 156794,
+      "sha256": "261dfd09c877fbc2761377b2c189013ab71f7ee699d0fcffaa35bdd2b36ec2f5"
+    },
+    {
+      "path": "after/joao-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 25892,
+      "sha256": "dcd636cdb83e5cd1c312efc9b29766bc673772c51ce78a8329f82d46f356494f"
+    },
+    {
+      "path": "after/joao-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 157722,
+      "sha256": "6350b25c9eb340391d6f79f41082f59e0be20bf0843579e8445c93a68961d2c4"
+    },
+    {
+      "path": "after/joao-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 191948,
+      "sha256": "41a9654f77273f86e59e8ee4823ffba6bfd6220fadac20e8d3f53ef0834eb157"
+    },
+    {
+      "path": "after/joao-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 151874,
+      "sha256": "d502b47e574929a8355403c468bad245994701e4c04304aa103929d4e3572f68"
+    },
+    {
+      "path": "after/joao-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 193938,
+      "sha256": "c7abdb528f1ad243a1d42f03f0ae0a7c483f41c554696f8723a91d1f0f1994d9"
+    },
+    {
+      "path": "after/joao-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 73142,
+      "sha256": "0fd810273be66d0f0f161135faa6caa726a8d81e715e18d2a0219f4378df188e"
+    },
+    {
+      "path": "after/joao-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1583452,
+      "sha256": "7ee2d8cd1daf43bb34a52ecd2713cf6ed33fc96215f0b7121aac946d6f54dd21"
+    },
+    {
+      "path": "after/khauany-airkick.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 29854,
+      "sha256": "e01f3039ff06f5bfa2d26623952ba9edc0d2c2ab097a267bebb2079beb41f6af"
+    },
+    {
+      "path": "after/khauany-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 91188,
+      "sha256": "a93d672b42fdb103a15ee2bd7d942a2292f60f225a2848ddae4763560a276c74"
+    },
+    {
+      "path": "after/khauany-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 16468,
+      "sha256": "0f91e3ec0d126e444345023deea7018d3672e34f45a831033b5d06edfa9442ea"
+    },
+    {
+      "path": "after/khauany-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 110104,
+      "sha256": "683ff86276ce3a9333b204dc670e90fa9398f39f60b99ac3b1d189bc59f2ab09"
+    },
+    {
+      "path": "after/khauany-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 141610,
+      "sha256": "b34ba42fe2e283859d36f31f801f953857058493a040819b22398ba6897db8f7"
+    },
+    {
+      "path": "after/khauany-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 118448,
+      "sha256": "2e32f83175b6c65eaddfed17c3421ca99b97bbd5caf22541b621ea0781988346"
+    },
+    {
+      "path": "after/khauany-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 156188,
+      "sha256": "3507df95a4a42e25e9b596dc228c2a93bd7a0ba8f0b267b798b474733278043e"
+    },
+    {
+      "path": "after/khauany-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 50720,
+      "sha256": "d275d1437d2ec184a814b9a4581ab84e90f0d73ca528392f684080365ba79081"
+    },
+    {
+      "path": "after/khauany-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1046246,
+      "sha256": "fcc8291747b2e54526154844bb80a994ae9ca1ea272843a80b68b5fdb9dce839"
+    },
+    {
+      "path": "after/khauany-sweep.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 30612,
+      "sha256": "932b607590e15737762f5ade62dc88f76edd28235ab71cfcf9cfdd8c7c4c344f"
+    },
+    {
+      "path": "after/luciana-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 92354,
+      "sha256": "c3a4e68f2f46f40d58b9609bf553fb44ed4040153517342b72c6f3ff7ac1c45a"
+    },
+    {
+      "path": "after/luciana-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 14112,
+      "sha256": "b603e5064f5a17b320c04fdb2c77426eb26527a0ce8e2f56ae06b0a351edc171"
+    },
+    {
+      "path": "after/luciana-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 94918,
+      "sha256": "e6bf311018eb56d6756cc1d31d6e1dc62c59a107831627c4d549b6992a4f4a13"
+    },
+    {
+      "path": "after/luciana-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 129444,
+      "sha256": "82ff6501934eb4df379f25f2930170a30a8e4a93c37f0de5620df55e6219833a"
+    },
+    {
+      "path": "after/luciana-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 105888,
+      "sha256": "b44126b6c4bdcc26158cc669eb722a39a0bdcdd644c510099aea74f472606ba2"
+    },
+    {
+      "path": "after/luciana-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 133726,
+      "sha256": "f666a8ceff45c8f36e9d1772ea89959c383fe9a37e18e70b9768ab14c601a383"
+    },
+    {
+      "path": "after/luciana-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 46582,
+      "sha256": "e40a3bc6347d9344115d6f56e7ea9e1441fc978477720caac40e5ad99e00d1de"
+    },
+    {
+      "path": "after/luciana-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1007320,
+      "sha256": "64a810b8da7cc41c6a5e8db57c198658e7307690af57670cba95c84aee147e04"
+    },
+    {
+      "path": "after/marcelino-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99588,
+      "sha256": "86bd24033e5ce64788c1ee2a89d767fcd749d655a1f438905c3df84f78e86e99"
+    },
+    {
+      "path": "after/marcelino-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 15280,
+      "sha256": "b4fea4a18d9550408533bfa26a7cddff4fca27b93348ad5961f6daf5931fedf5"
+    },
+    {
+      "path": "after/marcelino-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99592,
+      "sha256": "201a0549540bf55a44eee12660a9ba6ad81deb8fd7f8bbbbf32df43802656397"
+    },
+    {
+      "path": "after/marcelino-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 131234,
+      "sha256": "69a75753bd1ba0b1088aeed6df85199aa1b757c8b7c7a8d3a5f0f264213bec0a"
+    },
+    {
+      "path": "after/marcelino-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 118866,
+      "sha256": "1b7c7d13b8687ab1dabb4ec8e69fb826f0550d2c3434b66beab3143533eb9814"
+    },
+    {
+      "path": "after/marcelino-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 158520,
+      "sha256": "86e8e39a6a1ee5e8f5601693fc4fa87247c7697ae16d06ec3327920d406560bf"
+    },
+    {
+      "path": "after/marcelino-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 54436,
+      "sha256": "76bde1c0070394c80f1740cf413ac8b7ae88496dc4bf54ccf1fefe383e6ce5c3"
+    },
+    {
+      "path": "after/marcelino-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1077118,
+      "sha256": "a9f47cc9ba72d422a386709aa0d7c2b21735c1c9e2517d26532ae3cccbb78301"
+    },
+    {
+      "path": "after/marcelo-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99522,
+      "sha256": "d5800c36c44642b31d2cb0d61bb78594665b0f0653374e1992f6a8aa9d97f1ae"
+    },
+    {
+      "path": "after/marcelo-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 15846,
+      "sha256": "0674874e1f18bdd074ccded32a01a15ebfa3d5275fbdb0dad0371e93339a13fd"
+    },
+    {
+      "path": "after/marcelo-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 93378,
+      "sha256": "549b1ab5aec4fbb9b44e3dd521a6d10bd0f051628db195261219504a00b69c56"
+    },
+    {
+      "path": "after/marcelo-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 143370,
+      "sha256": "8d4562fd97da5dce654f6e8396518581cf6d79dc7eeaa9148ee6f552220aece1"
+    },
+    {
+      "path": "after/marcelo-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 134202,
+      "sha256": "aae18192c4de1ae239bedd7b6508ef2fd21b6b3b746f07e8dc85f8134d0aefc9"
+    },
+    {
+      "path": "after/marcelo-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 180134,
+      "sha256": "5a241495f3c2c1798bf443f1f7523dbd256dd457d357b0e6e2159adc93fff6a6"
+    },
+    {
+      "path": "after/marcelo-low.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 46902,
+      "sha256": "53f2374938dd5856107fee7b13e49fb9031e182e7feb558c0e2d9b7a4c1a03ae"
+    },
+    {
+      "path": "after/marcelo-motion.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 122758,
+      "sha256": "1a028e287d359c6e64a5176d68d0614046bbcf7db180d7122de66d28c42ab899"
+    },
+    {
+      "path": "after/marcelo-reaction.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 107416,
+      "sha256": "830b19363663e09bb75e9fb23d65cc42db2e26249b763acb281e2fda826bf473"
+    },
+    {
+      "path": "after/marcelo-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1111862,
+      "sha256": "11c55fee2f5f329429ee32334c17ec9637721f0b43262eddd14091332376a88c"
+    },
+    {
+      "path": "after/marcelo-strike.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 118296,
+      "sha256": "0c79632a962136d8e82da1515d54c2a2fadd8dd240b62d88f5b3450be268ea26"
+    },
+    {
+      "path": "after/marcelo-style.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 100474,
+      "sha256": "d86af5b75689107cb3591e7cf467a75a61e3222365efcf06f528dfd6f2c369f1"
+    },
+    {
+      "path": "after/marcos-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 114356,
+      "sha256": "01f9416480ef2a45c9af2e676f11fa3d0248db08ff596bb4a67feca95ae0c9ba"
+    },
+    {
+      "path": "after/marcos-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 17960,
+      "sha256": "9e0cc9ea9f32b0484716c39b705cb7d1b1d0fdee620b385638e9192e1dd8a19c"
+    },
+    {
+      "path": "after/marcos-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 118836,
+      "sha256": "dab70688a3dd9e09dbd9f384e67bf9288857b6f5cd931a994517a2f535caa1ec"
+    },
+    {
+      "path": "after/marcos-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 146248,
+      "sha256": "45ee4f686a5112097edce8ffa5aeec869adcc917ab63f7da17cba81ecc544766"
+    },
+    {
+      "path": "after/marcos-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 131888,
+      "sha256": "e16e0742efc4fcff4dbaffb4cd30ecb5c88622685fedfc8e776fe67d9982f700"
+    },
+    {
+      "path": "after/marcos-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 175758,
+      "sha256": "f0b6be07695282b45fbd49ba787b10328fa1b25f3580619ac6662d00cb3404f7"
+    },
+    {
+      "path": "after/marcos-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 60766,
+      "sha256": "d78af7d1eb3ff5a54411f6ad2da9bc402acd5b1c6633e695a281eb8342f7629b"
+    },
+    {
+      "path": "after/marcos-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1249392,
+      "sha256": "291dd25601935fb762cac45ebe6f3726924d0a9dd7e403a3f1813ec92918a1b7"
+    },
+    {
+      "path": "after/rafael-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 93434,
+      "sha256": "36b4612f9edb4c27e1699e98c481ec28a1e379e365c39e6f5f4c93a20b43cd52"
+    },
+    {
+      "path": "after/rafael-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 15500,
+      "sha256": "bcd0f42ec7e39730a96418165582affd35082c2b8a9d6e2d48af487eb1e08452"
+    },
+    {
+      "path": "after/rafael-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 86524,
+      "sha256": "e867dbc468f4b08a0a03147445bffda2fcad2b7178e6c351292046f5a18a90e1"
+    },
+    {
+      "path": "after/rafael-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 134666,
+      "sha256": "89dcd66d70dcc68aa7628370640b1a40a30da1b3d639bfd3d4ce5f2ca382f31d"
+    },
+    {
+      "path": "after/rafael-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 118550,
+      "sha256": "b4a4a941f2ab483b275dfa7aafc1308e46ea659f40d1ae32f5bde0c2479c761b"
+    },
+    {
+      "path": "after/rafael-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 151566,
+      "sha256": "eebae35b66c276c87a94355e3dcd4cb6bb4c4099b76fc9aa2c231b693f37234a"
+    },
+    {
+      "path": "after/rafael-low.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 52886,
+      "sha256": "f6f9c34c0465968d4bb4b5115f6fea477eb4a35e6771872bf2499ccc59cd4a05"
+    },
+    {
+      "path": "after/rafael-motion.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 109996,
+      "sha256": "687749a1991ee13c2e96a69cb0a473edf58956de8934f6b4deca80165b7a160b"
+    },
+    {
+      "path": "after/rafael-reaction.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 108038,
+      "sha256": "ae3eae66da1317af9ffdff6bd3ed4ad98cbfb69c5993942a8528d5c995874c48"
+    },
+    {
+      "path": "after/rafael-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1074720,
+      "sha256": "ef048473ed8e348f4593a6195ef67ba5c6a344b2e2beb808dddeb509dc152b41"
+    },
+    {
+      "path": "after/rafael-strike.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 110394,
+      "sha256": "d39e5b3bf0a3079c2acb1bea56c7279ad5884f3c62b23c896d9fce12c583b803"
+    },
+    {
+      "path": "after/rafael-style.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 100788,
+      "sha256": "8ded621ef15220d85cad21dc4cb6e39948fc04dbde2248a7fd4e82e34f98975a"
+    },
+    {
+      "path": "after/ruan-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 107194,
+      "sha256": "04163dd74751ed3bbc77c1dd7861544090fdc9c3fb3999ea74a9e7ef5a15c7d5"
+    },
+    {
+      "path": "after/ruan-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 17752,
+      "sha256": "6a2235ab8c4b18eda1c8b2dc1a3b3e76226adfaaa7f0aac9a81e6551858e36eb"
+    },
+    {
+      "path": "after/ruan-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 105960,
+      "sha256": "7048310010aedd5d54bbb2c7de8fce4469a50346b3dd45f8c1aa5ad15329e298"
+    },
+    {
+      "path": "after/ruan-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 140106,
+      "sha256": "d2831621ffa0d1bc2015fe6bc5c6aef5026473a3e853ae3125b1c15011e26f2a"
+    },
+    {
+      "path": "after/ruan-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 117108,
+      "sha256": "e2b7a7f24dd103447c56f692f611346f7938f8f3c487947bb8a6f3e5b7611bfd"
+    },
+    {
+      "path": "after/ruan-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 155774,
+      "sha256": "5c6ba8ec03a3a73857f826d7de7f909b44c203c3263d242e53ec68b0584e68ba"
+    },
+    {
+      "path": "after/ruan-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 52916,
+      "sha256": "a15fd563e5de6226e86859cee18dfba3981e32a44d713f38a40bb83c3d3dada3"
+    },
+    {
+      "path": "after/ruan-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1168824,
+      "sha256": "8d85ddd15021ec4ae2ae005252682da17a6b649f48f960293b8b23c499caac1c"
+    },
+    {
+      "path": "after/tais-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 109474,
+      "sha256": "26508c9e08bd254f2f804545725c66e6ac5d9e4d8c8760d5e487e4341401732f"
+    },
+    {
+      "path": "after/tais-bind.webp",
+      "width": 500,
+      "height": 450,
+      "bytes": 16392,
+      "sha256": "b6822f8394009b63d949b21166273d8f6ed4b2b99f99d0d2d756dc04e5693a16"
+    },
+    {
+      "path": "after/tais-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 117516,
+      "sha256": "cf08af6a3d57bf832ef7f97245c81bf2d3edc94d8eecb21f87783f1f3f2e13f7"
+    },
+    {
+      "path": "after/tais-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 135800,
+      "sha256": "f2e1d49131373438c501d3c16f9fa7977810da572131a10225adc2f658406dd5"
+    },
+    {
+      "path": "after/tais-joints.webp",
+      "width": 1600,
+      "height": 900,
+      "bytes": 134520,
+      "sha256": "6218e30aacd97ffa15ef57bb8d0417048db8890c0f7fb9828d3f2821178c0c6b"
+    },
+    {
+      "path": "after/tais-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 188228,
+      "sha256": "85c446f34f78ea1698d130f73a5f73d1b006501a7dab562cabfdcb3307af4b39"
+    },
+    {
+      "path": "after/tais-motion.webp",
+      "width": 2048,
+      "height": 265,
+      "bytes": 61754,
+      "sha256": "498ece6b681c51cc0a04162b7a0097413b755357a04a6c15791dc1b4972c52b3"
+    },
+    {
+      "path": "after/tais-states.webp",
+      "width": 1680,
+      "height": 5710,
+      "bytes": 1225322,
+      "sha256": "332b986b4c6a923206ab3844838fd93c48de02bf42b17e68ae1f8f29ad6ecc39"
+    },
+    {
+      "path": "before/dienes-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 121208,
+      "sha256": "3fd55f5a2e178ef57b9dd8041ea2110bdd52525f25a29bf807ae4380bff57b42"
+    },
+    {
+      "path": "before/dienes-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 128078,
+      "sha256": "074700563c79fc53e1e1168ccb5fbe112c9676b7843a389af16e6c55944cc3dd"
+    },
+    {
+      "path": "before/dienes-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 177814,
+      "sha256": "b08db2d82e4958db42543df554919bf5a2ce705629df3171a5887bbdc75599da"
+    },
+    {
+      "path": "before/dienes-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 200620,
+      "sha256": "5793cb2e6fb350aaa859defba78294a6b9c8116d7b69bf3fa2231e3a6897fc47"
+    },
+    {
+      "path": "before/gelton-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 117686,
+      "sha256": "6958ca124404b0095c6325c6e87ed92293f48821575e9d0868793b2947ed3e7e"
+    },
+    {
+      "path": "before/gelton-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 126636,
+      "sha256": "989328e9225f5844d24aaad6c343655254d67a28e32dbd22cc5d4ed9385ab69d"
+    },
+    {
+      "path": "before/gelton-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 148868,
+      "sha256": "09a29c3438ace8c8d7a23665c65e755360d6b495b9dfc21a35a62a5cc95cae15"
+    },
+    {
+      "path": "before/gelton-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 187030,
+      "sha256": "0dcdd9550ae53cc486d134fd0bc84605f47edb835574240f9078828f994edf30"
+    },
+    {
+      "path": "before/gustavo-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 112894,
+      "sha256": "2839519a6b7c0d3bd69a6abbe3c91b29d2ae2459dbd5bd7a939b96db2703c220"
+    },
+    {
+      "path": "before/gustavo-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99286,
+      "sha256": "9ebd7a835b38c7c84c2c5078037fade6d600d0ba673e5ffc318350fc73f741fb"
+    },
+    {
+      "path": "before/gustavo-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 146304,
+      "sha256": "887533874424c67d51d0f7eb37a0fb42cd5e2b7a24395991132dc8e8a38c9bcb"
+    },
+    {
+      "path": "before/gustavo-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 177744,
+      "sha256": "6c146c4870d1e1245acdc5d3f26d7758fd9a30cb3aecc4602530a3130fa87f87"
+    },
+    {
+      "path": "before/joao-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 156794,
+      "sha256": "261dfd09c877fbc2761377b2c189013ab71f7ee699d0fcffaa35bdd2b36ec2f5"
+    },
+    {
+      "path": "before/joao-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 157722,
+      "sha256": "6350b25c9eb340391d6f79f41082f59e0be20bf0843579e8445c93a68961d2c4"
+    },
+    {
+      "path": "before/joao-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 195262,
+      "sha256": "1695de282e47b73a52f02bc048b9298db18b0f4d2054049078675af81703504f"
+    },
+    {
+      "path": "before/joao-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 242660,
+      "sha256": "c80cd12651d58daee8cb406389b18c1784f634bfbf32a34eb8d50d9d75096a86"
+    },
+    {
+      "path": "before/khauany-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 91218,
+      "sha256": "78a26aeebd161ce7be77597e8285b9fc3d25f9e25fd79fe76530f983ecb467d5"
+    },
+    {
+      "path": "before/khauany-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 109356,
+      "sha256": "682a3b9009945a18fc72bb3c4edf1ef373e0296c21fd91e3ced67172d4d60b43"
+    },
+    {
+      "path": "before/khauany-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 141638,
+      "sha256": "cef49a1a45d4b571932e554abb64c5e212c3556188bf3edfddfd4b3d2ea4cb3f"
+    },
+    {
+      "path": "before/khauany-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 159374,
+      "sha256": "b380a5ae92753122422b6026c873b1dcfe8b6e7fada068913f93347fd15e4420"
+    },
+    {
+      "path": "before/luciana-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 92354,
+      "sha256": "c3a4e68f2f46f40d58b9609bf553fb44ed4040153517342b72c6f3ff7ac1c45a"
+    },
+    {
+      "path": "before/luciana-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 94918,
+      "sha256": "e6bf311018eb56d6756cc1d31d6e1dc62c59a107831627c4d549b6992a4f4a13"
+    },
+    {
+      "path": "before/luciana-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 128854,
+      "sha256": "463a31dff6eec966b967f0a00a3c495f3b7b2a4b782588fb1f0498aea2aecb84"
+    },
+    {
+      "path": "before/luciana-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 134492,
+      "sha256": "d5b42ebb3f2360b218a6c373bc43473e90027649e31844ef5a84ff9ee8dded14"
+    },
+    {
+      "path": "before/marcelino-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99588,
+      "sha256": "86bd24033e5ce64788c1ee2a89d767fcd749d655a1f438905c3df84f78e86e99"
+    },
+    {
+      "path": "before/marcelino-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99592,
+      "sha256": "201a0549540bf55a44eee12660a9ba6ad81deb8fd7f8bbbbf32df43802656397"
+    },
+    {
+      "path": "before/marcelino-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 130812,
+      "sha256": "875b9e1a188498d30f2a550a8b6a5f1cffe1552528fed1c8df8cebf7b0a1f26d"
+    },
+    {
+      "path": "before/marcelino-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 153044,
+      "sha256": "e69e95c974de943a0fa45664a8542adef880b42f12a6acb19410d87e5d713751"
+    },
+    {
+      "path": "before/marcelo-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 99522,
+      "sha256": "d5800c36c44642b31d2cb0d61bb78594665b0f0653374e1992f6a8aa9d97f1ae"
+    },
+    {
+      "path": "before/marcelo-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 93378,
+      "sha256": "549b1ab5aec4fbb9b44e3dd521a6d10bd0f051628db195261219504a00b69c56"
+    },
+    {
+      "path": "before/marcelo-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 134138,
+      "sha256": "39948a2025bcbb0e210c3e7c5cc65916cbcdd889d49c3c3e7298199a0b5740f0"
+    },
+    {
+      "path": "before/marcelo-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 174336,
+      "sha256": "5a1d64cf8ea246389085b8f6d8c007092d38eb4ae222c907fe42f5313cd8103a"
+    },
+    {
+      "path": "before/marcos-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 114356,
+      "sha256": "01f9416480ef2a45c9af2e676f11fa3d0248db08ff596bb4a67feca95ae0c9ba"
+    },
+    {
+      "path": "before/marcos-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 118836,
+      "sha256": "dab70688a3dd9e09dbd9f384e67bf9288857b6f5cd931a994517a2f535caa1ec"
+    },
+    {
+      "path": "before/marcos-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 145790,
+      "sha256": "6ee6d2b4bf500ef704a331cebc33bf6de2afd9d5fa2ebf350abd1bad39d57fe0"
+    },
+    {
+      "path": "before/marcos-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 179104,
+      "sha256": "a5af0dff5b87adb04edc39a4ea4af2d803ac6b1b27c496b8f539d134cc395724"
+    },
+    {
+      "path": "before/rafael-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 93434,
+      "sha256": "36b4612f9edb4c27e1699e98c481ec28a1e379e365c39e6f5f4c93a20b43cd52"
+    },
+    {
+      "path": "before/rafael-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 86524,
+      "sha256": "e867dbc468f4b08a0a03147445bffda2fcad2b7178e6c351292046f5a18a90e1"
+    },
+    {
+      "path": "before/rafael-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 127874,
+      "sha256": "61158163e3db59c49f65ed98a9d0a4d3eaf28fe4fa84b6a9ab0d68b297f048e9"
+    },
+    {
+      "path": "before/rafael-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 150154,
+      "sha256": "2ed8e06728e48bb75a68093af1e676a0be36332deae0870680228e51bcd62844"
+    },
+    {
+      "path": "before/ruan-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 107194,
+      "sha256": "04163dd74751ed3bbc77c1dd7861544090fdc9c3fb3999ea74a9e7ef5a15c7d5"
+    },
+    {
+      "path": "before/ruan-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 105960,
+      "sha256": "7048310010aedd5d54bbb2c7de8fce4469a50346b3dd45f8c1aa5ad15329e298"
+    },
+    {
+      "path": "before/ruan-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 139932,
+      "sha256": "f2379ae4a26fe287ad905b33d67fa21a4da433617d66f68925947b4d6013dc56"
+    },
+    {
+      "path": "before/ruan-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 154688,
+      "sha256": "a122a9524790f4f324eb4594c206b5bfbf170c415b158f74e108ec562e4c698c"
+    },
+    {
+      "path": "before/tais-base.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 109474,
+      "sha256": "26508c9e08bd254f2f804545725c66e6ac5d9e4d8c8760d5e487e4341401732f"
+    },
+    {
+      "path": "before/tais-combat.webp",
+      "width": 2048,
+      "height": 500,
+      "bytes": 117516,
+      "sha256": "cf08af6a3d57bf832ef7f97245c81bf2d3edc94d8eecb21f87783f1f3f2e13f7"
+    },
+    {
+      "path": "before/tais-identity.webp",
+      "width": 1120,
+      "height": 450,
+      "bytes": 133386,
+      "sha256": "660b3e3ce3eacecc16b614925747949dd6fe67417814091e059df349e6f0c6b0"
+    },
+    {
+      "path": "before/tais-locomotion.webp",
+      "width": 1680,
+      "height": 780,
+      "bytes": 187736,
+      "sha256": "700d8938ad6dfbc9212c37bb014a0a88e746c6f6272a9747cca5f658f1ff6a3b"
+    }
+  ]
+}
