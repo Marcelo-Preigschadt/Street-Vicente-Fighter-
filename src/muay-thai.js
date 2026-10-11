@@ -1,4 +1,6 @@
 import { MUAY_THAI_HURT } from './muay-thai-data.js?v=27';
+import {nativeWalkPose} from './native-walk.js';
+import {NATIVE_WALK_HURT} from './native-walk-data.js';
 
 // The full-body pose is shared by rendering and collision detection.
 export function muayThaiPose(f) {
@@ -15,11 +17,11 @@ export function muayThaiPose(f) {
   if(f.state==='throw')return stage<2?{atlas:'base',index:15}:{atlas:'combat',index:10};
   const poses={crouch:4,lowBlock:5,block:6,jump:7,hit:f.hitCrouched?9:8,ko:10,knockdown:10,wake:11,victory:12,special:13,crouchPunch:14,landing:4,preJump:4,dizzy:8};
   if(Object.hasOwn(poses,f.state))return {atlas:'base',index:poses[f.state]};
-  if(f.footwork)return {atlas:'base',index:f.footwork.kind==='advance'?2:3};
-  return {atlas:'base',index:((Math.floor(f.state==='walk'?f.walkDistance/40:f.animTime*5)%4)+4)%4};
+  const walk=nativeWalkPose(f);if(walk)return walk;
+  return {atlas:'base',index:Math.floor(f.animTime*5)%4};
 }
 export function muayThaiHurt(f) {
-  const {atlas,index}=muayThaiPose(f);return MUAY_THAI_HURT[atlas][index];
+  const {atlas,index}=muayThaiPose(f);return (atlas==='motion'?NATIVE_WALK_HURT.marcelino:MUAY_THAI_HURT[atlas])[index];
 }
 export const MUAY_THAI_STRIKES={
   punch:{near:28,reach:118,height:225,h:58},crouchPunch:{near:25,reach:145,height:118,h:44},

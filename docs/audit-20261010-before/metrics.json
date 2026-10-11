@@ -1,0 +1,103 @@
+{
+  "renderer": "shipping Canvas Renderer",
+  "source": "/workspace/scratch/168ea3e1de7e/street-vicente-baseline",
+  "metrics": [
+    {
+      "id": "marcelo",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0117352946325093,
+      "maxPelvisOffset": 49.54461770066027,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "rafael",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0000763119284772,
+      "maxPelvisOffset": 38.07214328789129,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "gustavo",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0169147943872772,
+      "maxPelvisOffset": 45.01032047772809,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "gelton",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.00297316867838,
+      "maxPelvisOffset": 50.328704785940346,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "marcelino",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0000765989174125,
+      "maxPelvisOffset": 47.610969017389564,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "marcos",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0000750720684237,
+      "maxPelvisOffset": 36.06810269284284,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "joao",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0000772245140082,
+      "maxPelvisOffset": 45.917538819666575,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "tais",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0155307006270962,
+      "maxPelvisOffset": 38.77803386582537,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "luciana",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0184164385353376,
+      "maxPelvisOffset": 57.447179279058346,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "khauany",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0156261905748625,
+      "maxPelvisOffset": 52.28731494780962,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "dienes",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0000805821941887,
+      "maxPelvisOffset": 40.25681536480748,
+      "flippedTriangles": 0
+    },
+    {
+      "id": "ruan",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": null,
+      "maxLegLengthRatio": 1.0000796977849862,
+      "maxPelvisOffset": 42.64482348556696,
+      "flippedTriangles": 0
+    }
+  ],
+  "browserApproval": false
+}

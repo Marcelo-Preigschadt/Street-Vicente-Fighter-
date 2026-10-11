@@ -1,5 +1,6 @@
 import {DIENES_HURT} from './dienes-data.js';
-import {GAITS} from './locomotion-data.js';
+import {nativeWalkPose} from './native-walk.js';
+import {NATIVE_WALK_HURT} from './native-walk-data.js';
 
 // A tight Muay Thai guard and short lateral steps, with dedicated elbow,
 // knee, low kick, chalk, and book release drawings.
@@ -15,11 +16,10 @@ export function dienesPose(f){
     guardCounter:active?8:6};
   if(Object.hasOwn(base,f.state))return {atlas:'base',index:base[f.state]};
   if(f.state==='throw')return {atlas:'combat',index:11};
-  if(f.footwork)return {atlas:'motion',index:f.footwork.kind==='advance'?2:6};
-  if(f.state==='walk'||f.walkBlend>.02)return {atlas:'motion',index:Math.floor(Math.abs(f.walkDistance)/GAITS.dienes.stride*8)%8};
+  const walk=nativeWalkPose(f);if(walk)return walk;
   return {atlas:'base',index:Math.floor(f.animTime*4)%2};
 }
-export function dienesHurt(f){const {atlas,index}=dienesPose(f);return DIENES_HURT[atlas][index];}
+export function dienesHurt(f){const {atlas,index}=dienesPose(f);return atlas==='motion'?NATIVE_WALK_HURT.dienes[index]:DIENES_HURT[atlas][index];}
 export const DIENES_STRIKES={
   punch:{near:24,reach:160,height:202,h:52},kick:{near:37,reach:211,height:159,h:69},
   crouchPunch:{near:18,reach:149,height:108,h:47},sweep:{near:18,reach:215,height:50,h:52},

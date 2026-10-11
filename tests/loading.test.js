@@ -25,8 +25,9 @@ test('carregamento não lê pixels nem cria centenas de recortes para mostrar o 
   globalThis.document={createElement(){surfaces++;return {getContext(){return {drawImage(){draws++;},getImageData(){throw Error('Extração de pixels no navegador');}};}};}};
   t.after(()=>{if(old===undefined)delete globalThis.document;else globalThis.document=old;});
   const requests=[];t.mock.method(globalThis,'fetch',async path=>{requests.push(path);return new Response(await bytes(path));});
-  const images=[],{base,portrait}=await loadPreparedSprites('marcos',async path=>{images.push(path);return {width:2048,height:1547};});
-  assert.deepEqual(images,['assets/runtime/marcos-v1.webp']);assert.deepEqual(requests,['assets/runtime/marcos-v1.json']);
+  const images=[],{base,portrait}=await loadPreparedSprites('marcos',async path=>{images.push(path);return path.includes('walk')?{width:3200,height:600}:{width:2048,height:1547};});
+  assert.deepEqual(images,['assets/runtime/marcos-v1.webp','assets/story/marcos-walk-v3.webp']);assert.deepEqual(requests,['assets/runtime/marcos-v1.json','assets/story/marcos-walk-v3.json']);
+  assert.equal(base.motion.frames.length,8);
   assert.equal(base.frames.length,16);assert.equal(base.combat.frames.length,16);assert.equal(base.style,base);
   assert.equal(surfaces,1);assert.equal(draws,1);assert.ok(portrait);
   const cutout=base.frames[0].cutout;assert.equal(base.frames[0].cutout,cutout);assert.equal(surfaces,2);

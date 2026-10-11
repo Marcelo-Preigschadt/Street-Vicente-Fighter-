@@ -58,6 +58,8 @@ test('trocas repetidas de elenco liberam arte antiga e preservam os quatro perso
   const r=new Renderer({getContext:()=>({})});r.loadBackground=async()=>{};
   r.loadCharacter=function(id){this.characterLoads??=new Map();this.characterLoads.delete(id);this.characterLoads.set(id,Promise.resolve());this.sheets[id]={};this.portraits[id]={};return Promise.resolve();};
   for(const id of Object.keys(CHARACTERS).filter(id=>id!=='marcelo'))await r.load(['marcelo',id]);
-  assert.equal(r.characterLoads.size,4);assert.equal(Object.keys(r.sheets).length,4);assert.ok(r.sheets.marcelo&&r.sheets.luciana);
+  assert.equal(r.characterLoads.size,4);assert.equal(Object.keys(r.sheets).length,4);
+  const recent=Object.keys(CHARACTERS).filter(id=>id!=='marcelo').slice(-3);
+  assert.deepEqual([...r.characterLoads.keys()].sort(),['marcelo',...recent].sort());assert.ok(r.sheets.marcelo&&recent.every(id=>r.sheets[id]));
   assert.equal(r.sheets.rafael,undefined);
 });

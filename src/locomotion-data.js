@@ -30,18 +30,18 @@ export const RIG_BIND = Object.freeze({
 const gait=(height,stride,backStride,duty,lift,sway,bob,lean,guard,tempo,head,recover)=>
  ({height,stride,backStride,duty,lift,sway,bob,lean,guard,tempo,head,recover,acceleration:7200,deceleration:9600});
 export const GAITS=Object.freeze({
- marcelo:gait(294,146,108,.69,17,9,3.4,8,0,2.6,1.1,.12),
+ marcelo:gait(295.973,146,108,.69,17,9,3.4,8,0,2.6,1.1,.12),
  rafael:gait(294,114,96,.80,8,4,2.4,11,1,3.9,2.2,.10),
- gustavo:gait(300,142,116,.72,20,6,4.2,6,1,3.2,1.2,.14),
- tais:gait(302,132,112,.61,28,3,3.8,2,1,3.6,.8,.09),
+ gustavo:gait(298.743,142,116,.72,20,6,4.2,6,1,3.2,1.2,.14),
+ tais:gait(321,132,112,.61,28,3,3.8,2,1,3.6,.8,.09),
  luciana:gait(300,138,108,.72,15,5,2.8,4,1,3.5,.9,.11),
  khauany:gait(300,150,115,.68,19,6,3.2,6,1,3.4,.9,.10),
  dienes:gait(300,125,110,.74,14,5,2.8,5,1,3.8,.8,.09),
  gelton:gait(294,150,124,.68,19,12,4.3,9,0,2.4,1.5,.17),
  marcelino:gait(294,134,108,.76,17,5,3.3,5,1,2.8,.8,.16),
  marcos:gait(294,108,88,.83,7,4,2,5,0,2.3,.5,.18),
- joao:gait(286,138,110,.74,18,8,4,14,0,3,1.4,.15),
- ruan:gait(286,128,100,.77,14,5,2.7,4,0,2.7,.7,.12),
+ joao:gait(297,138,110,.74,18,8,4,14,0,3,1.4,.15),
+ ruan:gait(303,128,100,.77,14,5,2.7,4,0,2.7,.7,.12),
  elite:gait(285,130,102,.76,15,4,2,5,1,2.6,.5,.15),
  kungfu:gait(290,144,106,.69,18,8,3,8,0,2.6,.9,.14),
  lab:gait(285,120,100,.78,14,4,2.2,5,1,2.7,.6,.16),

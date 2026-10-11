@@ -252,6 +252,7 @@ export class Fighter {
     Object.assign(this, { pendingDizzyDuration:0, pendingDizzyCause:null, dizzyCause:null });
     initLocomotion(this);
     this.attackPlant=null;
+    this.experimentalActorRig=false;
   }
   get airborne() { return this.y < WORLD.floor - .01; }
   get worldX(){return this.x;}set worldX(value){this.x=value;}
@@ -279,7 +280,7 @@ export class Fighter {
   }
   get hurtboxes() {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
-    if(usesRig(this))return rigHurtboxes(this);
+    if(this.experimentalActorRig&&usesRig(this))return rigHurtboxes(this);
     const pose = fighterPose(this);
     const profile = this.character.id==='dienes'?dienesHurt(this):this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];

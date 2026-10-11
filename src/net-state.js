@@ -1,7 +1,9 @@
 import {validStoryState} from './story.js';
 import { CHARACTERS } from './engine.js?v=27';
 
-export const PROTOCOL='svf-online-4-6-0';
+// Native-pose hurtboxes and mechanical walkers change deterministic physics.
+// Keep this review isolated from the currently published 4.6.20 clients.
+export const PROTOCOL='svf-online-4-6-22';
 export const MOVES=new Set(['punch','kick','special','uppercut','super','throw','custom','guardCounter','drone','storyNext','storySwap','storyRetry','storySpecial']);
 const FLAGS=['left','right','jump','down','block'];
 const ENGINE_FIELDS=['phase','phaseTime','paused','time','timer','round','roundWinner','freeze','nextDroneId'];

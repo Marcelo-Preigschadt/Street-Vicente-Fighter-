@@ -1,0 +1,14 @@
+{
+  "source": "assets/source/khauany-walk-v2.png",
+  "outputStem": "assets/story/khauany-walk-v3",
+  "reason": "The last three drawings touch at their boots. Global component selection plus fixed columns copied neighbouring boots/gloves and clipped the fifth/sixth drawing's own glove/toe.",
+  "seams": {
+    "fiveSix": [[600,1598],[609,1605],[612,1614],[615,1623],[618,1625],[640,1630],[645,1630]],
+    "sixSeven": [[600,1878],[609,1885],[612,1895],[615,1902],[618,1903],[627,1906],[636,1908],[645,1910]]
+  },
+  "frames": {
+    "5": {"roi": [1334,145,1634,645], "seed": [1460,420], "rightSeam": "fiveSix", "faceWindow": [1440,150,170,125], "foreignWitnesses": [[1618,590]], "ownedWitnesses": [[1618,630]]},
+    "6": {"roi": [1600,145,1912,645], "seed": [1770,420], "leftSeam": "fiveSix", "rightSeam": "sixSeven", "faceWindow": [1700,155,170,120], "foreignWitnesses": [[1605,280],[1610,630]], "ownedWitnesses": [[1880,275],[1900,630]]},
+    "7": {"roi": [1876,145,2172,645], "seed": [2020,420], "leftSeam": "sixSeven", "faceWindow": [1980,155,150,115], "foreignWitnesses": [[1888,270],[1890,625]], "ownedWitnesses": [[1909,627]]}
+  }
+}

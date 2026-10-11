@@ -1,13 +1,14 @@
 import {drawAthleticPulse,drawOlympicJump} from './savate-fx.js';
 import {drawForkProjectile,drawForkPower} from './fork-fx.js';
 import {drawDienesProjectile,drawDienesPower} from './dienes-fx.js';
-import {interpolateFighter} from './locomotion-render.js';
+import {interpolateFighter,prepareLocomotionRig,drawLocomotionRig} from './locomotion-render.js';
 import {entityScale} from './story-world.js';
 import {loadStoryArt,drawStory} from './story-render.js';
 import {drawKaratePulse,drawKarateCharge} from './karate-fx.js';
 import {drawWildPower} from './wild-fx.js?v=27';
 import {drawLanguagePower,drawLanguageProjectile} from './mma-fx.js';
 import { loadPreparedSprites } from './sprite-loader.js?v=27';
+import { spriteComponents } from './sprite-extraction.js';
 import { drawJudoSystem } from './judo-fx.js?v=27';
 import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=27';
 
@@ -32,12 +33,15 @@ const text = (c, str, x, y, size = 20, color = '#f4ecdb', align = 'left', weight
 };
 
 export class Renderer {
-  constructor(canvas) {
+  constructor(canvas, {experimentalActorRig=false}={}) {
     this.canvas = canvas; this.c = canvas.getContext('2d', { alpha: false }); this.sheets = {}; this.particles = []; this.labels = [];
     this.clock = 0; this.shake = 0; this.flash = 0; this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.superFX = new SuperEffects();
     this.fightFX = new FightEffects();
-    this.portraits = {};
+    // The full-body skin has not passed the visual review. Keep it available
+    // to the audit harness without forcing deformed art into ordinary play.
+    this.experimentalActorRig=experimentalActorRig===true;
+    this.portraits = {};this.locomotionRigs={};
     this.fighterViews=[{motion:{feet:[{},{}]}},{motion:{feet:[{},{}]}}];
 
   }
@@ -51,7 +55,7 @@ export class Renderer {
     await Promise.all([this.loadBackground(),...pair].map(item=>typeof item==='string'?this.loadCharacter(item):item));
     // Keep recent match art, but release old canvases as the roster grows.
     for(const id of [...this.characterLoads.keys()])if(this.characterLoads.size>4&&!pair.has(id)){
-      this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];
+      this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];delete this.locomotionRigs[id];
     }
   }
   loadCharacter(id) {
@@ -59,21 +63,15 @@ export class Renderer {
     if(this.characterLoads.has(id)){const task=this.characterLoads.get(id);this.characterLoads.delete(id);this.characterLoads.set(id,task);return task;}
     const task=(async()=>{
       const {base,portrait}=await loadPreparedSprites(id,loadImage);
-      if(id==='tais'){const [walkImage,walkFrames]=await Promise.all([loadImage('assets/story/tais-walk-v4.webp'),fetch('assets/story/tais-walk-v4.json').then(r=>r.json())]);base.motion={scale:1,frames:walkFrames.map(f=>({...f,image:walkImage}))};}
-      if(['luciana','khauany','dienes'].includes(id)){
-        const stem=`assets/story/${id}-walk-v2`;
-        const [walkImage,response]=await Promise.all([loadImage(`${stem}.webp`),fetch(`${stem}.json`)]);
-        if(!response.ok)throw new Error(`Não foi possível carregar a caminhada de ${id}`);
-        base.motion={scale:1,frames:(await response.json()).map(frame=>({...frame,image:walkImage}))};
-      }
       this.sheets[id]=base;this.portraits[id]=portrait;
+      if(this.experimentalActorRig)this.locomotionRigs[id]=prepareLocomotionRig(id,base);
       if(['gelton','marcelino','marcos','joao','ruan','tais','luciana','khauany','dienes'].includes(id)) {
         await cacheSpriteEffects(base,base.frames[13],CHARACTERS[id].color,['power']);
         for(const frame of base.combat.frames)await cacheSpriteEffects(base.combat,frame,CHARACTERS[id].color,['power']);
       } else await this.prepareVisualCache(id);
     })();
     this.characterLoads.set(id,task);
-    task.catch(()=>{this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];});
+    task.catch(()=>{this.characterLoads.delete(id);delete this.sheets[id];delete this.portraits[id];delete this.locomotionRigs[id];});
     return task;
   }
   async loadCapoeira() {
@@ -125,28 +123,11 @@ export class Renderer {
       const sx = Math.round(column * image.width / columns), sy = Math.round(row * image.height / rows);
       const ex = Math.round((column + 1) * image.width / columns), ey = Math.round((row + 1) * image.height / rows);
       // Generated atlases can have a few pixels crossing nominal cell borders.
-      // Find the largest connected silhouette in a padded cell, excluding neighboring-pose fragments.
+      // Find the cell-owned silhouette and attached fragments, excluding neighboring poses.
       const padding = cellPadding ?? (combat ? 64 : 12);
       const rx = Math.max(0, sx - padding), ry = Math.max(0, sy - padding);
       const rw = Math.min(image.width, ex + padding) - rx, rh = Math.min(image.height, ey + padding) - ry;
-      const mask = new Uint8Array(rw * rh), stack = new Int32Array(rw * rh);
-      for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) mask[y * rw + x] = pixels[((ry + y) * image.width + rx + x) * 4 + 3] >= 95 ? 1 : 0;
-      let best = null;
-      for (let start = 0; start < mask.length; start++) {
-        if (mask[start] !== 1) continue;
-        const members = [];
-        let top = 0, count = 0, bx1 = rw, by1 = rh, bx2 = 0, by2 = 0; stack[top++] = start; mask[start] = 2;
-        while (top) {
-          const index = stack[--top], x = index % rw, y = Math.floor(index / rw); count++; members.push(index);
-          bx1 = Math.min(bx1, x); by1 = Math.min(by1, y); bx2 = Math.max(bx2, x); by2 = Math.max(by2, y);
-          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-            if ((!dx && !dy) || x + dx < 0 || x + dx >= rw || y + dy < 0 || y + dy >= rh) continue;
-            const next = index + dy * rw + dx; if (mask[next] === 1) { mask[next] = 2; stack[top++] = next; }
-          }
-        }
-        if (!best || count > best.count) best = { count, bx1, by1, bx2, by2, members };
-      }
-      if (!best || best.count < 100) throw new Error('Sprite vazio. Verifique o atlas de personagens.');
+      const best = spriteComponents(pixels, image.width, image.height, [rx, ry, rw, rh], { cell: [sx, sy, ex, ey] });
       const x1 = rx + best.bx1 - sx, y1 = ry + best.by1 - sy, x2 = rx + best.bx2 - sx, y2 = ry + best.by2 - sy;
       // Ground-foot midpoint anchors attacks without moving the fighter's physical position.
       let footLeft = image.width, footRight = 0;
@@ -177,7 +158,9 @@ export class Renderer {
         for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
           const x = mx + dx - best.bx1, y = my + dy - best.by1;
           if (x < 0 || x >= w || y < 0 || y >= h) continue;
-          const src = ((ry + my + dy) * image.width + rx + mx + dx) * 4, dst = (y * w + x) * 4;
+          const sourceX = rx + mx + dx, sourceY = ry + my + dy;
+          if (sourceX < 0 || sourceX >= image.width || sourceY < 0 || sourceY >= image.height) continue;
+          const src = (sourceY * image.width + sourceX) * 4, dst = (y * w + x) * 4;
           for (let channel = 0; channel < 4; channel++) data.data[dst + channel] = pixels[src + channel];
         }
       }
@@ -321,7 +304,7 @@ export class Renderer {
       if(bitmap)c.drawImage(bitmap.image,(frame.x-frame.anchor)*scale-bitmap.padding,(frame.y-frame.bottom)*scale-bitmap.padding);
       else c.drawImage(frame.image??frame.cutout,...(frame.rect??[0,0,frame.w,frame.h]),(frame.x-frame.anchor)*scale,(frame.y-frame.bottom)*scale,frame.w*scale,frame.h*scale);
     };
-    drawPose(current, 1);
+    if(override||!this.experimentalActorRig||!drawLocomotionRig(c,f,this.locomotionRigs?.[f.character.id]))drawPose(current,1);
     c.globalAlpha = 1; c.restore();
     c.save();c.translate(f.x,f.y);c.scale(size,size);c.translate(-f.x,-f.y);
     if (!['marcos','joao','ruan','tais','luciana','khauany','dienes'].includes(f.character.id) && ['special', 'super'].includes(f.state) && f.actionTime < f.moveData.startup) {

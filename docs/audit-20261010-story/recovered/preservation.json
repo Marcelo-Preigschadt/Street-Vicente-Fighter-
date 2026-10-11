@@ -1,0 +1,40 @@
+{
+  "scope": "source pixel preservation; not temporal or browser approval",
+  "enemies": [
+    {
+      "id": "archaeologist",
+      "wholeSourceBodies": 16,
+      "unchangedVisiblePixels": 757409,
+      "opaqueBodyPixelsPreserved": 616801,
+      "duplicatedPixels": 0
+    },
+    {
+      "id": "aula",
+      "wholeSourceBodies": 16,
+      "unchangedVisiblePixels": 562321,
+      "opaqueBodyPixelsPreserved": 405070,
+      "duplicatedPixels": 0
+    },
+    {
+      "id": "exo",
+      "wholeSourceBodies": 16,
+      "unchangedVisiblePixels": 878965,
+      "opaqueBodyPixelsPreserved": 736351,
+      "duplicatedPixels": 0
+    },
+    {
+      "id": "substitute",
+      "wholeSourceBodies": 16,
+      "unchangedVisiblePixels": 553575,
+      "opaqueBodyPixelsPreserved": 422829,
+      "duplicatedPixels": 0
+    },
+    {
+      "id": "fairRobot",
+      "wholeSourceBodies": 16,
+      "unchangedVisiblePixels": 831045,
+      "opaqueBodyPixelsPreserved": 682352,
+      "duplicatedPixels": 0
+    }
+  ]
+}

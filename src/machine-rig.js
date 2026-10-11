@@ -1,17 +1,23 @@
 // Articulated mechanical animation, tied to simulation attack states and distance.
 import {entityScale} from './story-world.js';
 export function machineRigPose(e,time,reduced=false){
+  time=e.animTime??time;
   const walk=e.state==='walk'?Math.sin((e.brawlerWalkDistance??0)/24):0;
-  const contact=e.attackLife>0&&e.brawlerFrame===14;
-  const preparing=e.telegraph>0||e.attackLife>0&&!contact;
-  const t=Math.max(0,Math.min(1,(e.brawlerFrameTime??0)*16.25));
-  const extension=contact?1:e.attackLife>0&&e.brawlerFrame===13?(e.brawlerReverse?1-t:t):0;
-  const eased=extension*extension*(3-2*extension);
-  const recovery=Math.min(1,(e.recovery??0)/(e.profile?.boss ? .45 : .25));
-  const upper=preparing||contact?-1.15+1.1*eased:-.45+walk*.16+recovery*.4;
-  return {upper,forearm:preparing||contact?-.9+.95*eased:-.5-walk*.12+recovery*.55,
-    rear:2.7-walk*.12+(preparing?.35:0),rearForearm:contact?-.35:.5,
-    saw:reduced?0:time*32,wheel:reduced?0:(e.motion?.travel??e.brawlerWalkDistance??0)/(21*entityScale(e)),
+  const boss=!!e.profile?.boss,contact=boss?11:14;
+  const t=Math.max(0,Math.min(1,(e.brawlerFrameTime??0)*(boss?11.25:16.25)));
+  const extension=e.brawlerFrame===contact?1:e.brawlerFrame===contact-1?(e.brawlerReverse?1-t:t):0;
+  const remaining=e.profile?.boss?.45:.25,recovery=Math.max(0,Math.min(1,(e.recovery??0)/remaining));
+  const eased=(e.attackLife>0?1:e.telegraph>0?0:recovery*recovery*(3-2*recovery))*extension*extension*(3-2*extension);
+  const duration=e.profile?.boss?.45:.16;
+  const prepare=e.telegraph>0?Math.max(0,Math.min(1,1-e.telegraph/duration)):e.attackLife>0?1:Math.max(0,Math.min(1,(e.recovery??0)/remaining));
+  const anticipation=prepare*prepare*(3-2*prepare),idle=1-anticipation;
+  const upper=-.45-.7*anticipation+1.1*eased+walk*.16*idle;
+  // Rolling angle comes from signed world displacement. An orbit can move
+  // backwards while the enemy continues facing the player.
+  const wheelDistance=Number.isFinite(e.x)?e.x*e.direction:(e.motion?.travel??e.brawlerWalkDistance??0);
+  return {upper,forearm:-.5-.4*anticipation+.95*eased-walk*.12*idle,
+    rear:2.7-walk*.12*idle+anticipation*.35,rearForearm:.5-.85*eased,
+    saw:reduced?0:time*32,wheel:reduced?0:wheelDistance/(21*entityScale(e)),
     brush:reduced?0:time*12,bob:reduced?0:walk*1.5,lean:Math.max(-.045,Math.min(.045,(e.vx??0)/4000))};
 }
 function part(c,rig,index,x,y,w,h,angle=0,ax=.5,ay=.5){
@@ -31,6 +37,7 @@ function arm(c,rig,pose,shoulder,rear,cleaner){
   else part(c,rig,3,...wrist,70,70,pose.saw);
 }
 export function drawMachineRig(c,e,rig,time,reduced){
+  time=e.animTime??time;
   if(e.kind==='snack')return drawDeliveryDrone(c,e,rig,time,reduced);
   const cleaner=e.kind==='cleaner',pose=machineRigPose(e,time,reduced);
   c.save();c.translate(e.x,e.y);c.scale(e.direction*entityScale(e),entityScale(e));

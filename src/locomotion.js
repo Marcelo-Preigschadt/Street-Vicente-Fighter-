@@ -1,5 +1,6 @@
 import {GAITS,RIG_BIND,rigId,referenceJoints,JOINT} from './locomotion-data.js';
 import {entityScale} from './story-world.js';
+import {carryHandTarget} from './carry-pose.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const smoothStep=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 export const rootCurve=t=>{t=clamp(t,0,1);return t*t*t*(t*(6*t-15)+10);};
@@ -14,10 +15,10 @@ export function initLocomotion(f){
   feet:[0,1].map(()=>({x:f.x,lane:625,lift:0,angle:0,support:true,q:0,startX:0,startLane:625,targetX:0,targetLane:625,prevX:f.x,prevLane:625,prevLift:0,prevAngle:0})),prevPhase:0,prevBlend:0};
 }
 export function resetFeet(f){
- const id=rigId(f),r=reference(id),m=f.motion,s=entityScale(f),lane=f.lane??625;
+ const id=rigId(f),r=reference(id),m=f.motion,s=entityScale(f),sx=s*(f.character?.visualWidth??1),lane=f.lane??625;
  if(!m)return;
  for(let i=0;i<2;i++){const a=(i===0?JOINT.rearAnkle:JOINT.frontAnkle)*2,foot=m.feet[i];
-  foot.x=f.x+(r?r[a]:i?40:-40)*s*f.direction;foot.lane=lane;foot.lift=0;foot.angle=0;foot.support=true;foot.q=0;
+  foot.x=f.x+(r?r[a]:i?40:-40)*sx*f.direction;foot.lane=lane;foot.lift=0;foot.angle=0;foot.support=true;foot.q=0;
   foot.prevX=foot.x;foot.prevLane=lane;foot.prevLift=0;foot.prevAngle=0;
  }
  m.ready=true;m.facing=f.direction;m.moveSign=0;m.blend=0;m.phase=0;m.startupTravel=0;m.speed=0;m.phaseVelocity=0;m.bodyShift=0;m.prevBodyShift=0;m.lastWorldX=f.x;m.lastWorldLane=lane;
@@ -43,10 +44,11 @@ export function locomotionVelocity(f,target,dt){
 }
 // Called only after walls, body contacts and camera bounds have resolved world motion.
 export function updateLocomotion(f,dt){
- const m=f.motion;if(!m)return;const id=rigId(f),g=GAITS[id]??GAITS.marcelo,r=reference(id),s=entityScale(f),lane=f.lane??625;
+ const m=f.motion;if(!m)return;const id=rigId(f),g=GAITS[id]??GAITS.marcelo,r=reference(id),s=entityScale(f),sx=s*(f.character?.visualWidth??1),lane=f.lane??625;
  if(m.ready&&m.facing!==f.direction){const rear=m.feet[0];m.feet[0]=m.feet[1];m.feet[1]=rear;m.facing=f.direction;m.moveSign=0;m.bodyShift=0;for(const foot of m.feet){if(!foot.support){foot.targetX=foot.x;foot.targetLane=foot.lane;}foot.angle=-foot.angle;foot.prevAngle=-foot.prevAngle;}}
  const relocated=Math.abs(f.prevX-m.lastWorldX)>1e-5||Math.abs((f.prevLane??lane)-m.lastWorldLane)>1e-5;
- const recovered=['HIT','BLOCK','STUN','KNOCKDOWN','GET_UP'].includes(m.state)&&!f.action&&!f.airborne&&f.hitstun<=0&&f.blockstun<=0&&!f.knocked&&f.wakeTime<=0;
+ const authoredRecovery=!f.carry&&['ATTACK','SPECIAL','SUPER','GRAB','THROW','CROUCH','JUMP_START','LAND','ATTACK_RECOVERY'].includes(m.state);
+ const recovered=(authoredRecovery||['HIT','BLOCK','STUN','KNOCKDOWN','GET_UP'].includes(m.state))&&['idle','walk','stepIn','stepBack'].includes(f.state)&&!f.action&&!f.airborne&&f.hitstun<=0&&f.blockstun<=0&&f.dizzyTime<=0&&!f.knocked&&f.wakeTime<=0&&f.preJump<=0&&f.landing<=0;
  if(!m.ready||relocated||recovered||!f.airborne&&['JUMP','FALL'].includes(m.state)||Math.hypot(f.x-f.prevX,lane-(f.prevLane??lane))>120*s||m.feet.some(foot=>Math.abs(foot.x-f.x)>g.height*.72*s))resetFeet(f);
  const dx=f.x-f.prevX,dz=lane-(f.prevLane??lane),distance=Math.hypot(dx,dz),requested=Math.abs(f.vx)+Math.abs(f.storyVelocityY??0)>2;
  const eligible=!f.action&&!f.airborne&&!f.knocked&&f.hp>0&&f.hitstun<=0&&f.blockstun<=0&&f.landing<=0&&f.preJump<=0&&f.dizzyTime<=0;
@@ -76,7 +78,7 @@ export function updateLocomotion(f,dt){
      const base=r?(r[10]+r[18])*.10+(i?1:-1)*Math.max(Math.abs(r[18]-r[10])*.5,stride/s*.54)/2:i?40:-40;
      // The body travels during swing. Project only that remaining distance;
      // a longer lead target exceeds both legs' combined reach at contact.
-     foot.targetX=f.x+base*s*f.direction+nx*stride*(1-duty);
+     foot.targetX=f.x+base*sx*f.direction+nx*stride*(1-duty);
      foot.targetLane=lane+nz*stride*(1-duty);
     }
     const t=clamp((q-duty)/(1-duty),0,1),v=rootCurve(t);
@@ -93,7 +95,7 @@ export function updateLocomotion(f,dt){
   if(m.blend<=.001)m.startupTravel=0;
   // Complete the airborne foot's last short placement. Supporting feet never slide.
   for(let i=0;i<2;i++){const foot=m.feet[i],a=(i===0?JOINT.rearAnkle:JOINT.frontAnkle)*2;
-   if(!foot.support){const home=f.x+(r?r[a]:i?40:-40)*s*f.direction;
+   if(!foot.support){const home=f.x+(r?r[a]:i?40:-40)*sx*f.direction;
     foot.x+=(home-foot.x)*Math.min(1,dt*30);foot.lane+=(lane-foot.lane)*Math.min(1,dt*30);foot.lift=Math.max(0,foot.lift-dt*g.lift*s*14);
     if(foot.lift<=.01){foot.support=true;foot.lane=lane;foot.angle=0;}
    }
@@ -111,32 +113,38 @@ function bodyParameters(f,g){
  const breathe=Math.sin(time*g.tempo),weight=Math.sin(time*g.tempo*.53);
  // The support sole is in world coordinates. The animation root (pelvis) is
  // expressed relative to the physical root f.x; neither changes the other.
- let sum=0,supportX=0,supportSide=0;
+ let sum=0,supportX=0,supportLane=0,supportSide=0;
  for(let i=0;i<2;i++){
   const foot=m.feet[i];if(!foot.support)continue;
   const duty=clamp((g.duty+(back?.035:0)),.01,.95);
   const q=clamp(foot.q/duty,0,1);
   const load=smoothStep(Math.min(q,1-q)*4);
-  sum+=load;supportX+=load*(foot.x-f.x)*f.direction/(entityScale(f)||1);
+  sum+=load;supportX+=load*(foot.x-f.x)*f.direction/((entityScale(f)||1)*(f.character?.visualWidth??1));
+  supportLane+=load*(foot.lane-(f.lane??625))/(entityScale(f)||1);
   supportSide+=load*(i?1:-1);
  }
- supportX=sum?supportX/sum:0;supportSide=sum?supportSide/sum:0;
+ // Fade the transfer through double support instead of normalizing a nearly
+ // zero load into a full-body shift at the instant a sole touches down.
+ supportX/=Math.max(1,sum);supportLane/=Math.max(1,sum);supportSide/=Math.max(1,sum);
  const transfer=clamp(supportX*.32,-Math.max(15,g.sway*2.8),Math.max(15,g.sway*2.8));
  const shift=weight*g.sway*1.25*(1-moving)+(transfer+Math.sin(phase)*g.sway*.28)*moving;
- const down=(.5-.5*Math.cos(phase*2))*g.bob*moving+breathe*.65+(f.carry?4:0)+carryImpulse(f)*2;
+ // Story depth changes the projection of both soles and the body. Feeding
+ // lane displacement only to the ankles made the IK ask for longer legs.
+ const down=supportLane*moving+(.5-.5*Math.cos(phase*2))*g.bob*moving+breathe*.65+(f.carry?4+(f.crouching?28:0)+(f.preJump>0?12:0)+(f.landing>0?8:0):0)+carryImpulse(f)*2;
  const turn=Math.sin(phase)*.034*moving+weight*.018*(1-moving);
  const lean=(back?-1:1)*g.lean/g.height*moving+weight*.022*(1-moving)-shift/g.height*.10;
  return {shift,down,turn,lean,breathe,weight,phase,supportSide};
 }
 function constrainPelvis(f,r,g,dt){
- const p=bodyParameters(f,g),s=entityScale(f),m=f.motion;let lo=-Infinity,hi=Infinity;
+ const p=bodyParameters(f,g),s=entityScale(f),sx=s*(f.character?.visualWidth??1),m=f.motion;let lo=-Infinity,hi=Infinity;
+ if(f.airborne){m.bodyShift=0;f.visualOffsetX=p.shift;f.visualOffsetY=p.down;return;}
  for(let i=0;i<2;i++){
   const [h,k,a]=legJoints[i],foot=m.feet[i];if(!foot.support)continue;
   const side=i?-1:1,hipDrive=-side*Math.sin(p.phase)*3.5*m.blend;
   const hipY=r[h*2+1]+p.down- side*(Math.sin(p.phase)*2.2*m.blend+p.supportSide*1.2);
   const length=Math.hypot(r[k*2]-r[h*2],r[k*2+1]-r[h*2+1])+Math.hypot(r[a*2]-r[k*2],r[a*2+1]-r[k*2+1]);
   const dy=r[a*2+1]-foot.lift/s+(foot.lane-(f.lane??625))/s-hipY,reach=Math.sqrt(Math.max(0,length*length-dy*dy));
-  const footX=(foot.x-f.x)*f.direction/s-r[h*2]-hipDrive;lo=Math.max(lo,footX-reach);hi=Math.min(hi,footX+reach);
+  const footX=(foot.x-f.x)*f.direction/sx-r[h*2]-hipDrive;lo=Math.max(lo,footX-reach);hi=Math.min(hi,footX+reach);
  }
  const target=lo<=hi?clamp(p.shift,lo,hi):(lo+hi)/2;
  const next=p.shift+m.bodyShift+clamp(target-p.shift-m.bodyShift,-650*dt,650*dt);
@@ -152,15 +160,16 @@ function constrainPelvis(f,r,g,dt){
   const length=Math.hypot(r[k*2]-r[h*2],r[k*2+1]-r[h*2+1])+Math.hypot(r[a*2]-r[k*2],r[a*2+1]-r[k*2+1]);
   const footY=r[a*2+1]-foot.lift/s+(foot.lane-(f.lane??625))/s;
   const reach=Math.sqrt(Math.max(0,length*length-(footY-hipY)**2));
-  const x=clamp((foot.x-f.x)*f.direction/s,hipX-reach,hipX+reach);
-  foot.x=f.x+x*f.direction*s;
+  const x=clamp((foot.x-f.x)*f.direction/sx,hipX-reach,hipX+reach);
+  foot.x=f.x+x*f.direction*sx;
  }
  f.visualOffsetX=p.shift+m.bodyShift;f.visualOffsetY=p.down;
 }
 function joint(out,r,i,x,y){out[i*2]=r[i*2]+x;out[i*2+1]=r[i*2+1]+y;}
-function ik(out,r,hip,knee,ankle,x,y){
- const h=hip*2,k=knee*2,a=ankle*2,dx=x-out[h],dy=y-out[h+1],d=Math.hypot(dx,dy)||.001;
+function ik(out,r,hip,knee,ankle,x,y,hard=true){
+ const h=hip*2,k=knee*2,a=ankle*2;let dx=x-out[h],dy=y-out[h+1],d=Math.hypot(dx,dy)||.001;
  let upper=Math.hypot(r[k]-r[h],r[k+1]-r[h+1]),lower=Math.hypot(r[a]-r[k],r[a+1]-r[k+1]);
+ if(!hard&&d>upper+lower-.01){const ratio=(upper+lower-.01)/d;dx*=ratio;dy*=ratio;x=out[h]+dx;y=out[h+1]+dy;d=upper+lower-.01;}
  // Feet are hard constraints. A small extension accommodates painted perspective.
  const extend=Math.max(1,d/(upper+lower-.01));upper*=extend;lower*=extend;
  const along=clamp((upper*upper-lower*lower+d*d)/(2*d),0,upper),bend=Math.sqrt(Math.max(0,upper*upper-along*along));
@@ -170,7 +179,7 @@ function ik(out,r,hip,knee,ankle,x,y){
 // One joint evaluator is shared by drawing, hurtboxes and hand sockets.
 export function evaluateRig(f,out=scratch){
  const id=rigId(f),r=reference(id),g=GAITS[id],m=f.motion;if(!r||!g||!m?.ready)return null;
- out.set(r);const s=entityScale(f),blend=m.blend,time=f.animTime??0,phase=m.phase*Math.PI*2,back=m.moveSign*f.direction<0;
+ out.set(r);const s=entityScale(f),sx=s*(f.character?.visualWidth??1),blend=m.blend,time=f.animTime??0,phase=m.phase*Math.PI*2,back=m.moveSign*f.direction<0;
  const p=bodyParameters(f,g),breathe=p.breathe,weight=p.weight,moving=blend;
  const carry=!!f.carry,shift=p.shift+(m.bodyShift??0),down=p.down,turn=p.turn;
  joint(out,r,0,shift,down);
@@ -189,7 +198,9 @@ export function evaluateRig(f,out=scratch){
  }
  for(let side=0;side<2;side++){
   const h=side===0?3:7,k=side===0?4:8,a=side===0?5:9,toe=side===0?6:10,foot=m.feet[side];
-  const x=(foot.x-f.x)*f.direction/s,y=(foot.lane-(f.lane??625)-foot.lift)/s+r[a*2+1];
+  const tuck=f.airborne?clamp((WORLD_FLOOR-f.y)/Math.max(1,s)/140,0,1):0;
+  const x=f.airborne?r[a*2]+shift+(side?8:-6)*tuck:(foot.x-f.x)*f.direction/sx;
+  const y=f.airborne?r[a*2+1]-tuck*(side?26:18):(foot.lane-(f.lane??625)-foot.lift)/s+r[a*2+1];
   ik(out,r,h,k,a,x,y);
   const angle=foot.angle,tx=r[toe*2]-r[a*2],ty=r[toe*2+1]-r[a*2+1];
   out[toe*2]=x+tx*Math.cos(angle)-ty*Math.sin(angle);out[toe*2+1]=y+tx*Math.sin(angle)+ty*Math.cos(angle);
@@ -197,8 +208,8 @@ export function evaluateRig(f,out=scratch){
   let hx=r[hand*2]+out[sh*2]-r[sh*2]+Math.sin(phase+(side?0:Math.PI))*moving*(g.guard?4:7)+weight*(side?1:-1)*2.1;
   let hy=r[hand*2+1]+down+guard+Math.sin(time*g.tempo+(side?1.1:0))*1.2;
   if(back){hx-=moving*4;hy-=moving*(g.guard?3:1);}
-  if(carry){const throwProgress=f.action==='throw'?rootCurve(f.actionTime/(f.moveData?.startup??.1)):0,strike=carryImpulse(f);hx=side===0?23:66;hy=side===0?-185:-198;hx+=shift+throwProgress*16+strike*25;hy+=down-throwProgress*8+strike*(side===0?12:5);}
-  ik(out,r,sh,el,hand,hx,hy);
+  if(carry){const target=carryHandTarget(f,r,side,{shift,down,baseX:hx,baseY:hy,throwProgress:f.action==='throw'?rootCurve(f.actionTime/(f.moveData?.startup??.1)):0,strike:carryImpulse(f)},carryTarget);hx=target.x;hy=target.y;}
+  ik(out,r,sh,el,hand,hx,hy,false);
  }
  return out;
 }
@@ -216,4 +227,8 @@ export function handSockets(f,out={}){
  out.leftX=f.x+p[26]*f.direction*sx;out.leftY=f.y+p[27]*s;out.rightX=f.x+p[32]*f.direction*sx;out.rightY=f.y+p[33]*s;
  return out;
 }
-export function usesRig(f){const carryingAttack=isCarryStrike(f);return !!(RIG_BIND[rigId(f)]&&f.motion?.ready&&!f.airborne&&(!f.action||f.action==='throw'&&f.carry||carryingAttack)&&!f.knocked&&f.hp>0&&f.hitstun<=0&&f.blockstun<=0&&f.dizzyTime<=0&&f.wakeTime<=0&&f.landing<=0&&f.preJump<=0&&(!f.crouching||carryingAttack)&&(['idle','walk','stepIn','stepBack'].includes(f.state)||f.action==='throw'&&f.carry||carryingAttack||f.storyEnemy&&f.attackMode==='charge'&&f.attackLife>0));}
+const WORLD_FLOOR=625,carryTarget={};
+export function usesRig(f){
+ const carryingAttack=isCarryStrike(f),carry=!!f.carry;
+ return !!(RIG_BIND[rigId(f)]&&f.motion?.ready&&(!f.airborne||carry)&&(!f.action||f.action==='throw'&&carry||carryingAttack)&&!f.knocked&&f.hp>0&&f.hitstun<=0&&(f.blockstun<=0||carry)&&f.dizzyTime<=0&&f.wakeTime<=0&&((f.landing<=0&&f.preJump<=0&&!f.crouching)||carry||carryingAttack)&&(['idle','walk','stepIn','stepBack'].includes(f.state)||carry&&!f.action||f.action==='throw'&&carry||carryingAttack||f.storyEnemy&&f.attackMode==='charge'&&f.attackLife>0));
+}

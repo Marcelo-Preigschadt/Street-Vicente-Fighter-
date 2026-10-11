@@ -1,6 +1,6 @@
 import {WILD_LAYOUT} from '../src/wild-data.js';
 import {createRequire} from 'node:module';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {Renderer} from '../src/render.js';
 import {CHARACTERS} from '../src/engine.js';
@@ -9,6 +9,7 @@ import {GELTON_LAYOUT} from '../src/gelton-layout.js';
 import {MUAY_THAI_LAYOUT} from '../src/muay-thai-data.js';
 import {JUDO_LAYOUT} from '../src/judo-data.js';
 import {cachePortrait} from '../src/render-cache.js';
+import {PREPARED_SPRITE_VERSIONS,preparedSpriteStem,validateSpriteMetadata} from '../src/sprite-loader.js';
 const require=createRequire(import.meta.url);
 const {createCanvas,loadImage}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?`${process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES}/@napi-rs/canvas`:'@napi-rs/canvas');
 globalThis.document={createElement:()=>createCanvas(1,1)};
@@ -16,10 +17,31 @@ globalThis.matchMedia=()=>({matches:false});
 const r=new Renderer(createCanvas(1,1));await mkdir('assets/runtime',{recursive:true});
 async function webp(canvas,path,quality=88){
   const png=path.replace('.webp','.png');await writeFile(png,canvas.toBuffer('image/png'));
-  execFileSync('python3',['-c','from PIL import Image;import sys;from pathlib import Path;p=Path(sys.argv[1]);Image.open(p).save(sys.argv[2],quality=int(sys.argv[3]));p.unlink()',png,path,String(quality)]);
+  execFileSync('python3',['-c','from PIL import Image;import sys;from pathlib import Path;p=Path(sys.argv[1]);Image.open(p).save(sys.argv[2],lossless=True,method=6,exact=True);p.unlink()',png,path,String(quality)]);
 }
+if(process.argv[2]&&!Object.hasOwn(PREPARED_SPRITE_VERSIONS,process.argv[2]))throw new Error(`Personagem desconhecido: ${process.argv[2]}`);
 for(const [id,f]of Object.entries(CHARACTERS)) {
   if(process.argv[2]&&process.argv[2]!==id)continue;
+  if(id==='khauany'){
+    // The approved v1 pack supplies the 31 unchanged poses; the checked-in PNG
+    // supplies the corrected sweep. No external generated_images directory.
+    execFileSync('python3',['scripts/pack-sprite-corrections.py',id],{stdio:'inherit'});
+    execFileSync('python3',['scripts/prepare-post-tais-walk.py','--only',id],{stdio:'inherit'});
+    continue;
+  }
+  if(id==='luciana'){
+    execFileSync('python3',['scripts/build-luciana.py'],{stdio:'inherit'});
+    continue;
+  }
+  if(['tais','dienes'].includes(id)){
+    // These approved packs contain manually separated/restored source poses.
+    // Do not run the generic generator or silently replace the active v2 with
+    // obsolete v1 art. Repainting requires an explicit authored correction.
+    const stem=preparedSpriteStem(id),image=await loadImage(`${stem}.webp`);
+    validateSpriteMetadata(JSON.parse(await readFile(`${stem}.json`,'utf8')),image,id);
+    console.log(`${id}: approved v2 preserved and validated (no authored correction)`);
+    continue;
+  }
   if(['ruan','joao'].includes(id)){
     execFileSync('python3',[`scripts/build-${id}.py`,f.sprite,f.combatSprite],{stdio:'inherit'});
     continue;
@@ -55,8 +77,10 @@ for(const [id,f]of Object.entries(CHARACTERS)) {
   metadata.portrait=place(80,81);items.push({image:portrait,rect:metadata.portrait});
   const packed=createCanvas(2048,y+rowHeight+2),c=packed.getContext('2d');
   for(const {image,rect}of items)c.drawImage(image,...rect);
-  await webp(packed,`assets/runtime/${id}-v1.webp`);
-  await writeFile(`assets/runtime/${id}-v1.json`,JSON.stringify(metadata));
+  validateSpriteMetadata(metadata,packed,id);
+  const stem=preparedSpriteStem(id);
+  await webp(packed,`${stem}.webp`);
+  await writeFile(`${stem}.json`,JSON.stringify(metadata));
   const preview=createCanvas(240,300),p=preview.getContext('2d'),frame=sheets.base.frames[0],scale=Math.min(216/frame.w,280/frame.h);
   p.drawImage(frame.cutout,0,0,frame.w,frame.h,(240-frame.w*scale)/2,294-frame.h*scale,frame.w*scale,frame.h*scale);
   await webp(preview,`assets/runtime/${id}-preview-v1.webp`,84);

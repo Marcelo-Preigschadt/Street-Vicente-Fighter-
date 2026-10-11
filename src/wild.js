@@ -1,4 +1,6 @@
 import {WILD_HURT} from './wild-data.js?v=27';
+import {nativeWalkPose} from './native-walk.js';
+import {NATIVE_WALK_HURT} from './native-walk-data.js';
 
 // Entire painted poses are shared by animation and physical silhouettes.
 export function wildPose(f) {
@@ -7,10 +9,10 @@ export function wildPose(f) {
   if(Object.hasOwn(rows,f.state))return {atlas:'combat',index:rows[f.state]*4+stage};
   const poses={crouch:4,lowBlock:5,block:6,jump:7,hit:f.hitCrouched?9:8,ko:10,knockdown:10,wake:11,victory:12,crouchPunch:14,landing:4,preJump:4,dizzy:8};
   if(Object.hasOwn(poses,f.state))return {atlas:'base',index:poses[f.state]};
-  if(f.footwork)return {atlas:'base',index:f.footwork.kind==='advance'?2:3};
-  return {atlas:'base',index:((Math.floor(f.state==='walk'?f.walkDistance/36:f.animTime*5)%4)+4)%4};
+  const walk=nativeWalkPose(f);if(walk)return walk;
+  return {atlas:'base',index:Math.floor(f.animTime*5)%4};
 }
-export function wildHurt(f) { const {atlas,index}=wildPose(f);return WILD_HURT[atlas][index]; }
+export function wildHurt(f) { const {atlas,index}=wildPose(f);return (atlas==='motion'?NATIVE_WALK_HURT.joao:WILD_HURT[atlas])[index]; }
 export const WILD_STRIKES={
   punch:{near:25,reach:205,height:180,h:68},crouchPunch:{near:20,reach:175,height:130,h:55},
   kick:{near:30,reach:205,height:94,h:75},sweep:{near:25,reach:215,height:58,h:72},

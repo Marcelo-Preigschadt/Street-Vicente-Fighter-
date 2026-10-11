@@ -1,0 +1,104 @@
+{
+  "renderer": "game Canvas Renderer",
+  "experimentalActorRig": true,
+  "source": "/workspace/scratch/168ea3e1de7e/street-vicente-review",
+  "metrics": [
+    {
+      "id": "marcelo",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 5.684341886080802e-14,
+      "maxLegLengthRatio": 1.011653549382453,
+      "maxPelvisOffset": 49.54421716853402,
+      "flippedTriangles": 3471
+    },
+    {
+      "id": "rafael",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 5.684341886080802e-14,
+      "maxLegLengthRatio": 1.0000763119284772,
+      "maxPelvisOffset": 38.07214328789129,
+      "flippedTriangles": 1490
+    },
+    {
+      "id": "gustavo",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.0176687424071442,
+      "maxPelvisOffset": 44.85770638933681,
+      "flippedTriangles": 2128
+    },
+    {
+      "id": "gelton",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.00297316867838,
+      "maxPelvisOffset": 50.328704785940346,
+      "flippedTriangles": 1663
+    },
+    {
+      "id": "marcelino",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.0000765989174125,
+      "maxPelvisOffset": 47.610969017389564,
+      "flippedTriangles": 1305
+    },
+    {
+      "id": "marcos",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.0000750720684237,
+      "maxPelvisOffset": 36.06810269284284,
+      "flippedTriangles": 908
+    },
+    {
+      "id": "joao",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.0000743641341294,
+      "maxPelvisOffset": 56.328760928067595,
+      "flippedTriangles": 3562
+    },
+    {
+      "id": "tais",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 5.684341886080802e-14,
+      "maxLegLengthRatio": 1.0128317863577359,
+      "maxPelvisOffset": 37.92990544694571,
+      "flippedTriangles": 1969
+    },
+    {
+      "id": "luciana",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.0184164385353376,
+      "maxPelvisOffset": 57.447179279058346,
+      "flippedTriangles": 2442
+    },
+    {
+      "id": "khauany",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 0,
+      "maxLegLengthRatio": 1.0156261905748625,
+      "maxPelvisOffset": 52.28731494780962,
+      "flippedTriangles": 1783
+    },
+    {
+      "id": "dienes",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 1.1368683772161603e-13,
+      "maxLegLengthRatio": 1.0000805821941887,
+      "maxPelvisOffset": 40.25681536480748,
+      "flippedTriangles": 1557
+    },
+    {
+      "id": "ruan",
+      "maxSupportDrift": 0,
+      "maxRenderedSoleDrift": 0,
+      "maxLegLengthRatio": 1.0000752259557264,
+      "maxPelvisOffset": 42.63089182025658,
+      "flippedTriangles": 2199
+    }
+  ],
+  "browserApproval": false
+}

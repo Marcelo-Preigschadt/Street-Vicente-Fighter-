@@ -1,5 +1,6 @@
 import {SAVATE_WALK_HURT} from './savate-walk-data.js';
 import {SAVATE_HURT} from './savate-data.js';
+import {nativeWalkPose} from './native-walk.js';
 // Whole-body poses preserve the shoe contact and boxing guard of Savate.
 export function savatePose(f){
  if(f.footwork)return {atlas:'motion',index:f.footwork.kind==='advance'?2:6};
@@ -8,7 +9,7 @@ export function savatePose(f){
  if(Object.hasOwn(combat,f.state))return {atlas:'combat',index:combat[f.state]};
  const base={jump:4,crouch:5,block:10,hit:11,dizzy:11,victory:14,ko:15,knockdown:15,punch:extended?7:6,kick:extended?9:8,guardCounter:extended?7:6,special:extended?13:12,super:extended?13:12};
  if(Object.hasOwn(base,f.state))return {atlas:'base',index:base[f.state]};
- if(['walk','idle'].includes(f.state)&&f.walkBlend>.02)return {atlas:'motion',index:Math.floor((Math.max(0,f.walkDistance)%170)/170*8)};
+ const walk=nativeWalkPose(f);if(walk)return walk;
  return {atlas:'base',index:Math.floor(f.animTime*4)%2};
 }
 export function savateHurt(f){const {atlas,index}=savatePose(f);return (atlas==='motion'?SAVATE_WALK_HURT:SAVATE_HURT[atlas])[index];}
