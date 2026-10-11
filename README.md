@@ -1,4 +1,16 @@
-## Atualização 4.6.0 — movimentação e proporções
+# Street Vicente Fighter
+
+## Revisão 4.6.22 — publicação suspensa
+
+Esta branch corrige extração de sprites, a rasteira de Khauany, colisões e movimentos dos inimigos. A etapa 4.6.22 conecta os oito desenhos existentes de caminhada de Gelton, Marcelino, Marcos, João e Ruan, ajusta a cadência da campanha para os 12 heróis, corrige o recuo das quatro professoras e o levantamento de Luciana. Não está aprovada para deploy: a fluidez, a ginga e o encaixe visual dos objetos continuam pendentes. Os heróis usam suas poses completas; a malha reprovada exige uma opção experimental explícita.
+
+Estado, evidências e limitações: [correções dos outros heróis](docs/revisao-outros-herois-20261011.md) e [auditoria da etapa anterior](docs/revisao-animacao-20261011.md). `npm run review:animation` encerra com código 1 enquanto esses bloqueios existirem. `npm run build` apenas gera o pacote local.
+
+O protocolo `svf-online-4-6-22` separa esta física dos clientes anteriores. Não foram alterados tabelas, políticas ou dados de campanha do serviço online.
+
+## Histórico 4.6.0 — movimentação e proporções
+
+As afirmações de qualidade visual deste histórico foram reavaliadas. Os testes de IK demonstram propriedades matemáticas; não aprovam a deformação da arte nem a naturalidade da caminhada.
 
 História e 1×1 compartilham a locomoção articulada sobre as artes existentes. Apoios ficam fixos no mundo, pernas usam quadril/joelho/tornozelo, e a fase avança pela distância resolvida depois das colisões. Marcelo, Rafael, Gustavo e Tais têm base, apoio, elevação, transferência de peso e guarda diferentes; os demais personagens também têm parâmetros próprios. Há respiração no idle, aceleração/frenagem curtas, transições de movimento e recuo próprio. O ciclo para quando a pushbox impede avançar.
 

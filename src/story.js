@@ -4,15 +4,16 @@ import {STORY_HEROES,STORY_ACTS,STORY_RULES,ENEMY_TYPES} from './story-data.js';
 import {storyPropBounds,heldObjectTransform,thrownObjectBounds,carryStrikeBox} from './story-props.js';
 import {STORY_WORLD,entityScale,scaledBox} from './story-world.js';
 import {saveMotion,updateLocomotion,resetFeet,usesRig,rigHurtboxes,isCarryStrike} from './locomotion.js';
+import {updateEnemyMechanicalFeet,mechanicalHurtboxes} from './story-enemy-motion.js';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const idle=()=>({left:false,right:false,jump:false,down:false,block:false});
 const copy=v=>JSON.parse(JSON.stringify(v));
 const strikeData=(damage,level='mid')=>({damage,strength:1,stun:.24,blockstun:.16,push:220,meter:0,level,chip:.08,knockdown:false});
 export class StoryEnemy extends Fighter {
-  constructor(kind,slot,x){super('marcelo',slot);this.kind=kind;this.storyEnemy=true;this.worldScale=STORY_WORLD.actorScale;this.x=x;this.prevX=x;this.y=WORLD.floor;this.maxHp=ENEMY_TYPES[kind].hp;this.hp=this.maxHp;this.aiTime=.65;this.attackSerial=0;this.attackMode='';this.hitIds=[];this.deadTime=0;this.intentX=x;this.cooldown=.5;this.telegraph=0;this.attackLife=0;this.lane=625;this.prevLane=625;this.intentLane=625;this.recovery=0;this.attackDirection=1;this.pendingThrow=null;initMostafaEnemy(this);}
+  constructor(kind,slot,x){super('marcelo',slot);this.kind=kind;this.storyEnemy=true;this.worldScale=STORY_WORLD.actorScale;this.x=x;this.prevX=x;this.y=WORLD.floor;this.maxHp=ENEMY_TYPES[kind].hp;this.hp=this.maxHp;this.aiTime=.65;this.attackSerial=0;this.attackMode='';this.hitIds=[];this.deadTime=0;this.intentX=x;this.cooldown=.5;this.telegraph=0;this.attackLife=0;this.lane=625;this.prevLane=625;this.intentLane=625;this.recovery=0;this.attackDirection=1;this.pendingThrow=null;this.tripodFoot=null;initMostafaEnemy(this);}
   get profile(){return ENEMY_TYPES[this.kind];}
-  get hurtboxes(){if(this.hp<=0||this.invincible>0)return [];if(usesRig(this))return rigHurtboxes(this);const p=this.profile;return [scaledBox(this,-p.w*.4,p.h,p.w*.8,p.h*.23),scaledBox(this,-p.w*.38,p.h*.77,p.w*.76,p.h*.43),scaledBox(this,-p.w*.38,p.h*.34,p.w*.76,p.h*.34)];}
+  get hurtboxes(){if(this.hp<=0||this.invincible>0)return [];if(this.kind==='vial'||this.kind==='scanner')return mechanicalHurtboxes(this);if(this.experimentalActorRig&&usesRig(this))return rigHurtboxes(this);const p=this.profile;return [scaledBox(this,-p.w*.4,p.h,p.w*.8,p.h*.23),scaledBox(this,-p.w*.38,p.h*.77,p.w*.76,p.h*.43),scaledBox(this,-p.w*.38,p.h*.34,p.w*.76,p.h*.34)];}
   get pushbox(){return this.hp>0?scaledBox(this,-45,120,90,120):null;}
   get guard(){return {active:false,low:false,direction:this.direction};}
   get attackbox(){if(this.attackLife<=0)return null;if(!this.profile.fly&&['melee','grab','staff'].includes(this.attackMode)&&this.brawlerFrame!==(this.profile.boss?11:14))return null;const p=this.profile;let reach=p.range,height=160,h=140,near=20;
@@ -139,12 +140,13 @@ export class StoryEngine extends FightEngine {
         if(Math.abs(f.storyVelocityY)>8)f.state='walk';
       }else f.storyVelocityY=0;
       f.carryTime=Math.max(0,f.carryTime-dt);
+      if(f.carry)f.carry.elapsed=(f.carry.elapsed??.18)+dt;
 
     }
     for(const e of this.enemies)this.updateEnemy(e,dt,contacts);
     this.resolveStoryBodies();this.resolvePropBodies();
     for(const f of this.party){updateLocomotion(f,dt);this.releaseCarry(f);}
-    for(const f of this.enemies)updateLocomotion(f,dt);
+    for(const f of this.enemies){updateLocomotion(f,dt);updateEnemyMechanicalFeet(f,dt);}
     this.resolveMelee(contacts);this.updateProjectiles(dt,contacts);this.updateDrones(dt,contacts);this.updateProps(dt,contacts);this.updateHazards(dt,contacts);
     const guards=new Map([...this.party,...this.enemies].map(f=>[f.slot,{...f.guard}]));
     for(const contact of contacts)if(contact.target.hp>0&&contact.target.invincible<=0)this.hit(contact,guards.get(contact.target.slot));
@@ -273,12 +275,12 @@ export class StoryEngine extends FightEngine {
     }
     if(this.enemies.some(e=>e.hp>0&&this.sameLane(f,e)&&Math.abs(e.x-f.x)<190*entityScale(f)))return false;
     const p=this.props.filter(p=>!p.used&&['chair','table'].includes(p.kind)&&Math.abs(p.x-f.x)<this.propBox(p).w/2+STORY_WORLD.pickupReach&&this.sameLane(f,p)).sort((a,b)=>Math.abs(a.x-f.x)-Math.abs(b.x-f.x))[0];
-    if(!p)return false;p.used=true;f.carry={kind:p.kind,id:p.id};f.carryTime=.18;this.notice('Objeto em mãos · Soco para arremessar');return true;
+    if(!p)return false;p.used=true;f.carry={kind:p.kind,id:p.id,elapsed:0,originX:p.x,originY:WORLD.floor,originLane:p.lane??625};f.carryTime=.18;this.notice('Objeto em mãos · Soco para arremessar');return true;
   }
   releaseCarry(f){if(!f.pendingThrow)return;if(f.action!=='throw'){f.pendingThrow=null;return;}if(f.movePhase==='startup')return;const kind=f.pendingThrow,s=entityScale(f),held=heldObjectTransform(f),x=held?.centerX??f.x+f.direction*45*s,y=held?.centerY??f.y-125*s;
     this.thrown.push({kind,lane:f.lane,x,y,vx:f.direction*700*s,vy:-340*s,owner:f.slot,life:2.2,angle:held?.angle??0,facing:f.direction,hits:[]});f.carry=null;f.pendingThrow=null;this.notice(kind==='table'?'Mesa arremessada!':'Cadeira arremessada!');}
   interact(f){if(!f.canAct||f.airborne)return false;if(f.carry)return this.handleCarry(f);const p=this.props.filter(p=>!p.used&&['chair','table','shelf'].includes(p.kind)&&Math.abs(p.x-f.x)<this.propBox(p).w/2+STORY_WORLD.interactionReach&&this.sameLane(f,p)).sort((a,b)=>Math.abs(a.x-f.x)-Math.abs(b.x-f.x))[0];if(!p)return false;
-    if(p.kind==='shelf'){this.damageProp(p,p.hp,f);return true;}p.used=true;f.carry={kind:p.kind,id:p.id};f.carryTime=.18;this.notice('Objeto em mãos · Soco para arremessar');return true;}
+    if(p.kind==='shelf'){this.damageProp(p,p.hp,f);return true;}p.used=true;f.carry={kind:p.kind,id:p.id,elapsed:0,originX:p.x,originY:WORLD.floor,originLane:p.lane??625};f.carryTime=.18;this.notice('Objeto em mãos · Soco para arremessar');return true;}
   damageProp(p,damage,f){
     if(p.used)return;p.hp-=damage;p.flash=.14;
     if(p.kind==='soda'&&(p.cooldown??0)<=0){const s=entityScale(f);p.cooldown=.7;this.thrown.push({kind:'can',lane:p.lane??625,x:p.x,y:WORLD.floor-160*s,vx:f.direction*520*s,vy:-500*s,owner:f.slot,life:2.5,angle:0,hits:[]});this.notice('Lata explosiva liberada!');}
@@ -294,7 +296,10 @@ export class StoryEngine extends FightEngine {
   explodeCan(p,contacts){if(p.life<=0)return;p.life=0;this.event('clash',{x:p.x,y:p.y,color:'#ffc777'});for(const e of this.enemies)if(e.hp>0&&!p.hits.includes(e.slot)&&Math.abs(e.x-p.x)<210&&this.sameLane(p,e,65)){p.hits.push(e.slot);contacts.push({attacker:this.fighters[p.owner],target:e,move:'throw',data:strikeData(110),x:e.x,y:e.y-100,direction:Math.sign(e.x-p.x)||1});}}
   environmentHit(target,damage,x,contacts){const source=this.nullEnemy;source.x=x;source.direction=target.x>=x?1:-1;
     // Hazards damage both teams directly, independent of friendly-fire checks.
-    if(target.invincible>0)return;target.hp=Math.max(0,target.hp-damage);target.hitstun=.22;target.flash=.08;target.vx=0;this.clearAction(target);this.event('storyHazardHit',{x:target.x,y:target.y-70,color:'#ff7979'});}
+    if(target.invincible>0)return;
+    const held=target.carry?heldObjectTransform(target):null;
+    if(target.carry){const s=entityScale(target);this.thrown.push({kind:target.carry.kind,lane:target.lane,x:held?.centerX??target.x,y:held?.centerY??target.y-100*s,vx:-target.direction*100*s,vy:-100*s,owner:target.slot,life:.8,angle:held?.angle??0,facing:target.direction,hits:[]});target.carry=null;target.pendingThrow=null;}
+    target.hp=Math.max(0,target.hp-damage);target.hitstun=.22;target.flash=.08;target.vx=0;this.clearAction(target);this.event('storyHazardHit',{x:target.x,y:target.y-70,color:'#ff7979'});}
   updateHazards(dt,contacts){for(const h of this.hazards){h.clock+=dt;const cycle=h.clock%h.period,active=cycle>=h.warning&&cycle<h.warning+h.active;if(!active)continue;
     const region={x:h.x-h.w/2,y:WORLD.floor-(h.kind==='cable'?260:28),w:h.w,h:h.kind==='cable'?260:28};
     for(const t of [...this.heroes,...this.enemies]){if(t.hp<=0||!this.sameLane(h,t,55)||this.time-(h.hits[t.slot]??-100)<1.1||!t.hurtboxes.some(b=>overlap(region,b)))continue;h.hits[t.slot]=this.time;this.environmentHit(t,h.kind==='acid'?45:h.kind==='frost'?22:48,h.x,contacts);if(h.kind==='frost')t.hitstun=.6;}

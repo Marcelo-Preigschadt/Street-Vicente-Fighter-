@@ -1,0 +1,605 @@
+{
+  "scope": "prepared-sprite-crop-and-alpha; no automatic visual acceptance",
+  "characters": [
+    {
+      "id": "joao",
+      "stem": "assets/runtime/joao-v1",
+      "imageSize": [
+        2048,
+        1877
+      ],
+      "frameCount": 32,
+      "frames": [
+        {
+          "atlas": "base",
+          "index": 0,
+          "rect": [
+            2,
+            2,
+            328,
+            297
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            328.0,
+            297.0
+          ],
+          "opaquePixels": 51382,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 1,
+          "rect": [
+            332,
+            2,
+            318,
+            299
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            318.0,
+            299.0
+          ],
+          "opaquePixels": 50633,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 2,
+          "rect": [
+            652,
+            2,
+            333,
+            297
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            333.0,
+            297.0
+          ],
+          "opaquePixels": 49897,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 3,
+          "rect": [
+            987,
+            2,
+            331,
+            295
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            331.0,
+            295.0
+          ],
+          "opaquePixels": 49356,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 4,
+          "rect": [
+            1320,
+            2,
+            347,
+            253
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            347.0,
+            253.0
+          ],
+          "opaquePixels": 48672,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 5,
+          "rect": [
+            1669,
+            2,
+            267,
+            247
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            267.0,
+            247.0
+          ],
+          "opaquePixels": 45383,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 6,
+          "rect": [
+            2,
+            303,
+            322,
+            321
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            322.0,
+            321.0
+          ],
+          "opaquePixels": 52233,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 7,
+          "rect": [
+            326,
+            303,
+            230,
+            278
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            230.0,
+            278.0
+          ],
+          "opaquePixels": 39143,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 8,
+          "rect": [
+            558,
+            303,
+            278,
+            280
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            278.0,
+            280.0
+          ],
+          "opaquePixels": 48367,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 9,
+          "rect": [
+            838,
+            303,
+            232,
+            228
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            232.0,
+            228.0
+          ],
+          "opaquePixels": 36888,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 10,
+          "rect": [
+            1072,
+            303,
+            456,
+            133
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            456.0,
+            133.0
+          ],
+          "opaquePixels": 43452,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 11,
+          "rect": [
+            1530,
+            303,
+            300,
+            247
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            300.0,
+            247.0
+          ],
+          "opaquePixels": 44404,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 12,
+          "rect": [
+            2,
+            626,
+            297,
+            302
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            297.0,
+            302.0
+          ],
+          "opaquePixels": 45297,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 13,
+          "rect": [
+            301,
+            626,
+            349,
+            278
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            349.0,
+            278.0
+          ],
+          "opaquePixels": 52504,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 14,
+          "rect": [
+            652,
+            626,
+            342,
+            248
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            342.0,
+            248.0
+          ],
+          "opaquePixels": 42972,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 15,
+          "rect": [
+            996,
+            626,
+            347,
+            254
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            347.0,
+            254.0
+          ],
+          "opaquePixels": 47541,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 0,
+          "rect": [
+            1345,
+            626,
+            307,
+            296
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            307.0,
+            296.0
+          ],
+          "opaquePixels": 51278,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 1,
+          "rect": [
+            1654,
+            626,
+            327,
+            296
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            327.0,
+            296.0
+          ],
+          "opaquePixels": 52631,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            37
+          ]
+        },
+        {
+          "atlas": "combat",
+          "index": 2,
+          "rect": [
+            2,
+            930,
+            414,
+            294
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            414.0,
+            294.0
+          ],
+          "opaquePixels": 51513,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 3,
+          "rect": [
+            418,
+            930,
+            308,
+            296
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            308.0,
+            296.0
+          ],
+          "opaquePixels": 49718,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            61
+          ]
+        },
+        {
+          "atlas": "combat",
+          "index": 4,
+          "rect": [
+            728,
+            930,
+            294,
+            249
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            294.0,
+            249.0
+          ],
+          "opaquePixels": 44067,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            128
+          ]
+        },
+        {
+          "atlas": "combat",
+          "index": 5,
+          "rect": [
+            1024,
+            930,
+            305,
+            256
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            305.0,
+            256.0
+          ],
+          "opaquePixels": 45373,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 6,
+          "rect": [
+            1331,
+            930,
+            441,
+            238
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            441.0,
+            238.0
+          ],
+          "opaquePixels": 53773,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 7,
+          "rect": [
+            1774,
+            930,
+            251,
+            259
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            251.0,
+            259.0
+          ],
+          "opaquePixels": 42043,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 8,
+          "rect": [
+            2,
+            1228,
+            276,
+            255
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            276.0,
+            255.0
+          ],
+          "opaquePixels": 46683,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 9,
+          "rect": [
+            280,
+            1228,
+            222,
+            252
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            222.0,
+            252.0
+          ],
+          "opaquePixels": 34858,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 10,
+          "rect": [
+            504,
+            1228,
+            260,
+            198
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            260.0,
+            198.0
+          ],
+          "opaquePixels": 34033,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 11,
+          "rect": [
+            766,
+            1228,
+            288,
+            239
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            288.0,
+            239.0
+          ],
+          "opaquePixels": 44801,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 12,
+          "rect": [
+            1056,
+            1228,
+            272,
+            280
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            272.0,
+            280.0
+          ],
+          "opaquePixels": 47544,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 13,
+          "rect": [
+            1330,
+            1228,
+            343,
+            275
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            343.0,
+            275.0
+          ],
+          "opaquePixels": 53057,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 14,
+          "rect": [
+            2,
+            1510,
+            392,
+            279
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            392.0,
+            279.0
+          ],
+          "opaquePixels": 58491,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            21
+          ]
+        },
+        {
+          "atlas": "combat",
+          "index": 15,
+          "rect": [
+            396,
+            1510,
+            300,
+            282
+          ],
+          "scale": 1.0,
+          "drawnSize": [
+            300.0,
+            282.0
+          ],
+          "opaquePixels": 47316,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        }
+      ]
+    }
+  ],
+  "preservation": {
+    "unchangedPosesPixelExact": 31,
+    "portraitPixelExact": true
+  },
+  "totalFrames": 32
+}

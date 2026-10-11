@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {MOTION_SPRITE_STEMS,preparedSpriteStem} from '../src/sprite-loader.js';
 import {FightEngine,FIXED_STEP,WORLD,fighterPose} from '../src/engine.js';
 import {StoryEngine} from '../src/story.js';
 import {FIGHTING_STYLES} from '../src/styles.js';
@@ -10,11 +11,9 @@ import {resetFeet,evaluateRig,usesRig} from '../src/locomotion.js';
 const ids=['luciana','khauany','dienes'];
 const advance=(game,seconds)=>{for(let i=0;i<Math.ceil(seconds/FIXED_STEP);i++)game.update(FIXED_STEP);};
 
-test('o ciclo visual usa oito quadros completos, com escala uniforme, em vez da deformação',async()=>{
-  const render=await readFile(new URL('../src/render.js',import.meta.url),'utf8');
-  assert.doesNotMatch(render,/drawLocomotionRig\(/);
+test('o fallback conserva os oito quadros completos aprovados e sua escala uniforme',async()=>{
   for(const id of ids){
-    const frames=JSON.parse(await readFile(new URL(`../assets/story/${id}-walk-v2.json`,import.meta.url)));
+    const frames=JSON.parse(await readFile(new URL(`../${MOTION_SPRITE_STEMS[id]}.json`,import.meta.url)));
     assert.equal(frames.length,8,id);
     for(const frame of frames){
       assert.ok(frame.h>470&&frame.w>190,id);
@@ -31,7 +30,7 @@ test('o ciclo visual usa oito quadros completos, com escala uniforme, em vez da 
 
 test('a malha da ginga usa as dimensões e o eixo dos sprites que são desenhados',async()=>{
   for(const id of ids){
-    const manifest=JSON.parse(await readFile(new URL(`../assets/runtime/${id}-v${id==='dienes'?2:1}.json`,import.meta.url)));
+    const manifest=JSON.parse(await readFile(new URL(`../${preparedSpriteStem(id)}.json`,import.meta.url)));
     const frame=manifest.atlases.base.frames[0],bind=RIG_BIND[id];
     assert.deepEqual([bind.w,bind.h,bind.axis],[frame.w,frame.h,frame.anchor],id);
     assert.ok(Math.abs(frame.h*manifest.atlases.base.scale-GAITS[id].height)<1,id);
@@ -109,10 +108,10 @@ test('Khauãny mantém duas pernas apoiadas na rasteira e usa o chute horizontal
   assert.deepEqual(fighterPose(airborne),{atlas:'combat',index:3});
 });
 
-test('Luciana usa a pose de levantar, não a de cair para trás',()=>{
+test('Luciana se apoia no chão para levantar e não exibe o soco de combat[14]',()=>{
   const game=new FightEngine();game.start('luciana','local','rafael');
   const f=game.fighters[0];f.state='wake';
-  assert.deepEqual(fighterPose(f),{atlas:'combat',index:14});
+  assert.deepEqual(fighterPose(f),{atlas:'combat',index:13});
 });
 
 test('os chutes de Luciana e Khauãny preservam a guarda e os dois pés na preparação',()=>{

@@ -1,0 +1,507 @@
+{
+  "source": "/workspace/scratch/168ea3e1de7e/street-vicente-review",
+  "renderer": "actual game Renderer",
+  "browserApproval": false,
+  "controlledOfflineScene": true,
+  "characters": [
+    {
+      "id": "marcelo",
+      "mode": "versus",
+      "posesSeen": [
+        "reaction:0",
+        "reaction:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 230.44800000000168,
+      "forwardFrameChanges": 12,
+      "backwardFrameChanges": 9,
+      "scaledHeight": 296.641
+    },
+    {
+      "id": "rafael",
+      "mode": "versus",
+      "posesSeen": [
+        "reaction:0",
+        "reaction:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 276.43999999999846,
+      "forwardFrameChanges": 18,
+      "backwardFrameChanges": 16,
+      "scaledHeight": 294
+    },
+    {
+      "id": "gustavo",
+      "mode": "versus",
+      "posesSeen": [
+        "reaction:0",
+        "reaction:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 243.03200000000243,
+      "forwardFrameChanges": 10,
+      "backwardFrameChanges": 10,
+      "scaledHeight": 294.927
+    },
+    {
+      "id": "gelton",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 263.9120000000022,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 14,
+      "scaledHeight": 294
+    },
+    {
+      "id": "marcelino",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 226.2360000000018,
+      "forwardFrameChanges": 14,
+      "backwardFrameChanges": 13,
+      "scaledHeight": 294
+    },
+    {
+      "id": "marcos",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 202.3680000000009,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 13,
+      "scaledHeight": 294
+    },
+    {
+      "id": "joao",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 251.38400000000274,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 13,
+      "scaledHeight": 297
+    },
+    {
+      "id": "tais",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 268.0879999999979,
+      "forwardFrameChanges": 13,
+      "backwardFrameChanges": 11,
+      "scaledHeight": 321
+    },
+    {
+      "id": "luciana",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 256.95200000000295,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 13,
+      "scaledHeight": 299.999
+    },
+    {
+      "id": "khauany",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 262.52000000000317,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 14,
+      "scaledHeight": 299.999
+    },
+    {
+      "id": "dienes",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 252.07999999999947,
+      "forwardFrameChanges": 17,
+      "backwardFrameChanges": 16,
+      "scaledHeight": 300
+    },
+    {
+      "id": "ruan",
+      "mode": "versus",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 255.560000000002,
+      "forwardFrameChanges": 16,
+      "backwardFrameChanges": 15,
+      "scaledHeight": 303
+    },
+    {
+      "id": "marcelo",
+      "mode": "story",
+      "posesSeen": [
+        "reaction:0",
+        "reaction:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7",
+        "base:0"
+      ],
+      "distanceDuringForward": 161.8466089795898,
+      "forwardFrameChanges": 12,
+      "backwardFrameChanges": 13,
+      "scaledHeight": 208.335
+    },
+    {
+      "id": "rafael",
+      "mode": "story",
+      "posesSeen": [
+        "reaction:0",
+        "reaction:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7",
+        "base:0"
+      ],
+      "distanceDuringForward": 194.1473850340157,
+      "forwardFrameChanges": 18,
+      "backwardFrameChanges": 18,
+      "scaledHeight": 206.48
+    },
+    {
+      "id": "gustavo",
+      "mode": "story",
+      "posesSeen": [
+        "reaction:0",
+        "reaction:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7",
+        "base:0"
+      ],
+      "distanceDuringForward": 170.6845148299342,
+      "forwardFrameChanges": 10,
+      "backwardFrameChanges": 10,
+      "scaledHeight": 207.131
+    },
+    {
+      "id": "gelton",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 185.3488087074818,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 15,
+      "scaledHeight": 206.48
+    },
+    {
+      "id": "marcelino",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 158.88846693877434,
+      "forwardFrameChanges": 14,
+      "backwardFrameChanges": 15,
+      "scaledHeight": 206.48
+    },
+    {
+      "id": "marcos",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 142.12566204081492,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 16,
+      "scaledHeight": 206.48
+    },
+    {
+      "id": "joao",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "base:2",
+        "base:3",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 176.55023238095305,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 16,
+      "scaledHeight": 208.587
+    },
+    {
+      "id": "tais",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 188.28166748299088,
+      "forwardFrameChanges": 13,
+      "backwardFrameChanges": 14,
+      "scaledHeight": 225.442
+    },
+    {
+      "id": "luciana",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 180.46071074830098,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 15,
+      "scaledHeight": 210.693
+    },
+    {
+      "id": "khauany",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 184.37118911564932,
+      "forwardFrameChanges": 15,
+      "backwardFrameChanges": 15,
+      "scaledHeight": 210.693
+    },
+    {
+      "id": "dienes",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 177.03904217687239,
+      "forwardFrameChanges": 17,
+      "backwardFrameChanges": 17,
+      "scaledHeight": 210.694
+    },
+    {
+      "id": "ruan",
+      "mode": "story",
+      "posesSeen": [
+        "base:0",
+        "base:1",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7"
+      ],
+      "distanceDuringForward": 179.48309115646242,
+      "forwardFrameChanges": 16,
+      "backwardFrameChanges": 17,
+      "scaledHeight": 212.801
+    }
+  ]
+}

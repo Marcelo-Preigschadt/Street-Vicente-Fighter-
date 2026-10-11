@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "vial",
+    "legs": [
+      {
+        "reachable": true,
+        "error": 0
+      },
+      {
+        "reachable": true,
+        "error": 0
+      },
+      {
+        "reachable": true,
+        "error": 0
+      }
+    ]
+  },
+  {
+    "kind": "scanner",
+    "legs": [
+      {
+        "reachable": true,
+        "error": 0
+      },
+      {
+        "reachable": true,
+        "error": 0
+      }
+    ]
+  }
+]

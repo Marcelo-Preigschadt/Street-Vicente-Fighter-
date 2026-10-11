@@ -1,4 +1,6 @@
-// Exercises the shipping Canvas compositor and simulation, including foot-lock metrics.
+// Exercises the game Canvas compositor and simulation. A rejected actor mesh
+// can be inspected with --experimental-rig; passing contact metrics does not
+// grant visual approval.
 import {createRequire} from 'node:module';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {Renderer} from '../src/render.js';
@@ -10,9 +12,9 @@ import {referenceJoints} from '../src/locomotion-data.js';
 const require=createRequire(import.meta.url);let canvasModule;try{canvasModule=require('@napi-rs/canvas');}catch(error){if(!process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES)throw new Error('Instale @napi-rs/canvas para a conferência visual (os testes de simulação não dependem dele).',{cause:error});canvasModule=require(`${process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES}/@napi-rs/canvas`);}const {createCanvas,Image}=canvasModule;
 globalThis.document={createElement:()=>createCanvas(1,1)};globalThis.matchMedia=()=>({matches:false});globalThis.Image=class extends Image{set src(path){super.src=typeof path==='string'?path.split('?')[0]:path;}get src(){return super.src;}};
 globalThis.fetch=async path=>new Response(await readFile(path.split('?')[0]));
-const directory=process.argv[2]??'/tmp/svf-locomotion';await mkdir(directory,{recursive:true});
-const canvas=createCanvas(1280,720),r=new Renderer(canvas);await r.load(Object.keys(CHARACTERS));await r.loadStory();
-const ids=['marcelo','rafael','gustavo','tais'],metrics=[];
+const directory=process.argv.slice(2).find(value=>!value.startsWith('--'))??'/tmp/svf-locomotion';await mkdir(directory,{recursive:true});
+const canvas=createCanvas(1280,720),r=new Renderer(canvas,{experimentalActorRig:process.argv.includes('--experimental-rig')});await r.load(Object.keys(CHARACTERS));await r.loadStory();
+const ids=Object.keys(CHARACTERS),metrics=[];
 for(const id of ids){
  const g=new FightEngine({random:()=>.6});g.start(id,'local',id==='rafael'?'marcelo':'rafael');g.phase='fight';g.fighters[0].x=270;g.fighters[1].x=1170;
  const f=g.fighters[0];f.prevX=f.x;resetFeet(f);const sheet=createCanvas(1280,740),c=sheet.getContext('2d');c.fillStyle='#090d14';c.fillRect(0,0,1280,740);
@@ -23,12 +25,12 @@ for(const id of ids){
   const p=evaluateRig(f),distance=(v,a,b)=>Math.hypot(v[a*2]-v[b*2],v[a*2+1]-v[b*2+1]);
   for(const [h,k,a]of [[3,4,5],[7,8,9]])maxStretch=Math.max(maxStretch,(distance(p,h,k)+distance(p,k,a))/(distance(reference,h,k)+distance(reference,k,a)));
   r.c=canvas.getContext('2d');r.c.clearRect(0,0,1280,720);r.drawFighter(f);const rig=r.locomotionRigs[id];
-  for(let i=0;i<rig.vertices.length;i++){const v=rig.vertices[i],side=v.first===5?0:v.first===9?1:-1;if(side<0||v.weight!==1||v.sy<rig.height*.98)continue;const foot=f.motion.feet[side],x=f.x+rig.positions[i*2]*f.direction*entityScale(f),y=f.y+rig.positions[i*2+1]*entityScale(f),last=soleSamples.get(i);
+  for(let i=0;i<(rig?.vertices.length??0);i++){const v=rig.vertices[i],side=v.first===5?0:v.first===9?1:-1;if(side<0||v.weight!==1||v.sy<rig.height*.98)continue;const foot=f.motion.feet[side],x=f.x+rig.positions[i*2]*f.direction*entityScale(f)*(f.character.visualWidth??1),y=f.y+rig.positions[i*2+1]*entityScale(f),last=soleSamples.get(i);
    if(last?.support&&foot.support&&last.lift===0&&foot.lift===0)maxSoleDrift=Math.max(maxSoleDrift,Math.hypot(x-last.x,y-last.y));soleSamples.set(i,{x,y,support:foot.support,lift:foot.lift});}
   if(frame%15===0&&frame<120){const sample=frame/15;c.save();c.translate((sample%4)*320+150-f.x,Math.floor(sample/4)*360+325-f.y);r.c=c;r.drawFighter(f);c.restore();c.fillStyle='#d6e4eb';c.font='15px Arial';c.fillText(`${id} · ${f.motion.state} · ${frame}/60 s`,sample%4*320+12,Math.floor(sample/4)*360+347);}
   if(frame<72&&id==='marcelo'){r.c=canvas.getContext('2d');r.c.fillStyle='#000';r.c.fillRect(0,0,1280,720);r.drawFighter(f);await writeFile(`${directory}/walk-${String(frame).padStart(3,'0')}.png`,canvas.toBuffer('image/png'));}
  }
- await writeFile(`${directory}/${id}-forward.png`,sheet.toBuffer('image/png'));metrics.push({id,maxSupportDrift:maxDrift,maxSoleDrift,maxLegLengthRatio:maxStretch});
+ await writeFile(`${directory}/${id}-forward.png`,sheet.toBuffer('image/png'));metrics.push({id,maxSupportDrift:maxDrift,maxSoleDrift:r.locomotionRigs[id]?maxSoleDrift:null,maxLegLengthRatio:maxStretch});
  g.setInput(0,{left:true});for(let i=0;i<40;i++)g.update(FIXED_STEP);
  r.c=canvas.getContext('2d');r.c.fillStyle='#000';r.c.fillRect(0,0,1280,720);r.drawFighter(f);await writeFile(`${directory}/${id}-backward.png`,canvas.toBuffer('image/png'));
  g.setInput(0,{});for(let i=0;i<18;i++)g.update(FIXED_STEP);r.draw(g,0,1);await writeFile(`${directory}/${id}-versus.png`,canvas.toBuffer('image/png'));

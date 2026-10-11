@@ -1,5 +1,6 @@
 import {KHAUANY_HURT} from './khauany-data.js';
-import {GAITS} from './locomotion-data.js';
+import {nativeWalkPose} from './native-walk.js';
+import {NATIVE_WALK_HURT} from './native-walk-data.js';
 
 // Compact counter-fighting stance, with the launcher and sliding kick painted
 // as complete poses instead of reusing Luciana's punch/knee frames.
@@ -16,12 +17,11 @@ export function khauanyPose(f){
     ko:15,knockdown:15,punch:extended?8:7,kick:extended?9:0,
     guardCounter:extended?8:6,special:extended?13:6,super:extended?13:6};
   if(Object.hasOwn(base,f.state))return {atlas:'base',index:base[f.state]};
-  if(f.footwork)return {atlas:'motion',index:f.footwork.kind==='advance'?2:6};
-  if(f.state==='walk'||f.walkBlend>.02)return {atlas:'motion',index:Math.floor(Math.abs(f.walkDistance)/GAITS.khauany.stride*8)%8};
+  const walk=nativeWalkPose(f);if(walk)return walk;
   return {atlas:'base',index:Math.floor(f.animTime*4)%2};
 }
 export function khauanyHurt(f){
-  const {atlas,index}=khauanyPose(f),bands=KHAUANY_HURT[atlas][index];
+  const {atlas,index}=khauanyPose(f),bands=atlas==='motion'?NATIVE_WALK_HURT.khauany[index]:KHAUANY_HURT[atlas][index];
   // The leaning hit reaction lowers the crown a few pixels below other
   // fighters. Keep a small head contact margin so high combo finishers connect.
   return f.state==='hit'?bands.map((band,i)=>i===bands.length-1

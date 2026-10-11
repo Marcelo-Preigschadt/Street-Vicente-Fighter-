@@ -1,18 +1,42 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {FightEngine,Fighter,FIXED_STEP,WORLD} from '../src/engine.js';
+import {FightEngine,Fighter,FIXED_STEP,WORLD,CHARACTERS,fighterPose} from '../src/engine.js';
 import {StoryEngine} from '../src/story.js';
-import {STORY_WORLD,entityScale} from '../src/story-world.js';
+import {STORY_WORLD,entityScale,scaledBox} from '../src/story-world.js';
+import {NATIVE_WALK_HURT} from '../src/native-walk-data.js';
 import {GAITS,referenceJoints,MOTION_STATES} from '../src/locomotion-data.js';
 import {resetFeet,evaluateRig,motionState,handSockets,updateLocomotion,usesRig} from '../src/locomotion.js';
 import {interpolateFighter} from '../src/locomotion-render.js';
+import {Renderer} from '../src/render.js';
 import {heldObjectTransform,STORY_PROP_DIMENSIONS,thrownObjectBounds,carryStrikeBox} from '../src/story-props.js';
 import {ENEMY_TYPES} from '../src/story-data.js';
-const ids=['marcelo','rafael','gustavo','tais'];
+const ids=Object.keys(CHARACTERS);
 const advance=(e,t)=>{for(let i=0;i<Math.round(t/FIXED_STEP);i++)e.update(FIXED_STEP);};
 function versus(id,slot=0){const e=new FightEngine();const other=id==='marcelo'?'rafael':'marcelo';e.start(slot===0?id:other,'local',slot===1?id:other);e.phase='fight';e.fighters[0].x=450;e.fighters[1].x=830;for(const f of e.fighters){f.prevX=f.x;resetFeet(f);}return e;}
 function story(id='marcelo'){const e=new StoryEngine();e.start(id,'story-solo');e.queue(0,'storyNext');return e;}
 const length=(p,a,b)=>Math.hypot(p[a*2]-p[b*2],p[a*2+1]-p[b*2+1]);
+
+test('o jogo padrão desenha poses completas e não ativa uma malha reprovada por acidente',t=>{
+ const previous=globalThis.matchMedia;globalThis.matchMedia=()=>({matches:false});t.after(()=>{globalThis.matchMedia=previous;});
+ const calls=[],c={save(){},restore(){},translate(){},scale(){},drawImage(...args){calls.push(args);}};
+ const renderer=new Renderer({getContext:()=>c});
+ const bitmap={},frame={image:bitmap,rect:[10,20,210,300],x:0,y:0,w:210,h:300,anchor:105,bottom:300,scale:1};
+ renderer.poseFor=()=>({sheet:{frames:[frame]},index:0});
+ const rejected=new Proxy({}, {get(){throw new Error('Malha não aprovada foi usada');}});
+ for(const id of ids)for(const slot of [0,1])for(const state of ['idle','walk','block','jump']){
+  const f=versus(id,slot).fighters[slot];f.state=state;f.carry={kind:'chair',id:'no-warp',elapsed:.18};renderer.locomotionRigs[id]=rejected;calls.length=0;
+  renderer.drawFighter(f);
+  assert.deepEqual(calls,[[bitmap,10,20,210,300,-105,-300,210,300]],`${id} P${slot+1} ${state}`);
+ }
+});
+
+test('colisões da caminhada padrão seguem o quadro desenhado mesmo com os apoios preparados',()=>{
+ for(const id of ['luciana','khauany','dienes'])for(const slot of [0,1])for(let frame=0;frame<8;frame++){
+  const f=versus(id,slot).fighters[slot];f.state='walk';f.walkBlend=1;f.walkDistance=GAITS[id].stride*(frame+.1)/8;
+  const pose=fighterPose(f);assert.equal(pose.atlas,'motion');assert.equal(pose.index,frame);assert.ok(f.motion.ready);
+  assert.deepEqual(f.hurtboxes,NATIVE_WALK_HURT[id][frame].map(([x,y,w,h])=>scaledBox(f,x,y,w,h)));
+ }
+});
 
 for(const id of ids)for(const slot of [0,1])test(`${id}, P${slot+1}: apoios fixos e pernas sem alongamento artificial ao avançar/recuar`,()=>{
  for(const backwards of [false,true]){
@@ -23,7 +47,7 @@ for(const id of ids)for(const slot of [0,1])test(`${id}, P${slot+1}: apoios fixo
    for(const [side,h,k,a] of [[0,3,4,5],[1,7,8,9]]){
     const foot=f.motion.feet[side];if(before[side].support&&foot.support){assert.equal(foot.x,before[side].x);assert.equal(foot.lane,before[side].lane);supports++;}
     if(foot.lift>0)lifts++;
-    assert.ok(Math.abs(f.x+p[a*2]*f.direction-foot.x)<1e-7);
+    assert.ok(Math.abs(f.x+p[a*2]*f.direction*(f.character.visualWidth??1)-foot.x)<1e-7);
     assert.ok((length(p,h,k)+length(p,k,a))/(length(r,h,k)+length(r,k,a))<1.08);
    }
   }
@@ -59,9 +83,9 @@ test('máquina de movimento dá prioridade a hit, block, stun, knockdown, get-up
 });
 
 test('ataque após passada tem startup, active, recovery e conserva o pé de apoio durante o avanço',()=>{
- for(const id of ids){const e=versus(id),f=e.fighters[0];e.setInput(0,{right:true});advance(e,.12);e.queue(0,'punch',1);e.update(FIXED_STEP);assert.equal(f.movePhase,'startup');assert.equal(f.attackbox,null);assert.ok(f.attackPlant);const planted=f.attackPlant.x;let active=false,recovery=false;
-  for(let i=0;i<65&&f.action;i++){e.update(FIXED_STEP);if(f.movePhase==='active'){active=true;assert.ok(f.attackbox);}if(f.movePhase==='recovery'){recovery=true;assert.equal(f.attackbox,null);}if(f.attackPlant)assert.equal(f.attackPlant.x,planted);}
-  assert.ok(active&&recovery);advance(e,.2);assert.ok(f.motion.blend>.9);
+ for(const id of ids){const e=versus(id),f=e.fighters[0];e.fighters[1].x=1200;e.setInput(0,{right:true});advance(e,.12);e.queue(0,'punch',1);e.update(FIXED_STEP);assert.equal(f.movePhase,'startup');assert.equal(f.attackbox,null);assert.ok(f.attackPlant);const planted=f.attackPlant.x;let active=false,recovery=false;
+  for(let i=0;i<180&&f.action;i++){e.update(FIXED_STEP);if(f.movePhase==='active'){active=true;assert.ok(f.attackbox);}if(f.movePhase==='recovery'){recovery=true;assert.equal(f.attackbox,null);}if(f.attackPlant)assert.equal(f.attackPlant.x,planted);}
+  assert.equal(f.action,null,id);assert.ok(active&&recovery);advance(e,.2);assert.ok(f.motion.blend>.9,id);
  }
 });
 
@@ -85,7 +109,7 @@ test('profundidade usa a posição dos pés, com apoios estáveis em deslocament
  assert.ok(supports>40);assert.ok(f.lane<625);assert.equal(f.feetY,f.lane);assert.equal(f.y,WORLD.floor);assert.ok(f.walkDistance>20);
 });
 
-test('cadeira fica nas duas mãos ao virar e é solta somente após o startup do arremesso',()=>{
+test('encaixe nos punhos virtuais espelha a cadeira e a simulação só a solta após o startup do arremesso',()=>{
  const e=story('tais'),f=e.fighters[0],p=e.props.find(p=>p.kind==='chair');e.story.wave=3;e.story.dropWave=3;e.camera=p.x-400;f.x=p.x-20;f.prevX=f.x;f.lane=p.lane;f.prevLane=f.lane;resetFeet(f);e.queue(0,'punch');assert.equal(f.carry.kind,'chair');advance(e,.2);
  for(const direction of [1,-1]){f.direction=direction;resetFeet(f);const hands=handSockets(f),held=heldObjectTransform(f),size=STORY_PROP_DIMENSIONS.chair;
   for(const [sign,x,y]of [[-1,hands.leftX,hands.leftY],[1,hands.rightX,hands.rightY]]){const gx=sign*held.gripSpan*.5*direction,gy=-size.height*.8;assert.ok(Math.abs(held.x+gx*Math.cos(held.angle)-gy*Math.sin(held.angle)-x)<1e-7);assert.ok(Math.abs(held.y+gx*Math.sin(held.angle)+gy*Math.cos(held.angle)-y)<1e-7);}
@@ -97,7 +121,9 @@ test('parceiro revivido retém escala, profundidade e apoios da campanha',()=>{
  const e=new StoryEngine();e.start('marcelo','story-local','rafael');e.queue(0,'storyNext');e.fighters[0].lane=570;e.fighters[1].hp=0;e.update(FIXED_STEP);const f=e.fighters[1];assert.equal(f.hp,350);assert.equal(f.worldScale,STORY_WORLD.actorScale);assert.equal(f.lane,570);assert.ok(f.motion.ready);assert.ok(f.motion.feet.every(p=>p.lane===570));
 });
 test('reposicionar no mundo renova apoios sem arrastar a pose para o ponto antigo',()=>{
- const e=versus('marcos'),f=e.fighters[0];advance(e,.2);f.x+=90;e.update(FIXED_STEP);assert.ok(Math.abs(f.motion.bodyShift)<10);assert.ok(f.hurtboxes[0].x>f.x-40);assert.equal(f.motion.lastWorldX,f.x);
+ const e=versus('marcos'),f=e.fighters[0];advance(e,.2);const before=f.hurtboxes;f.x+=90;f.animTime-=FIXED_STEP;e.update(FIXED_STEP);assert.ok(Math.abs(f.motion.bodyShift)<10);
+ f.hurtboxes.forEach((box,i)=>{assert.ok(Math.abs(box.x-before[i].x-90)<1e-7);assert.equal(box.y,before[i].y);});
+ assert.equal(f.motion.lastWorldX,f.x);
 });
 test('virar troca pé dianteiro/traseiro e mantém os contatos existentes no mundo',()=>{
  const f=versus('marcelo').fighters[0],feet=f.motion.feet.map(p=>p.x).sort((a,b)=>a-b);f.direction=-1;f.prevX=f.x;updateLocomotion(f,FIXED_STEP);assert.deepEqual(f.motion.feet.map(p=>p.x).sort((a,b)=>a-b),feet);assert.equal(f.motion.facing,-1);
@@ -108,7 +134,7 @@ test('todos os equipamentos têm aproximação, preparação, contato, recupera�
   assert.ok(walking&&start&&attack&&recovery,kind);n.hp=0;e.update(FIXED_STEP);assert.equal(n.motion.state,'DEFEAT',kind);
  }
 });
-test('carga dos chefes bípedes usa passada articulada durante o avanço comprometido',()=>{
+test('cinemática experimental dos chefes avança durante a carga comprometida',()=>{
  const e=story(),n=e.spawnEnemy('inspector',670);n.attackMode='charge';n.attackLife=.3;n.state='attack';n.direction=-1;const x=n.x;e.update(FIXED_STEP);assert.ok(n.x<x);assert.ok(n.motion.phase>0);assert.ok(usesRig(n));
 });
 test('golpe com cadeira preserva as mãos ocupadas e só causa dano durante os frames ativos',()=>{
@@ -129,7 +155,7 @@ test('boxe inicia avanço pelo pé dianteiro e recuo pelo traseiro, sem cruzar a
   assert.ok(f.motion.feet.some((p,i)=>Math.abs(p.x-start[i])>10));
  }
 });
-test('silhueta em câmera lenta: quadril, ambas as coxas, tronco, ombros e braços variam com o worldX congelado',()=>{
+test('juntas virtuais do experimento variam quadril, coxas, tronco, ombros e braços com worldX congelado',()=>{
  const angle=(p,a,b)=>Math.atan2(p[b*2]-p[a*2],p[b*2+1]-p[a*2+1]);
  const span=values=>Math.max(...values)-Math.min(...values);
  for(const id of ids){
@@ -158,7 +184,7 @@ test('silhueta em câmera lenta: quadril, ambas as coxas, tronco, ombros e braç
   assert.ok(frames.some(x=>x.feet.some((foot,i)=>foot.support&&foot.x===x.before[i].x)),id+' pé plantado');
  }
 });
-test('História compartilha a pose articulada com 1×1 para herói e exoesqueleto bípede',()=>{
+test('História e 1×1 compartilham a cinemática experimental para herói e exoesqueleto',()=>{
  const e=story('tais'),hero=e.fighters[0],robot=e.spawnEnemy('exo',880,625);
  e.enemies=e.enemies.filter(enemy=>enemy!==robot);
  e.setInput(0,{right:true});const samples=[[],[]];

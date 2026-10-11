@@ -1,5 +1,11 @@
 # Movimento 4.6.0
 
+> Documento histórico. A revisão de 11/10/2026 reprovou a deformação visual da
+> malha. A versão candidata usa poses completas por padrão; testes de juntas
+> virtuais não comprovam pés plantados nos pixels dessas poses. O encaixe dos
+> objetos também não está aprovado. Estado atual e evidências:
+> [revisao-animacao-20261011.md](revisao-animacao-20261011.md).
+
 ## Diagnóstico antes da edição
 
 | Responsabilidade | Código investigado | Causa encontrada |

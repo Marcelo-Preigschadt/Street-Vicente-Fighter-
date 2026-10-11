@@ -1,4 +1,5 @@
 import { MOTION_HURT } from './motion-data.js?v=27';
+import {nativeWalkPose} from './native-walk.js';
 
 // Complete drawings, distance-driven footwork and committed burst steps.
 // A step changes spacing; it never grants whole-body invulnerability.
@@ -30,10 +31,7 @@ export function motionPose(f) {
     const { kind,time,duration } = f.footwork;
     return { atlas:'motion', index:(kind === 'advance' ? 8 : 10) + Number(time >= duration * .42) };
   }
-  if (['walk','idle'].includes(f.state) && f.walkBlend > 0) {
-    const cycle = ((f.walkDistance / FOOTWORK[f.character.id].stride) % 1 + 1) % 1;
-    return { atlas:'motion', index:Math.floor(cycle * 8) };
-  }
+  if(f.walkBlend>0)return nativeWalkPose(f,{footwork:false});
   return null;
 }
 

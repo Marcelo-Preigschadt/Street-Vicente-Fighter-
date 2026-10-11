@@ -1,0 +1,21 @@
+{
+  "khauany": {
+    "baselineStem": "assets/runtime/khauany-v1",
+    "outputStem": "assets/runtime/khauany-v2",
+    "corrections": [
+      {
+        "atlas": "combat",
+        "index": 14,
+        "animation": "sweep-contact",
+        "source": "assets/source/khauany-sweep-contact-v2.png",
+        "runtimeWidth": 470,
+        "authoredScale": 0.255,
+        "anchorFraction": 0.4404
+      }
+    ],
+    "hurtData": {
+      "path": "src/khauany-data.js",
+      "export": "KHAUANY_HURT"
+    }
+  }
+}

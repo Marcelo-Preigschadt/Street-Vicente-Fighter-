@@ -1,0 +1,219 @@
+{
+  "beforeCommit": "ddd06f015c2ed1af7726b765bbdb1ccb22c83f41",
+  "heroes": 12,
+  "preparedPacks": 12,
+  "externalWalkPacks": 9,
+  "scope": "Same existing art files, not a proof of facial identity against unavailable photographs",
+  "files": [
+    {
+      "file": "assets/runtime/marcelo-v1.webp",
+      "sha256": "0a30917443d41da6eff634ccf73078926f52a0229e76f59b9a9ffb8c2dc12418",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/marcelo-v1.json",
+      "sha256": "46c6fea44977ec52bf3f9f05816af3e77c90db5b542f2c80c1dabb9497079699",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/rafael-v1.webp",
+      "sha256": "f035756bf486b13b3960d254e99fd7d15d283baeda7bd8a5d77383e4f0ec8eb7",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/rafael-v1.json",
+      "sha256": "b0643db194cf6a025bf5a98fb0f0fc032c93c5e6faeee43e672c36d98a92e607",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/gustavo-v1.webp",
+      "sha256": "f2bc7550dbe276636e8e7c395b2a909ca92600d7f2d2a2e30f555ed2a9e76021",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/gustavo-v1.json",
+      "sha256": "08f07908b69c80d564c3a4424af96b42b25d87b998597d96f00a8ebbfb86ff65",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/gelton-v1.webp",
+      "sha256": "fa0b8a917625b90245f7174cfc08d8473261b2bbcb3a31ed01ab9b77b71125b4",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/gelton-v1.json",
+      "sha256": "9ec7520868bf2182a04e083ac62b9545f893ff31ee06ad99c279a7d0d2aec377",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/marcelino-v1.webp",
+      "sha256": "c26620795f181402980c223e818ad5c40a5f5f5e840d3099866671ed216c3675",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/marcelino-v1.json",
+      "sha256": "13233f47fcea01c7b143c811937750c284557fd91ae298324e9f850f845a84a5",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/marcos-v1.webp",
+      "sha256": "c3791b5d6024a527723bc70a0af59bef5e5301739e6ee763e8080b08ee627834",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/marcos-v1.json",
+      "sha256": "1a7c562e1eb55f3e732d8da186de744eefd98ee61e7344f7fb1ea6fae2b6f503",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/joao-v1.webp",
+      "sha256": "71c1896185ede2fb43dc88c5ed28593ab6e108ccc6050a218ab3a167bbe8bf8d",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/joao-v1.json",
+      "sha256": "052bb215a5017924121acb7f893e94d733f8d9224f1f5a32c4e44df9450f3717",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/ruan-v1.webp",
+      "sha256": "52fd9cbb97d9b098ebb379dcb64d128ead3532af081792220a9bf33bae885b54",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/ruan-v1.json",
+      "sha256": "a91a870ddaad4800efc7ff7db12b90b52926c0490b7b73c87eabdcf5eafa6237",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/tais-v2.webp",
+      "sha256": "298c67c8e6ba37c6e9f60bbe6567b50e7de5e38d154df799703af32acabb395f",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/tais-v2.json",
+      "sha256": "c4334f9b9ffbf089bb7e9e8df9fd7f1dd43661d70eb72d35252e18140ee397f8",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/luciana-v1.webp",
+      "sha256": "3e91e070a88e87846b133fe15e63cc2900f3a97fbc68e47b6f7af089ee5dcb43",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/luciana-v1.json",
+      "sha256": "a7681596956bf3e6d3149abb6b6d10456deffa968e12b06430ea967803390d79",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/khauany-v2.webp",
+      "sha256": "753a9516129ae2fbd92f12777fe2a815066ecf8541234c81503c00b086896759",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/khauany-v2.json",
+      "sha256": "f4289fce766922eeb396ff5a6ee91a861b7220d74ac960a83b1b9c92523e3747",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/dienes-v2.webp",
+      "sha256": "ac6c237e07cd44189693ce45b596fceb4980accb49503cd92df46b25804662b0",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/runtime/dienes-v2.json",
+      "sha256": "7e8425d96ba244df3896903cb675b04180fcc118605957f43b73158c487dbd84",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/gelton-walk-v3.webp",
+      "sha256": "72108b3027a4128d06b0ecfcc8a04ad0dabe0c93f2f20a94c85e0d4625a5288d",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/gelton-walk-v3.json",
+      "sha256": "e3534986b2b664b8b496d54bd3aed989ae26588906fd74d40781f34de445335b",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/marcelino-walk-v3.webp",
+      "sha256": "048bd42f3684709df0b1e7f3329698781daff9118a4f34ea4f183e691051a16e",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/marcelino-walk-v3.json",
+      "sha256": "e258d1dddd1acfd405b8dd1118845026c8110ff081b9447eb39351cafa69d9db",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/marcos-walk-v3.webp",
+      "sha256": "baa8c69b28e6d9d656bd9e339d20084eb3761818530e118f6decc7ce77bcd535",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/marcos-walk-v3.json",
+      "sha256": "d847c3c894cf92c0ee9da59401d0bf2f019aadc345de92a599f3fe7867b84466",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/joao-walk-v3.webp",
+      "sha256": "01feaa42d523af3a95eaacbfc97f1fb1758a96f7b2b394caa8e463c4cb1e7260",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/joao-walk-v3.json",
+      "sha256": "17ababbbd00d4656480d35bf7ecbf672928851670eafc88bbb35845a017ae439",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/ruan-walk-v3.webp",
+      "sha256": "a9241c872eb3efcef9ab3dc7f2b4d82bf5fe63a1ad7207952274797aa0f3a7e2",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/ruan-walk-v3.json",
+      "sha256": "7d50168d00634ce1bc1a7a6b4d1f4a60238d929036b288d7f2506a5aed753863",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/tais-walk-v4.webp",
+      "sha256": "c45a54b4ace09d240f62d646ccc9ec86cd6b5dda71147fccb1ddceaf49f9eb06",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/tais-walk-v4.json",
+      "sha256": "7ca67e4f76d92c8c5f033fe36569e9b431dc689f5a44901a6b815a22ed5e2b80",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/luciana-walk-v2.webp",
+      "sha256": "fa28d6e4512a6a7aa742652c674a6f209433fa20ae99203b2b796945148efb65",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/luciana-walk-v2.json",
+      "sha256": "75fedf52a5bdaeb6bde9e445dc00766a02a3c253abea7f8e0f7d633cffca0248",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/khauany-walk-v3.webp",
+      "sha256": "f4db853cde5e6e4643a5971189270d5eac49ee8ae1693111858cf78d64825da6",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/khauany-walk-v3.json",
+      "sha256": "fc9c5c3652815566872cd1d4a9d7ccc76d512e33fae9ee8f6d38335889f83387",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/dienes-walk-v2.webp",
+      "sha256": "73c25fa767406ed02e766d2c26fb54330044c93694ebf35dddfafff6c6e84623",
+      "byteExactAgainstPreviousReview": true
+    },
+    {
+      "file": "assets/story/dienes-walk-v2.json",
+      "sha256": "b550693fde9392956344e5a35adff4676e82b17f281fba0c260aa5bf5749da97",
+      "byteExactAgainstPreviousReview": true
+    }
+  ]
+}

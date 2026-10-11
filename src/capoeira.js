@@ -1,4 +1,6 @@
 import { GELTON_HURT } from './gelton-hurt.js?v=27';
+import {nativeWalkPose} from './native-walk.js';
+import {NATIVE_WALK_HURT} from './native-walk-data.js';
 // Dedicated whole-body capoeira poses. The same pose selects rendering and collisions.
 export function capoeiraPose(f) {
   const m=f.moveData, stage=m ? f.actionTime<m.startup ? Number(f.actionTime>=m.startup*.5) : f.actionTime<m.startup+m.active ? 2 : 3 : 0;
@@ -11,10 +13,11 @@ export function capoeiraPose(f) {
   if(f.state==='crouchPunch')return {atlas:'base',index:14};
   const pose={crouch:4,lowBlock:5,block:6,jump:7,hit:f.hitCrouched?9:8,ko:10,knockdown:10,wake:11,victory:12,landing:4,preJump:4,dizzy:8};
   if(Object.hasOwn(pose,f.state))return {atlas:'base',index:pose[f.state]};
+  const walk=nativeWalkPose(f);if(walk)return walk;
   return {atlas:'base',index:Math.floor(f.animTime*8)%4};
 }
 export function capoeiraHurt(f) {
-  const pose=capoeiraPose(f);return GELTON_HURT[pose.atlas][pose.index];
+  const pose=capoeiraPose(f);return (pose.atlas==='motion'?NATIVE_WALK_HURT.gelton:GELTON_HURT[pose.atlas])[pose.index];
 }
 export const CAPOEIRA_STRIKES={
   punch:{near:35,reach:158,height:218,h:42},crouchPunch:{near:20,reach:146,height:118,h:46},

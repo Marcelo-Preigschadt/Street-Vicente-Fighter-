@@ -26,8 +26,8 @@ test('cotovelo, circular, low kick e joelhada escolhem poses distintas no contat
 });
 test('recuo não produz índice negativo; passos e guarda preservam um corpo completo',()=>{
   const f=new Fighter('marcelino',0);f.state='walk';
-  for(let d=-400;d<401;d+=13){f.walkDistance=d;const p=fighterPose(f);assert.ok(p.index>=0&&p.index<4);}
-  f.footwork={kind:'retreat'};assert.deepEqual(fighterPose(f),{atlas:'base',index:3});
+  for(let d=-400;d<401;d+=13){f.walkDistance=d;const p=fighterPose(f);assert.equal(p.atlas,'motion');assert.ok(p.index>=0&&p.index<8);}
+  f.footwork={kind:'retreat'};assert.deepEqual(fighterPose(f),{atlas:'motion',index:6});
 });
 test('áreas vulneráveis acompanham pose, esquiva e espelhamento nos dois lados',()=>{
   const f=new Fighter('marcelino',0);
