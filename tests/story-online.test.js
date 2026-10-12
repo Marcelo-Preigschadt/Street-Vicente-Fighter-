@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {RelayPeer} from '../src/relay.js';
 import {OnlineMatch} from '../src/online.js';
 import {StoryEngine} from '../src/story.js';
-import {snapshot,PROTOCOL} from '../src/net-state.js';
+import {snapshot,STORY_PROTOCOL} from '../src/net-state.js';
 import {RoomDirectory} from '../src/rooms.js';
 const flush=()=>new Promise(r=>setImmediate(r));
 function sockets(){const all=new Set();return class Socket extends EventTarget {
@@ -32,5 +32,5 @@ test('sala história não aceita jogadores do versus e aceita alunos na equipe',
 });
 test('diretório registra modo e protocolo sem segredo e uma resposta antiga não repõe salas do outro modo',async()=>{
  let finish;const calls=[];const d=new RoomDirectory({fetcher:async(url,options)=>{calls.push({url,...options});if(options.method==='GET'&&url.includes('game_mode=eq.versus'))await new Promise(r=>finish=r);return {ok:true,status:options.method==='GET'?200:204,json:async()=>[{code:'ABCDEFGH',game_mode:url.includes('eq.story')?'story':'versus'}]};}});
- const old=d.refresh();d.setMode('story');finish();await old;assert.equal(d.rooms[0].game_mode,'story');await d.register('HGFEDCBA','rafael');const body=JSON.parse(calls.find(c=>c.method==='POST').body);assert.equal(body.game_mode,'story');assert.equal(body.protocol,PROTOCOL);assert.equal(body.token,undefined);assert.match(body.owner_hash,/^[a-f0-9]{64}$/);await d.remove();
+ const old=d.refresh();d.setMode('story');finish();await old;assert.equal(d.rooms[0].game_mode,'story');await d.register('HGFEDCBA','rafael');const body=JSON.parse(calls.find(c=>c.method==='POST').body);assert.equal(body.game_mode,'story');assert.equal(body.protocol,STORY_PROTOCOL);assert.equal(body.token,undefined);assert.match(body.owner_hash,/^[a-f0-9]{64}$/);await d.remove();
 });

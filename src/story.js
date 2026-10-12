@@ -5,13 +5,14 @@ import {storyPropBounds,heldObjectTransform,thrownObjectBounds,carryStrikeBox} f
 import {STORY_WORLD,entityScale,scaledBox} from './story-world.js';
 import {saveMotion,updateLocomotion,resetFeet,usesRig,rigHurtboxes,isCarryStrike} from './locomotion.js';
 import {updateEnemyMechanicalFeet,mechanicalHurtboxes} from './story-enemy-motion.js';
+import {StoryHero,storyHandSocket,STORY_WALK_SPEED} from './story-hero.js';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const idle=()=>({left:false,right:false,jump:false,down:false,block:false});
 const copy=v=>JSON.parse(JSON.stringify(v));
 const strikeData=(damage,level='mid')=>({damage,strength:1,stun:.24,blockstun:.16,push:220,meter:0,level,chip:.08,knockdown:false});
 export class StoryEnemy extends Fighter {
-  constructor(kind,slot,x){super('marcelo',slot);this.kind=kind;this.storyEnemy=true;this.worldScale=STORY_WORLD.actorScale;this.x=x;this.prevX=x;this.y=WORLD.floor;this.maxHp=ENEMY_TYPES[kind].hp;this.hp=this.maxHp;this.aiTime=.65;this.attackSerial=0;this.attackMode='';this.hitIds=[];this.deadTime=0;this.intentX=x;this.cooldown=.5;this.telegraph=0;this.attackLife=0;this.lane=625;this.prevLane=625;this.intentLane=625;this.recovery=0;this.attackDirection=1;this.pendingThrow=null;this.tripodFoot=null;initMostafaEnemy(this);}
+  constructor(kind,slot,x){super('marcelo',slot);this.kind=kind;this.storyEnemy=true;this.worldScale=STORY_WORLD.actorScale;this.x=x;this.prevX=x;this.y=WORLD.floor;this.maxHp=ENEMY_TYPES[kind].hp;this.hp=this.maxHp;this.aiTime=.65;this.attackSerial=0;this.attackMode='';this.hitIds=[];this.deadTime=0;this.intentX=x;this.cooldown=.5;this.telegraph=0;this.attackLife=0;this.lane=625;this.prevLane=625;this.intentLane=625;this.recovery=0;this.attackDirection=1;this.pendingThrow=null;this.tripodFoot=null;this.entering=false;this.entrySide=0;this.entryDelay=0;this.prevBrawlerWalkDistance=0;initMostafaEnemy(this);}
   get profile(){return ENEMY_TYPES[this.kind];}
   get hurtboxes(){if(this.hp<=0||this.invincible>0)return [];if(this.kind==='vial'||this.kind==='scanner')return mechanicalHurtboxes(this);if(this.experimentalActorRig&&usesRig(this))return rigHurtboxes(this);const p=this.profile;return [scaledBox(this,-p.w*.4,p.h,p.w*.8,p.h*.23),scaledBox(this,-p.w*.38,p.h*.77,p.w*.76,p.h*.43),scaledBox(this,-p.w*.38,p.h*.34,p.w*.76,p.h*.34)];}
   get pushbox(){return this.hp>0?scaledBox(this,-45,120,90,120):null;}
@@ -28,7 +29,7 @@ export class StoryEngine extends FightEngine {
     if(!mode.startsWith('story-')){this.storyActive=false;return super.start(id,mode,other);}
     if(!STORY_HEROES.includes(id)||!STORY_HEROES.includes(other))throw new RangeError('Selecione um personagem disponível para o resgate.');
     this.storyActive=true;this.mode=mode;this.playerId=id;this.cpu=mode==='story-solo';this.paused=false;this.time=0;this.round=1;this.roundWinner=null;
-    this.fighters=[new Fighter(id,0),new Fighter(other,1)];this.timer=clamp(options.timer??STORY_RULES.turnSeconds,1,STORY_RULES.turnSeconds);this.freeze=0;this.nextDroneId=1;
+    this.fighters=[new StoryHero(id,0),new StoryHero(other,1)];this.timer=clamp(options.timer??STORY_RULES.turnSeconds,1,STORY_RULES.turnSeconds);this.freeze=0;this.nextDroneId=1;
     this.story={act:clamp(options.act??0,0,3),wave:0,boss:false,bossPhase:1,duelist:0,seed:options.seed??0x51f4701,nextId:2,score:0,defeated:0,revives:0,checkpointTimer:STORY_RULES.turnSeconds,dialog:'entry',ending:false,notice:'',noticeTime:0,overclock:false};
     this.loadAct(this.story.act,true);
   }
@@ -47,7 +48,34 @@ export class StoryEngine extends FightEngine {
     super.setInput(slot,{...input,down:input.crouch===true});
   }
   beginFootwork(f,kind){if(!this.storyActive)return super.beginFootwork(f,kind);if(!f.canAct||f.airborne)return false;f.runUntil=this.time+.85;return true;}
-  spawnProjectile(f,data,wave){super.spawnProjectile(f,data,wave);if(this.storyActive)this.projectiles.at(-1).lane=f.lane;}
+  event(type,data={}){
+    if(!this.storyActive)return super.event(type,data);
+    const slot=data.fighter??data.owner,f=this.fighters?.[slot]??this.enemies?.find(e=>e.slot===slot);
+    if(type==='droneDeploy'&&f){
+      const d=this.drones.find(d=>d.id===data.id),hand=storyHandSocket(f),s=entityScale(f);
+      if(d){
+        d.dockX=clamp(f.x+f.direction*(d.swarm?80+(d.index%3)*68:SENTINEL.offset)*s,this.camera+35,this.camera+1245);
+        d.dockY=d.swarm?d.y:Math.max(100,f.y-180*s);d.launchX=hand.x;d.launchY=hand.y;d.x=hand.x;d.y=hand.y;d.lane=f.lane;
+        data={...data,x:d.x,y:d.y,lane:d.lane};
+      }
+    }
+    if(['special','superFreeze','projectile'].includes(type)&&f){
+      const hand=storyHandSocket(f);data={...data,...hand};
+    }
+    const lane=data.lane??this.entity(data.target)?.lane??f?.lane;
+    if(Number.isFinite(data.y)&&Number.isFinite(lane))data={...data,y:data.y+lane-WORLD.floor,lane};
+    super.event(type,data);
+  }
+  spawnProjectile(f,data,wave){
+    if(!this.storyActive)return super.spawnProjectile(f,data,wave);
+    if(wave===0)this.announcePower(f);
+    const hand=storyHandSocket(f),s=entityScale(f);
+    this.projectiles.push({owner:f.slot,character:f.character.id,direction:f.direction,move:f.action,
+      data:{...data,...(data.finalKnockdown?{knockdown:wave===(data.waves??3)-1}:{})},wave,
+      ...hand,originX:hand.x,originY:hand.y,prevX:hand.x,prevY:hand.y,
+      radius:(data.radius??(f.action==='super'?32:27))*s,speed:data.speed*s,life:3.1,effect:data.effect??'energy'});
+    this.event('projectile',{fighter:f.slot,move:f.action,character:f.character.id,color:f.character.color,...hand,direction:f.direction,wave,effect:data.effect});
+  }
 
   queue(slot,move,strength=1){
     if(!this.storyActive)return super.queue(slot,move,strength);
@@ -97,11 +125,24 @@ export class StoryEngine extends FightEngine {
     if(d==='clear'){if(this.story.act===3){this.finish(true);return;}this.loadAct(this.story.act+1);}
   }
   notice(text){this.story.notice=text;this.story.noticeTime=3.2;this.event('storyNotice',{text});}
-  spawnEnemy(kind,x,lane=625){const e=new StoryEnemy(kind,this.story.nextId++,x);e.lane=lane;e.prevLane=lane;e.intentLane=lane;e.direction=-1;const p=e.profile;if(p.fly){e.y=WORLD.floor-p.fly*entityScale(e);e.prevY=e.y;}resetFeet(e);e.aiTime=.55+this.randomStory()*.8;this.enemies.push(e);return e;}
+  spawnEnemy(kind,x,lane=625,entry=null){const e=new StoryEnemy(kind,this.story.nextId++,x);e.lane=lane;e.prevLane=lane;e.intentLane=lane;e.direction=entry?.side??-1;e.entering=!!entry;e.entrySide=entry?.side??0;e.entryDelay=entry?.delay??0;const p=e.profile;if(p.fly){e.y=WORLD.floor-p.fly*entityScale(e);e.prevY=e.y;}resetFeet(e);e.aiTime=.55+this.randomStory()*.8;this.enemies.push(e);return e;}
+  enemyExtent(kind){const p=ENEMY_TYPES[kind];return Math.max(p.w*.95,p.h*.7)*STORY_WORLD.actorScale+35;}
+  limitEnemyPosition(e,next){
+    const margin=this.enemyExtent(e.kind),left=this.story.boss?90:this.camera-margin-180,right=this.story.boss?1190:this.camera+WORLD.width+margin+180;
+    // A scrolling boundary must not relocate an existing actor in one tick.
+    if(e.x<left)return Math.min(right,Math.max(e.x,next));
+    if(e.x>right)return Math.max(left,Math.min(e.x,next));
+    return clamp(next,left,right);
+  }
   spawnWave(){
-    const wave=this.story.wave,gate=STORY_RULES.gates[wave],types=STORY_ACTS[this.story.act].waves[wave];
+    const wave=this.story.wave,types=STORY_ACTS[this.story.act].waves[wave];
     this.enemies=this.enemies.filter(e=>e.hp>0);
-    for(let i=0;i<types.length;i++){const behind=i%2&&!ENEMY_TYPES[types[i]].fly,x=behind?Math.max(this.camera+110,this.heroes[0].x-340):gate+120+Math.floor(i/2)*120;this.spawnEnemy(types[i],x,545+(i%3)*50);}
+    for(let i=0;i<types.length;i++){
+      const kind=types[i],behind=i%2&&!ENEMY_TYPES[kind].fly,side=behind?1:-1;
+      const offset=this.enemyExtent(kind)+Math.floor(i/2)*80;
+      const x=behind?this.camera-offset:this.camera+WORLD.width+offset;
+      this.spawnEnemy(kind,x,545+(i%3)*50,{side,delay:Math.floor(i/2)*.18});
+    }
     this.story.wave++;this.notice(`ONDA ${this.story.wave} / 3 · Desative os equipamentos`);
   }
   beginBoss(){
@@ -124,7 +165,7 @@ export class StoryEngine extends FightEngine {
   step(dt){
     if(!this.storyActive)return super.step(dt);
     if(this.paused||['selection','storyDialog','result'].includes(this.phase))return;
-    for(const f of [...this.party,...this.enemies]){f.prevX=f.x;f.prevY=f.y;f.prevLane=f.lane;f.prevWalkDistance=f.walkDistance;f.prevWalkBlend=f.walkBlend;f.prevActionTime=f.actionTime;saveMotion(f);}
+    for(const f of [...this.party,...this.enemies]){f.prevX=f.x;f.prevY=f.y;f.prevLane=f.lane;f.prevWalkDistance=f.walkDistance;f.prevWalkBlend=f.walkBlend;f.prevActionTime=f.actionTime;if(f.storyEnemy)f.prevBrawlerWalkDistance=f.brawlerWalkDistance;saveMotion(f);}
     if(this.freeze>0){this.freeze=Math.max(0,this.freeze-dt);return;}
     this.time+=dt;this.phaseTime+=dt;this.timer=Math.max(0,this.timer-dt);this.story.noticeTime=Math.max(0,this.story.noticeTime-dt);this.story.swapCooldown=Math.max(0,(this.story.swapCooldown??0)-dt);
     if(this.timer<=0){this.finish(false);return;}
@@ -146,7 +187,13 @@ export class StoryEngine extends FightEngine {
     for(const e of this.enemies)this.updateEnemy(e,dt,contacts);
     this.resolveStoryBodies();this.resolvePropBodies();
     for(const f of this.party){updateLocomotion(f,dt);this.releaseCarry(f);}
-    for(const f of this.enemies){updateLocomotion(f,dt);updateEnemyMechanicalFeet(f,dt);}
+    for(const f of this.enemies){
+      updateLocomotion(f,dt);updateEnemyMechanicalFeet(f,dt);
+      if(f.state==='walk'||f.attackMode==='charge'&&f.attackLife>0){
+        const dx=f.x-f.prevX,dz=f.lane-f.prevLane,sign=Math.abs(dx)>1e-7?Math.sign(dx)*f.direction:1;
+        f.brawlerWalkDistance+=Math.hypot(dx,dz)*sign;
+      }
+    }
     this.resolveMelee(contacts);this.updateProjectiles(dt,contacts);this.updateDrones(dt,contacts);this.updateProps(dt,contacts);this.updateHazards(dt,contacts);
     const guards=new Map([...this.party,...this.enemies].map(f=>[f.slot,{...f.guard}]));
     for(const contact of contacts)if(contact.target.hp>0&&contact.target.invincible<=0)this.hit(contact,guards.get(contact.target.slot));
@@ -156,11 +203,11 @@ export class StoryEngine extends FightEngine {
   }
   updateFacing(){if(!this.storyActive)return super.updateFacing();for(const f of this.heroes){if(f.action||f.airborne||f.knocked||f.hitstun>0)continue;const move=Number(f.input.right)-Number(f.input.left);if(move&&move!==f.direction){f.direction=move;f.directions=[];f.lastDirection=5;}}}
   sameLane(a,b,reach=STORY_RULES.laneReach){return Math.abs((a.lane??625)-(b.lane??625))<=reach;}
-  walkingMultiplier(f){if(!this.storyActive)return 1;const diagonal=(f.input.left||f.input.right)&&f.laneInput?Math.SQRT1_2:1;return diagonal*(f.runUntil>this.time?1.65:1)*(f.carry?.kind==='table'?.72:f.carry?.kind==='chair'?.87:1);}
+  walkingMultiplier(f){if(!this.storyActive)return 1;const diagonal=(f.input.left||f.input.right)&&f.laneInput?Math.SQRT1_2:1;return STORY_WALK_SPEED*diagonal*(f.runUntil>this.time?1.65:1)*(f.carry?.kind==='table'?.72:f.carry?.kind==='chair'?.87:1);}
   get movementLimit(){return this.enemies.some(e=>e.hp>0)?STORY_RULES.gates[Math.max(0,this.story.wave-1)]+550:this.story.wave<3?STORY_RULES.gates[this.story.wave]+300:STORY_RULES.worldWidth;}
   integrate(f,dt){
     if(!this.storyActive)return super.integrate(f,dt);
-    if(f.storyEnemy){f.x=clamp(f.x+(f.vx+f.knockback)*dt,this.story.boss?90:this.camera+40,this.story.boss?1190:Math.min(3560,this.camera+1240));if(f.y<WORLD.floor||f.vy){const gravity=WORLD.gravity*entityScale(f);f.y+=f.vy*dt+.5*gravity*dt*dt;f.vy+=gravity*dt;if(f.y>=WORLD.floor){f.y=WORLD.floor;f.vy=0;}}f.knockback*=Math.max(0,1-dt*8);return;}
+    if(f.storyEnemy){f.x=this.limitEnemyPosition(f,f.x+(f.vx+f.knockback)*dt);if((!f.profile.fly||f.knocked)&&(f.y<WORLD.floor||f.vy)){const gravity=WORLD.gravity*entityScale(f);f.y+=f.vy*dt+.5*gravity*dt*dt;f.vy+=gravity*dt;if(f.y>=WORLD.floor){f.y=WORLD.floor;f.vy=0;}}f.knockback*=Math.max(0,1-dt*8);return;}
     if(!f.action&&!f.knocked&&f.hitstun<=0&&f.blockstun<=0&&!f.airborne&&f.landing<=0&&!f.input.down&&!f.input.block){
       f.storyVelocityX=f.vx;
     }else f.storyVelocityX=0;
@@ -172,7 +219,7 @@ export class StoryEngine extends FightEngine {
     f.x=left+(f.x-110)*scale;f.vx*=scale;f.knockback*=scale;f.recoilDeceleration*=scale;f.prevX=oldPrev;
     if(!Number.isFinite(f.x))f.x=oldX;
   }
-  resolveStoryBodies(){for(const f of this.heroes)for(const e of this.enemies){if(e.hp<=0||e.profile.fly||f.airborne||e.knocked||!this.sameLane(f,e,28))continue;const gap=f.x-e.x,dist=(65+e.profile.w*.2)*entityScale(f);if(Math.abs(gap)<dist){const sign=gap>=0?1:-1;e.x=clamp(e.x-sign*dist*.08,this.camera+40,this.story.boss?1190:this.camera+1240);f.x=clamp(e.x+sign*dist,this.camera+70,this.story.boss?1170:this.camera+1210);}}}
+  resolveStoryBodies(){for(const f of this.heroes)for(const e of this.enemies){if(e.hp<=0||e.profile.fly||f.airborne||e.knocked||!this.sameLane(f,e,28))continue;const gap=f.x-e.x,dist=(65+e.profile.w*.2)*entityScale(f);if(Math.abs(gap)<dist){const sign=gap>=0?1:-1;e.x=this.limitEnemyPosition(e,e.x-sign*dist*.08);f.x=clamp(e.x+sign*dist,this.camera+70,this.story.boss?1170:this.camera+1210);}}}
   resolvePropBodies(){for(const f of this.heroes){if(f.airborne||f.knocked)continue;for(const p of this.props){if(p.used||!['table','chair','soda','shelf'].includes(p.kind)||!this.sameLane(f,p,14))continue;const box=this.propBox(p),radius=24*entityScale(f);if(f.x>box.x-radius&&f.x<box.x+box.w+radius){const left=f.prevX<=p.x;f.x=left?box.x-radius:box.x+box.w+radius;if((f.vx>0)===left)f.vx=0;}}}}
   resolveMelee(contacts){
     for(const f of this.heroes){
@@ -191,6 +238,15 @@ export class StoryEngine extends FightEngine {
     if(e.telegraph<=0&&e.attackLife<=0)e.direction=target.x>=e.x?1:-1;
     if(e.hitstun>0||e.knocked){e.brawlerEngaging=false;e.brawlerState='run';animateMostafa(e,e.knocked?'fall':'hit',dt);e.state='hit';e.vx=0;if(!p.fly||e.knocked)this.integrate(e,dt);if(e.y>=WORLD.floor&&e.hitstun<=0){e.knocked=false;e.vy=0;e.state='idle';}return;}
     if(p.fly)e.y=WORLD.floor-(p.fly+Math.sin(this.time*3+e.slot)*10)*entityScale(e);
+    if(e.entering){
+      e.entryDelay=Math.max(0,e.entryDelay-dt);
+      if(e.entryDelay>0){e.state='idle';e.vx=0;animateMostafa(e,'idle',dt);return;}
+      e.direction=e.entrySide;e.vx=e.entrySide*Math.min(270,p.speed*1.5)*entityScale(e);e.state='walk';
+      this.integrate(e,dt);animateMostafa(e,'run',dt);
+      const margin=this.enemyExtent(e.kind);
+      if(e.x>=this.camera+margin&&e.x<=this.camera+WORLD.width-margin){e.entering=false;e.brawlerState='run';}
+      return;
+    }
     if(e.telegraph>0){animateMostafa(e,'windup',dt);e.telegraph=Math.max(0,e.telegraph-dt);e.state='windup';e.vx=0;if(e.telegraph<=0)this.fireEnemy(e,target);return;}
     if(e.attackLife>0){animateMostafa(e,'attack',dt);e.attackLife=Math.max(0,e.attackLife-dt);e.state='attack';
       if(e.attackMode==='charge'){e.vx=e.direction*460*entityScale(e);this.integrate(e,dt);}
@@ -248,12 +304,16 @@ export class StoryEngine extends FightEngine {
       if(p.x<this.camera-300||p.x>(this.story.boss?1580:this.camera+1600))p.life=0;
     }
   }
-  deploySwarm(f,data){if(!this.storyActive)return super.deploySwarm(f,data);const x=f.x;super.deploySwarm(f,data);const group=this.drones.filter(d=>d.owner===f.slot&&d.createdAt===this.time);for(const d of group)d.x=clamp(x+f.direction*(80+(d.index%3)*68)*entityScale(f),this.camera+35,this.camera+1245);}
-  deployDrone(f,data){if(!this.storyActive)return super.deployDrone(f,data);super.deployDrone(f,data);this.drones.at(-1).x=clamp(f.x+f.direction*SENTINEL.offset*entityScale(f),this.camera+35,this.camera+1245);}
   updateDrones(dt,contacts){
     if(!this.storyActive)return super.updateDrones(dt,contacts);
     for(const l of this.lasers){l.age=this.time-l.createdAt;l.life=Math.max(0,SENTINEL.beamDuration-l.age);}this.lasers=this.lasers.filter(l=>l.life>0);
-    for(const d of this.drones){d.age=this.time-d.createdAt;if(d.dead||d.fired)continue;const caster=this.fighters[d.owner],target=this.opponentFor(caster);if(target.hp<=0)continue;d.lane=caster.lane;if(!d.swarm&&!this.sameLane(caster,target))continue;
+    for(const d of this.drones){d.age=this.time-d.createdAt;if(d.dead||d.fired)continue;const caster=this.fighters[d.owner],target=this.opponentFor(caster);
+      if(Number.isFinite(d.launchX)){
+        const t=clamp((d.age-(d.swarm?d.index*.035:0))/.32,0,1),q=t*t*(3-2*t);
+        d.prevX=d.x;d.prevY=d.y;d.x=d.launchX+(d.dockX-d.launchX)*q;d.y=d.launchY+(d.dockY-d.launchY)*q;
+        if(t<1)continue;delete d.launchX;delete d.launchY;
+      }
+      if(target.hp<=0)continue;if(!d.swarm&&!this.sameLane({lane:d.lane},target))continue;
       const delay=d.swarm?d.fireDelay:SENTINEL.delay;
       if(d.swarm){const s=entityScale(caster),want=caster.x+caster.direction*(80+d.index%3*68)*s;d.x+=clamp(want-d.x,-dt*210*s,dt*210*s);d.direction=target.x>=d.x?1:-1;}
       if(d.age<delay)continue;
@@ -333,7 +393,7 @@ export class StoryEngine extends FightEngine {
 export function validStoryState(s){
   if(!s||!s.story||!Number.isInteger(s.story.act)||s.story.act<0||s.story.act>3||!Number.isInteger(s.story.wave)||s.story.wave<0||s.story.wave>3||!Number.isFinite(s.camera)||s.camera<0||s.camera>2320)return false;
   if(!['enemies','props','hazards','thrown'].every(k=>Array.isArray(s[k])&&s[k].length<=32))return false;
-  if(!s.enemies.every(e=>e&&Number.isFinite(e.lane)&&e.lane>=STORY_RULES.laneTop&&e.lane<=STORY_RULES.laneBottom&&Object.hasOwn(ENEMY_TYPES,e.kind)&&Number.isInteger(e.slot)&&e.slot>=2&&e.slot<256&&Number.isFinite(e.x)&&e.x>=0&&e.x<=3900&&Number.isFinite(e.y)&&Math.abs(e.y)<3000&&Number.isFinite(e.hp)&&e.hp>=0&&e.hp<=ENEMY_TYPES[e.kind].hp))return false;
+  if(!s.enemies.every(e=>e&&Number.isFinite(e.lane)&&e.lane>=STORY_RULES.laneTop&&e.lane<=STORY_RULES.laneBottom&&Object.hasOwn(ENEMY_TYPES,e.kind)&&Number.isInteger(e.slot)&&e.slot>=2&&e.slot<256&&Number.isFinite(e.x)&&e.x>=-550&&e.x<=4150&&Number.isFinite(e.y)&&Math.abs(e.y)<3000&&Number.isFinite(e.hp)&&e.hp>=0&&e.hp<=ENEMY_TYPES[e.kind].hp))return false;
   if(new Set(s.enemies.map(e=>e.slot)).size!==s.enemies.length)return false;
   return [1,2].includes(s.story.bossPhase)&&[0,1].includes(s.story.duelist)&&Number.isInteger(s.story.seed)&&s.story.seed>=0&&s.story.seed<=4294967295;
 }

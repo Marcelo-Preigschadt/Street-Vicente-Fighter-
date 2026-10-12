@@ -1,12 +1,18 @@
 # Street Vicente Fighter
 
-## Revisão 4.6.22 — publicação suspensa
+## Atualização 4.6.23 — correções do modo História
 
-Esta branch corrige extração de sprites, a rasteira de Khauany, colisões e movimentos dos inimigos. A etapa 4.6.22 conecta os oito desenhos existentes de caminhada de Gelton, Marcelino, Marcos, João e Ruan, ajusta a cadência da campanha para os 12 heróis, corrige o recuo das quatro professoras e o levantamento de Luciana. Não está aprovada para deploy: a fluidez, a ginga e o encaixe visual dos objetos continuam pendentes. Os heróis usam suas poses completas; a malha reprovada exige uma opção experimental explícita.
+A campanha tem cadência própria para os 12 heróis, pivôs registrados pelo corpo e parada em poses de apoio. As ondas entram pelas bordas; limites da câmera deixam de puxar os inimigos para dentro da tela. O deslocamento resolvido alimenta os ciclos de avanço e recuo, inclusive dos voadores e do holograma. Voadores não recebem gravidade durante a aproximação.
 
-Estado, evidências e limitações: [correções dos outros heróis](docs/revisao-outros-herois-20261011.md) e [auditoria da etapa anterior](docs/revisao-animacao-20261011.md). `npm run review:animation` encerra com código 1 enquanto esses bloqueios existirem. `npm run build` apenas gera o pacote local.
+Preparação, disparo e rajadas usam as mãos das poses pintadas, com a mesma escala, espelhamento e profundidade do personagem. Drones partem da mão e seguem uma trajetória até a formação; o sentinela fica na altura do corpo do alvo. Os desenhos, rostos, vozes, controles e combate do 1 × 1 foram preservados. O protocolo do versus continua `svf-online-4-6-22`; somente História usa `svf-story-4-6-23`.
 
-O protocolo `svf-online-4-6-22` separa esta física dos clientes anteriores. Não foram alterados tabelas, políticas ou dados de campanha do serviço online.
+Validação: 508 testes; build de 80 arquivos; 72 amostras do 1 × 1 com pixels idênticos à versão aceita; 348 arquivos de arte e código de combate preservados; dois clientes no relay real com estado igual após rollback. A conferência de imagem e vídeos utiliza o compositor real em Canvas offline. Não houve teste interativo de navegador neste ambiente.
+
+[Detalhes e evidências da 4.6.23](docs/revisao-historia-4.6.23.md). Publicação solicitada pelo usuário para testar a campanha e enviar os próximos ajustes.
+
+## Arquivo da revisão 4.6.22
+
+A 4.6.22 foi publicada para teste a pedido do usuário. Os relatórios [dos outros heróis](docs/revisao-outros-herois-20261011.md), [da etapa anterior](docs/revisao-animacao-20261011.md) e `docs/animation-review.json` registram o diagnóstico anterior àquela publicação. O comando `review:animation` continua sendo o bloqueio do escopo amplo daquele prompt; não é o resultado dos testes desta entrega focada no modo História. A malha experimental permanece desativada.
 
 ## Histórico 4.6.0 — movimentação e proporções
 

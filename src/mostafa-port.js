@@ -27,8 +27,7 @@ function moveTo(engine,e,x,lane,speed,dt){
   const dx=x-e.x,dz=lane-e.lane,normal=Math.hypot(dx,dz*1.35),s=entityScale(e);
   const target=normal>2?speed*s:0;e.motion.speed+=clamp(target-e.motion.speed,-1200*s*dt,1200*s*dt);const step=Math.min(normal,e.motion.speed*dt);
   e.vx=normal>2?dx/normal*e.motion.speed:0;
-  if(normal>2){e.x+=dx/normal*step;e.lane=clamp(e.lane+dz/normal*step,520,660);e.brawlerWalkDistance+=step;}
-  e.x=clamp(e.x,engine.camera+40,engine.story.boss?1190:Math.min(3560,engine.camera+1240));
+  if(normal>2){e.x=engine.limitEnemyPosition(e,e.x+dx/normal*step);e.lane=clamp(e.lane+dz/normal*step,520,660);}
   return normal;
 }
 // RUNNING -> PUNCH_PRE -> FIGHT, or WALKING to four positions surrounding player.

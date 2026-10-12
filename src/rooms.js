@@ -1,4 +1,4 @@
-import {PROTOCOL} from './net-state.js';
+import {protocolForGameMode} from './net-state.js';
 const URL='https://rulmufwtytgfmznuduuo.supabase.co/rest/v1/svf_rooms';
 const KEY='sb_publishable_ImcwfTJHChOS_o3gYTOn-Q_mIEB1lhB';
 const FIELDS='code,status,character,game_mode,protocol,created_at,expires_at';
@@ -20,13 +20,13 @@ export class RoomDirectory {
   }
   async fetchRooms(){
     const mode=this.gameMode;
-    try{const rooms=await this.request(`?select=${FIELDS}&protocol=eq.${PROTOCOL}&game_mode=eq.${mode}&order=created_at.desc&limit=100`);if(mode===this.gameMode){this.rooms=rooms;this.onChange(this.rooms);}}
+    try{const rooms=await this.request(`?select=${FIELDS}&protocol=eq.${protocolForGameMode(mode)}&game_mode=eq.${mode}&order=created_at.desc&limit=100`);if(mode===this.gameMode){this.rooms=rooms;this.onChange(this.rooms);}}
     catch(error){this.onError(error.message);}finally{this.refreshing=null;if(mode!==this.gameMode)await this.refresh();}
   }
   enqueue(action){const result=this.queue.then(action);this.queue=result.catch(error=>this.onError(error.message));return result;}
   setMode(mode){const next=mode==='story'?'story':'versus';if(this.gameMode!==next){this.gameMode=next;this.rooms=[];this.onChange([]);this.refresh();}}
   register(code,character,gameMode=this.gameMode){
-    const owner={code,character,game_mode:gameMode,protocol:PROTOCOL,status:'waiting',token:Array.from(crypto.getRandomValues(new Uint8Array(32)),n=>n.toString(16).padStart(2,'0')).join('')};
+    const owner={code,character,game_mode:gameMode,protocol:protocolForGameMode(gameMode),status:'waiting',token:Array.from(crypto.getRandomValues(new Uint8Array(32)),n=>n.toString(16).padStart(2,'0')).join('')};
     this.owner=owner;
     return this.enqueue(async()=>{
       const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(owner.token));

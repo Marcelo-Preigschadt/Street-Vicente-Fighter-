@@ -27,7 +27,7 @@ export function schoolEnemyFrame(e,native=null){
   if(e.hitstun>0)return 12;
   if(e.telegraph>0)return 9;
   if(e.attackLife>0){if(e.attackMode==='charge')return 10;const contact=e.profile.boss?11:14;return e.brawlerFrame===contact?10:e.brawlerReverse?11:9;}
-  if(e.state==='walk')return 1+Math.floor((e.brawlerWalkDistance%180)/180*8);
+  if(e.state==='walk'){const phase=(e.brawlerWalkDistance??0)/(180*(e.worldScale??1));return 1+Math.floor(((phase%1+1)%1)*8);}
   return 0;
 }
 export function interpolateEntity(e,alpha){return {...e,profile:e.profile,x:e.prevX+(e.x-e.prevX)*alpha,y:e.prevY+(e.y-e.prevY)*alpha,lane:(e.prevLane??e.lane)+(e.lane-(e.prevLane??e.lane))*alpha,attackbox:e.attackbox};}
