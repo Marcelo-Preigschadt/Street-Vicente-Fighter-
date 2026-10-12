@@ -1,9 +1,11 @@
 import {validStoryState} from './story.js';
 import { CHARACTERS } from './engine.js?v=27';
 
-// Native-pose hurtboxes and mechanical walkers change deterministic physics.
-// Keep this review isolated from the currently published 4.6.20 clients.
+// Versus keeps the accepted 4.6.22 wire protocol. Only the campaign's changed
+// entrances and release sockets need a new deterministic simulation namespace.
 export const PROTOCOL='svf-online-4-6-22';
+export const STORY_PROTOCOL='svf-story-4-6-23';
+export const protocolForGameMode=mode=>mode==='story'?STORY_PROTOCOL:PROTOCOL;
 export const MOVES=new Set(['punch','kick','special','uppercut','super','throw','custom','guardCounter','drone','storyNext','storySwap','storyRetry','storySpecial']);
 const FLAGS=['left','right','jump','down','block'];
 const ENGINE_FIELDS=['phase','phaseTime','paused','time','timer','round','roundWinner','freeze','nextDroneId'];

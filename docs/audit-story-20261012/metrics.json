@@ -1,0 +1,1304 @@
+{
+  "browserPlaytest": "not_run",
+  "realCompositor": true,
+  "heroes": [
+    {
+      "id": "marcelo",
+      "worldTravel": 425.6731600108793,
+      "pose": {
+        "atlas": "reaction",
+        "index": 1
+      }
+    },
+    {
+      "id": "rafael",
+      "worldTravel": 490.8524066394501,
+      "pose": {
+        "atlas": "reaction",
+        "index": 1
+      }
+    },
+    {
+      "id": "gustavo",
+      "worldTravel": 443.44931818231464,
+      "pose": {
+        "atlas": "reaction",
+        "index": 1
+      }
+    },
+    {
+      "id": "gelton",
+      "worldTravel": 473.0762484680296,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    },
+    {
+      "id": "marcelino",
+      "worldTravel": 419.7477739537393,
+      "pose": {
+        "atlas": "base",
+        "index": 1
+      }
+    },
+    {
+      "id": "marcos",
+      "worldTravel": 386.12237953741436,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    },
+    {
+      "id": "joao",
+      "worldTravel": 455.30009029659595,
+      "pose": {
+        "atlas": "base",
+        "index": 1
+      }
+    },
+    {
+      "id": "tais",
+      "worldTravel": 479.0016345251696,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    },
+    {
+      "id": "luciana",
+      "worldTravel": 463.2006050394517,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    },
+    {
+      "id": "khauany",
+      "worldTravel": 471.1011197823186,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    },
+    {
+      "id": "dienes",
+      "worldTravel": 456.28765463946365,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    },
+    {
+      "id": "ruan",
+      "worldTravel": 461.2254763537371,
+      "pose": {
+        "atlas": "base",
+        "index": 0
+      }
+    }
+  ],
+  "entry": [
+    {
+      "act": 1,
+      "maxTravelPerVideoFrame": 11.36819212723151,
+      "visibleFrames": 184
+    },
+    {
+      "act": 2,
+      "maxTravelPerVideoFrame": 4.565034013605327,
+      "visibleFrames": 177
+    },
+    {
+      "act": 3,
+      "maxTravelPerVideoFrame": 5.4429251700676105,
+      "visibleFrames": 186
+    },
+    {
+      "act": 4,
+      "maxTravelPerVideoFrame": 11.24784412452675,
+      "visibleFrames": 182
+    }
+  ],
+  "powerSamples": [
+    {
+      "id": "marcelo",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 12
+      },
+      "hand": {
+        "x": 625.706102892517,
+        "y": 524.4944652065307,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "marcelo",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 729.1693218187755,
+        "y": 482.6962159504762,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 729.1693218187755,
+          "originY": 482.6962159504762,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "marcelo",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 729.1693218187755,
+        "y": 482.6962159504762,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "rafael",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 12
+      },
+      "hand": {
+        "x": 625.6299735760545,
+        "y": 527.2613702470749,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "rafael",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 721.8110727178231,
+        "y": 481.68930499346936,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 721.8110727178231,
+          "originY": 481.68930499346936,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "rafael",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 721.8110727178231,
+        "y": 481.68930499346936,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 721.8110727178231,
+          "originY": 481.68930499346936,
+          "lane": 625
+        },
+        {
+          "originX": 721.8110727178231,
+          "originY": 481.68930499346936,
+          "lane": 625
+        },
+        {
+          "originX": 721.8110727178231,
+          "originY": 481.68930499346936,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "gustavo",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 12
+      },
+      "hand": {
+        "x": 633.2147178930612,
+        "y": 529.2203590794558,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "gustavo",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 736.3464036821769,
+        "y": 493.15744297986396,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 736.3464036821769,
+          "originY": 493.15744297986396,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "gustavo",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 736.3464036821769,
+        "y": 493.15744297986396,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 736.3464036821769,
+          "originY": 493.15744297986396,
+          "lane": 625
+        },
+        {
+          "originX": 736.3464036821769,
+          "originY": 493.15744297986396,
+          "lane": 625
+        },
+        {
+          "originX": 736.3464036821769,
+          "originY": 493.15744297986396,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "gelton",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "combat",
+        "index": 13
+      },
+      "hand": {
+        "x": 684.6468597202721,
+        "y": 481.18099126530615,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "gelton",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "combat",
+        "index": 14
+      },
+      "hand": {
+        "x": 755.6805904046258,
+        "y": 465.7050835020408,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 755.6805904046258,
+          "originY": 465.7050835020408,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "gelton",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "combat",
+        "index": 14
+      },
+      "hand": {
+        "x": 755.6805904046258,
+        "y": 465.7050835020408,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 755.6805904046258,
+          "originY": 465.7050835020408,
+          "lane": 625
+        },
+        {
+          "originX": 755.6805904046258,
+          "originY": 465.7050835020408,
+          "lane": 625
+        },
+        {
+          "originX": 755.6805904046258,
+          "originY": 465.7050835020408,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "marcelino",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 726.0553309213606,
+        "y": 471.5474042002721,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "marcelino",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 726.0553309213606,
+        "y": 471.5474042002721,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 726.0553309213606,
+          "originY": 471.5474042002721,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "marcelino",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 726.0553309213606,
+        "y": 471.5474042002721,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 726.0553309213606,
+          "originY": 471.5474042002721,
+          "lane": 625
+        },
+        {
+          "originX": 726.0553309213606,
+          "originY": 471.5474042002721,
+          "lane": 625
+        },
+        {
+          "originX": 726.0553309213606,
+          "originY": 471.5474042002721,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "marcos",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 773.9586534433333,
+        "y": 493.8948195801361,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "marcos",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 782.1095760081628,
+        "y": 493.8948195801361,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "marcos",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "combat",
+        "index": 11
+      },
+      "hand": {
+        "x": 772.64043130068,
+        "y": 532.4240170772789,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "joao",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "combat",
+        "index": 1
+      },
+      "hand": {
+        "x": 593.9932119183675,
+        "y": 452.93333333333334,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "joao",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "combat",
+        "index": 2
+      },
+      "hand": {
+        "x": 807.5109492789113,
+        "y": 466.0104,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "joao",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "combat",
+        "index": 14
+      },
+      "hand": {
+        "x": 715.9443733333333,
+        "y": 484.899106122449,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "tais",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 12
+      },
+      "hand": {
+        "x": 617.8907780051701,
+        "y": 528.2844477453061,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "tais",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 728.9046818808163,
+        "y": 463.32707019755105,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 728.9046818808163,
+          "originY": 463.32707019755105,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "tais",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 728.9046818808163,
+        "y": 463.32707019755105,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 728.9046818808163,
+          "originY": 463.32707019755105,
+          "lane": 625
+        },
+        {
+          "originX": 728.9046818808163,
+          "originY": 463.32707019755105,
+          "lane": 625
+        },
+        {
+          "originX": 728.9046818808163,
+          "originY": 463.32707019755105,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "luciana",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 12
+      },
+      "hand": {
+        "x": 640.6396670571427,
+        "y": 537.4339656266667,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "luciana",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 730.1074953028569,
+        "y": 486.21888414367345,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 730.0814675858501,
+          "originY": 486.21888414367345,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "luciana",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 741.3445021055779,
+        "y": 486.21888414367345,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 741.3149619738488,
+          "originY": 486.21888414367345,
+          "lane": 625
+        },
+        {
+          "originX": 741.3445021055779,
+          "originY": 486.21888414367345,
+          "lane": 625
+        },
+        {
+          "originX": 741.3445021055779,
+          "originY": 486.21888414367345,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "khauany",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 6
+      },
+      "hand": {
+        "x": 661.2356642965987,
+        "y": 467.2811088217687,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "khauany",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 707.7687569991837,
+        "y": 520.0567394568708,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 707.7687569991837,
+          "originY": 520.0567394568708,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "khauany",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 707.7687569991837,
+        "y": 520.0567394568708,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 707.7687569991837,
+          "originY": 520.0567394568708,
+          "lane": 625
+        },
+        {
+          "originX": 707.7687569991837,
+          "originY": 520.0567394568708,
+          "lane": 625
+        },
+        {
+          "originX": 707.7687569991837,
+          "originY": 520.0567394568708,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "dienes",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "combat",
+        "index": 11
+      },
+      "hand": {
+        "x": 691.2285536944217,
+        "y": 512.7110912544217,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "dienes",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "combat",
+        "index": 12
+      },
+      "hand": {
+        "x": 690.8585843755102,
+        "y": 530.9399322448979,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 690.8585843755102,
+          "originY": 530.9399322448979,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "dienes",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "combat",
+        "index": 13
+      },
+      "hand": {
+        "x": 698.3144121319729,
+        "y": 528.9458586680272,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 698.3144121319729,
+          "originY": 528.9458586680272,
+          "lane": 625
+        },
+        {
+          "originX": 698.3144121319729,
+          "originY": 528.9458586680272,
+          "lane": 625
+        },
+        {
+          "originX": 698.3144121319729,
+          "originY": 528.9458586680272,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "ruan",
+      "move": "special",
+      "phase": "charge",
+      "pose": {
+        "atlas": "base",
+        "index": 12
+      },
+      "hand": {
+        "x": 663.0482707482993,
+        "y": 515.0810040816326,
+        "lane": 625
+      },
+      "projectiles": []
+    },
+    {
+      "id": "ruan",
+      "move": "special",
+      "phase": "release",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 756.6630721088436,
+        "y": 496.0974857142857,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 756.6630721088436,
+          "originY": 496.0974857142857,
+          "lane": 625
+        }
+      ]
+    },
+    {
+      "id": "ruan",
+      "move": "super",
+      "phase": "volley",
+      "pose": {
+        "atlas": "base",
+        "index": 13
+      },
+      "hand": {
+        "x": 756.6630721088436,
+        "y": 496.0974857142857,
+        "lane": 625
+      },
+      "projectiles": [
+        {
+          "originX": 756.6630721088436,
+          "originY": 496.0974857142857,
+          "lane": 625
+        },
+        {
+          "originX": 756.6630721088436,
+          "originY": 496.0974857142857,
+          "lane": 625
+        },
+        {
+          "originX": 756.6630721088436,
+          "originY": 496.0974857142857,
+          "lane": 625
+        }
+      ]
+    }
+  ],
+  "versusPixels": [
+    {
+      "id": "marcelo",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "19dba635582044c3b63edb30143c6988dbeb5664a4aafa98dcfa2b9744b3b8b6"
+    },
+    {
+      "id": "marcelo",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "7ae5d611a927f9d11aabed9a1a51070ddfcd89a8ec51d1dceeabfbd057fd6f3f"
+    },
+    {
+      "id": "marcelo",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "574aff2583edf3101b8ebbfa6d7f19fd847ef71eba3eff20343bd1023a8dace2"
+    },
+    {
+      "id": "marcelo",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "9567e2eae3afe394aa278ed236f1b3a21ba83294310c601012970fd5dcaa69d9"
+    },
+    {
+      "id": "marcelo",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "574aff2583edf3101b8ebbfa6d7f19fd847ef71eba3eff20343bd1023a8dace2"
+    },
+    {
+      "id": "marcelo",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "9567e2eae3afe394aa278ed236f1b3a21ba83294310c601012970fd5dcaa69d9"
+    },
+    {
+      "id": "rafael",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "fe33b89768289ea2c0117e89f5704bfb0bfc0ad6c62b8d142dd43edae9369aa5"
+    },
+    {
+      "id": "rafael",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "fe33b89768289ea2c0117e89f5704bfb0bfc0ad6c62b8d142dd43edae9369aa5"
+    },
+    {
+      "id": "rafael",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "6401a5681ef07c1b926da29a1644ece00d653d0c7ad183ec5a8468e3fd4d4403"
+    },
+    {
+      "id": "rafael",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "1b4d124ea4534fd0beb4fcbec6a5dd0a7ef393f645d01bcd225cea8cf2b4eb45"
+    },
+    {
+      "id": "rafael",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "6401a5681ef07c1b926da29a1644ece00d653d0c7ad183ec5a8468e3fd4d4403"
+    },
+    {
+      "id": "rafael",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "1b4d124ea4534fd0beb4fcbec6a5dd0a7ef393f645d01bcd225cea8cf2b4eb45"
+    },
+    {
+      "id": "gustavo",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "2fb0c1916238a2ff60d91da2aba3d7207543c9f49795fbbc6e57a83b086a2f2c"
+    },
+    {
+      "id": "gustavo",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "fd23ec24c93d04cda26917aab7d3782e6353983d85f4c93d78870723b23e4f7b"
+    },
+    {
+      "id": "gustavo",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "29fed9a325c74d94db948ad5a9bbd7d2cef5875d0774a0f7bda2aec84a4767e0"
+    },
+    {
+      "id": "gustavo",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "99d18956a9f1f7b575b7e84db23f1e8901f20c29c56c7b2aeed1fbea229dc3ce"
+    },
+    {
+      "id": "gustavo",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "b73278009f39b26ca3add1731526d9c2a8ab9a0a7c900c35bec08b776bc3a520"
+    },
+    {
+      "id": "gustavo",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "99d18956a9f1f7b575b7e84db23f1e8901f20c29c56c7b2aeed1fbea229dc3ce"
+    },
+    {
+      "id": "gelton",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "ce9e41b43cd0d2d3520f91b24d8bfba853fdf469d88294f01ebddf86fcd345d4"
+    },
+    {
+      "id": "gelton",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "9dea349ab648c7ef84e1ad87bb31abd1c0b729374960fc4688e7e059eaba0962"
+    },
+    {
+      "id": "gelton",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "2f14cd4d83b3863983f021af4cfcff137e116c11749785297cc8c660216f5001"
+    },
+    {
+      "id": "gelton",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "ec7dcef79fcc6ca441c5e41cb84e0651d2806dc1aaf51a172c6f1f8f0a859fe8"
+    },
+    {
+      "id": "gelton",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "14c0bd4a8829c8311b88ecd394d11706d96f74198fbcbf0093990688652fc9e9"
+    },
+    {
+      "id": "gelton",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "7dce41e9c6ba764be0e30f839346006da5ec22d28d84f44c5315b9fbcdb42437"
+    },
+    {
+      "id": "marcelino",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "ec84e34cdaa234577070d0494f7fc38f36e965bf821550885613f034fdf69944"
+    },
+    {
+      "id": "marcelino",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "152a9eab186de69ded4beb69778ccf9465ac4ba34fc7bf51b34be26ca043e558"
+    },
+    {
+      "id": "marcelino",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "49d24a1880160690c66a2d8623cc2bce0408401fb6867899e5135a77437a6494"
+    },
+    {
+      "id": "marcelino",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "4b1164d9499805328e09273f40c7e0828ad867f7ba161ce5a8f90b4a33215d06"
+    },
+    {
+      "id": "marcelino",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "b88fb4fe3bf091e519c632082999cf9442dd63a373779e64f79463a020a761b3"
+    },
+    {
+      "id": "marcelino",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "560489427d272f061dd397ef9184c3d9ff88712acd5c4e15256d1c2e05f005de"
+    },
+    {
+      "id": "marcos",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "61a6b4502ce12c4407c85d808c501cc05727f64049759a03606c2fa9bbcaa919"
+    },
+    {
+      "id": "marcos",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "dd5e913b659c2c6b7bb19f9797d21b1480000def24268d6664e45711d6427c0f"
+    },
+    {
+      "id": "marcos",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "657868f1e1253b60d3228e0738311ee86ece88e4859f1b57d95a44deabfe0e20"
+    },
+    {
+      "id": "marcos",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "57eb176533e4e412e77836a0358193ce54118acc311745265a38a88928d3ecfa"
+    },
+    {
+      "id": "marcos",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "5be04a98f4efb39d480852abbe411b935a75f900a298906f66d5d987c733b96c"
+    },
+    {
+      "id": "marcos",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "0e3c1292f4bcf3c8bd537415dfc6c3125a8dd4931ab68b5c2ffd2862c0e0d97c"
+    },
+    {
+      "id": "joao",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "354d427a5eba418cc0af17f09b56aadbefb3ee6b702062d9c67aa70620e5e48b"
+    },
+    {
+      "id": "joao",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "354d427a5eba418cc0af17f09b56aadbefb3ee6b702062d9c67aa70620e5e48b"
+    },
+    {
+      "id": "joao",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "915a5356536de5a6138d45b09fe14d603cf223f3fa879a1d65fe09ba17b03d9a"
+    },
+    {
+      "id": "joao",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "8fac124c6d50f92d4333f6471be63a26692860dc6f4c306f678738e8f5d051a4"
+    },
+    {
+      "id": "joao",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "358218c05580c4eb5a36b10ca91eaac313a0ec90faec14f3627d9be74e7b081e"
+    },
+    {
+      "id": "joao",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "72eb9a66436ab0c392cdcfd11d5eaf6d3d75f619823ed1e6fc9c062ea7d84576"
+    },
+    {
+      "id": "tais",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "84b63aa70c74a92594166de3b1179c29ed28e6a1c54c619948ae77ecbf8cb421"
+    },
+    {
+      "id": "tais",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "e3f05ea4597ada5e34942200adaa48d26e77c2816420012b102ec5cfefa5f469"
+    },
+    {
+      "id": "tais",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "9a0d904eb82cb6d9cbc9b7470db270347983daa7b015be94790328bc1d949854"
+    },
+    {
+      "id": "tais",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "9a0d904eb82cb6d9cbc9b7470db270347983daa7b015be94790328bc1d949854"
+    },
+    {
+      "id": "tais",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "9a0d904eb82cb6d9cbc9b7470db270347983daa7b015be94790328bc1d949854"
+    },
+    {
+      "id": "tais",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "ca330730e32b5bd1f286f21143b551245ee6a13b9fec7e3bc800989fa0d2c4c7"
+    },
+    {
+      "id": "luciana",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "ecfc12eda11e7aac0ad51101fb716acfc08a83c7d86837f3a69045b76ec78e50"
+    },
+    {
+      "id": "luciana",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "ecfc12eda11e7aac0ad51101fb716acfc08a83c7d86837f3a69045b76ec78e50"
+    },
+    {
+      "id": "luciana",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "28da3653bf1e2130329df04142b3626c09d825b5f6c00965ec44b6a3afafdbdc"
+    },
+    {
+      "id": "luciana",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "cb0d4d2df363bdc809e55da6755593317373a7479812bfd1f144866c3690a1d1"
+    },
+    {
+      "id": "luciana",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "cc68c93763586b376efc3d87d0861bad0c38640349070c85a8bf6bc772d48a0c"
+    },
+    {
+      "id": "luciana",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "858557a8698ad560fd6aaf836ef1266579964cf6384dec50f36f9d25714449e1"
+    },
+    {
+      "id": "khauany",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "3dd3763cd2997eb46711bf8e67614e8bc57f8f7456960407bc5179207208774e"
+    },
+    {
+      "id": "khauany",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "11e81c2e98bd0359817b1271b7e66460ce892c6fc6756dffae79f4f60e9b38ac"
+    },
+    {
+      "id": "khauany",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "d659aac79f1edfe59eb8e72cfde7212405a64bf3a56e1116af467d7e9f23e5fe"
+    },
+    {
+      "id": "khauany",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "95fe38ec92dc46e65a90e2e5a8d40bbb44160e0a9a4f01381e5913452483e93e"
+    },
+    {
+      "id": "khauany",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "8575903596f2dc655a585e60753ca61e031dcb20dbfe8f89e7d2691cf176334b"
+    },
+    {
+      "id": "khauany",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "b5011654cc03f820c028bab49452df74c746e6af45ecd52d7c0352ed88c72ec1"
+    },
+    {
+      "id": "dienes",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "f685a0d472bf74e9df14e2ec5b2dba465ab68a4ff8313ec0af8eb8fa748f9ce9"
+    },
+    {
+      "id": "dienes",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "17915ab48e6c7f50d96dcb37131a4f455b1110870f8354214058fd461732552a"
+    },
+    {
+      "id": "dienes",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "2a4eb3235c34712bfd023bcc05d34af0620971929489e87bca2f0c6e363c8ab2"
+    },
+    {
+      "id": "dienes",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "d8a233406aba4f2decd122cbb68fc64418c53cd04f3e1f1da16fad736e7c6ecf"
+    },
+    {
+      "id": "dienes",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "7e48f211ec397f23d89b5d74057592f4787926fede375113fb73595ae97f5844"
+    },
+    {
+      "id": "dienes",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "692c2ce420a066c8c7672284e4ac6c80345b88085de2e571a8c89899645c59eb"
+    },
+    {
+      "id": "ruan",
+      "state": "walk",
+      "q": 0.4,
+      "sha256": "a1c3ca76d7d4925ccb7cd6b3ebcbeab498309222d2158c0b21b3cd31487876c9"
+    },
+    {
+      "id": "ruan",
+      "state": "walk",
+      "q": 1.1,
+      "sha256": "a1c3ca76d7d4925ccb7cd6b3ebcbeab498309222d2158c0b21b3cd31487876c9"
+    },
+    {
+      "id": "ruan",
+      "state": "special",
+      "q": 0.4,
+      "sha256": "b47545f3da2eebfe19648b3a28088359e487c6c3b4c146b7173f6bac2653d6d6"
+    },
+    {
+      "id": "ruan",
+      "state": "special",
+      "q": 1.1,
+      "sha256": "a14528a17402fc9f8b17ac08d052a1d16da5811a6109ba06de1a0cf20cca5da4"
+    },
+    {
+      "id": "ruan",
+      "state": "super",
+      "q": 0.4,
+      "sha256": "b47545f3da2eebfe19648b3a28088359e487c6c3b4c146b7173f6bac2653d6d6"
+    },
+    {
+      "id": "ruan",
+      "state": "super",
+      "q": 1.1,
+      "sha256": "337717053cef9b4987596e0f92c110d274bf3deaa3aa61d859bf9b27a2bdec3b"
+    }
+  ]
+}

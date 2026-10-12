@@ -7,6 +7,7 @@ import {drawSentinel,drawSentinelLaser} from './sentinel-fx.js';
 import {STORY_PROP_DIMENSIONS,heldObjectTransform} from './story-props.js';
 import {drawMachineRig} from './machine-rig.js';
 import {prepareEnemyMotion,drawEnemyArticulation,enemyFlightPose} from './story-enemy-motion.js';
+import {drawStoryHero,storyHeroPose} from './story-hero.js';
 const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(new Error(`Não foi possível carregar ${src}`));i.src=src;});
 const text=(c,s,x,y,size=20,color='#edf6e7',align='left')=>{c.font=`800 ${size}px Arial`;c.textAlign=align;c.textBaseline='middle';c.fillStyle=color;c.fillText(s,x,y);};
 const rect=(c,x,y,w,h,color,r=6)=>{c.fillStyle=color;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();};
@@ -101,7 +102,7 @@ function hud(r,e){
   else if(!s.boss&&!e.enemies.some(n=>n.hp>0)){text(c,'AVANCE  →',1190,641,18,'#d3f1a3','right');}
 }
 export function storyPose(r,f,art){
-  return null; // Campaign and versus use the same complete pose frames.
+  const pose=storyHeroPose(f),base=r.sheets[f.character.id];return {sheet:pose.atlas==='base'?base:base?.[pose.atlas],index:pose.index};
 }
 export function drawStory(r,e,dt,alpha){
   const c=r.c,art=r.storyArt;if(!art){c.fillStyle='#0b1b20';c.fillRect(0,0,1280,720);return;}
@@ -115,21 +116,28 @@ c.fillStyle='#09212922';c.fillRect(0,0,1280,720);
   if(r.shake>0&&!r.reduced)c.translate(Math.sin(r.clock*87)*r.shake,Math.cos(r.clock*71)*r.shake*.45);
 
   r.storyViews??=new Map();const entities=r.storyLayers??(r.storyLayers=[]),heroes=r.storyHeroes??(r.storyHeroes=[]);entities.length=0;heroes.length=0;
-  for(const f of e.heroes){let view=r.storyViews.get(f.slot);if(!view){view={motion:{feet:[{},{}]}};r.storyViews.set(f.slot,view);}interpolateFighter(f,alpha,view);heroes.push(view);layer(r,'hero',view,view.lane);}
-  for(const f of e.enemies){let view=r.storyViews.get(f.slot);if(!view){view={motion:{feet:[{},{}]}};r.storyViews.set(f.slot,view);}interpolateFighter(f,alpha,view);view.profile=f.profile;view.attackbox=f.attackbox;view._presentationAlpha=alpha;layer(r,'enemy',view,view.lane);}
+  for(const f of e.heroes){let view=r.storyViews.get(f.slot);if(!view){view={motion:{feet:[{},{}]}};r.storyViews.set(f.slot,view);}interpolateFighter(f,alpha,view);view.walkDistance=f.prevWalkDistance+(f.walkDistance-f.prevWalkDistance)*alpha;heroes.push(view);layer(r,'hero',view,view.lane);}
+  for(const f of e.enemies){let view=r.storyViews.get(f.slot);if(!view){view={motion:{feet:[{},{}]}};r.storyViews.set(f.slot,view);}interpolateFighter(f,alpha,view);view.brawlerWalkDistance=(f.prevBrawlerWalkDistance??f.brawlerWalkDistance)+(f.brawlerWalkDistance-(f.prevBrawlerWalkDistance??f.brawlerWalkDistance))*alpha;view.profile=f.profile;view.attackbox=f.attackbox;view._presentationAlpha=alpha;layer(r,'enemy',view,view.lane);}
   for(const p of e.props)layer(r,'prop',p,p.lane??625);for(const h of e.hazards)layer(r,'hazard',h,h.lane??625);for(const p of e.thrown)layer(r,'thrown',p,p.lane??625);entities.sort(layerDepth);
   for(const item of entities){const v=item.value;c.save();c.translate(0,item.lane-WORLD.floor);c.translate(v.x,WORLD.floor);c.scale(storyDepthScale(item.lane),storyDepthScale(item.lane));c.translate(-v.x,-WORLD.floor);
     if(item.kind==='prop')prop(c,v,r.clock,art);
     else if(item.kind==='thrown'){const frame=art.propFrames[v.kind];c.save();c.translate(v.x,v.y);c.rotate(v.angle);if(frame)drawStoryObject(c,v.kind,art,0,frame.height*.5,{facing:v.facing??1});c.restore();}
     else if(item.kind==='hazard'){c.translate(0,625-item.lane);hazard(c,v,r.clock,art);}
-    else{c.fillStyle='#07101566';c.beginPath();c.ellipse(v.x,WORLD.floor+4,(item.kind==='hero'?45:v.profile.w*.3)*entityScale(v),5,0,0,Math.PI*2);c.fill();if(item.kind==='hero'){r.drawFighter(v);if(v.carry){const held=heldObjectTransform(v,v.carry.kind,r.carryTransform);if(held)drawStoryObject(c,v.carry.kind,art,held.x,held.y,held);}}else drawStoryEnemy(c,v,art,r.clock,r.reduced);}
+    else{c.fillStyle='#07101566';c.beginPath();c.ellipse(v.x,WORLD.floor+4,(item.kind==='hero'?45:v.profile.w*.3)*entityScale(v),5,0,0,Math.PI*2);c.fill();if(item.kind==='hero'){drawStoryHero(r,v);if(v.carry){const held=heldObjectTransform(v,v.carry.kind,r.carryTransform);if(held)drawStoryObject(c,v.carry.kind,art,held.x,held.y,held);}}else drawStoryEnemy(c,v,art,r.clock,r.reduced);}
     c.restore();
   }
-  for(const d of e.drones){c.save();c.translate(0,(d.lane??625)-625);drawSentinel(c,d,r.reduced);c.restore();}
+  for(const d of e.drones){c.save();c.translate(0,(d.lane??625)-625);const view=Number.isFinite(d.launchX)?{...d,x:(d.prevX??d.x)+(d.x-(d.prevX??d.x))*alpha,y:(d.prevY??d.y)+(d.y-(d.prevY??d.y))*alpha}:d;drawSentinel(c,view,r.reduced);c.restore();}
   for(const l of e.lasers){c.save();c.translate(0,(l.lane??625)-625);drawSentinelLaser(c,l,r.reduced);c.restore();}
-  for(const p of e.projectiles){c.save();c.translate(0,(p.lane??625)-625);if(p.character!=='enemy')r.drawProjectile(p);else{c.save();c.translate(p.x,p.y);c.fillStyle=p.color;c.shadowColor=p.color;c.shadowBlur=16;c.beginPath();c.ellipse(0,0,p.radius*1.6,p.radius,0,0,Math.PI*2);c.fill();c.restore();}c.restore();}
+  for(const p of e.projectiles){c.save();c.translate(0,(p.lane??625)-625);const view={...p,x:p.prevX+(p.x-p.prevX)*alpha};if(p.character!=='enemy'){
+    // The growing trail is clipped at its actual release point; a newborn
+    // projectile cannot paint a fully formed beam behind the caster.
+    if(Number.isFinite(p.originX)){c.beginPath();const edge=p.originX-p.direction*6*entityScale(e.fighters[p.owner]);c.rect(p.direction>0?edge:edge-6000,-3000,6000,6000);c.clip();}
+    r.drawProjectile(view);
+  }else{c.save();c.translate(view.x,view.y);c.fillStyle=p.color;c.shadowColor=p.color;c.shadowBlur=16;c.beginPath();c.ellipse(0,0,p.radius*1.6,p.radius,0,0,Math.PI*2);c.fill();c.restore();}c.restore();}
 
-  r.fightFX.draw(c,r.reduced);r.drawParticles(dt);r.drawSuperScene(heroes.map(f=>({...f,y:f.y+f.lane-625})));r.drawSuperImpacts();
+  r.fightFX.draw(c,r.reduced);r.drawParticles(dt);
+  const superView=Object.create(r);superView.drawFighter=f=>drawStoryHero(r,f,{effects:false});
+  superView.drawSuperScene(heroes.map(f=>({...f,y:f.y+f.lane-625})));r.drawSuperImpacts();
   c.restore();hud(r,e);
   if(r.flash>0){c.fillStyle=`rgba(245,255,232,${r.flash})`;c.fillRect(0,0,1280,720);}c.restore();
 }

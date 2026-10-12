@@ -1,5 +1,5 @@
 import {STORY_HEROES} from './story-data.js';
-import { PROTOCOL,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=27';
+import { protocolForGameMode,MOVES,validCharacter,snapshot,applySnapshot } from './net-state.js?v=27';
 import {RollbackGame} from './netplay.js?v=28';
 import {RelayPeer} from './relay.js?v=27';
 
@@ -11,6 +11,7 @@ export function roomCode(random=crypto.getRandomValues(new Uint8Array(8))) {
 }
 export function normalizeCode(code) { return String(code).trim().toUpperCase().replace(/[\s-]/g,''); }
 export class OnlineMatch {
+  get protocol(){return protocolForGameMode(this.gameMode);}
   constructor({engine,prepare,onStart,onStatus,onEnd,onCorrection=()=>{},onLobby=()=>{},directory=null,PeerClass=null,now=()=>performance.now()}={}) {
     Object.assign(this,{engine,prepare,onStart,onStatus,onEnd,onCorrection,onLobby,directory,PeerClass,now});this.generation=0;this.active=false;this.running=false;this.slot=0;
   }
@@ -26,7 +27,7 @@ export class OnlineMatch {
       if(kind==='quick'&&this.PeerClass.relay){
         if(!this.directory)throw new Error('A lista de salas não está disponível.');
         await this.directory.refresh();if(gen!==this.generation)return;
-        const room=this.directory.rooms.find(r=>r.status==='waiting'&&(r.game_mode??'versus')===this.gameMode&&(!r.protocol||r.protocol===PROTOCOL));
+        const room=this.directory.rooms.find(r=>r.status==='waiting'&&(r.game_mode??'versus')===this.gameMode&&(!r.protocol||r.protocol===this.protocol));
         return this.begin(room?'join':'create',character,room?.code??'');
       }
       if(kind==='quick')await this.quick(gen);
@@ -61,7 +62,7 @@ export class OnlineMatch {
         else if(!this.running&&error.type==='peer-unavailable')this.failedConnection(gen);
       });
       p.on('connection',conn=>{
-        if(gen!==this.generation||this.slot!==0||this.conn||conn.metadata?.protocol!==PROTOCOL||!this.validChoice(conn.metadata?.character)||(conn.metadata?.gameMode??'versus')!==this.gameMode){
+        if(gen!==this.generation||this.slot!==0||this.conn||conn.metadata?.protocol!==this.protocol||!this.validChoice(conn.metadata?.character)||(conn.metadata?.gameMode??'versus')!==this.gameMode){
           conn.on('open',()=>{conn.send({t:'busy'});setTimeout(()=>conn.close(),100);});return;
         }
         this.attach(conn,gen,true);
@@ -70,7 +71,7 @@ export class OnlineMatch {
     });
   }
   connect(id,gen) {
-    const c=this.peer.connect(id,{reliable:true,serialization:'json',metadata:{protocol:PROTOCOL,character:this.character,gameMode:this.gameMode}});
+    const c=this.peer.connect(id,{reliable:true,serialization:'json',metadata:{protocol:this.protocol,character:this.character,gameMode:this.gameMode}});
     this.attach(c,gen,false);
   }
   attach(conn,gen,host) {
@@ -102,7 +103,7 @@ export class OnlineMatch {
   }
   publishLobby() {
     this.lobbyRevision++;
-    this.send({t:'lobby',protocol:PROTOCOL,gameMode:this.gameMode,matchId:this.matchId,pair:this.pair,confirmed:this.confirmed,serials:this.serials,revision:this.lobbyRevision,locked:this.preparing});
+    this.send({t:'lobby',protocol:this.protocol,gameMode:this.gameMode,matchId:this.matchId,pair:this.pair,confirmed:this.confirmed,serials:this.serials,revision:this.lobbyRevision,locked:this.preparing});
     this.notifyLobby();
     if(!this.preparing&&this.confirmed.every(Boolean)){
       this.preparing=true;this.localReady=false;this.remoteReady=false;this.remoteSynced=false;
@@ -147,7 +148,7 @@ export class OnlineMatch {
     if(m.t==='ping'){this.send({t:'pong',sent:m.sent});return;}
     if(m.t==='pong'){this.ping=Math.max(0,Math.round(this.now()-m.sent));return;}
     if(m.t==='lobby'&&this.slot===1&&!this.running){
-      if(m.protocol!==PROTOCOL||(m.gameMode??'versus')!==this.gameMode||typeof m.matchId!=='string'||!Array.isArray(m.pair)||m.pair.length!==2||!m.pair.every(id=>this.validChoice(id))||
+      if(m.protocol!==this.protocol||(m.gameMode??'versus')!==this.gameMode||typeof m.matchId!=='string'||!Array.isArray(m.pair)||m.pair.length!==2||!m.pair.every(id=>this.validChoice(id))||
         !Array.isArray(m.confirmed)||m.confirmed.length!==2||!m.confirmed.every(x=>typeof x==='boolean')||
         !Array.isArray(m.serials)||m.serials.length!==2||!m.serials.every(x=>Number.isSafeInteger(x)&&x>=0)||
         !Number.isSafeInteger(m.revision)||typeof m.locked!=='boolean')return this.fail('As versões do jogo são diferentes. Atualize a página.');
