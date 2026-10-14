@@ -89,4 +89,6 @@ test('recorde local tolera armazenamento indisponível e valores inválidos, sem
  saveArcadeRecord(storage,12345);assert.equal(values.get(ARCADE_RECORD_KEY),'12345');assert.equal(readArcadeRecord(storage),12345);assert.equal(formatScore(12345),'00012345');
  for(const v of ['NaN','-1','1.5','9999999999999999999']){values.set(ARCADE_RECORD_KEY,v);assert.equal(readArcadeRecord(storage),0);}
  const blocked={getItem(){throw Error('Storage bloqueado');},setItem(){throw Error('Quota');}};assert.equal(readArcadeRecord(blocked),0);assert.doesNotThrow(()=>saveArcadeRecord(blocked,10));
+ saveArcadeRecord(()=>storage,90);assert.equal(readArcadeRecord(()=>storage),90);
+ const denied=()=>{throw Error('Getter de localStorage bloqueado');};assert.equal(readArcadeRecord(denied),0);assert.doesNotThrow(()=>saveArcadeRecord(denied,10));
 });

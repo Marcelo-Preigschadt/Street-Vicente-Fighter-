@@ -7,8 +7,8 @@ export const ARCADE_STOPS=Object.freeze([
 ]);
 const cleanScore=value=>Number.isSafeInteger(Number(value))&&Number(value)>=0?Number(value):0;
 export const formatScore=value=>String(cleanScore(value)).padStart(8,'0');
-export function readArcadeRecord(storage){try{return cleanScore(storage?.getItem(ARCADE_RECORD_KEY));}catch{return 0;}}
-export function saveArcadeRecord(storage,score){try{storage?.setItem(ARCADE_RECORD_KEY,String(cleanScore(score)));}catch{}}
+export function readArcadeRecord(storage){try{return cleanScore((typeof storage==='function'?storage():storage)?.getItem(ARCADE_RECORD_KEY));}catch{return 0;}}
+export function saveArcadeRecord(storage,score){try{(typeof storage==='function'?storage():storage)?.setItem(ARCADE_RECORD_KEY,String(cleanScore(score)));}catch{}}
 const breakdown=()=>({combat:0,combo:0,round:0,life:0,time:0,perfect:0,super:0,match:0,clear:0});
 
 export class ArcadeRun {

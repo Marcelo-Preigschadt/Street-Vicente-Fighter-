@@ -91,8 +91,9 @@ function showOnlineLobby({pair,slot}){
   updateSelection();onlineBusy(true);
 }
 async function prepareOnline(pair,slot){
-  inputs.release();audio.unlock();audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
-  await Promise.all([renderer.load(pair),...(online.gameMode==='story'?[renderer.loadStory()]:[])]);
+  inputs.release();audio.unlock();
+  const audioReady=audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
+  await Promise.all([renderer.load(pair),audioReady,document.fonts.load('20px VicenteArcade').catch(()=>{}),...(online.gameMode==='story'?[renderer.loadStory()]:[])]);
 }
 function showOnlineMatch(pair,slot){
   arcade.reset();arcadeView.hide();$('result-score').hidden=true;audio.playerSlot=slot;
@@ -142,9 +143,9 @@ function event(e) {
 
 const portraitPath=id=>`assets/runtime/${id}-head-menu-v${['adriano','khauany','dienes'].includes(id)?1:['joao','gelton','tais'].includes(id)?4:3}.webp${id==='ruan'?'?v=362':id==='joao'?'?v=362':''}`;
 const arcadeView=new ArcadeView({characters:CHARACTERS,portraitPath});
-const arcade=new ArcadeFlow({engine,roster:Object.keys(CHARACTERS),record:readArcadeRecord(window.localStorage),
+const arcade=new ArcadeFlow({engine,roster:Object.keys(CHARACTERS),record:readArcadeRecord(()=>window.localStorage),
   prepare:pair=>Promise.all([renderer.load(pair),audio.loadFighters(pair)]),
-  onRecord:score=>saveArcadeRecord(window.localStorage,score),
+  onRecord:score=>saveArcadeRecord(()=>window.localStorage,score),
   onBattle:run=>{
     selected=run.playerId;opponent=run.opponentId;updateSelection();arcadeView.hide();showScreen(null);
     inputs.release();audio.stopSamples();audio.playerSlot=0;audio.playing=true;accumulator=0;
