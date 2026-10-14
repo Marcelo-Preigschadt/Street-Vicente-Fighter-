@@ -8,6 +8,8 @@ import { Renderer } from './render.js?v=27';
 import { ArcadeAudio } from './audio.js?v=27';
 import { Inputs } from './input.js?v=30';
 import { OnlineMatch,normalizeCode } from './online.js?v=28';
+import {ArcadeFlow,readArcadeRecord,saveArcadeRecord} from './arcade.js';
+import {ArcadeView} from './arcade-ui.js';
 
 const $ = id => document.getElementById(id);
 const renderer = new Renderer($('game')), audio = new ArcadeAudio();
@@ -34,6 +36,7 @@ function showScreen(id){
 }
 function showMainMenu(){
   if(starting)return;
+  arcade.reset();arcadeView.hide();$('result-score').hidden=true;
   if(online.active)online.close();
   inputs.network();renderer.event({type:'selection'});
   engine.phase='selection';engine.paused=false;inputs.release();audio.playing=false;audio.stopSamples();
@@ -45,8 +48,8 @@ function showModeScreen(family){
   selectionFamily=family;
   $('mode-title').textContent=family==='story'?'MODO HISTÓRIA':'VERSUS BATTLE';
   $('mode-description').textContent=family==='story'?'Escolha como vai jogar a Operação Resgate do NIT.':'Escolha quem vai controlar o adversário antes de selecionar os lutadores.';
-  $('mode-cpu-title').textContent=family==='story'?'HISTÓRIA SOLO':'CONTRA A MÁQUINA';
-  $('mode-cpu-description').textContent=family==='story'?'Enfrente os quatro atos com um lutador.':'Enfrente um lutador controlado pelo computador.';
+  $('mode-cpu-title').textContent=family==='story'?'HISTÓRIA SOLO':'ARCADE · CONTRA A MÁQUINA';
+  $('mode-cpu-description').textContent=family==='story'?'Enfrente os quatro atos com um lutador.':'Vença o elenco inteiro, some pontos e avance pelo Circuito Vicente.';
   $('mode-local-title').textContent=family==='story'?'HISTÓRIA EM DUPLA NO PC':'1 V.S. 1 NO MESMO PC';
   $('mode-local-description').textContent=family==='story'?'Dois jogadores cooperam no mesmo computador.':'Dois jogadores usam o mesmo computador.';
   showScreen('mode-screen');document.querySelector('[data-mode-choice="cpu"]').focus();
@@ -92,6 +95,7 @@ async function prepareOnline(pair,slot){
   await Promise.all([renderer.load(pair),...(online.gameMode==='story'?[renderer.loadStory()]:[])]);
 }
 function showOnlineMatch(pair,slot){
+  arcade.reset();arcadeView.hide();$('result-score').hidden=true;audio.playerSlot=slot;
   selected=pair[slot];opponent=pair[1-slot];updateSelection();inputs.network(online,slot);
   showScreen(null);$('pause-screen').hidden=true;$('result-screen').hidden=true;
   $('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches;$('pause').disabled=false;$('pause').textContent='Pausar';
@@ -112,9 +116,10 @@ function startOnline(kind='quick'){
 function event(e) {
   if(typeof online!=='undefined'&&online.event(e))return;
   renderer.event(e); audio.event(e, engine);
+  if(arcade.event(e))return;
   if (e.type === 'pause') { $('pause-screen').hidden = !e.paused; inputs.release(); audio.playing = !e.paused; $('pause').textContent = e.paused ? 'Continuar' : 'Pausar'; if (e.paused) $('resume').focus(); else $('game').focus(); }
   if (e.type === 'round') $('announcer').textContent = `Round ${e.round}`;
-  if (e.type === 'fight') { $('announcer').textContent = 'Lutem!'; $('game').focus(); }
+  if (e.type === 'fight') { $('announcer').textContent = 'Fight!'; $('game').focus(); }
   if (e.type === 'special') $('announcer').textContent = `${e.name}. ${e.quote}`;
   if (e.type === 'droneFire') $('announcer').textContent = 'Enxame de Drones disparou';
   if(e.type==='storyAct'){$('pause-screen').hidden=true;$('pause').textContent='Pausar';saveCheckpoint(engine);$('pause').disabled=false;audio.playing=true;$('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches||getMode()==='local';}
@@ -125,8 +130,9 @@ function event(e) {
   }
   if(e.type==='storyResult'){audio.playing=false;if(e.won)clearCheckpoint(engine);}
   if (e.type === 'dizzy' && e.fighter<2) $('announcer').textContent = `${engine.fighters[e.fighter].character.name} ficou tonto ${e.cause === 'chemicalSmoke' ? 'pela Névoa Atômica' : 'após o combo'}`;
-  if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round`;
+  if (e.type === 'roundEnd') $('announcer').textContent = e.winner === null ? 'Round empatado' : `${engine.fighters[e.winner].character.name} venceu o round${e.perfect?' · Perfect!':''}`;
   if (e.type === 'result') {
+    $('result-score').hidden=true;$('result-eyebrow').textContent='FIM DE JOGO';$('rematch').textContent='Revanche';
     const f = engine.fighters[e.winner]; $('winner-name').textContent = `${f.character.name} venceu!`; $('winner-quote').textContent = f.character.quote;
     $('result-screen').hidden = false; $('touch-controls').hidden = true; audio.playing = false; $('pause').disabled = true; $('announcer').textContent = `${f.character.name} venceu a luta`;
     $('rematch').hidden=online.running;$('result-back').textContent=online.running?'Voltando à seleção…':'Trocar personagem';$('result-back').disabled=online.running;
@@ -135,6 +141,21 @@ function event(e) {
 }
 
 const portraitPath=id=>`assets/runtime/${id}-head-menu-v${['adriano','khauany','dienes'].includes(id)?1:['joao','gelton','tais'].includes(id)?4:3}.webp${id==='ruan'?'?v=362':id==='joao'?'?v=362':''}`;
+const arcadeView=new ArcadeView({characters:CHARACTERS,portraitPath});
+const arcade=new ArcadeFlow({engine,roster:Object.keys(CHARACTERS),record:readArcadeRecord(window.localStorage),
+  prepare:pair=>Promise.all([renderer.load(pair),audio.loadFighters(pair)]),
+  onRecord:score=>saveArcadeRecord(window.localStorage,score),
+  onBattle:run=>{
+    selected=run.playerId;opponent=run.opponentId;updateSelection();arcadeView.hide();showScreen(null);
+    inputs.release();audio.stopSamples();audio.playerSlot=0;audio.playing=true;accumulator=0;
+    $('pause-screen').hidden=true;$('result-screen').hidden=true;$('pause').disabled=false;$('pause').textContent='Pausar';$('restart').hidden=false;
+    $('touch-controls').hidden=!matchMedia('(pointer: coarse)').matches;
+    $('game').setAttribute('aria-label',`Modo Arcade, luta ${run.index+1} de ${run.total}: ${CHARACTERS[run.playerId].name} contra ${CHARACTERS[run.opponentId].name}.`);$('game').focus();
+  },
+  onRoute:run=>{inputs.release();audio.playing=false;$('pause').disabled=true;$('touch-controls').hidden=true;$('result-screen').hidden=true;arcadeView.show(run);$('announcer').textContent=`Vitória. Próximo adversário: ${CHARACTERS[run.nextOpponentId].name}.`;},
+  onResult:run=>{inputs.release();audio.playing=false;$('pause').disabled=true;$('touch-controls').hidden=true;arcadeView.result(run);},
+  onError:error=>{if(arcade.run?.state==='route')arcadeView.error(error);else{$('announcer').textContent=`Não foi possível preparar a luta: ${error.message}`;$('rematch').disabled=false;$('rematch').textContent='Tentar novamente';}}
+});
 let previewed = selected;
 function previewFighter(id) {
   previewed=id;
@@ -173,6 +194,7 @@ function updateSelection() {
   document.querySelector('.fighters').setAttribute('aria-label','Seleção de todos os personagens');
   document.querySelectorAll('[data-fighter]').forEach(card=>card.hidden=story&&!STORY_HEROES.includes(card.dataset.fighter));
   const local = getMode() === 'local',network=getMode()==='online',lobby=network&&online.lobby;
+  $('selection').dataset.opponentType=story?'ALLY':local||network?'2P':'CPU';
   if(lobby)opponent=online.pair[1-online.slot];
   $('room-directory').hidden=!network;$('online-panel').hidden=!network;$('opponent').closest('label').hidden=network||(story&&getMode()==='cpu');
   document.querySelector('.match-rules').hidden=story;
@@ -238,6 +260,10 @@ updateSelection();
 
 async function start(checkpoint=null) {
   if(checkpoint instanceof Event)checkpoint=null;
+  if(arcade.run?.state==='route'){arcade.skip();return;}
+  if(arcade.run?.state==='defeated'){
+    audio.unlock();$('rematch').disabled=true;$('rematch').textContent='Preparando a luta…';await arcade.continue();return;
+  }
   if(getMode()==='online'){
     if(engine.phase==='result'&&online.running){online.finish();return;}
     if(online.lobby&&!online.running){online.confirm();return;}
@@ -250,8 +276,8 @@ async function start(checkpoint=null) {
   starting=true;$('start').disabled=true;$('start').textContent='Preparando a luta…';
   $('load-status').textContent=`Carregando ${CHARACTERS[pair[0]].name} e ${CHARACTERS[pair[1]].name}…`;
   inputs.release();audio.unlock();
-  audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
-  try{await Promise.all([renderer.load(pair),...(isStory()?[renderer.loadStory()]:[])]);}catch(error){
+  const audioReady=audio.loadFighters(pair).catch(error=>console.warn('Áudio de combate indisponível.',error));
+  try{await Promise.all([renderer.load(pair),audioReady,document.fonts.load('20px VicenteArcade').catch(()=>{}),...(isStory()?[renderer.loadStory()]:[])]);}catch(error){
     $('load-status').textContent=`${error.message}. Pressione Começar para tentar novamente.`;
     starting=false;$('start').disabled=false;$('start').textContent='Começar a luta';return;
   }
@@ -263,11 +289,13 @@ async function start(checkpoint=null) {
   $('selection').hidden = true; $('pause-screen').hidden = true; $('result-screen').hidden = true; $('pause').disabled = false; $('pause').textContent = 'Pausar';
   $('game').focus();
   $('touch-controls').hidden = !(matchMedia('(pointer: coarse)').matches && ['cpu','story-solo','story-online'].includes(mode));
-  engine.start(selected, mode, opponent,checkpoint?{act:checkpoint.act,timer:checkpoint.timer}:{});
+  if(mode==='cpu')arcade.beginPrepared(selected,opponent);
+  else{arcade.reset();arcadeView.hide();audio.playerSlot=0;engine.start(selected, mode, opponent,checkpoint?{act:checkpoint.act,timer:checkpoint.timer}:{});}
   if(isStory())$('game').setAttribute('aria-label','Operação Resgate do NIT: campanha em quatro atos. Avance, desative equipamentos e enfrente os chefes.');
-  else $('game').setAttribute('aria-label', `Jogo de luta: ${CHARACTERS[selected].name} contra ${CHARACTERS[opponent].name}. Os comandos estão no botão de informações dos personagens.`);
+  else if(mode!=='cpu')$('game').setAttribute('aria-label', `Jogo de luta: ${CHARACTERS[selected].name} contra ${CHARACTERS[opponent].name}. Os comandos estão no botão de informações dos personagens.`);
 }
 function selection(closeNetwork=true) {
+  arcade.reset();arcadeView.hide();$('result-score').hidden=true;
   if(closeNetwork&&online.active)online.close();inputs.network();onlineBusy(false);$('online-hud').hidden=true;$('room-share').hidden=true;
   renderer.event({ type: 'selection' });
   $('story-dialog').hidden=true;$('story-hud').hidden=true;$('story-dialog').dataset.scene='';
@@ -292,7 +320,8 @@ $('home-link').addEventListener('click',e=>{e.preventDefault();showMainMenu();})
 $('continue-story').addEventListener('click',()=>start(readCheckpoint(battleMode())));
 $('story-next').addEventListener('click',()=>{inputs.queue(0,'storyNext',1);$('game').focus();});
 $('story-swap').addEventListener('click',()=>{inputs.queue(0,'storySwap',1);$('game').focus();});
-$('start').addEventListener('click', start); $('restart').addEventListener('click',()=>{if(engine.storyActive){inputs.release();engine.paused=false;engine.retryAct();}else start();}); $('rematch').addEventListener('click', start);
+$('start').addEventListener('click', start); $('restart').addEventListener('click',()=>{if(engine.storyActive){inputs.release();engine.paused=false;engine.retryAct();}else if(arcade.run)void arcade.continue();else start();}); $('rematch').addEventListener('click', start);
+$('arcade-next').addEventListener('click',()=>arcade.skip());$('arcade-menu').addEventListener('click',showMainMenu);
 $('back').addEventListener('click', selection); $('result-back').addEventListener('click',()=>{if(online.running&&engine.phase==='result')online.finish();else selection();});
 function pause(){if(online.running)online.pause();else engine.togglePause();}
 $('resume').addEventListener('click',pause);$('pause').addEventListener('click',pause);
@@ -336,6 +365,7 @@ window.addEventListener('keydown', e => {
   if(e.code==='Escape'&&!$('selection').hidden){e.preventDefault();$('selection-back').click();return;}
   if(e.code==='Escape'&&(!$('mode-screen').hidden||!$('room-screen').hidden)){e.preventDefault();showMainMenu();return;}
   if(e.code==='Escape'&&!$('menu-screen').hidden){e.preventDefault();return;}
+  if(!$('arcade-route').hidden){if(e.code==='Enter'){e.preventDefault();arcade.skip();}else if(e.code==='Escape'){e.preventDefault();showMainMenu();}return;}
   if(['INPUT','SELECT','TEXTAREA','BUTTON','A','SUMMARY'].includes(e.target.tagName)||e.target.closest('[data-fighter]'))return;
   if (e.code === 'Escape' || e.code === 'KeyP') { e.preventDefault(); pause(); }
   if(e.code==='Enter'&&!e.repeat&&engine.storyActive&&engine.phase==='storyDialog'){e.preventDefault();inputs.queue(0,'storyNext',1);return;}
@@ -399,12 +429,13 @@ function gamepadAction(action,slot){
   if(action==='pause'){if(screens.every(id=>$(id).hidden)&&!engine.paused)pause();return;}
   let section=null;
   if(!$('pause-screen').hidden)section=$('pause-screen');
+  else if(!$('arcade-route').hidden)section=$('arcade-route');
   else if(!$('result-screen').hidden)section=$('result-screen');
   else section=screens.map(id=>$(id)).find(el=>!el.hidden);
   if(!section)return;
   const candidates=[...section.querySelectorAll('button,input,select')].filter(el=>!el.disabled&&!el.closest('[hidden]')&&el.getClientRects().length);
   if(action==='back'){
-    const back=section.id==='selection'?'selection-back':section.id==='room-screen'?'room-back':section.id==='mode-screen'?'mode-back':section.id==='pause-screen'?'resume':section.id==='result-screen'?'result-back':null;
+    const back=section.id==='selection'?'selection-back':section.id==='room-screen'?'room-back':section.id==='mode-screen'?'mode-back':section.id==='pause-screen'?'resume':section.id==='result-screen'?'result-back':section.id==='arcade-route'?'arcade-menu':null;
     if(back)$(back).click();return;
   }
   if(action==='confirm'||action==='start'){
@@ -428,13 +459,15 @@ function frame(now) {
   const dt = Math.min(.066, (now - last) / 1000); last = now;
   // Gamepad API requires continuous polling, also while paused and on menu screens.
   inputs.update();
+  if(!document.hidden)arcade.tick(dt);
   if(online.running){if(!engine.paused)online.advance();accumulator=0;}
   else if (!engine.paused) { accumulator += dt; while (accumulator >= FIXED_STEP) { engine.update(FIXED_STEP); accumulator -= FIXED_STEP; } }
   else accumulator = 0;
   online.tick();
   const alpha=online.running?1:accumulator/FIXED_STEP;
   syncStoryUI(engine,online);
-  renderer.draw(engine, engine.paused ? 0 : dt, engine.paused ? 1 : alpha); audio.tick(dt); requestAnimationFrame(frame);
+  if($('arcade-route').hidden)renderer.draw(engine, engine.paused ? 0 : dt, engine.paused ? 1 : alpha);else arcadeView.tick(dt,arcade);
+  audio.tick(dt); requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 

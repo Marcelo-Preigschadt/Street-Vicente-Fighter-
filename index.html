@@ -7,11 +7,11 @@
   <meta name="description" content="Street Vicente Fighter: versus 1 × 1 e Operação Resgate do NIT, uma campanha em quatro atos para jogar solo, em dupla local ou online.">
   <title>Street Vicente Fighter</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="releases/v4.7.1/style.css">
-  <script type="module" src="releases/v4.7.1/main.js"></script>
+  <link rel="stylesheet" href="releases/v4.8.0/style.css">
+  <script type="module" src="releases/v4.8.0/main.js"></script>
 </head>
 <body>
-  <main class="cabinet" data-game-version="4.7.1">
+  <main class="cabinet" data-game-version="4.8.0">
     <div id="game-shell" class="game-shell">
     <header class="topbar">
       <a class="wordmark" id="home-link" href="./" aria-label="Voltar ao menu de Street Vicente Fighter"><span>STREET VICENTE</span><strong>FIGHTER</strong></a>
@@ -141,11 +141,16 @@
         <img id="story-scene" class="story-scene" alt="">
         <div class="story-panel"><div class="story-route" id="story-route"></div><span id="story-act" class="eyebrow"></span><h2 id="story-title"></h2><p id="story-body"></p><div class="story-dialogue"><img id="story-speaker-image" alt=""><div><strong id="story-speaker"></strong><blockquote id="story-quote"></blockquote></div></div><button id="story-next" class="primary-button" type="button">Iniciar o ato</button><span class="story-hint">Enter ou Start no controle · Avançar</span></div>
       </section>
+      <section id="arcade-route" class="screen arcade-route" hidden aria-label="Rota do circuito Arcade no Vicente Dutra">
+        <header class="arcade-route-header"><div><span class="eyebrow">CIRCUITO VICENTE · BRASIL</span><h2 id="arcade-route-title">NEXT CHALLENGER</h2><p id="arcade-route-progress"></p></div><div class="arcade-total"><span>1P SCORE</span><strong id="arcade-route-score"></strong><small>HI SCORE <b id="arcade-route-record"></b></small></div></header>
+        <div class="arcade-travel"><div class="arcade-map-frame"><canvas id="arcade-map" width="1200" height="610" aria-label="Mapa dos setores da escola e trajeto do jogador"></canvas></div><aside class="arcade-challenger"><div class="arcade-route-faces"><img id="arcade-hero-face" alt=""><strong>VS</strong><img id="arcade-next-face" alt=""></div><span id="arcade-hero-name"></span><small>PRÓXIMO ADVERSÁRIO</small><h3 id="arcade-next-name"></h3><p id="arcade-next-place"></p><div id="arcade-bonuses" class="arcade-bonuses"></div></aside></div>
+        <footer class="arcade-route-footer"><p id="arcade-route-status" role="status"></p><div><button id="arcade-next" class="primary-button" type="button">Próxima luta</button><button id="arcade-menu" class="text-button" type="button">Sair do circuito</button></div></footer>
+      </section>
       <div id="pause-screen" class="screen modal-screen" hidden>
         <div class="modal"><span class="eyebrow">INTERVALO</span><h2>Luta pausada</h2><button id="resume" class="primary-button" type="button">Continuar</button><button id="restart" class="secondary-button" type="button">Recomeçar a luta</button><button id="back" class="text-button" type="button">Seleção de personagens</button></div>
       </div>
       <div id="result-screen" class="screen modal-screen" hidden>
-        <div class="modal result-modal"><span class="eyebrow">FIM DE JOGO</span><h2 id="winner-name"></h2><p id="winner-quote"></p><button id="rematch" class="primary-button" type="button">Revanche</button><button id="result-back" class="secondary-button" type="button">Trocar personagem</button></div>
+        <div class="modal result-modal"><span id="result-eyebrow" class="eyebrow">FIM DE JOGO</span><h2 id="winner-name"></h2><p id="winner-quote"></p><div id="result-score" class="result-score" hidden><span>1P SCORE</span><strong id="result-score-value"></strong><small>HI SCORE <b id="result-record-value"></b></small><p id="result-progress"></p></div><button id="rematch" class="primary-button" type="button">Revanche</button><button id="result-back" class="secondary-button" type="button">Trocar personagem</button></div>
       </div>
       <div id="touch-controls" class="touch-controls" hidden aria-label="Controles de toque">
         <div class="touch-dpad"><button data-action="jump" data-story-action="up" class="up" aria-label="Pular">▲</button><button data-action="left" class="left" aria-label="Esquerda">◀</button><button data-action="right" class="right" aria-label="Direita">▶</button><button data-action="down" class="down" aria-label="Agachar">▼</button></div>

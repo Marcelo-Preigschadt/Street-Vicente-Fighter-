@@ -1,5 +1,11 @@
 # Áudio de combate
 
+## Locutor clássico — 4.8.0
+
+As chamadas de abertura e resultado usam 16 amostras gravadas de **Street Fighter II (CPS-1), Capcom**: Round, números 1–9, Final, Fight, Perfect, You, Win e Lose. Fonte dos arquivos: [Rengrow/Street-Fighter-II-Gamusinos-Fighters-, Game/assets/sfx/voices](https://github.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/tree/master/Game/assets/sfx/voices). Catálogo de referência das amostras do jogo: [The Sounds Resource — Voices (CPS-1)](https://sounds.spriters-resource.com/arcade/streetfighter2/asset/393852/).
+
+Os WAV `announcer-*-sf2-v1.wav` são preservados byte a byte, sem TTS, pitch ou alteração de velocidade. URLs, SHA-256, formato e duração estão em `announcer-sf2-sources-v1.json`. A Web Audio API agenda as palavras originais para formar as chamadas. A voz gerada que o usuário rejeitou não é usada. Os áudios de todos os personagens anteriores permanecem intactos.
+
 ## Falas dos poderes
 
 Gravações geradas para este projeto em português brasileiro. Os clipes aprovados de Marcelo e Rafael usam o preset **Clint**, modelo expressivo `eleven_v3`, interpretação `[shouting]` e velocidade `1.1`, exatamente os parâmetros utilizados no primeiro áudio “Bora NIT”. Os arquivos são locais; não dependem de geração de voz ou serviços externos durante a partida.

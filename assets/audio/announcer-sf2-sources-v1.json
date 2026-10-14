@@ -1,0 +1,166 @@
+{
+  "game": "Street Fighter II (CPS-1)",
+  "sourceType": "Original recorded samples; no TTS, pitch or time alteration",
+  "clips": [
+    {
+      "id": "round",
+      "path": "assets/audio/announcer-round-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_round.wav",
+      "sha256": "442d1379fc625cf96c54705aa8a3c02767431facd0ad31a82ad6a36cd3ec8559",
+      "duration": 1.1649886621315193,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "1",
+      "path": "assets/audio/announcer-1-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_1.wav",
+      "sha256": "23a1b2d7343217b3aa69b68b0a6451b644d56606b4fa4a9d727572b8fedfce09",
+      "duration": 0.7655328798185941,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "2",
+      "path": "assets/audio/announcer-2-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_2.wav",
+      "sha256": "60c672a119c1c1f8d358354375f324d39ec28fb215c3b5282db9ebcbdda019ff",
+      "duration": 0.7322448979591837,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "3",
+      "path": "assets/audio/announcer-3-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_3.wav",
+      "sha256": "73606d15b1b45fd8e4b90ea5edc40a0d3a3094d9f4dbdac49a922006eee3707e",
+      "duration": 0.6989569160997733,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "4",
+      "path": "assets/audio/announcer-4-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_4.wav",
+      "sha256": "ac98ffd570778e04ab697cb37afef5a627eac585d63449887ac550079f5058c5",
+      "duration": 0.7488888888888889,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "5",
+      "path": "assets/audio/announcer-5-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_5.wav",
+      "sha256": "0e37d88a7c9364f357534948882f6c0754fd91757322fdeb6337b9351d52493b",
+      "duration": 1.0484807256235829,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "6",
+      "path": "assets/audio/announcer-6-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_6.wav",
+      "sha256": "117f9aba6ac073fd7b9a1176516b2380ce06999116603fd8ee895f22e5659de3",
+      "duration": 0.9319727891156463,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "7",
+      "path": "assets/audio/announcer-7-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_7.wav",
+      "sha256": "dcf7ac479c5d34e50d95b9b47b6f331940e8d802f34e130b1da0c3df28871870",
+      "duration": 1.1816326530612244,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "8",
+      "path": "assets/audio/announcer-8-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_8.wav",
+      "sha256": "829cb05f606a0e51821e3b2662710e997cee1ae3a6a8120be88f88976c7f3e05",
+      "duration": 0.8653968253968254,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "9",
+      "path": "assets/audio/announcer-9-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_9.wav",
+      "sha256": "82e68828813fdf78e7a30602afed99fda29873e17d890a7e03e31c41d01a6032",
+      "duration": 1.1982766439909298,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "final",
+      "path": "assets/audio/announcer-final-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_final.wav",
+      "sha256": "f2befabad126d5b79abddc2c358d5ed1d95a46a93bfd9e9ed899e1aa3d332486",
+      "duration": 0.9985487528344671,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "fight",
+      "path": "assets/audio/announcer-fight-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_fight.wav",
+      "sha256": "1089eafaea546ec685a77a4c0dea7b1f6ceb6b10f966d6d813ad543018d53eb8",
+      "duration": 0.682312925170068,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "perfect",
+      "path": "assets/audio/announcer-perfect-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_perfect.wav",
+      "sha256": "07f536dde07afae26463f05530aa4981b2bcd3b2b088abe54e6ec23d9da1bb95",
+      "duration": 0.8487528344671201,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "you",
+      "path": "assets/audio/announcer-you-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_you.wav",
+      "sha256": "b981b32a62c4b7fa2c98ab7696730dbb27021599ca99a9a15ba8cbf895e7de3e",
+      "duration": 0.8487528344671201,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "win",
+      "path": "assets/audio/announcer-win-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_win.wav",
+      "sha256": "b321390cc911924ba2ff2de4e3a4951f82a88f2e5c6407467f09313dcf88a5c7",
+      "duration": 0.7156009070294784,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    },
+    {
+      "id": "lose",
+      "path": "assets/audio/announcer-lose-sf2-v1.wav",
+      "source": "https://raw.githubusercontent.com/Rengrow/Street-Fighter-II-Gamusinos-Fighters-/master/Game/assets/sfx/voices/announcer_lose.wav",
+      "sha256": "82b531a6a07b18e1904a7ca6bd8116569319e43bde7da8aa612eee25890c8a43",
+      "duration": 0.8154648526077097,
+      "rate": 22050,
+      "channels": 2,
+      "bits": 16
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 export const SOUNDS = Object.freeze({
+  ...Object.fromEntries(['round','1','2','3','4','5','6','7','8','9','final','fight','perfect','you','win','lose'].map(id=>[`announcer-${id}`,`assets/audio/announcer-${id}-sf2-v1.wav`])),
   'adriano-select':'assets/audio/adriano-select-br-v1.wav','adriano-special':'assets/audio/adriano-special-br-v1.wav','adriano-uppercut':'assets/audio/adriano-uppercut-br-v1.wav','adriano-super':'assets/audio/adriano-super-br-v1.wav',
   'tais-select':'assets/audio/tais-select-br-v3.wav','tais-special':'assets/audio/tais-special-br-v3.wav','tais-uppercut':'assets/audio/tais-uppercut-br-v3.wav','tais-super':'assets/audio/tais-super-br-v3.wav',
   'luciana-select':'assets/audio/luciana-select-br-v1.wav','luciana-special':'assets/audio/luciana-special-br-v1.wav','luciana-uppercut':'assets/audio/luciana-uppercut-br-v1.wav','luciana-super':'assets/audio/luciana-super-br-v1.wav',
@@ -46,7 +47,7 @@ export class ArcadeAudio {
   }
   loadFighters(ids) {
     this.clipLoads??=new Map();
-    const paths=Object.entries(SOUNDS).filter(([key])=>!key.includes('-')||ids.some(id=>key.startsWith(`${id}-`)));
+    const paths=Object.entries(SOUNDS).filter(([key])=>!key.includes('-')||key.startsWith('announcer-')||ids.some(id=>key.startsWith(`${id}-`)));
     return Promise.all(paths.map(([key,path])=>{
       if(!this.clipLoads.has(key)) {
         const task=(async()=>{
@@ -109,7 +110,7 @@ export class ArcadeAudio {
     if (!this.enabled) this.stopSamples();
     return this.enabled;
   }
-  sample(id, volume = 1, voice = null) {
+  sample(id, volume = 1, voice = null, delay = 0) {
     const buffer = this.buffers.get(id);
     if (!buffer || !this.context || !this.enabled || this.context.state !== 'running') return false;
     if (voice !== null) {
@@ -119,7 +120,15 @@ export class ArcadeAudio {
     source.buffer = buffer; amp.gain.value = volume; source.connect(amp); amp.connect(this.master);
     this.sources.add(source); if (voice !== null) this.voices.set(voice, source);
     source.onended = () => { source.disconnect(); amp.disconnect(); this.sources.delete(source); if (this.voices.get(voice) === source) this.voices.delete(voice); };
-    source.start(); return true;
+    source.start(ctx.currentTime+Math.max(0,delay)); return true;
+  }
+  announce(words,delay=0) {
+    for(const [channel,source] of this.voices)if(typeof channel==='string'&&channel.startsWith('announcer:')){try{source.stop();}catch{}}
+    let at=delay;
+    for(const [i,word] of words.entries()){
+      const key=`announcer-${word}`,buffer=this.buffers.get(key);
+      if(buffer){this.sample(key,1.8,`announcer:${i}`,at);at+=(buffer.duration??0)+.025;}
+    }
   }
   tone(frequency, duration, type = 'square', volume = .2, endFrequency = frequency) {
     if (!this.context || !this.enabled || this.context.state !== 'running') return;
@@ -173,18 +182,20 @@ export class ArcadeAudio {
         }
         break;
       }
-      case 'round': this.stopSamples(); this.musicTime = 0; this.beat = 0; this.tone(440, .14, 'square', .12); break;
+      case 'round': this.stopSamples(); this.musicTime = 0; this.beat = 0; this.announce(e.final?['final','round']:e.round<=9?['round',String(e.round)]:['round']); break;
       case 'storyAct': this.stopSamples();this.tone(330,.2,'triangle',.12,660);break;
       case 'storyEnemyDown': this.noise(.12,.08);break;
       case 'storyPropBreak': this.noise(.09,.13);this.tone(180,.07,'triangle',.045,65);break;
       case 'storyEnemyAttack': this.tone(110,.07,'sawtooth',.035,70);break;
       case 'storyHazardHit': this.noise(.15,.1);break;
       case 'storyResult': this.tone(e.won?523:160,.5,'triangle',.2,e.won?1046:50);break;
-      case 'fight': this.tone(660, .22, 'square', .19, 880); break;
+      case 'fight': this.announce(['fight']); break;
       case 'customStart': this.tone(260,.25,'triangle',.15,780); break;
       case 'guardCounter': this.tone(780,.13,'triangle',.12,260); break;
       case 'roundEnd':
+        this.stopSamples();
         if (e.winner !== null && !e.timeout) this.sample('ko', .65, 1 - e.winner);
+        if(e.winner!==null)this.announce(['you',e.winner===(this.playerSlot??0)?'win':'lose',...(e.perfect?['perfect']:[])],.4);
         this.tone(220, .30, 'triangle', .12, 55); break;
       case 'result': this.tone(523.25, .4, 'triangle', .2, 1046.5); break;
       case 'pause': if (e.paused) this.stopSamples(); break;

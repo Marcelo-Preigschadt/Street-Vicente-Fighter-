@@ -330,7 +330,7 @@ export class FightEngine {
     // Keep accumulated super charge for the match; start() creates fresh fighters.
     this.fighters.forEach(f => f.reset(f.meter)); this.projectiles = []; this.drones = []; this.lasers = []; this.nextDroneId = 1; this.freeze = 0; this.timer = 90;
     this.phase = 'intro'; this.phaseTime = 0; this.time = 0; this.roundWinner = null;
-    this.event('round', { round: this.round });
+    this.event('round', { round: this.round, final: this.fighters.every(f=>f.wins===1) });
   }
   setInput(slot, input) {
     const f = this.fighters[slot], next = { ...idleInput(), ...input };
@@ -975,7 +975,7 @@ export class FightEngine {
     });
     if (winner) { winner.wins++; winner.quoteTime = 2.75; winner.powerName = 'ROUND VENCIDO'; winner.powerQuote = winner.character.quote; }
     this.roundWinner = winner?.slot ?? null;
-    this.event('roundEnd', { winner: this.roundWinner, timeout: this.timer <= 0, quote: winner?.character.quote });
+    this.event('roundEnd', { winner: this.roundWinner, timeout: this.timer <= 0, perfect: winner?.hp===1000, quote: winner?.character.quote });
   }
   togglePause() {
     if (!['intro', 'fight', 'roundEnd'].includes(this.phase)) return;

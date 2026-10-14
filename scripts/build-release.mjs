@@ -10,7 +10,7 @@ for(const file of (await readdir('src')).filter(file=>file.endsWith('.js')).sort
   await writeFile(`${directory}/${file}`,source);
   manifest.files[file]=createHash('sha256').update(source).digest('hex');
 }
-const css=await readFile('style.css');await writeFile(`${directory}/style.css`,css);
+const css=(await readFile('style.css','utf8')).replace(/url\((['"]?)(assets\/[^)'"\s]+)\1\)/g,'url($1../../$2$1)');await writeFile(`${directory}/style.css`,css);
 manifest.files['style.css']=createHash('sha256').update(css).digest('hex');
 await writeFile(`${directory}/manifest.json`,JSON.stringify(manifest,null,2)+'\n');
 let html=await readFile('index.html','utf8');

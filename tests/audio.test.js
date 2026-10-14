@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { ArcadeAudio, SOUNDS } from '../src/audio.js';
+import {createHash} from 'node:crypto';
 
 const fileBytes = path => readFile(new URL(`../${path}`, import.meta.url));
 const param = () => ({ value: 0, setValueAtTime() {}, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {}, setTargetAtTime(value) { this.value = value; } });
@@ -10,11 +11,16 @@ class AudioContextStub {
   resume() { return Promise.resolve(); }
   createGain() { return { gain: param(), connect() {}, disconnect() {} }; }
   createDynamicsCompressor() { return { threshold: param(), knee: param(), ratio: param(), connect() {} }; }
-  decodeAudioData(bytes) { return Promise.resolve({ bytes: bytes.byteLength }); }
+  createOscillator() {return {frequency:param(),connect(){},disconnect(){},start(){},stop(){this.onended?.();}};}
+  decodeAudioData(bytes) {
+    const data=Buffer.from(bytes);let rate=1,size=0;
+    for(let at=12;at+8<=data.length;){const n=data.readUInt32LE(at+4),tag=data.toString('ascii',at,at+4);if(tag==='fmt ')rate=data.readUInt32LE(at+16);if(tag==='data')size=n;at+=8+n+(n%2);}
+    return Promise.resolve({ bytes: bytes.byteLength,duration:size/rate });
+  }
   createBuffer(channels, length) { const data = new Float32Array(length); return { getChannelData: () => data }; }
   createBufferSource() {
     const source = { connect() {}, disconnect() {}, stopped: false,
-      start: () => this.started.push(source), stop() { this.stopped = true; this.onended?.(); } };
+      start: at => {source.scheduledAt=at;this.started.push(source);}, stop() { this.stopped = true; this.onended?.(); } };
     return source;
   }
 }
@@ -99,4 +105,31 @@ test('super de Marcelo conserva as mesmas amostras PCM do Bora NIT original', as
   const superClip=pcm(await fileBytes(SOUNDS['marcelo-super']));
   assert.deepEqual(superClip.subarray(0,original.length),original);
   assert.ok(superClip.length>original.length);
+});
+
+test('locutor usa os 16 WAV originais de SFII documentados, preservados byte a byte e carregados com cada dupla',async t=>{
+ const proof=JSON.parse(await fileBytes('assets/audio/announcer-sf2-sources-v1.json'));
+ assert.equal(proof.clips.length,16);
+ for(const clip of proof.clips){const bytes=await fileBytes(clip.path);assert.equal(createHash('sha256').update(bytes).digest('hex'),clip.sha256);assert.equal(SOUNDS['announcer-'+clip.id],clip.path);}
+ const audio=prepare(t);await audio.loadFighters(['adriano','rafael']);
+ for(const clip of proof.clips)assert.ok(audio.bytes.has('announcer-'+clip.id));
+ assert.equal(audio.bytes.has('marcelo-special'),false);
+});
+test('Round One, Final Round e Fight usam chamadas originais sequenciais sem sobreposição',async t=>{
+ const audio=prepare(t);await audio.loadFighters(['adriano','rafael']);audio.unlock();await audio.decodeAvailable();
+ for(const e of [{type:'round',round:1,final:false},{type:'round',round:3,final:true}]){
+  audio.event(e,{fighters:[]});const sources=[...audio.voices].filter(([k])=>k.startsWith('announcer:')).map(([,s])=>s);
+  const words=e.final?['final','round']:['round','1'];assert.deepEqual(sources.map(s=>s.buffer),words.map(w=>audio.buffers.get('announcer-'+w)));
+  assert.ok(sources[1].scheduledAt>=sources[0].scheduledAt+sources[0].buffer.duration);assert.ok(sources[1].scheduledAt+sources[1].buffer.duration<2.35);
+ }
+ audio.event({type:'fight'});assert.equal(audio.voices.get('announcer:0').buffer,audio.buffers.get('announcer-fight'));
+});
+test('You Win e Perfect terminam antes do próximo round; pausa cancela também os clipes agendados',async t=>{
+ const audio=prepare(t);await audio.loadFighters(['adriano','rafael']);audio.unlock();await audio.decodeAvailable();
+ audio.event({type:'roundEnd',winner:0,perfect:true,timeout:false});
+ const sources=[...audio.voices].filter(([k])=>typeof k==='string'&&k.startsWith('announcer:')).map(([,s])=>s);
+ assert.deepEqual(sources.map(s=>s.buffer),['you','win','perfect'].map(w=>audio.buffers.get('announcer-'+w)));
+ assert.ok(sources[2].scheduledAt>=sources[1].scheduledAt+sources[1].buffer.duration);assert.ok(sources[2].scheduledAt+sources[2].buffer.duration<3);
+ audio.event({type:'pause',paused:true});assert.ok(sources.every(s=>s.stopped));assert.equal(audio.sources.size,0);
+ audio.playerSlot=1;audio.event({type:'roundEnd',winner:0,perfect:false,timeout:true});assert.equal(audio.voices.get('announcer:1').buffer,audio.buffers.get('announcer-lose'));
 });

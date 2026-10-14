@@ -1,3 +1,4 @@
+import {drawVersusHUD,drawVersusAnnouncer} from './versus-hud.js';
 import {drawAdrianoProjectile,drawAdrianoPower} from './adriano-fx.js';
 import {drawAthleticPulse,drawOlympicJump} from './savate-fx.js';
 import {drawForkProjectile,drawForkPower} from './fork-fx.js';
@@ -11,7 +12,7 @@ import {drawLanguagePower,drawLanguageProjectile} from './mma-fx.js';
 import { loadPreparedSprites } from './sprite-loader.js?v=27';
 import { spriteComponents } from './sprite-extraction.js';
 import { drawJudoSystem } from './judo-fx.js?v=27';
-import { CHARACTERS, WORLD, fighterPose, FIGHTING_STYLES } from './engine.js?v=27';
+import { CHARACTERS, WORLD, fighterPose } from './engine.js?v=27';
 
 import { SuperEffects } from './super-fx.js?v=27';
 import { FightEffects, drawEnergyProjectile, drawEnergyRise, drawChemicalSmoke } from './fight-fx.js?v=27';
@@ -491,50 +492,7 @@ export class Renderer {
     c.drawImage(this.portraits[f.character.id],x-4,y-1); c.restore();
     c.strokeStyle = f.character.color; c.lineWidth = 2; rectangle(c, x, y, 70, 76, 4); c.stroke();
   }
-  drawHUD(engine) {
-    const c = this.c;
-    const top = c.createLinearGradient(0, 0, 0, 160); top.addColorStop(0, '#081316ee'); top.addColorStop(.7, '#081316aa'); top.addColorStop(1, '#08131600'); c.fillStyle = top; c.fillRect(0, 0, 1280, 160);
-    engine.fighters.forEach((f, i) => {
-      const right = i === 1, x = right ? 728 : 132, w = 420;
-      this.drawPortrait(f, right ? 1162 : 48, 31, right);
-      text(c, f.character.name, right ? 1147 : 133, 47, 27, '#fff4dd', right ? 'right' : 'left');
-      text(c, right ? engine.cpu ? 'CPU' : 'P2' : 'P1', right ? 744 : 549, 47, 16, f.character.color, right ? 'left' : 'right');
-      c.fillStyle = '#152423'; rectangle(c, x, 68, w, 29, 2); c.fill();
-      const trailing = Math.max(f.hp, f.displayHP) / 1000 * w, current = f.hp / 1000 * w;
-      c.fillStyle = '#c47b4a'; c.fillRect(right ? x + w - trailing : x, 70, trailing, 25);
-      const gradient = c.createLinearGradient(x, 68, x, 98); gradient.addColorStop(0, f.hp < 250 ? '#f8a15e' : '#dcf58b'); gradient.addColorStop(1, f.hp < 250 ? '#c83236' : '#80c557');
-      c.fillStyle = gradient; c.fillRect(right ? x + w - current : x, 70, current, 25);
-      c.strokeStyle = '#f1e6cc'; c.lineWidth = 2; c.strokeRect(x, 68, w, 29);
-      for (let j = 0; j < 2; j++) { c.fillStyle = j < f.wins ? '#ffe3a2' : '#1c3028'; c.strokeStyle = '#869378'; rectangle(c, right ? x + w - 16 - j * 23 : x + j * 23, 110, 14, 10, 2); c.fill(); c.stroke(); }
-      if (f.hp < 250) text(c, 'PERIGO', right ? x + w - 62 : x + 60, 115, 13, '#ffbc88', right ? 'right' : 'left');
-      text(c, FIGHTING_STYLES[f.character.id].name.toLocaleUpperCase('pt-BR'), right ? x + w : x, 139, 12, '#d5e1cc', right ? 'right' : 'left', 700);
-      const energyX = right ? 853 : 54, energyWidth = 373;
-      c.fillStyle = '#081617cc'; rectangle(c, energyX - 8, 656, energyWidth + 16, 48, 4); c.fill();
-      c.fillStyle = '#30423b'; c.fillRect(energyX, 674, energyWidth, 13);
-      c.fillStyle = f.character.color; c.fillRect(right ? energyX + energyWidth * (1 - f.meter / 100) : energyX, 674, energyWidth * f.meter / 100, 13);
-      if (f.meter >= 100) {
-        c.save(); c.shadowColor = f.character.color; c.shadowBlur = this.reduced ? 8 : 12 + Math.sin(this.clock * 7) * 4;
-        c.strokeStyle = '#f0ffca'; c.lineWidth = 2; c.strokeRect(energyX - 1, 673, energyWidth + 2, 15);
-        if (!this.reduced) {
-          c.beginPath(); c.rect(energyX, 674, energyWidth, 13); c.clip();
-          const sweep = (this.clock * 135) % (energyWidth + 100) - 50;
-          const shine = c.createLinearGradient(energyX + sweep - 25, 0, energyX + sweep + 25, 0);
-          shine.addColorStop(0, '#ffffff00'); shine.addColorStop(.5, '#ffffffa0'); shine.addColorStop(1, '#ffffff00');
-          c.fillStyle = shine; c.fillRect(energyX, 674, energyWidth, 13);
-        }
-        c.restore();
-      }
-      c.strokeStyle = '#dde6cc88'; c.lineWidth = 1; c.strokeRect(energyX, 674, energyWidth, 13);
-      for (let j = 1; j <= 3; j++) { c.fillStyle = '#142224'; c.fillRect(energyX + energyWidth * .25 * j - 1, 674, 2, 13); }
-      text(c, f.meter >= 100 ? 'SUPER PRONTO' : 'SUPER', right ? energyX + energyWidth : energyX, 666, 13, f.meter >= 100 ? f.character.color : '#a7b8ae', right ? 'right' : 'left');
-      if(f.customTime>0)text(c,`COMBO LIVRE · ${f.customTime.toFixed(1)}s`,right?energyX+energyWidth:energyX,641,15,f.character.color,right?'right':'left');
-      text(c, Math.floor(f.meter).toString(), right ? energyX : energyX + energyWidth, 666, 13, '#f5ecd9', right ? 'left' : 'right');
-    });
-    c.fillStyle = '#142323'; c.strokeStyle = '#dacda4'; c.lineWidth = 2; rectangle(c, 592, 28, 96, 89, 9); c.fill(); c.stroke();
-    text(c, Math.ceil(engine.timer).toString().padStart(2, '0'), 640, 67, 45, engine.timer <= 10 ? '#ffad73' : '#ffe6b2', 'center', 900);
-    text(c, `ROUND ${engine.round}`, 640, 103, 13, '#b8c4b1', 'center');
-    text(c, 'STREET VICENTE FIGHTER', 640, 686, 12, '#f2e5cbbb', 'center');
-  }
+  drawHUD(engine) { drawVersusHUD(this,engine); }
   drawQuote(f) {
     const c = this.c, x = f.slot === 0 ? 320 : 960, alpha = Math.min(1, f.quoteTime * 3);
     c.save(); c.globalAlpha = alpha; c.font = '800 21px Arial'; const w = Math.max(c.measureText(f.powerQuote || f.character.quote).width, c.measureText(f.powerName || '').width) + 36;
@@ -547,17 +505,5 @@ export class Renderer {
     if (f.comboNameTime > 0) text(c,f.comboName,x,277,18,'#fff4dd',f.slot === 0 ? 'left' : 'right');
     c.restore();
   }
-  drawAnnouncer(engine) {
-    const c = this.c; let title = '', subtitle = '', size = 100;
-    if (engine.phase === 'intro') { title = engine.phaseTime < 1.35 ? `ROUND ${engine.round}` : 'LUTEM!'; size = engine.phaseTime < 1.35 ? 77 : 105; }
-    if (engine.phase === 'roundEnd') {
-      title = engine.roundWinner === null ? 'EMPATE' : engine.timer <= 0 ? 'TEMPO!' : 'K.O.';
-      subtitle = engine.roundWinner === null ? 'Vamos de novo.' : `${engine.fighters[engine.roundWinner].character.name} venceu o round`;
-    }
-    if (!title) return;
-    c.save(); const scale = !this.reduced && engine.phaseTime < .2 ? 1 + (.2 - engine.phaseTime) * 1.7 : 1;
-    c.translate(640, 326); c.scale(scale, scale); c.font = `900 italic ${size}px Arial`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#111e1fe6'; c.strokeText(title, 0, 0);
-    c.fillStyle = title === 'LUTEM!' ? '#b8ed68' : '#ffe4a6'; c.fillText(title, 0, 0); c.restore();
-    if (subtitle) { c.fillStyle = '#102024db'; rectangle(c, 390, 388, 500, 42, 4); c.fill(); text(c, subtitle, 640, 410, 24, '#f4ecdb', 'center'); }
-  }
+  drawAnnouncer(engine) { drawVersusAnnouncer(this,engine); }
 }

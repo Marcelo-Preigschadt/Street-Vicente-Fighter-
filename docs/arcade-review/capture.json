@@ -1,0 +1,9 @@
+{
+  "renderer": "Actual Renderer and drawArcadeMap",
+  "scriptedStates": true,
+  "manualPlaythrough": false,
+  "routeFrames": 168,
+  "fps": 30,
+  "routeSeconds": 5.6,
+  "existingCharacterArtChanged": false
+}
