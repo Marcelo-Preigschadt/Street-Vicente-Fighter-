@@ -66,6 +66,7 @@ for(const id of Object.keys(CHARACTERS))test(`${id}: toda rajada usa a mão da p
   const e=game(id),f=e.fighters[0],events=[];e.onEvent=v=>events.push(v);
   f.x=800;f.prevX=f.x;f.direction=facing;f.lane=550;f.prevLane=550;f.y=air?470:WORLD.floor;f.prevY=f.y;f.meter=100;
   assert.ok(e.beginMove(f,move));const m=f.moveData;if(!m.projectile)continue;
+  if(id==='adriano'&&move==='super')continue; // Siege fronts have independent origins, covered by adriano.test.js.
   const count=m.waves??(move==='super'?3:1);
   for(let wave=0;wave<count;wave++){
    f.actionTime=m.startup+wave*.11+1e-8;f.state=move;

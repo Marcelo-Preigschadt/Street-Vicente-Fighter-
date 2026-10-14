@@ -1,3 +1,4 @@
+import {adrianoSiegeProjectile} from './adriano.js';
 import {FightEngine,Fighter,WORLD,COMBAT,SENTINEL} from './engine.js';
 import {initMostafaEnemy,animateMostafa,mostafaEnemyIntent,mostafaCamera} from './mostafa-port.js';
 import {STORY_HEROES,STORY_ACTS,STORY_RULES,ENEMY_TYPES} from './story-data.js';
@@ -59,7 +60,7 @@ export class StoryEngine extends FightEngine {
         data={...data,x:d.x,y:d.y,lane:d.lane};
       }
     }
-    if(['special','superFreeze','projectile'].includes(type)&&f){
+    if(['special','superFreeze','projectile'].includes(type)&&f&&!(type==='projectile'&&data.character==='adriano'&&data.effect==='dynastySiege')){
       const hand=storyHandSocket(f);data={...data,...hand};
     }
     const lane=data.lane??this.entity(data.target)?.lane??f?.lane;
@@ -70,11 +71,12 @@ export class StoryEngine extends FightEngine {
     if(!this.storyActive)return super.spawnProjectile(f,data,wave);
     if(wave===0)this.announcePower(f);
     const hand=storyHandSocket(f),s=entityScale(f);
+    const siege=f.character.id==='adriano'&&data.effect==='dynastySiege'?adrianoSiegeProjectile(this,f,data,wave):{};
     this.projectiles.push({owner:f.slot,character:f.character.id,direction:f.direction,move:f.action,
       data:{...data,...(data.finalKnockdown?{knockdown:wave===(data.waves??3)-1}:{})},wave,
       ...hand,originX:hand.x,originY:hand.y,prevX:hand.x,prevY:hand.y,
-      radius:(data.radius??(f.action==='super'?32:27))*s,speed:data.speed*s,life:3.1,effect:data.effect??'energy'});
-    this.event('projectile',{fighter:f.slot,move:f.action,character:f.character.id,color:f.character.color,...hand,direction:f.direction,wave,effect:data.effect});
+      radius:(data.radius??(f.action==='super'?32:27))*s,speed:data.speed*s,life:3.1,effect:data.effect??'energy',...siege});
+    this.event('projectile',{fighter:f.slot,move:f.action,character:f.character.id,color:f.character.color,...hand,direction:f.direction,wave,effect:data.effect,...(siege.x===undefined?{}:{x:siege.x,y:siege.y,direction:siege.direction})});
   }
 
   queue(slot,move,strength=1){

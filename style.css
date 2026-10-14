@@ -269,3 +269,5 @@
 .gamepad-footer{display:flex;gap:9px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
 .gamepad-footer button{font-size:12px;padding:9px 11px}
 @media(max-width:600px){#gamepad-config{padding:7px 5px;font-size:10px}.gamepad-panel{top:59px;right:5px;width:calc(100% - 10px)}}
+
+.fighter-card.adriano{--fighter-color:#d7af66;}

@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[1]
-IDS = ['marcelo', 'rafael', 'gustavo', 'gelton', 'marcelino', 'marcos', 'joao', 'ruan', 'tais', 'luciana', 'khauany', 'dienes']
+IDS = ['adriano', 'marcelo', 'rafael', 'gustavo', 'gelton', 'marcelino', 'marcos', 'joao', 'ruan', 'tais', 'luciana', 'khauany', 'dienes']
 VERSIONS = {'tais': 2, 'khauany': 2, 'dienes': 2}
 MOTION = json.loads(subprocess.check_output([
     'node', '--input-type=module', '-e',

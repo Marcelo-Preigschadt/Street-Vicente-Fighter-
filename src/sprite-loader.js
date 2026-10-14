@@ -1,6 +1,6 @@
 // Silhouette extraction is done at build time. Browsers only decode and draw rectangles.
-export const PREPARED_SPRITE_VERSIONS=Object.freeze({marcelo:1,rafael:1,gustavo:1,gelton:1,marcelino:1,marcos:1,joao:1,ruan:1,tais:2,luciana:1,khauany:2,dienes:2});
-export const MOTION_SPRITE_STEMS=Object.freeze({gelton:'assets/story/gelton-walk-v3',marcelino:'assets/story/marcelino-walk-v3',marcos:'assets/story/marcos-walk-v3',joao:'assets/story/joao-walk-v3',ruan:'assets/story/ruan-walk-v3',tais:'assets/story/tais-walk-v4',luciana:'assets/story/luciana-walk-v2',khauany:'assets/story/khauany-walk-v3',dienes:'assets/story/dienes-walk-v2'});
+export const PREPARED_SPRITE_VERSIONS=Object.freeze({adriano:1,marcelo:1,rafael:1,gustavo:1,gelton:1,marcelino:1,marcos:1,joao:1,ruan:1,tais:2,luciana:1,khauany:2,dienes:2});
+export const MOTION_SPRITE_STEMS=Object.freeze({adriano:'assets/story/adriano-walk-v1',gelton:'assets/story/gelton-walk-v3',marcelino:'assets/story/marcelino-walk-v3',marcos:'assets/story/marcos-walk-v3',joao:'assets/story/joao-walk-v3',ruan:'assets/story/ruan-walk-v3',tais:'assets/story/tais-walk-v4',luciana:'assets/story/luciana-walk-v2',khauany:'assets/story/khauany-walk-v3',dienes:'assets/story/dienes-walk-v2'});
 
 export function preparedSpriteStem(id) {
   if(!Object.hasOwn(PREPARED_SPRITE_VERSIONS,id))throw new Error(`Personagem sem atlas preparado: ${id}`);

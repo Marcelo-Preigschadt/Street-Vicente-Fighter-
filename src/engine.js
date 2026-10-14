@@ -1,3 +1,4 @@
+import {adrianoPose,adrianoHurt,ADRIANO_STRIKES,adrianoSiegeProjectile} from './adriano.js';
 import {savatePose,savateHurt,SAVATE_STRIKES} from './savate.js';
 import {mmaPose,mmaHurt,MMA_STRIKES} from './mma.js';
 import {khauanyPose,khauanyHurt,KHAUANY_STRIKES} from './khauany.js';
@@ -23,6 +24,12 @@ export const COMBAT = Object.freeze({ jumpVelocity: -1440, preJump: 3 / 60, inpu
   landing: 4 / 60, emptyLanding: 2 / 60, superFreeze: 14 / 60, leftWall: 110, rightWall: 1170 });
 export const CHEMISTRY = Object.freeze({ smokeDuration:1.9, smokeRadius:30 });
 export const CHARACTERS = Object.freeze({
+  adriano:{id:'adriano',category:'teachers',subject:'História',name:'Prof. Adriano',quote:'Hoje você vai fazer história!',color:'#d7af66',accent:'#c09de6',
+    speed:338,backSpeed:328,jumpSpeed:615,power:1.02,sprite:'assets/source/adriano/base.png',combatSprite:'assets/source/adriano/combat.png',
+    powers:{special:'Selo do Império',uppercut:'Ascensão da Muralha',super:'Cerco das Dinastias'},
+    powerQuotes:{special:'Selo do Império!',uppercut:'Ergam a muralha!',super:'O cerco começou! Dinastias, avancem!'},
+    voiceDuration:{special:2.08,uppercut:1.92,super:5.68},strikes:ADRIANO_STRIKES,projectile:{offset:165,height:210}},
+
   marcelo: { id: 'marcelo', category:'teachers', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
     speed: 324, backSpeed: 240, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',
     powers: { special: 'Rajada de Código', uppercut: 'Firewall', super: 'Enxame de Drones', drone: 'Sentinela Automática' },
@@ -122,6 +129,9 @@ function moveData(name, strength = 1, characterId = null) {
       technique: characterId ? styleTechnique(characterId,name,strength) : '',
       cancellable: name === 'punch' || name === 'crouchPunch' || (name === 'kick' && strength < 2) };
   }
+  if(characterId==='adriano'&&name==='special')return {name,strength,startup:frames(16),active:frames(1),recovery:frames(25),damage:91+strength*10,stun:frames(27),blockstun:frames(20),push:225,meter:8,level:'mid',projectile:true,chip:.06,speed:580+strength*75,effect:'imperialSeal',radius:24};
+  if(characterId==='adriano'&&name==='uppercut')return {name,strength,startup:frames(8),active:frames(14),recovery:frames(30),damage:120+strength*12,stun:frames(30),blockstun:frames(18),push:280,meter:9,level:'mid',knockdown:true,launch:700,invincibility:frames(6),jumpVelocity:-920,travelSpeed:115,effect:'risingWall'};
+  if(characterId==='adriano'&&name==='super')return {name,strength,startup:frames(14),active:frames(34),recovery:frames(34),damage:106,stun:frames(27),blockstun:frames(18),push:90,meter:0,level:'mid',projectile:true,waves:3,finalKnockdown:true,launch:450,chip:.06,speed:700,cost:100,invincibility:frames(8),effect:'dynastySiege',radius:28};
   if(characterId==='tais'&&name==='special')return {name,strength,startup:frames(14),active:frames(1),recovery:frames(25),damage:90+strength*10,stun:frames(25),blockstun:frames(17),push:280,meter:8,level:'mid',projectile:true,chip:.08,speed:680+strength*100,effect:'athleticPulse',radius:24};
   if(characterId==='tais'&&name==='uppercut')return {name,strength,startup:frames(7),active:frames(14),recovery:frames(29),damage:112+strength*13,stun:frames(29),blockstun:frames(18),push:300,meter:9,level:'mid',knockdown:true,launch:760,invincibility:frames(7),jumpVelocity:-1020,travelSpeed:190,effect:'olympicJump'};
   if(characterId==='tais'&&name==='super')return {name,strength,startup:frames(11),active:frames(36),recovery:frames(30),damage:74,stun:frames(26),blockstun:frames(17),push:140,meter:0,level:'mid',projectile:true,waves:4,finalKnockdown:true,launch:470,chip:.08,speed:970,cost:100,invincibility:frames(9),effect:'athleticPulse',radius:27};
@@ -196,6 +206,7 @@ const POWERS = new Set(['special', 'uppercut', 'super', 'drone']);
 
 // The physical hurtboxes and the renderer select exactly the same animation pose.
 export function fighterPose(f) {
+  if(f.character.id==='adriano')return adrianoPose(f);
   if(f.character.id==='dienes')return dienesPose(f);
   if(f.character.id==='khauany')return khauanyPose(f);
   if(f.character.id==='luciana')return mmaPose(f);
@@ -282,7 +293,7 @@ export class Fighter {
     if (this.knocked || this.wakeTime > 0 || this.invincible > 0 || this.hp <= 0) return [];
     if(this.experimentalActorRig&&usesRig(this))return rigHurtboxes(this);
     const pose = fighterPose(this);
-    const profile = this.character.id==='dienes'?dienesHurt(this):this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
+    const profile = this.character.id==='adriano'?adrianoHurt(this):this.character.id==='dienes'?dienesHurt(this):this.character.id==='khauany'?khauanyHurt(this):this.character.id==='luciana'?mmaHurt(this):this.character.id==='tais'?savateHurt(this):this.character.id==='ruan'?karateHurt(this):this.character.id==='joao'?wildHurt(this):this.character.id==='marcos'?judoHurt(this):this.character.id==='gelton'?capoeiraHurt(this):this.character.id==='marcelino'?muayThaiHurt(this):['strike','low','reaction'].includes(pose.atlas) ? techniqueHurt(this.character.id,pose.atlas)[pose.index] : pose.atlas === 'motion' ? motionHurt(this.character.id)[pose.index]
       : pose.atlas === 'style' ? styleHurt(this.character.id)[pose.index] : HURT_PROFILES[this.character.id][pose.atlas][pose.index];
     const body = profile.map(([offset, height, w, h]) => scaledBox(this,offset,height,w,h));
     // Extended arms and legs can be struck, including the first recovery frames.
@@ -782,9 +793,10 @@ export class FightEngine {
   spawnProjectile(f, data, wave) {
     if (wave === 0) this.announcePower(f);
     const { offset, height } = f.character.projectile,s=entityScale(f), x = f.x + f.direction * offset*s;
+    const siege=f.character.id==='adriano'&&data.effect==='dynastySiege'?adrianoSiegeProjectile(this,f,data,wave):{};
     this.projectiles.push({ owner: f.slot, character: f.character.id, direction: f.direction, move: f.action, data: { ...data, ...(data.finalKnockdown?{knockdown:wave===(data.waves??3)-1}:{}) }, wave,
-      x, prevX: x, y: f.y - height*s, radius: (data.radius ?? (f.action === 'super' ? 32 : 27))*s, speed: data.speed*s, life: 3.1, effect:data.effect ?? 'energy' });
-    this.event('projectile', { fighter:f.slot, move:f.action, character:f.character.id, color:f.character.color, x, y:f.y-height, direction:f.direction, wave,effect:data.effect });
+      x, prevX: x, y: f.y - height*s, radius: (data.radius ?? (f.action === 'super' ? 32 : 27))*s, speed: data.speed*s, life: 3.1, effect:data.effect ?? 'energy',...siege });
+    this.event('projectile', { fighter:f.slot, move:f.action, character:f.character.id, color:f.character.color, x, y:f.y-height, direction:siege.direction??f.direction, wave,effect:data.effect,...(siege.x===undefined?{}:{x:siege.x,y:siege.y}) });
   }
   announcePower(f) {
     f.quoteTime = f.character.voiceDuration[f.action] + .1; f.powerQuote = f.character.powerQuotes[f.action];

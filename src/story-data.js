@@ -1,5 +1,5 @@
 // The campaign is independent of versus rounds. All content and tuning are shared by both peers.
-export const STORY_HEROES=Object.freeze(['marcelo','rafael','gustavo','gelton','marcelino','marcos','joao','ruan','tais','luciana','khauany','dienes']);
+export const STORY_HEROES=Object.freeze(['adriano','marcelo','rafael','gustavo','gelton','marcelino','marcos','joao','ruan','tais','luciana','khauany','dienes']);
 export const STORY_TITLE='Operação Resgate do NIT';
 export const STORY_PREMISE='O sinal bateu. A luta começou. O sistema do Núcleo de Informática e Tecnologia (NIT) sofreu um cyberataque: um vírus de inteligência artificial trancou os portões da escola e tomou o controle da robótica, dos projetores e dos drones de segurança. A IA também corrompeu o conselho disciplinar. Marcelo, Rafael e Gustavo precisam atravessar o colégio e recuperar o servidor central antes do fim do turno.';
 export const STORY_ACTS=Object.freeze([

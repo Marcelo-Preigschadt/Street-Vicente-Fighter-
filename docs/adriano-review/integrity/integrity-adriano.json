@@ -1,0 +1,1105 @@
+{
+  "scope": "prepared-sprite-crop-and-alpha; no automatic visual acceptance",
+  "characters": [
+    {
+      "id": "adriano",
+      "stem": "assets/runtime/adriano-v1",
+      "imageSize": [
+        2048,
+        2210
+      ],
+      "preparedFrameCount": 48,
+      "externalMotionFrameCount": 8,
+      "frameCount": 56,
+      "frames": [
+        {
+          "atlas": "base",
+          "index": 0,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            3,
+            290,
+            301
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            289.037,
+            300.0
+          ],
+          "opaquePixels": 37232,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 1,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            299,
+            3,
+            190,
+            304
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            189.369,
+            302.99
+          ],
+          "opaquePixels": 33695,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 2,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            495,
+            3,
+            250,
+            307
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            249.169,
+            305.98
+          ],
+          "opaquePixels": 33497,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 3,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            751,
+            3,
+            249,
+            301
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            248.173,
+            300.0
+          ],
+          "opaquePixels": 32597,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 4,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1006,
+            3,
+            182,
+            260
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            181.395,
+            259.136
+          ],
+          "opaquePixels": 30411,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 5,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1194,
+            3,
+            239,
+            232
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            238.206,
+            231.229
+          ],
+          "opaquePixels": 30293,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 6,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1439,
+            3,
+            298,
+            304
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            297.01,
+            302.99
+          ],
+          "opaquePixels": 41025,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 7,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1743,
+            3,
+            294,
+            303
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            293.023,
+            301.993
+          ],
+          "opaquePixels": 39764,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 8,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            316,
+            184,
+            319
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            183.389,
+            317.94
+          ],
+          "opaquePixels": 31795,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 9,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            193,
+            316,
+            328,
+            317
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            326.91,
+            315.947
+          ],
+          "opaquePixels": 37499,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 10,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            527,
+            316,
+            270,
+            305
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            269.103,
+            303.987
+          ],
+          "opaquePixels": 34515,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 11,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            803,
+            316,
+            242,
+            302
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            241.196,
+            300.997
+          ],
+          "opaquePixels": 38242,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 12,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1051,
+            316,
+            296,
+            286
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            295.017,
+            285.05
+          ],
+          "opaquePixels": 38291,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 13,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1353,
+            316,
+            323,
+            278
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            321.927,
+            277.076
+          ],
+          "opaquePixels": 37800,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 14,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1682,
+            316,
+            209,
+            316
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            208.306,
+            314.95
+          ],
+          "opaquePixels": 28803,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "base",
+          "index": 15,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            641,
+            336,
+            92
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            334.884,
+            91.694
+          ],
+          "opaquePixels": 20244,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 0,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            345,
+            641,
+            309,
+            283
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            307.973,
+            282.06
+          ],
+          "opaquePixels": 39479,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 1,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            660,
+            641,
+            314,
+            283
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            312.957,
+            282.06
+          ],
+          "opaquePixels": 41727,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 2,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            980,
+            641,
+            259,
+            212
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            258.14,
+            211.296
+          ],
+          "opaquePixels": 32689,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 3,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1245,
+            641,
+            316,
+            253
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            314.95,
+            252.159
+          ],
+          "opaquePixels": 38109,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 4,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1567,
+            641,
+            238,
+            286
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            237.209,
+            285.05
+          ],
+          "opaquePixels": 40703,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 5,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            933,
+            295,
+            271
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            294.02,
+            270.1
+          ],
+          "opaquePixels": 37379,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 6,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            304,
+            933,
+            219,
+            283
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            218.272,
+            282.06
+          ],
+          "opaquePixels": 32106,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 7,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            529,
+            933,
+            332,
+            250
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            330.897,
+            249.169
+          ],
+          "opaquePixels": 39610,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 8,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            867,
+            933,
+            302,
+            304
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            300.997,
+            302.99
+          ],
+          "opaquePixels": 43331,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 9,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1175,
+            933,
+            298,
+            280
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            297.01,
+            279.07
+          ],
+          "opaquePixels": 37355,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 10,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1479,
+            933,
+            196,
+            322
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            195.349,
+            320.93
+          ],
+          "opaquePixels": 33902,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 11,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1681,
+            933,
+            288,
+            337
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            287.043,
+            335.88
+          ],
+          "opaquePixels": 37583,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 12,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            1276,
+            323,
+            241
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            321.927,
+            240.199
+          ],
+          "opaquePixels": 43353,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            218
+          ]
+        },
+        {
+          "atlas": "combat",
+          "index": 13,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            332,
+            1276,
+            251,
+            276
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            250.166,
+            275.083
+          ],
+          "opaquePixels": 40131,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "combat",
+          "index": 14,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            589,
+            1276,
+            315,
+            303
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            313.953,
+            301.993
+          ],
+          "opaquePixels": 40596,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            32
+          ]
+        },
+        {
+          "atlas": "combat",
+          "index": 15,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            910,
+            1276,
+            207,
+            255
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            206.312,
+            254.153
+          ],
+          "opaquePixels": 35020,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            108
+          ]
+        },
+        {
+          "atlas": "strike",
+          "index": 0,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1123,
+            1276,
+            293,
+            303
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            292.027,
+            301.993
+          ],
+          "opaquePixels": 40389,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 1,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1422,
+            1276,
+            308,
+            297
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            306.977,
+            296.013
+          ],
+          "opaquePixels": 38131,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 2,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1736,
+            1276,
+            277,
+            292
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            276.08,
+            291.03
+          ],
+          "opaquePixels": 38315,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 3,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            1585,
+            290,
+            291
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            289.037,
+            290.033
+          ],
+          "opaquePixels": 36934,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 4,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            299,
+            1585,
+            284,
+            302
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            283.056,
+            300.997
+          ],
+          "opaquePixels": 39963,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 5,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            589,
+            1585,
+            328,
+            298
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            326.91,
+            297.01
+          ],
+          "opaquePixels": 40352,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 6,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            923,
+            1585,
+            189,
+            311
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            188.372,
+            309.967
+          ],
+          "opaquePixels": 29992,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 7,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1118,
+            1585,
+            294,
+            298
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            293.023,
+            297.01
+          ],
+          "opaquePixels": 34037,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 8,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1418,
+            1585,
+            183,
+            307
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            182.392,
+            305.98
+          ],
+          "opaquePixels": 30597,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 9,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1607,
+            1585,
+            334,
+            298
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            332.89,
+            297.01
+          ],
+          "opaquePixels": 36540,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 10,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            3,
+            1902,
+            174,
+            300
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            173.422,
+            299.003
+          ],
+          "opaquePixels": 29539,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 11,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            183,
+            1902,
+            283,
+            305
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            282.06,
+            303.987
+          ],
+          "opaquePixels": 32685,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 12,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            472,
+            1902,
+            298,
+            298
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            297.01,
+            297.01
+          ],
+          "opaquePixels": 41234,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 13,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            776,
+            1902,
+            303,
+            291
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            301.993,
+            290.033
+          ],
+          "opaquePixels": 36389,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 14,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1085,
+            1902,
+            335,
+            286
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            333.887,
+            285.05
+          ],
+          "opaquePixels": 38464,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "strike",
+          "index": 15,
+          "stem": "assets/runtime/adriano-v1",
+          "rect": [
+            1426,
+            1902,
+            278,
+            298
+          ],
+          "scale": 0.99667774,
+          "drawnSize": [
+            277.076,
+            297.01
+          ],
+          "opaquePixels": 35689,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 0,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            3,
+            3,
+            385,
+            423
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            277.978,
+            305.415
+          ],
+          "opaquePixels": 66373,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 1,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            394,
+            3,
+            288,
+            420
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            207.942,
+            303.249
+          ],
+          "opaquePixels": 62081,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 2,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            688,
+            3,
+            231,
+            411
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            166.787,
+            296.751
+          ],
+          "opaquePixels": 56680,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 3,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            925,
+            3,
+            224,
+            416
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            161.733,
+            300.361
+          ],
+          "opaquePixels": 53019,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": [
+            53
+          ]
+        },
+        {
+          "atlas": "motion",
+          "index": 4,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            1155,
+            3,
+            316,
+            416
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            228.159,
+            300.361
+          ],
+          "opaquePixels": 61967,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 5,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            1477,
+            3,
+            387,
+            410
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            279.422,
+            296.029
+          ],
+          "opaquePixels": 64505,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 6,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            3,
+            432,
+            317,
+            405
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            228.881,
+            292.419
+          ],
+          "opaquePixels": 61707,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        },
+        {
+          "atlas": "motion",
+          "index": 7,
+          "stem": "assets/story/adriano-walk-v1",
+          "rect": [
+            326,
+            432,
+            374,
+            415
+          ],
+          "scale": 0.72202166,
+          "drawnSize": [
+            270.036,
+            299.639
+          ],
+          "opaquePixels": 64708,
+          "meaningfulComponents": 1,
+          "enclosedAlphaHolesOver20px": []
+        }
+      ]
+    }
+  ],
+  "preservation": {
+    "unchangedPosesPixelExact": 31,
+    "portraitPixelExact": true
+  },
+  "walkPreservation": {
+    "framesWithSourceExactRetainedPixels": 8,
+    "sourceExactOpaqueFacePixels": {
+      "5": 13474,
+      "6": 14417,
+      "7": 12917
+    },
+    "foreignWitnessesRemoved": 5,
+    "ownedWitnessesPreserved": 4
+  },
+  "totalFrames": 56
+}

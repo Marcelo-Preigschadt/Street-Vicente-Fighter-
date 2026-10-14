@@ -1,0 +1,20 @@
+{
+  "version": "4.7.0",
+  "automatedTests": {
+    "passed": 530,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "spriteIntegrity": {
+    "characters": 13,
+    "frames": 728,
+    "adrianoFrames": 56
+  },
+  "build": "passed",
+  "animationReview": "blocked-existing-project-hold",
+  "browserPlaytest": "not_run; Chromium unavailable; browser download failed",
+  "physicalUsbPlaytest": "not_run",
+  "onlineValidation": "deterministic rollback with jitter and out-of-order packets; public service session not tested",
+  "publication": "Explicit user authorization on 2026-10-14 to commit, publish photo-derived assets and audio, and update main/GitHub Pages; previous project review HOLD remains documented."
+}

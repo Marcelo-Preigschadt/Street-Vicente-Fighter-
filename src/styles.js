@@ -1,3 +1,4 @@
+import {adrianoStrike} from './adriano.js';
 import {SAVATE_STRIKES} from './savate.js';
 import {MMA_STRIKES} from './mma.js';
 import {KHAUANY_STRIKES} from './khauany.js';
@@ -13,6 +14,13 @@ import { techniqueStrike } from './technique.js?v=27';
 const route = (name, ...steps) => ({ name, steps });
 // Timings are arcade tuning in 60 Hz frames; techniques inform poses and routes.
 export const FIGHTING_STYLES = Object.freeze({
+  adriano:{name:'Karatê · Contra-ataque',summary:'Guarda lateral, suri-ashi, uraken, shuto, mawashi-geri, yoko-geri e ushiro-geri.',step:31,
+    names:{punch:['Uraken','Gyaku-zuki de encontro','Shuto-uchi'],kick:['Mawashi-geri','Yoko-geri','Ushiro-geri'],
+      crouchPunch:['Shuto baixo curto','Shuto no corpo','Shuto baixo forte'],sweep:['De-ashi-barai curto','De-ashi-barai','De-ashi-barai forte'],
+      airPunch:['Uraken aéreo curto','Uraken aéreo','Uraken aéreo forte'],airKick:['Yoko-geri aéreo curto','Yoko-geri aéreo','Yoko-geri aéreo forte']},
+    normals:{punch:[[4,3,9,41,20,85],[7,4,13,70,24,135],[10,5,20,99,28,205]],kick:[[7,4,14,54,23,155],[10,5,19,86,28,220],[14,6,26,119,32,305]]},
+    combos:[route('Resposta do Dojo','punch:0','punch:1','kick:1'),route('Ângulo Imperial','punch:0','punch:2','kick:0'),route('Guarda e Varredura','crouchPunch:0','punch:1','sweep:1')]},
+
   marcelo: {
     name: 'Kung Fu', summary: 'Punhos na linha central, retorno giratório, chutes frontais e rasteira.', step: 26,
     names: { punch: ['Punho rápido', 'Soco direto', 'Punho de retorno'], kick: ['Chute frontal rápido', 'Chute frontal', 'Chute frontal forte'],
@@ -139,6 +147,7 @@ export function stylePose(f, extended) {
   return null;
 }
 export function styleStrike(f) {
+  if(f.character.id==='adriano')return adrianoStrike(f);
   if(f.character.id==='dienes')return DIENES_STRIKES[f.action];
   if(f.character.id==='khauany')return KHAUANY_STRIKES[f.action];
   if(f.character.id==='luciana')return MMA_STRIKES[f.action];

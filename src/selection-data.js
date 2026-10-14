@@ -1,4 +1,5 @@
 export const SELECTION_QUOTES = Object.freeze({
+  "adriano":"Hoje você vai fazer história!",
   "khauany":"Você veio lutar ou só fazer figuração?",
   "dienes":"Boa sorte, vai precisar",
   "luciana":"Pode vir! Na trocação eu ponho ponto final!",

@@ -43,7 +43,7 @@ test('loader rejeita retângulos fora do atlas, dimensões incompatíveis e esca
 });
 
 test('todos os 12 atlas usados pelo loader existem, mantendo v2 de Tais e Dienes e a rasteira dedicada de Khauãny',async()=>{
-  assert.equal(Object.keys(PREPARED_SPRITE_VERSIONS).length,12);
+  assert.equal(Object.keys(PREPARED_SPRITE_VERSIONS).length,13);
   for(const id of Object.keys(PREPARED_SPRITE_VERSIONS)){
     const stem=preparedSpriteStem(id);const data=JSON.parse(await readFile(new URL(`../${stem}.json`,import.meta.url)));
     const bitmap=await readFile(new URL(`../${stem}.webp`,import.meta.url));assert.ok(bitmap.length>1000,id);

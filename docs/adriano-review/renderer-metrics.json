@@ -1,0 +1,121 @@
+{
+  "renderer": "actual Renderer",
+  "browserPlaytest": false,
+  "physicalUsbController": false,
+  "clips": [
+    {
+      "mode": "versus",
+      "frames": 240,
+      "fps": 30,
+      "duration": 8,
+      "posesSeen": [
+        "base:0",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7",
+        "base:1",
+        "strike:0",
+        "strike:1",
+        "strike:10",
+        "strike:11",
+        "base:12",
+        "base:13",
+        "combat:10",
+        "combat:11",
+        "combat:15",
+        "strike:12",
+        "strike:13",
+        "strike:14",
+        "strike:15"
+      ],
+      "walkingFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "worldScale": 1,
+      "powerEvents": [
+        {
+          "move": "special",
+          "name": "Selo do Império"
+        },
+        {
+          "move": "uppercut",
+          "name": "Ascensão da Muralha"
+        },
+        {
+          "move": "super",
+          "name": "Cerco das Dinastias"
+        }
+      ],
+      "invalidState": false
+    },
+    {
+      "mode": "story",
+      "frames": 240,
+      "fps": 30,
+      "duration": 8,
+      "posesSeen": [
+        "base:0",
+        "motion:0",
+        "motion:1",
+        "motion:2",
+        "motion:3",
+        "motion:4",
+        "motion:5",
+        "motion:6",
+        "motion:7",
+        "base:1",
+        "strike:0",
+        "strike:1",
+        "strike:10",
+        "strike:11",
+        "base:12",
+        "base:13",
+        "combat:10",
+        "combat:11",
+        "combat:15",
+        "strike:12",
+        "strike:13",
+        "strike:14",
+        "strike:15"
+      ],
+      "walkingFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "worldScale": 0.702312925170068,
+      "powerEvents": [
+        {
+          "move": "special",
+          "name": "Selo do Império"
+        },
+        {
+          "move": "uppercut",
+          "name": "Ascensão da Muralha"
+        },
+        {
+          "move": "super",
+          "name": "Cerco das Dinastias"
+        }
+      ],
+      "invalidState": false
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 export const SOUNDS = Object.freeze({
+  'adriano-select':'assets/audio/adriano-select-br-v1.wav','adriano-special':'assets/audio/adriano-special-br-v1.wav','adriano-uppercut':'assets/audio/adriano-uppercut-br-v1.wav','adriano-super':'assets/audio/adriano-super-br-v1.wav',
   'tais-select':'assets/audio/tais-select-br-v3.wav','tais-special':'assets/audio/tais-special-br-v3.wav','tais-uppercut':'assets/audio/tais-uppercut-br-v3.wav','tais-super':'assets/audio/tais-super-br-v3.wav',
   'luciana-select':'assets/audio/luciana-select-br-v1.wav','luciana-special':'assets/audio/luciana-special-br-v1.wav','luciana-uppercut':'assets/audio/luciana-uppercut-br-v1.wav','luciana-super':'assets/audio/luciana-super-br-v1.wav',
   'khauany-select':'assets/audio/khauany-select-br-v1.wav','khauany-special':'assets/audio/khauany-special-br-v1.wav','khauany-uppercut':'assets/audio/khauany-uppercut-br-v1.wav','khauany-super':'assets/audio/khauany-super-br-v1.wav',
