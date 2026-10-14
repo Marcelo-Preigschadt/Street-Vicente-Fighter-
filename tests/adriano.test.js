@@ -10,6 +10,8 @@ import {validCharacter,snapshot} from '../src/net-state.js';
 import {RollbackGame} from '../src/netplay.js';
 import {SOUNDS} from '../src/audio.js';
 import {ADRIANO_HURT} from '../src/adriano-data.js';
+import {adrianoHurt} from '../src/adriano.js';
+import {ADRIANO_TRANSITION_GEOMETRY} from '../src/adriano-transition-data.js';
 
 const advance=(e,t)=>{for(let i=0;i<Math.ceil(t/FIXED_STEP);i++)e.update(FIXED_STEP);};
 function scene(slot=0,story=false){
@@ -33,9 +35,28 @@ test('as três forças de soco e chute selecionam seis técnicas visuais própri
  for(const move of ['punch','kick'])for(let strength=0;strength<3;strength++){
   const {e,f}=scene();assert.ok(e.beginMove(f,move,strength));f.actionTime=f.moveData.startup+FIXED_STEP;
   const p=fighterPose(f);assert.equal(p.atlas,'strike');poses.push(p.index);assert.ok(f.attackbox);
-  f.actionTime=0;assert.equal(fighterPose(f).index,p.index-1);assert.equal(f.attackbox,null);
+  f.actionTime=0;assert.deepEqual(fighterPose(f),strength===1?{atlas:'base',index:0}:{atlas:'strike',index:p.index-1});assert.equal(f.attackbox,null);
  }
  assert.equal(new Set(poses).size,6);
+});
+test('piloto de soco/chute médios percorre desenhos completos sem adiantar o contato e com colisões idênticas à campanha',()=>{
+ for(const story of [false,true])for(const slot of [0,1])for(const move of ['punch','kick']){
+  const {e,f}=scene(slot,story);assert.ok(e.beginMove(f,move,1));
+  const m=f.moveData,end=m.startup+m.active+m.recovery,seen=new Set();
+  const chamber=move==='punch'?2:8;
+  for(let tick=0;tick<Math.ceil(end/FIXED_STEP);tick++){
+   f.actionTime=tick*FIXED_STEP;const p=fighterPose(f);seen.add(`${p.atlas}:${p.index}`);
+   const active=f.actionTime>=m.startup&&f.actionTime<m.startup+m.active;
+   assert.equal(!!f.attackbox,active,`${move}/${story}/${slot}/${tick}`);
+   if(active)assert.deepEqual(p,{atlas:'strike',index:chamber+1});
+   assert.deepEqual(storyHeroGeometry(f).hurt,adrianoHurt(f));
+   assert.ok(f.hurtboxes.length);assert.ok(f.hurtboxes.every(b=>[b.x,b.y,b.w,b.h].every(Number.isFinite)));
+   if(p.atlas==='transition')assert.deepEqual(adrianoHurt(f),ADRIANO_TRANSITION_GEOMETRY[`transition:${p.index}`].hurt);
+  }
+  assert.equal(seen.size,7);assert.equal([...seen].filter(p=>p.startsWith('transition:')).length,4);
+  assert.deepEqual(fighterPose(f),{atlas:'base',index:0});assert.equal(f.canAct,false);
+  advance(e,end+.1);assert.equal(f.action,null);assert.equal(f.canAct,true);
+ }
 });
 test('Selo do Império sai na direção correta nos dois lados e não exige super',()=>{
  for(const slot of [0,1]){
@@ -95,4 +116,22 @@ test('super de Adriano converge após rollback com jitter e pacotes fora de orde
  assert.deepEqual(JSON.parse(JSON.stringify(snapshot(nets[0].engine,1))),JSON.parse(JSON.stringify(snapshot(nets[1].engine,1))));
  assert.ok(nets.some(n=>n.rollbacks>0));
  for(const es of events)assert.equal(es.filter(v=>v.type==='special'&&v.character==='adriano'&&v.move==='super').length,1);
+});
+test('novas transições de soco/chute mantêm os dois clientes iguais após rollback durante o contato',()=>{
+ let now=0;const wire=[],nets=[];
+ for(let slot=0;slot<2;slot++){
+  const e=new FightEngine({random:()=>.5,onEvent:v=>nets[slot]?.event(v)});e.start('adriano','online','adriano');e.phase='fight';
+  e.fighters[0].x=e.fighters[0].prevX=520;e.fighters[1].x=e.fighters[1].prevX=680;
+  nets.push(new RollbackGame({engine:e,slot,now:()=>now,startAt:0,onEvent:()=>{},send:packets=>wire.push({target:1-slot,due:now+25+(packets[0].frame*19+slot*29)%110,packets:structuredClone(packets)})}));
+ }
+ const deliver=()=>{for(let i=wire.length-1;i>=0;i--)if(wire[i].due<=now){const p=wire.splice(i,1)[0];nets[p.target].receive(p.packets);}};
+ for(let tick=1;tick<=300;tick++){
+  now=tick*FIXED_STEP*1000+.001;
+  if([1,80,180].includes(tick))nets[0].attack(tick===80?'kick':'punch',1);
+  if([42,130,220].includes(tick))nets[1].attack(tick===130?'kick':'punch',1);
+  deliver();nets.forEach(n=>n.advance());deliver();
+ }
+ for(const n of nets)if(n.pending.length)n.send(n.pending.splice(0));now+=2000;deliver();
+ assert.deepEqual(JSON.parse(JSON.stringify(snapshot(nets[0].engine,1))),JSON.parse(JSON.stringify(snapshot(nets[1].engine,1))));
+ assert.ok(nets.some(n=>n.rollbacks>0));assert.ok(nets[0].engine.fighters.some(f=>f.hp<1000));
 });

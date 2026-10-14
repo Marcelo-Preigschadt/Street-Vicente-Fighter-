@@ -1,6 +1,7 @@
 // Silhouette extraction is done at build time. Browsers only decode and draw rectangles.
 export const PREPARED_SPRITE_VERSIONS=Object.freeze({adriano:2,marcelo:1,rafael:1,gustavo:1,gelton:1,marcelino:1,marcos:1,joao:1,ruan:1,tais:2,luciana:1,khauany:2,dienes:2});
 export const MOTION_SPRITE_STEMS=Object.freeze({adriano:'assets/story/adriano-walk-v2',gelton:'assets/story/gelton-walk-v3',marcelino:'assets/story/marcelino-walk-v3',marcos:'assets/story/marcos-walk-v3',joao:'assets/story/joao-walk-v3',ruan:'assets/story/ruan-walk-v3',tais:'assets/story/tais-walk-v4',luciana:'assets/story/luciana-walk-v2',khauany:'assets/story/khauany-walk-v3',dienes:'assets/story/dienes-walk-v2'});
+export const ADDITIONAL_SPRITE_STEMS=Object.freeze({adriano:{transition:'assets/runtime/adriano-transitions-v1'}});
 
 export function preparedSpriteStem(id) {
   if(!Object.hasOwn(PREPARED_SPRITE_VERSIONS,id))throw new Error(`Personagem sem atlas preparado: ${id}`);
@@ -67,6 +68,12 @@ export async function loadPreparedSprites(id,loadImage) {
     if(!Array.isArray(motionFrames)||motionFrames.length!==8)throw new Error(`${id}: caminhada inválida (8 poses obrigatórias)`);
     validateSpriteFrames({scale:1,frames:motionFrames},motionImage,id,'motion');
     base.motion={scale:1,frames:motionFrames.map(frame=>({...frame,image:motionImage}))};
+  }
+  for(const [atlas,stem] of Object.entries(ADDITIONAL_SPRITE_STEMS[id]??{})){
+    const [extraImage,extraResponse]=await Promise.all([loadImage(`${stem}.webp`),fetch(`${stem}.json`)]);
+    if(!extraResponse.ok)throw new Error(`Não foi possível carregar ${id}/${atlas}: HTTP ${extraResponse.status}`);
+    const profile=validateSpriteFrames(await extraResponse.json(),extraImage,id,atlas);
+    base[atlas]={scale:profile.scale,frames:profile.frames.map(frame=>({...frame,image:extraImage}))};
   }
   const portrait=document.createElement('canvas');portrait.width=80;portrait.height=81;
   portrait.getContext('2d').drawImage(image,...metadata.portrait,0,0,80,81);

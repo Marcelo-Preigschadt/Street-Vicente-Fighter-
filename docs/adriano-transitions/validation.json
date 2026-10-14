@@ -1,0 +1,37 @@
+{
+  "scriptedRenderer": true,
+  "manualPlaytest": false,
+  "fps": 60,
+  "seconds": 6.5,
+  "posesSeen": {
+    "punch": [
+      "base:0",
+      "transition:0",
+      "strike:2",
+      "transition:1",
+      "strike:3",
+      "transition:2",
+      "transition:3"
+    ],
+    "kick": [
+      "base:0",
+      "transition:4",
+      "strike:8",
+      "transition:5",
+      "strike:9",
+      "transition:6",
+      "transition:7"
+    ]
+  },
+  "geometry": [
+    {
+      "move": "punch",
+      "geometryMatchesVersusAndStory": true
+    },
+    {
+      "move": "kick",
+      "geometryMatchesVersusAndStory": true
+    }
+  ],
+  "scope": "Adriano medium punch and medium kick only; existing contact poses/timing retained"
+}

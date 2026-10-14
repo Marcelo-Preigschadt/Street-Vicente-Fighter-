@@ -2,6 +2,7 @@ import {ADRIANO_BODY_SCALE,ADRIANO_HURT} from './adriano-data.js';
 export {ADRIANO_BODY_SCALE} from './adriano-data.js';
 import {nativeWalkPose} from './native-walk.js';
 import {entityScale} from './story-world.js';
+import {ADRIANO_TRANSITION_GEOMETRY} from './adriano-transition-data.js';
 
 const box=(near,reach,height,h)=>({near:near*ADRIANO_BODY_SCALE,reach:reach*ADRIANO_BODY_SCALE,height:height*ADRIANO_BODY_SCALE,h:h*ADRIANO_BODY_SCALE});
 export const ADRIANO_STRIKES=Object.freeze({
@@ -16,9 +17,31 @@ const standingStrikes={
 };
 export function adrianoStrike(f){return standingStrikes[f.action]?.[f.moveData?.strength??1]??ADRIANO_STRIKES[f.action];}
 
-// Startup and recovery traverse the authored chamber; contact uses the complete
-// extended pose. Each standing strength selects its own technique pair.
+// The medium-attack pilot adds whole-body anticipation and return drawings.
+// Contact retains the approved pose and exact gameplay window; no blending,
+// time stretching or limb deformation is used to manufacture extra frames.
+function mediumTransitionPose(f){
+ const m=f.moveData,t=f.actionTime??0;
+ if(!m||m.strength!==1||!['punch','kick'].includes(f.state))return null;
+ const offset=f.state==='kick'?4:0,chamber=f.state==='kick'?8:2;
+ if(t<m.startup){
+  const q=t/m.startup;
+  if(q<.16)return {atlas:'base',index:0};
+  if(q<.40)return {atlas:'transition',index:offset};
+  if(q<.66)return {atlas:'strike',index:chamber};
+  return {atlas:'transition',index:offset+1};
+ }
+ if(t<m.startup+m.active)return {atlas:'strike',index:chamber+1};
+ const q=(t-m.startup-m.active)/m.recovery;
+ if(q<.12)return {atlas:'strike',index:chamber+1};
+ if(q<.43)return {atlas:'transition',index:offset+2};
+ if(q<.76)return {atlas:'transition',index:offset+3};
+ return {atlas:'base',index:0};
+}
+
+// Each other standing strength retains its own approved technique pair.
 export function adrianoPose(f){
+ const transition=mediumTransitionPose(f);if(transition)return transition;
  const m=f.moveData,t=f.actionTime??0,active=m&&t>=m.startup&&t<m.startup+m.active;
  if(m&&['punch','kick','guardCounter'].includes(f.state)){
   const first=f.state==='kick'?6:f.state==='guardCounter'?4:0;
@@ -38,7 +61,7 @@ export function adrianoPose(f){
  const walk=nativeWalkPose(f);if(walk)return walk;
  return {atlas:'base',index:Math.floor(f.animTime*3.5)%2};
 }
-export function adrianoHurt(f){const p=adrianoPose(f);return ADRIANO_HURT[p.atlas][p.index];}
+export function adrianoHurt(f){const p=adrianoPose(f);return p.atlas==='transition'?ADRIANO_TRANSITION_GEOMETRY[`transition:${p.index}`].hurt:ADRIANO_HURT[p.atlas][p.index];}
 
 // Three authored siege fronts share the existing projectile wire fields. Their
 // origin and collision heights differ; nothing random enters the simulation.

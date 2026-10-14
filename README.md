@@ -1,5 +1,11 @@
 # Street Vicente Fighter
 
+## Atualização 4.9.0 — piloto de novos sprites de ataque
+
+Soco e chute médios do Adriano passam por sete poses distintas cada. Oito desenhos adicionais preenchem preparação, extensão parcial e recuperação; os contatos aprovados e os tempos de combate são mantidos. A escala corporal continua em 0,88. As novas silhuetas usam os mesmos quadros no desenho e nas colisões de História e Versus; clientes antigos recebem outra versão de protocolo.
+
+Esta entrega cobre dois movimentos de um personagem. A revisão de fluidez do elenco e a apresentação dos poderes continuam pendentes. [Comparação animada, fontes, prompts e limites da validação](docs/adriano-transitions/review.md).
+
 ## Atualização 4.6.23 — correções do modo História
 
 A campanha tem cadência própria para os 12 heróis, pivôs registrados pelo corpo e parada em poses de apoio. As ondas entram pelas bordas; limites da câmera deixam de puxar os inimigos para dentro da tela. O deslocamento resolvido alimenta os ciclos de avanço e recuo, inclusive dos voadores e do holograma. Voadores não recebem gravidade durante a aproximação.

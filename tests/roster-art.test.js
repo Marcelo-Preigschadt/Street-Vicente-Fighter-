@@ -4,17 +4,21 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {Fighter,CHARACTERS,fighterPose} from '../src/engine.js';
 import {Renderer} from '../src/render.js';
-import {preparedSpriteStem,MOTION_SPRITE_STEMS} from '../src/sprite-loader.js';
+import {preparedSpriteStem,MOTION_SPRITE_STEMS,ADDITIONAL_SPRITE_STEMS,validateSpriteFrames} from '../src/sprite-loader.js';
 
 test('todos os personagens têm quadros e colisões válidos em cada fase dos golpes, nos dois lados',()=>{
  for(const id of Object.keys(CHARACTERS)){
   const metadata=JSON.parse(readFileSync(`${preparedSpriteStem(id)}.json`));
   const walking=MOTION_SPRITE_STEMS[id]?`${MOTION_SPRITE_STEMS[id]}.json`:null;
   if(walking)metadata.atlases.motion={scale:1,frames:JSON.parse(readFileSync(walking))};
+  for(const [atlas,stem]of Object.entries(ADDITIONAL_SPRITE_STEMS[id]??{})){
+   metadata.atlases[atlas]=validateSpriteFrames(JSON.parse(readFileSync(`${stem}.json`)),{width:2048,height:8192},id,atlas);
+   assert.ok(readFileSync(`${stem}.webp`).length>1000);
+  }
   for(const slot of [0,1])for(const state of ['idle','walk','jump','crouch','block','lowBlock','hit','ko','knockdown','wake','victory','landing','preJump','dizzy','punch','kick','crouchPunch','sweep','airPunch','airKick','special','uppercut','super','throw','guardCounter']){
    for(const time of [0,.075,.15,.29,.35]){
     const f=new Fighter(id,slot);f.state=state;f.actionTime=time;f.animTime=time;f.walkDistance=-80;
-    f.moveData={startup:.1,active:.2,strength:1};
+    f.moveData={startup:.1,active:.2,recovery:.25,strength:1};
     const pose=fighterPose(f),frame=metadata.atlases[pose.atlas]?.frames[pose.index];
     assert.ok(frame,`${id} ${state} ${time}: ${JSON.stringify(pose)}`);
     assert.ok(f.hurtboxes.length,`${id} ${state}: colisão ausente`);

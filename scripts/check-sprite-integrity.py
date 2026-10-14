@@ -20,6 +20,10 @@ MOTION = json.loads(subprocess.check_output([
     'node', '--input-type=module', '-e',
     "import {MOTION_SPRITE_STEMS} from './src/sprite-loader.js';process.stdout.write(JSON.stringify(MOTION_SPRITE_STEMS));"
 ], cwd=ROOT, text=True))
+ADDITIONAL = json.loads(subprocess.check_output([
+    'node', '--input-type=module', '-e',
+    "import {ADDITIONAL_SPRITE_STEMS} from './src/sprite-loader.js';process.stdout.write(JSON.stringify(ADDITIONAL_SPRITE_STEMS));"
+], cwd=ROOT, text=True))
 
 
 def crop(image, rectangle):
@@ -102,10 +106,18 @@ def scan(output=None, ids=None):
         images = {str(stem.relative_to(ROOT)): image}
         sheets = [(atlas, sheet['frames'], sheet['scale'], str(stem.relative_to(ROOT))) for atlas, sheet in metadata['atlases'].items()]
         prepared_count = sum(len(sheet['frames']) for sheet in metadata['atlases'].values())
+        motion_count = additional_count = 0
         if ident in MOTION:
             motion_stem = ROOT / MOTION[ident]
             images[MOTION[ident]] = Image.open(motion_stem.with_suffix('.webp')).convert('RGBA')
             sheets.append(('motion', json.loads(motion_stem.with_suffix('.json').read_text()), 1, MOTION[ident]))
+            motion_count = len(sheets[-1][1])
+        for atlas, extra in ADDITIONAL.get(ident, {}).items():
+            extra_stem = ROOT / extra
+            images[extra] = Image.open(extra_stem.with_suffix('.webp')).convert('RGBA')
+            profile = json.loads(extra_stem.with_suffix('.json').read_text())
+            sheets.append((atlas, profile['frames'], profile['scale'], extra))
+            additional_count += len(profile['frames'])
         frames = []
         for atlas, profiles, sheet_scale, source_stem in sheets:
             for index, frame in enumerate(profiles):
@@ -127,7 +139,7 @@ def scan(output=None, ids=None):
                                'opaquePixels': int(mask.sum()), 'meaningfulComponents': int(np.count_nonzero(areas >= 20)),
                                'enclosedAlphaHolesOver20px': [int(n) for n in sorted(hole_areas, reverse=True) if n > 20]})
         item = {'id': ident, 'stem': str(stem.relative_to(ROOT)), 'imageSize': list(image.size), 'preparedFrameCount': prepared_count,
-                'externalMotionFrameCount': len(frames) - prepared_count, 'frameCount': len(frames), 'frames': frames}
+                'externalMotionFrameCount': motion_count, 'additionalFrameCount': additional_count, 'frameCount': len(frames), 'frames': frames}
         report['characters'].append(item)
         if output:
             cols, cw, ch = 8, 190, 210
