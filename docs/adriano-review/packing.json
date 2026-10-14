@@ -1,14 +1,16 @@
 {
   "character": "adriano",
   "poses": 56,
-  "baseScale": 0.99667774,
-  "walkScale": 0.72202166,
+  "bodyScale": 0.88,
+  "bodyHeight": 264.0,
+  "baseScale": 0.87707641,
+  "walkScale": 0.63537906,
   "sources": {
-    "walk.png": "3be8f8eac1cc728bfb589cc4c4a2162d3aa766f6081200f5fcbd22766a7fedf5",
-    "combat.png": "3f7ef6e02a46ced794dbe28a5619a0e6bf8cc22a3118f155637a98b7c5d9370c",
-    "base.png": "a6eced51f0a10ef6c0241c7741fa6465d6b7e3498e9d608ba9680a1b8ff844ab",
     "portrait.png": "6b386b4f571198404390416bc214f57edb73894110417c27a783e8d0c86b9481",
-    "strike.png": "45460f43c2064037134803df212a22ec308fde3417b585ac7ecedbf911b5bb49"
+    "base.png": "a6eced51f0a10ef6c0241c7741fa6465d6b7e3498e9d608ba9680a1b8ff844ab",
+    "combat.png": "3f7ef6e02a46ced794dbe28a5619a0e6bf8cc22a3118f155637a98b7c5d9370c",
+    "strike.png": "45460f43c2064037134803df212a22ec308fde3417b585ac7ecedbf911b5bb49",
+    "walk.png": "3be8f8eac1cc728bfb589cc4c4a2162d3aa766f6081200f5fcbd22766a7fedf5"
   },
   "sourceRects": {
     "base": [

@@ -1,3 +1,4 @@
+import {ADRIANO_BODY_SCALE} from './adriano-data.js';
 const TAU=Math.PI*2;
 function seal(c,r,angle){
  c.save();c.rotate(angle);c.fillStyle='#3e2441';c.strokeStyle='#ffdf9c';c.lineWidth=2;
@@ -20,6 +21,7 @@ export function drawAdrianoProjectile(c,p,clock,reduced=false){
 }
 export function drawAdrianoPower(c,f,clock,reduced=false){
  const m=f.moveData;if(!m)return;
+ c.save();c.translate(f.x,f.y);c.scale(ADRIANO_BODY_SCALE,ADRIANO_BODY_SCALE);c.translate(-f.x,-f.y);
  if(f.state==='special'&&f.actionTime<m.startup){
   const q=f.actionTime/m.startup;c.save();c.translate(f.x+f.direction*120,f.y-205);c.globalAlpha=.35+.5*q;seal(c,7+q*15,reduced?0:clock*2);c.restore();
  }
@@ -34,4 +36,5 @@ export function drawAdrianoPower(c,f,clock,reduced=false){
   if(!reduced)for(let i=0;i<3;i++){c.save();c.translate(-80+i*70,-35-Math.sin(q*Math.PI)*30);c.globalAlpha=.35;banner(c,22,i%2);c.restore();}
   c.restore();
  }
+ c.restore();
 }

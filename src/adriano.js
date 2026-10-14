@@ -1,8 +1,9 @@
-import {ADRIANO_HURT} from './adriano-data.js';
+import {ADRIANO_BODY_SCALE,ADRIANO_HURT} from './adriano-data.js';
+export {ADRIANO_BODY_SCALE} from './adriano-data.js';
 import {nativeWalkPose} from './native-walk.js';
 import {entityScale} from './story-world.js';
 
-const box=(near,reach,height,h)=>({near,reach,height,h});
+const box=(near,reach,height,h)=>({near:near*ADRIANO_BODY_SCALE,reach:reach*ADRIANO_BODY_SCALE,height:height*ADRIANO_BODY_SCALE,h:h*ADRIANO_BODY_SCALE});
 export const ADRIANO_STRIKES=Object.freeze({
  punch:box(25,175,219,42),kick:box(28,218,201,62),
  crouchPunch:box(20,188,166,44),sweep:box(18,220,48,66),

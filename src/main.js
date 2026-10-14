@@ -142,7 +142,7 @@ function previewFighter(id) {
   $('left-name').textContent=CHARACTERS[id].name;
   $('left-style').textContent=card.querySelector('.fighter-style').textContent;
   $('left-portrait').src=portraitPath(id);
-  $('left-stance').src=`assets/runtime/${id}-preview-v${id==='tais'?2:1}.webp${id==='ruan'?'?v=362':id==='joao'?'?v=362':id==='luciana'?'?v=467':''}`;
+  $('left-stance').src=`assets/runtime/${id}-preview-v${['adriano','tais'].includes(id)?2:1}.webp${id==='ruan'?'?v=362':id==='joao'?'?v=362':id==='luciana'?'?v=467':''}`;
   $('left-stance').alt=`${CHARACTERS[id].name} em pose de luta`;
   $('selection-quote').textContent=SELECTION_QUOTES[id];
   $('preview-left').style.setProperty('--fighter-color',CHARACTERS[id].color);
@@ -188,7 +188,7 @@ function updateSelection() {
   $('right-name').textContent=network&&!lobby?'DESAFIANTE':CHARACTERS[opponent].name;
   $('right-style').textContent=network&&!lobby?'MULTIPLAYER ONLINE':document.querySelector(`[data-fighter="${opponent}"] .fighter-style`).textContent;
   $('right-portrait').src=portraitPath(opponent);
-  $('right-stance').src=`assets/runtime/${opponent}-preview-v${opponent==='tais'?2:1}.webp${opponent==='ruan'?'?v=362':opponent==='joao'?'?v=362':opponent==='luciana'?'?v=467':''}`;
+  $('right-stance').src=`assets/runtime/${opponent}-preview-v${['adriano','tais'].includes(opponent)?2:1}.webp${opponent==='ruan'?'?v=362':opponent==='joao'?'?v=362':opponent==='luciana'?'?v=467':''}`;
   $('right-stance').alt=network&&!lobby?'':`${CHARACTERS[opponent].name} em pose de luta`;
   $('rival-slot').textContent=network?(lobby?`${story?'PARCEIRO':'ADVERSÁRIO'} · P${2-online.slot}`:'PLAYER 2'):local?(story?'PARCEIRO · P2':'JOGADOR 2'):story?'EQUIPE DO RESGATE':'COMPUTADOR';
   if(story){document.querySelector('.roster-caption').innerHTML='EQUIPE DO RESGATE <span>TREZE LUTADORES · UMA MISSÃO</span>'; $('rival-note').textContent=getMode()==='cpu'?'Campanha solo · apenas você em campo. WASD: andar · Espaço: pular.':'Juntos contra a IA. Sem dano entre parceiros.';}else document.querySelector('.roster-caption').innerHTML='TODOS OS LUTADORES <span>PROFESSORES E ALUNOS</span>';

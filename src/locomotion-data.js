@@ -1,3 +1,4 @@
+import {ADRIANO_BODY_SCALE} from './adriano-data.js';
 // Bind poses refer to the approved painted stances, never to replacement artwork.
 // Coordinates are normalized inside the cropped frame; feet are the world origin.
 const bind=(w,h,axis,atlas,points)=>({w,h,axis,atlas,index:0,points});
@@ -32,7 +33,7 @@ export const RIG_BIND = Object.freeze({
 const gait=(height,stride,backStride,duty,lift,sway,bob,lean,guard,tempo,head,recover)=>
  ({height,stride,backStride,duty,lift,sway,bob,lean,guard,tempo,head,recover,acceleration:7200,deceleration:9600});
 export const GAITS=Object.freeze({
- adriano:gait(300,126,104,.78,12,5,2.6,4,0,2.9,.8,.12),
+ adriano:gait(300*ADRIANO_BODY_SCALE,126*ADRIANO_BODY_SCALE,104*ADRIANO_BODY_SCALE,.78,12*ADRIANO_BODY_SCALE,5*ADRIANO_BODY_SCALE,2.6*ADRIANO_BODY_SCALE,4,0,2.9,.8,.12),
  marcelo:gait(295.973,146,108,.69,17,9,3.4,8,0,2.6,1.1,.12),
  rafael:gait(294,114,96,.80,8,4,2.4,11,1,3.9,2.2,.10),
  gustavo:gait(298.743,142,116,.72,20,6,4.2,6,1,3.2,1.2,.14),

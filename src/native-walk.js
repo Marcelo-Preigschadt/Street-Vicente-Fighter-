@@ -1,9 +1,10 @@
+import {ADRIANO_BODY_SCALE} from './adriano-data.js';
 import {entityScale} from './story-world.js';
 
 // Distances are authored in the versus drawing plane. Story scales both the
 // actor and its world travel, so the cycle must use that same scale.
 export const NATIVE_WALK_STRIDES=Object.freeze({
- adriano:126,marcelo:160,rafael:128,gustavo:196,gelton:150,marcelino:134,
+ adriano:126*ADRIANO_BODY_SCALE,marcelo:160,rafael:128,gustavo:196,gelton:150,marcelino:134,
  marcos:108,joao:138,ruan:128,tais:170,luciana:138,khauany:150,dienes:125
 });
 export function nativeWalkingFrame(f){

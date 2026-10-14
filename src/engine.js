@@ -1,4 +1,4 @@
-import {adrianoPose,adrianoHurt,ADRIANO_STRIKES,adrianoSiegeProjectile} from './adriano.js';
+import {adrianoPose,adrianoHurt,ADRIANO_BODY_SCALE,ADRIANO_STRIKES,adrianoSiegeProjectile} from './adriano.js';
 import {savatePose,savateHurt,SAVATE_STRIKES} from './savate.js';
 import {mmaPose,mmaHurt,MMA_STRIKES} from './mma.js';
 import {khauanyPose,khauanyHurt,KHAUANY_STRIKES} from './khauany.js';
@@ -28,7 +28,7 @@ export const CHARACTERS = Object.freeze({
     speed:338,backSpeed:328,jumpSpeed:615,power:1.02,sprite:'assets/source/adriano/base.png',combatSprite:'assets/source/adriano/combat.png',
     powers:{special:'Selo do Império',uppercut:'Ascensão da Muralha',super:'Cerco das Dinastias'},
     powerQuotes:{special:'Selo do Império!',uppercut:'Ergam a muralha!',super:'O cerco começou! Dinastias, avancem!'},
-    voiceDuration:{special:2.08,uppercut:1.92,super:5.68},strikes:ADRIANO_STRIKES,projectile:{offset:165,height:210}},
+    voiceDuration:{special:2.08,uppercut:1.92,super:5.68},strikes:ADRIANO_STRIKES,projectile:{offset:165*ADRIANO_BODY_SCALE,height:210*ADRIANO_BODY_SCALE}},
 
   marcelo: { id: 'marcelo', category:'teachers', name: 'Prof. Marcelo', quote: 'Bora NIT', color: '#b8ed68', accent: '#69daaa',
     speed: 324, backSpeed: 240, jumpSpeed: 600, power: 1.08, sprite: 'assets/marcelo.webp', combatSprite: 'assets/marcelo-combat.webp', walkSprite: 'assets/marcelo-walk.webp',

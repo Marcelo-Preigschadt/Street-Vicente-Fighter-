@@ -1,10 +1,11 @@
+import {ADRIANO_BODY_SCALE} from './adriano-data.js';
 import { MOTION_HURT } from './motion-data.js?v=27';
 import {nativeWalkPose} from './native-walk.js';
 
 // Complete drawings, distance-driven footwork and committed burst steps.
 // A step changes spacing; it never grants whole-body invulnerability.
 export const FOOTWORK = Object.freeze({
-  adriano:{stride:126,advance:{distance:105,duration:15/60,cancelAt:6/60},retreat:{distance:115,duration:14/60},counter:.35,range:[135,220],attackAdvance:{punch:[8,13,19],kick:[8,16,22],crouchPunch:[4,7,10],sweep:[4,7,10]}},
+  adriano:{stride:126*ADRIANO_BODY_SCALE,advance:{distance:105,duration:15/60,cancelAt:6/60},retreat:{distance:115,duration:14/60},counter:.35,range:[135,220],attackAdvance:{punch:[8,13,19],kick:[8,16,22],crouchPunch:[4,7,10],sweep:[4,7,10]}},
   marcelo: { stride:160, advance:{distance:112,duration:14/60,cancelAt:5/60}, retreat:{distance:72,duration:16/60},
     counter: .20, range:[112,155], attackAdvance:{punch:[8,14,20],kick:[10,16,22],crouchPunch:[4,8,12],sweep:[4,6,8]} },
   rafael: { stride:128, advance:{distance:82,duration:11/60,cancelAt:4/60}, retreat:{distance:104,duration:13/60},

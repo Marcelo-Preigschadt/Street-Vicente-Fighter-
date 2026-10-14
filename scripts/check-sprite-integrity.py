@@ -15,7 +15,7 @@ from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[1]
 IDS = ['adriano', 'marcelo', 'rafael', 'gustavo', 'gelton', 'marcelino', 'marcos', 'joao', 'ruan', 'tais', 'luciana', 'khauany', 'dienes']
-VERSIONS = {'tais': 2, 'khauany': 2, 'dienes': 2}
+VERSIONS = {'adriano': 2, 'tais': 2, 'khauany': 2, 'dienes': 2}
 MOTION = json.loads(subprocess.check_output([
     'node', '--input-type=module', '-e',
     "import {MOTION_SPRITE_STEMS} from './src/sprite-loader.js';process.stdout.write(JSON.stringify(MOTION_SPRITE_STEMS));"

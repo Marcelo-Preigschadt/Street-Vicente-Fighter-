@@ -14,6 +14,9 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/source/adriano'
 RUNTIME = ROOT / 'assets/runtime'
+BODY_SCALE = .88
+BODY_HEIGHT = 300 * BODY_SCALE
+VERSION = 2
 
 
 def extract(name, rows=4):
@@ -67,7 +70,7 @@ def profile(image, axis, scale):
     return result
 
 
-def pack(items, path, scales, portrait=None):
+def pack(items, path, scales, previous=None):
     width = 2048
     placements = []
     x = y = 3
@@ -91,7 +94,14 @@ def pack(items, path, scales, portrait=None):
         data = {'x':0,'y':0,'w':pose.width,'h':pose.height,'anchor':axis,'bottom':pose.height,'rect':rect}
         meta['atlases'][atlas]['frames'].append(data)
         geometry[atlas].append(profile(pose,axis,scales[atlas]))
-    sheet.save(path.with_suffix('.webp'),lossless=True,exact=True,method=6)
+    image_path = path.with_suffix('.webp')
+    # A scale-only release keeps the authored bitmap byte-for-byte when the
+    # newly assembled pixels match the original atlas.
+    if previous and Image.open(previous).convert('RGBA').tobytes() == sheet.tobytes():
+        image_path.write_bytes(previous.read_bytes())
+    else:
+        sheet.save(image_path,lossless=True,exact=True,method=6)
+    assert Image.open(image_path).size == sheet.size, (image_path, 'invalid packed image')
     path.with_suffix('.json').write_text(json.dumps(meta,separators=(',',':'))+'\n')
     return meta, geometry
 
@@ -99,19 +109,19 @@ def pack(items, path, scales, portrait=None):
 def main():
     sheets = {name:extract(name) for name in ['base','combat','strike']}
     walking = extract('walk',2)
-    scale = round(300/sheets['base'][0][0].height,8)
+    scale = round(BODY_HEIGHT/sheets['base'][0][0].height,8)
     portrait = Image.open(SOURCE/'portrait.png').convert('RGBA')
     head = portrait.resize((320,320),Image.Resampling.LANCZOS)
     head.save(RUNTIME/'adriano-head-menu-v1.webp',quality=95,method=6)
     items = [(name,i,pose,rect) for name,frames in sheets.items() for i,(pose,rect) in enumerate(frames)]
     items.append(('portrait',0,head.resize((80,81),Image.Resampling.LANCZOS),None))
-    meta, geometry = pack(items,RUNTIME/'adriano-v1',{name:scale for name in sheets})
-    walk_scale = round(300/np.median([pose.height for pose,_ in walking]),8)
-    motion, motion_geometry = pack([('motion',i,pose,rect) for i,(pose,rect) in enumerate(walking)],ROOT/'assets/story/adriano-walk-v1',{'motion':walk_scale})
+    meta, geometry = pack(items,RUNTIME/f'adriano-v{VERSION}',{name:scale for name in sheets},RUNTIME/'adriano-v1.webp')
+    walk_scale = round(BODY_HEIGHT/np.median([pose.height for pose,_ in walking]),8)
+    motion, motion_geometry = pack([('motion',i,pose,rect) for i,(pose,rect) in enumerate(walking)],ROOT/f'assets/story/adriano-walk-v{VERSION}',{'motion':walk_scale},ROOT/'assets/story/adriano-walk-v1.webp')
     # The existing loader consumes a flat list with a scale on each walk frame.
     frames = motion['atlases']['motion']['frames']
     for frame in frames: frame['scale'] = walk_scale
-    (ROOT/'assets/story/adriano-walk-v1.json').write_text(json.dumps(frames,separators=(',',':'))+'\n')
+    (ROOT/f'assets/story/adriano-walk-v{VERSION}.json').write_text(json.dumps(frames,separators=(',',':'))+'\n')
     geometry['motion'] = motion_geometry['motion']
     sockets = {}
     for atlas,frames in {**meta['atlases'],'motion':{'scale':walk_scale,'frames':frames}}.items():
@@ -120,14 +130,14 @@ def main():
             size = frame.get('scale',frames['scale'])
             hand_x = w*.92 if atlas == 'base' and i in [12,13] or atlas == 'strike' and i in [12,14] else w*.72
             sockets[f'{atlas}:{i}'] = {'anchor':axis,'hand':[round((hand_x-axis)*size,5),round(-h*.68*size,5)],'hurt':geometry[atlas][i]}
-    (ROOT/'src/adriano-data.js').write_text('export const ADRIANO_HURT='+json.dumps(geometry,separators=(',',':'))+';\nexport const ADRIANO_STORY_GEOMETRY='+json.dumps(sockets,separators=(',',':'))+';\n')
+    (ROOT/'src/adriano-data.js').write_text(f'export const ADRIANO_BODY_SCALE={BODY_SCALE};\n'+'export const ADRIANO_HURT='+json.dumps(geometry,separators=(',',':'))+';\nexport const ADRIANO_STORY_GEOMETRY='+json.dumps(sockets,separators=(',',':'))+';\n')
     pose = sheets['base'][0][0]
-    factor = min(216/pose.width,280/pose.height)
+    factor = min(216/pose.width,280/pose.height) * BODY_SCALE
     thumbnail = pose.resize((round(pose.width*factor),round(pose.height*factor)),Image.Resampling.LANCZOS)
     preview = Image.new('RGBA',(240,300))
     preview.alpha_composite(thumbnail,((240-thumbnail.width)//2,294-thumbnail.height))
     pixels=np.asarray(preview).copy();pixels[pixels[:, :, 3] == 0]=0
-    Image.fromarray(pixels).save(RUNTIME/'adriano-preview-v1.webp',lossless=True,exact=True,method=6)
+    Image.fromarray(pixels).save(RUNTIME/f'adriano-preview-v{VERSION}.webp',lossless=True,exact=True,method=6)
     board = Image.new('RGB',(1440,5*365),'#1c2836')
     draw = ImageDraw.Draw(board)
     all_frames = [(name,i,p) for name,poses in sheets.items() for i,(p,_) in enumerate(poses)] + [('motion',i,p) for i,(p,_) in enumerate(walking)]
@@ -139,7 +149,7 @@ def main():
         draw.text((x+5,y+340),f'{name}:{i}',fill='white')
     output = ROOT/'docs/adriano-review'; output.mkdir(exist_ok=True)
     board.save(output/'poses.webp',quality=94)
-    proof = {'character':'adriano','poses':56,'baseScale':scale,'walkScale':walk_scale,'sources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in SOURCE.glob('*.png')},'sourceRects':{name:[rect for _,rect in poses] for name,poses in sheets.items()},'existingCharacterAssetsChanged':False}
+    proof = {'character':'adriano','poses':56,'bodyScale':BODY_SCALE,'bodyHeight':BODY_HEIGHT,'baseScale':scale,'walkScale':walk_scale,'sources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in SOURCE.glob('*.png')},'sourceRects':{name:[rect for _,rect in poses] for name,poses in sheets.items()},'existingCharacterAssetsChanged':False}
     (output/'packing.json').write_text(json.dumps(proof,indent=2)+'\n')
     print(json.dumps(proof,ensure_ascii=False))
 

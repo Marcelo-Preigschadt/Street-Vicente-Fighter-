@@ -1,0 +1,157 @@
+{
+  "scaleReductionPercent": 12,
+  "originalBitmapsPreserved": true,
+  "comparisons": [
+    {
+      "mode": "versus idle",
+      "id": "adriano",
+      "before": true,
+      "width": 289.0365446,
+      "height": 299.99999974
+    },
+    {
+      "mode": "versus idle",
+      "id": "adriano",
+      "before": false,
+      "width": 254.3521589,
+      "height": 263.99999941
+    },
+    {
+      "mode": "versus idle",
+      "id": "rafael",
+      "before": false,
+      "width": 227.43396226415095,
+      "height": 294
+    },
+    {
+      "mode": "versus idle",
+      "id": "ruan",
+      "before": false,
+      "width": 271,
+      "height": 303
+    },
+    {
+      "mode": "versus walk",
+      "id": "adriano",
+      "before": true,
+      "width": 166.78700346,
+      "height": 296.75090226000003
+    },
+    {
+      "mode": "versus walk",
+      "id": "adriano",
+      "before": false,
+      "width": 146.77256286,
+      "height": 261.14079366
+    },
+    {
+      "mode": "versus walk",
+      "id": "rafael",
+      "before": false,
+      "width": 216.77848101265823,
+      "height": 293.06962025316454
+    },
+    {
+      "mode": "versus walk",
+      "id": "ruan",
+      "before": false,
+      "width": 162.55375,
+      "height": 305.60105
+    },
+    {
+      "mode": "story idle",
+      "id": "adriano",
+      "before": true,
+      "width": 202.99410111907486,
+      "height": 210.69387736841907
+    },
+    {
+      "mode": "story idle",
+      "id": "adriano",
+      "before": false,
+      "width": 178.63480874038098,
+      "height": 185.41061183053336
+    },
+    {
+      "mode": "story idle",
+      "id": "rafael",
+      "before": false,
+      "width": 159.72981132075472,
+      "height": 206.48000000000002
+    },
+    {
+      "mode": "story idle",
+      "id": "ruan",
+      "before": false,
+      "width": 190.32680272108843,
+      "height": 212.80081632653062
+    }
+  ],
+  "roster": [
+    {
+      "id": "adriano",
+      "width": 254.3521589,
+      "height": 263.99999941
+    },
+    {
+      "id": "marcelo",
+      "width": 255.26946101275917,
+      "height": 296.6407184872408
+    },
+    {
+      "id": "rafael",
+      "width": 227.43396226415095,
+      "height": 294
+    },
+    {
+      "id": "gustavo",
+      "width": 226.29652999362042,
+      "height": 294.92744482775123
+    },
+    {
+      "id": "gelton",
+      "width": 302.0547,
+      "height": 293.999908
+    },
+    {
+      "id": "marcelino",
+      "width": 210.82889,
+      "height": 293.99992
+    },
+    {
+      "id": "marcos",
+      "width": 241.63125,
+      "height": 294
+    },
+    {
+      "id": "joao",
+      "width": 268.96,
+      "height": 297
+    },
+    {
+      "id": "tais",
+      "width": 200.62497,
+      "height": 320.999952
+    },
+    {
+      "id": "luciana",
+      "width": 182.92600000000002,
+      "height": 299.99864
+    },
+    {
+      "id": "khauany",
+      "width": 215.99928,
+      "height": 299.999
+    },
+    {
+      "id": "dienes",
+      "width": 240.68800000000002,
+      "height": 300.0004
+    },
+    {
+      "id": "ruan",
+      "width": 271,
+      "height": 303
+    }
+  ]
+}

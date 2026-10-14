@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {CHARACTERS} from '../src/engine.js';
-import {loadPreparedSprites} from '../src/sprite-loader.js';
+import {loadPreparedSprites,preparedSpriteStem} from '../src/sprite-loader.js';
 import {ArcadeAudio} from '../src/audio.js';
 const bytes=path=>readFile(new URL(`../${path}`,import.meta.url));
 test('atlas preparados preservam todos os quadros, escalas e retângulos sem sobreposição',async()=>{
   for(const id of Object.keys(CHARACTERS)){
-    const metadata=JSON.parse(await bytes(`assets/runtime/${id}-v1.json`)),rects=[];
+    const metadata=JSON.parse(await bytes(`${preparedSpriteStem(id)}.json`)),rects=[];
     for(const [atlas,sheet]of Object.entries(metadata.atlases)){
       assert.equal(sheet.frames.length,atlas==='low'?8:16);
       for(const f of sheet.frames){
